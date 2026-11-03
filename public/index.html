@@ -532,7 +532,7 @@ function copy(text, what) {
   $(id).addEventListener('click', function () { if (state.result) copy(id === 'copyCsv' ? monthlyCsv() : weeklyCsv(), id === 'copyCsv' ? 'CSV bulanan' : 'CSV mingguan'); });
 });
 // Direct download only where the browser allows it (GitHub Pages, local file)
-var canDownload = /github\.io$/.test(location.hostname) || location.protocol === 'file:' || location.hostname === 'localhost';
+var canDownload = window.self === window.top; // own tab (Worker, local file); hidden inside embedded viewers
 if (canDownload) $('dlCsv').hidden = false;
 $('dlCsv').addEventListener('click', function () {
   if (!state.result) return;

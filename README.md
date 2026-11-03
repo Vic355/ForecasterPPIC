@@ -4,16 +4,25 @@ PPIC Forecast Desk for The Univenus Serang (plan 7079): extract the monthly clos
 
 ## Input tab (web)
 
-`index.html` is the **Input Data & Model** tab. Open it (or enable GitHub Pages on this repo) and drop in the
+`public/index.html` is the **Input Data & Model** tab, served by a Cloudflare Worker (`wrangler.jsonc`). Open it and drop in the
 "Daily Report Prod & Sales All Mills Closing" Excel file. Everything runs in the browser; the file is not uploaded anywhere.
 
 It shows:
 
 1. **Data yang diambil**: which report column feeds each field, and which headers are ignored.
 2. **Pemeriksaan file**: missing HQ forecast, gap check (opening + actual − ORIG), W1–W5 vs monthly order in, #REF! values, kg rows, duplicate codes.
-3. **Pratinjau**: the extracted SKU rows, copyable (and downloadable on GitHub Pages) as monthly and weekly CSV.
+3. **Pratinjau**: the extracted SKU rows, copyable and downloadable as monthly and weekly CSV.
 
 The page opens with a simulated sample so it can be tried without a file.
+
+## Deploy (Cloudflare Worker)
+
+```
+npx wrangler login
+npx wrangler deploy        # -> https://ppic-forecast-desk.<your-subdomain>.workers.dev
+```
+
+Or connect this repo in the Cloudflare dashboard (Workers & Pages → Create → Import a repository) to deploy on every push.
 
 ## Fields taken (Serang SKU sheet, cartons)
 
