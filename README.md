@@ -57,3 +57,13 @@ python ingest/ingest_closing.py inspect REPORT.xlsx --plant 7079
 python ingest/ingest_closing.py load    REPORT.xlsx --plant 7079 --closing 2026-08 --db ppic.sqlite
 python ingest/ingest_closing.py export  --db ppic.sqlite --out exports/
 ```
+
+## Built-in reference data
+
+| File | What | Source |
+| --- | --- | --- |
+| `data/sku_class_hq.csv` | 356 SKUs: Pareto type, HQ class (A / B / C / NPD), DOI target days | Stock Level Check, 21 Oct 2026 |
+| `data/stock_level_2026-10-21.csv` | Per SKU, all mills, in cartons: SOH, OS, stock status (Good / Overstock), forecast, PO | same report |
+
+HQ class is reference only: A = Pareto (DOI target 15 days), B and C = Non Pareto (30 days), NPD = new product (45 days).
+The input tab shows each SKU's HQ class and DOI target and flags SKUs missing from the list.
