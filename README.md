@@ -17,6 +17,22 @@ PPIC Forecast Desk for The Univenus Serang (plan 7079): extract the monthly clos
 SKUs are keyed by **Nomat** (nomor material). Article Code is kept alongside, used to look up the HQ class, and used as the
 key only when a row has no Nomat (flagged "Tanpa Nomat"). Closing and forecast are joined by Nomat, then by Article Code.
 
+## Forecast ML (prototype v1)
+
+Per SKU (Nomat), in the browser, recomputed from whatever history is loaded:
+
+    Forecast ML = w × Holt(order in) + (1 − w) × Forecast HQ × r
+
+- **Holt**: level + damped trend on monthly order in (alpha 0.5, beta 0.3, damping 0.8), floored at 0.
+- **r** (HQ bias correction): Σ order in ÷ Σ Forecast HQ over the SKU's last 3 closings, shrunk toward the all-SKU ratio
+  (2 pseudo-months) and clamped to 0.3–3.
+- **w** (Holt weight): from each part's past one-month-ahead errors (inverse-error weighting, lightly shrunk to 0.5); 0.5 with no history.
+  No HQ → Holt only; no order-in history (new SKU) → corrected HQ only.
+- **Backtest** (Kinerja ML card): every closing month after the first is re-predicted with only the months before it and the
+  HQ forecast that the closing reports for that month; accuracy = 1 − WAPE, same as the HQ card.
+- **Signal** compares Forecast HQ with Forecast ML: ▼ HQ above ML (≥20% strong, 5–20%), ≈ under 5%, ▲ HQ below ML.
+- The downloaded history workbook gets a `forecast_ml` sheet (holt, corrected HQ, ratio, weight per SKU-month).
+
 ## Input tab (web)
 
 The **Input Data & Model** tab is served by a Cloudflare Worker (`wrangler.jsonc`). Everything runs in the browser; files are not uploaded anywhere.

@@ -100,6 +100,16 @@ dialog#chDlg::backdrop { background: rgba(0, 0, 0, .45); }
 .ctb td.barc { width: 140px; min-width: 100px; vertical-align: middle; }
 .ib { display: block; height: 8px; border-radius: 0 4px 4px 0; } .ib.up { background: var(--bad); } .ib.dn { background: var(--s1); }
 .chdata summary { margin: 2px 0 6px; }
+:root { --s3: #6250d6; --up1-bg: #E3EEFB; --up1: #1c5cab; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --s3: #9085e9; --up1-bg: #1A2A40; --up1: #86b6ef; } }
+:root[data-theme="dark"] { --s3: #9085e9; --up1-bg: #1A2A40; --up1: #86b6ef; }
+.sg { display: inline-block; font-size: 11px; font-weight: 700; border-radius: 4px; padding: 1px 6px; white-space: nowrap; border: 1px solid transparent; }
+.s-dn2 { background: var(--bad-soft); color: var(--bad); border-color: var(--bad); }
+.s-dn1 { background: var(--warn-soft); color: var(--warn); }
+.s-eq { background: var(--ok-soft); color: var(--ok); }
+.s-up1 { background: var(--up1-bg); color: var(--up1); }
+.s-up2 { background: var(--up1-bg); color: var(--up1); border-color: var(--up1); }
+.fct td.ml { color: var(--s3); font-weight: 600; }
 .empty { padding: 28px; text-align: center; color: var(--muted); }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
 .row { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }
@@ -168,7 +178,7 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
   <header>
     <div>
       <h1>PPIC Forecast Desk · The Univenus Serang</h1>
-      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-03g</span></div>
+      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-03h</span></div>
     </div>
     <nav class="tabs" aria-label="Lembar">
       <button type="button" class="tab on" data-tab="Forecast" aria-current="page">Forecast</button><button type="button" class="tab" disabled title="Belum tersedia">Saran Buffer</button><button type="button" class="tab" data-tab="Input">Input Data &amp; Model</button>
@@ -182,7 +192,7 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
       <div class="ph"><h2>Order in vs Forecast HQ, lalu Forecast HQ vs Forecast ML</h2>
         <div style="display:flex;gap:6px;align-items:center"><button type="button" id="fcOpenAll">Buka semua famili</button><button type="button" id="fcCloseAll">Tutup semua</button></div></div>
       <div class="scroll" style="max-height: 680px"><table id="fcTable" class="fct"></table></div>
-      <div class="legend"><span><b>Selisih</b> = Forecast HQ − Order in. <b class="pos">Merah</b>: HQ di atas order in.</span><span><b>Forecast ML</b> masih kosong: model belum dilatih.</span><span><span class="pill p-warn">Tanpa HQ</span> SKU aktif yang tidak ada di Forecast HQ bulan itu.</span><span>Sinyal ▼▲≈ muncul setelah Forecast ML ada.</span></div>
+      <div class="legend"><span><b>Selisih</b> = Forecast HQ − Order in. <b class="pos">Merah</b>: HQ di atas order in.</span><span><b>Forecast ML</b> (prototipe): Holt pada order in + Forecast HQ dikoreksi biasnya per SKU. Arahkan kursor ke angka ML untuk rinciannya.</span><span><b>Sinyal</b> HQ dibanding ML: <span class="sg s-dn2">▼</span> HQ ≥20% di atas, <span class="sg s-dn1">▼</span> 5–20% di atas, <span class="sg s-eq">≈</span> beda &lt;5%, <span class="sg s-up1">▲</span> 5–20% di bawah, <span class="sg s-up2">▲</span> ≥20% di bawah.</span><span><span class="pill p-warn">Tanpa HQ</span> ada order in / ML tapi Forecast HQ kosong.</span></div>
     </section>
   </div>
 
@@ -1035,10 +1045,102 @@ function forecastModel(c) {
   });
   famList.sort(function (a, b) { return b.weight - a.weight; });
   famList.forEach(function (f) { f.skus.sort(function (a, b) { return b.weight - a.weight; }); });
-  return { latest: latest, past: past, future: future, fms: fms, fver: fver, closingMonths: cms, skus: skus, fams: famList };
+  var mm = { latest: latest, past: past, future: future, fms: fms, fver: fver, closingMonths: cms, skus: skus, fams: famList };
+  runML(mm);
+  return mm;
+}
+/* ---------- Forecast ML prototype: Holt (damped) on order in + Forecast HQ corrected for its own bias ---------- */
+// Per SKU: ML = w · Holt(order in) + (1 − w) · HQ × r
+//   Holt: level + damped trend on monthly order in (alpha 0.5, beta 0.3, damping 0.8), never below 0.
+//   r: how far HQ has run from order in for this SKU (Σ order in ÷ Σ HQ over the last 3 closings), pulled toward
+//      the all-SKU ratio when the SKU has little history, kept between 0.3 and 3.
+//   w: share for Holt, from the past one-month-ahead errors of each part (smaller error, bigger share); 0.5 without history.
+// Backtest: each closing month is predicted using only the months before it, with HQ's forecast for that month from the closing.
+var ML = { alpha: 0.5, beta: 0.3, phi: 0.8, ratioMonths: 3, shrink: 2, rMin: 0.3, rMax: 3 };
+function holtFc(ys, h) {
+  var l = null, b = 0;
+  ys.forEach(function (y) {
+    if (y === null || y === undefined) return;
+    if (l === null) { l = y; return; }
+    var pl = l; l = ML.alpha * y + (1 - ML.alpha) * (l + ML.phi * b); b = ML.beta * (l - pl) + (1 - ML.beta) * ML.phi * b;
+  });
+  if (l === null) return null;
+  var damp = 0, p = 1; for (var i = 1; i <= h; i++) { p *= ML.phi; damp += p; }
+  return Math.max(0, l + b * damp);
+}
+// Order-in series up to (not including) index k: missing months after the SKU first appears count as 0.
+function oiSeries(s, cms, k) {
+  var out = [], seen = false;
+  for (var i = 0; i < k; i++) { var v = s.oi[cms[i]]; if (v !== undefined) seen = true; out.push(v !== undefined ? (v || 0) : seen ? 0 : null); }
+  return out;
+}
+function ratioOf(list, cms, k) {
+  var so = 0, sh = 0, nm = 0;
+  for (var i = Math.max(0, k - ML.ratioMonths); i < k; i++) {
+    var mo = cms[i];
+    list.forEach(function (s) { var q = s.hq[mo]; if (typeof q === 'number' && q > 0 && s.oi[mo] !== undefined) { so += s.oi[mo] || 0; sh += q; } });
+  }
+  return { r: sh ? so / sh : null, sh: sh };
+}
+function skuRatio(s, cms, k, R) {
+  var so = 0, sh = 0, nm = 0;
+  for (var i = Math.max(0, k - ML.ratioMonths); i < k; i++) { var mo = cms[i], q = s.hq[mo]; if (typeof q === 'number' && q > 0 && s.oi[mo] !== undefined) { so += s.oi[mo] || 0; sh += q; nm++; } }
+  var g = R === null ? 1 : R, own = sh ? so / sh : g;
+  var r = (ML.shrink * g + nm * own) / (ML.shrink + nm);
+  return Math.min(ML.rMax, Math.max(ML.rMin, r));
+}
+// Prediction for a month h steps after cms[k-1], with HQ value q for that month. Rs[k] = all-SKU ratio using months < k.
+function mlPredict(s, cms, k, h, q, Rs) {
+  var holt = holtFc(oiSeries(s, cms, k), h);
+  var r = skuRatio(s, cms, k, Rs[k]), hqc = typeof q === 'number' && q > 0 ? q * r : null;
+  // weight from past one-step errors (months 1..k-1 within the history)
+  var eH = 0, eQ = 0, nH = 0, scale = 0;
+  for (var j = 1; j < k; j++) {
+    var y = s.oi[cms[j]]; if (y === undefined) continue;
+    var ph = holtFc(oiSeries(s, cms, j), 1), qj = s.hq[cms[j]], pq = typeof qj === 'number' && qj > 0 ? qj * skuRatio(s, cms, j, Rs[j]) : null;
+    if (ph !== null && pq !== null) { eH += Math.abs(ph - y); eQ += Math.abs(pq - y); nH++; scale += y; }
+  }
+  var c = nH ? 0.1 * scale / nH * 2 : 0, w = nH ? (eQ + c) / (eH + eQ + 2 * c || 1) : 0.5;
+  var ml = holt !== null && hqc !== null ? w * holt + (1 - w) * hqc : holt !== null ? holt : hqc !== null ? hqc : null;
+  return { ml: ml, holt: holt, hqc: hqc, r: r, w: holt !== null && hqc !== null ? w : holt !== null ? 1 : 0 };
+}
+function runML(m) {
+  var cms = m.closingMonths, K = cms.length, Rs = [];
+  for (var k = 0; k <= K; k++) Rs.push(ratioOf(m.skus, cms, k).r);
+  m.R = Rs[K];
+  m.bt = [];
+  for (var k2 = 1; k2 < K; k2++) {
+    var mo = cms[k2], t = { m: mo, oi: 0, mlAbs: 0, hqAbs: 0, ml: 0, hq: 0, n: 0 };
+    m.skus.forEach(function (s) {
+      var y = s.oi[mo], q = s.hq[mo]; if (y === undefined && q === undefined) return;
+      var p = mlPredict(s, cms, k2, 1, q, Rs), pv = p.ml === null ? 0 : p.ml;
+      s.bt = s.bt || {}; s.bt[mo] = pv;
+      t.oi += y || 0; t.ml += pv; t.hq += q || 0; t.mlAbs += Math.abs(pv - (y || 0)); t.hqAbs += Math.abs((q || 0) - (y || 0)); t.n++;
+    });
+    t.mlAcc = t.oi ? Math.max(0, 1 - t.mlAbs / t.oi) * 100 : null; t.hqAcc = t.oi ? Math.max(0, 1 - t.hqAbs / t.oi) * 100 : null;
+    m.bt.push(t);
+  }
+  if (!K) return;
+  m.skus.forEach(function (s) {
+    s.ml = {}; s.mlInfo = {};
+    m.future.forEach(function (mo, i) {
+      var p = mlPredict(s, cms, K, i + 1, s.fhq[mo], Rs);
+      if (p.ml !== null) { s.ml[mo] = Math.round(p.ml); s.mlInfo[mo] = p; }
+    });
+  });
+}
+// Signal: Forecast HQ compared with Forecast ML (mockup bands).
+function mlSignal(hq, ml) {
+  if (ml === null || ml === undefined) return '<span class="sub">–</span>';
+  if (typeof hq !== 'number') return ml > 0 ? '<span class="pill p-warn">Tanpa HQ</span>' : '<span class="sub">–</span>';
+  if (!ml) return hq > 0 ? '<span class="sg s-dn2" title="ML 0">▼ HQ</span>' : '<span class="sub">–</span>';
+  var d = (hq - ml) / ml * 100, a = Math.abs(d), txt = fmt.format(Math.round(a)) + '%';
+  var cls = a < 5 ? 's-eq' : d > 0 ? (a >= 20 ? 's-dn2' : 's-dn1') : (a >= 20 ? 's-up2' : 's-up1');
+  var arrow = a < 5 ? '≈' : d > 0 ? '▼' : '▲';
+  return '<span class="sg ' + cls + '" title="Forecast HQ ' + (d >= 0 ? 'di atas' : 'di bawah') + ' Forecast ML ' + txt + '">' + arrow + ' ' + (a >= 1000 ? '>999%' : txt) + '</span>';
 }
 function aggr(list, m) {
-  var a = { fs: 0, fsN: 0, oi: {}, hq: {}, fhq: {}, noHq: {}, absErr: {} };
+  var a = { fs: 0, fsN: 0, oi: {}, hq: {}, fhq: {}, noHq: {}, absErr: {}, ml: {}, both: {} };
   list.forEach(function (s) {
     if (s.fs !== null) { a.fs += s.fs; a.fsN++; }
     m.past.forEach(function (mo) {
@@ -1048,6 +1150,8 @@ function aggr(list, m) {
       }
     });
     m.future.forEach(function (mo) {
+      if (s.ml && typeof s.ml[mo] === 'number') a.ml[mo] = (a.ml[mo] || 0) + s.ml[mo];
+      if (s.ml && typeof s.ml[mo] === 'number' && typeof s.fhq[mo] === 'number') { var bb = a.both[mo] || (a.both[mo] = { hq: 0, ml: 0 }); bb.hq += s.fhq[mo]; bb.ml += s.ml[mo]; }
       if (typeof s.fhq[mo] === 'number') a.fhq[mo] = (a.fhq[mo] || 0) + s.fhq[mo];
       else if (m.fms.indexOf(mo) >= 0 && (s.oi[m.latest] || 0) > 0) a.noHq[mo] = (a.noHq[mo] || 0) + 1;
     });
@@ -1063,6 +1167,7 @@ function renderForecastScreen(c) {
   if (state.sample) ctx.push('<span class="pill p-warn">CONTOH SIMULASI</span>');
   ctx.push('Closing terakhir: <b>' + (L ? monthLabel(L) : 'belum ada') + '</b>');
   ctx.push('Forecast HQ: <b>' + (m.fms.length ? m.fms.map(function (x) { return monthLabel(x) + ' (' + m.fver[x] + ')'; }).join(', ') : 'belum ada') + '</b>');
+  ctx.push('Forecast ML: <b>prototipe Holt + HQ terkoreksi</b>');
   ctx.push('Kunci SKU: <b>Nomat</b>');
   ctx.push('Satuan: <b>karton</b>');
   $('fcCtx').innerHTML = ctx.map(function (x) { return '<span>' + x + '</span>'; }).join('');
@@ -1089,17 +1194,27 @@ function renderForecastScreen(c) {
       biases.length < 2 ? 'Butuh minimal 2 bulan closing untuk melihat tren (ada ' + biases.length + ').' : m.past.map(function (mo, i) { return monthLabel(mo) + ' ' + pctS(biases[i]); }).join(' · ') + (same ? '. Arah selisih sama tiap bulan.' : '.'),
       biases.length < 2 ? 'Data kurang' : same ? 'Pola berulang' : 'Bervariasi', biases.length < 2 ? '' : same ? 'bad' : 'ok', 'trend');
   }
-  var f1 = m.future[0], fh = tot.fhq[f1];
-  cards += fcCard('Forecast HQ ' + (f1 ? monthLabel(f1) : '') + ' (M+1)', fh === undefined ? '–' : n(fh),
-    fh === undefined ? 'Forecast HQ ' + (f1 ? monthLabel(f1) : 'M+1') + ' belum diunggah.' : 'Versi ' + m.fver[f1] + '.' + (L && tot.oi[L] ? ' ' + pctS((fh / tot.oi[L] - 1) * 100) + ' vs order in ' + monthLabel(L) + '.' : '') + ' Forecast ML belum ada.',
-    fh === undefined ? 'Belum ada' : '', fh === undefined ? 'warn' : '', L ? 'm1' : '');
+  var f1 = m.future[0], fh = tot.fhq[f1], fml = tot.ml[f1], b1 = tot.both[f1];
+  var gapML = fml && fh !== undefined ? (fh - fml) / fml * 100 : null, nNo = tot.noHq[f1] || 0;
+  cards += fcCard('Forecast ' + (f1 ? monthLabel(f1) : '') + ' (M+1)', fh === undefined ? '–' : n(fh),
+    fh === undefined ? 'Forecast HQ ' + (f1 ? monthLabel(f1) : 'M+1') + ' belum diunggah.' + (fml !== undefined ? ' Forecast ML ' + n(fml) + '.' : '') :
+      'Forecast HQ versi ' + m.fver[f1] + '. Forecast ML ' + n(fml) + (gapML !== null ? ', jadi HQ ' + fmt.format(Math.abs(Math.round(gapML))) + '% ' + (gapML >= 0 ? 'lebih tinggi' : 'lebih rendah') : '') + '.' + (nNo ? ' ' + nNo + ' SKU aktif tidak ada di HQ.' : ''),
+    fh === undefined ? 'Belum ada' : gapML === null ? '' : Math.abs(gapML) >= 20 ? 'Selisih besar' : Math.abs(gapML) >= 5 ? 'Selisih' : 'Sejalan',
+    fh === undefined ? 'warn' : gapML === null ? '' : Math.abs(gapML) >= 20 ? 'warn' : Math.abs(gapML) >= 5 ? '' : 'ok', L ? 'm1' : '');
   if (f1 && m.fms.indexOf(f1) >= 0 && L) {
     var miss = m.skus.filter(function (s) { return (s.oi[L] || 0) > 0 && typeof s.fhq[f1] !== 'number'; });
     var missQ = miss.reduce(function (a, s) { return a + s.oi[L]; }, 0);
     cards += fcCard('SKU tanpa Forecast HQ ' + monthLabel(f1), n(miss.length) + ' SKU', miss.length ? n(missQ) + ' karton order in ' + monthLabel(L) + ' tidak punya Forecast HQ ' + monthLabel(f1) + '.' : 'Semua SKU yang aktif di ' + monthLabel(L) + ' ada di Forecast HQ.',
       miss.length ? 'Data kurang' : 'Lengkap', miss.length ? 'warn' : 'ok', 'nohq');
   } else cards += fcCard('SKU tanpa Forecast HQ', '–', 'Perlu closing dan Forecast HQ bulan berikutnya.', '', '');
-  cards += fcCard('Kinerja Forecast ML', '–', 'Belum ada model. Butuh minimal 12 bulan closing untuk uji mundur (ada ' + m.closingMonths.length + ').', 'Belum ada', '');
+  if (m.bt.length) {
+    var so = 0, sm = 0, sq = 0, win = 0;
+    m.bt.forEach(function (t) { so += t.oi; sm += t.mlAbs; sq += t.hqAbs; if (t.mlAbs < t.hqAbs) win++; });
+    var aM = so ? Math.max(0, 1 - sm / so) * 100 : 0, aQ = so ? Math.max(0, 1 - sq / so) * 100 : 0, few = m.bt.length < 3;
+    cards += fcCard('Kinerja Forecast ML · ' + m.bt.length + ' bln', fmt.format(Math.round(aM)) + '% vs ' + fmt.format(Math.round(aQ)) + '%',
+      'Akurasi uji mundur ML vs HQ. ML lebih baik ' + win + ' dari ' + m.bt.length + ' bulan.' + (few ? ' Data masih sedikit (prototipe), angka bisa berubah banyak.' : ''),
+      aM > aQ ? 'Lebih akurat' : 'Belum lebih baik', aM > aQ ? 'ok' : 'warn', 'ml');
+  } else cards += fcCard('Kinerja Forecast ML', '–', 'Uji mundur butuh minimal 2 bulan closing (ada ' + m.closingMonths.length + ').', 'Data kurang', '');
   $('fcCards').innerHTML = cards; CH.model = m;
   // table
   var np = m.past.length, nf = m.future.length;
@@ -1117,11 +1232,13 @@ function renderForecastScreen(c) {
       t += '<td class="num sep">' + n(o) + '</td><td class="num">' + n(q) + '</td><td class="num' + (d > 0 ? ' pos' : '') + '">' + signed(d) + '</td>';
     });
     m.future.forEach(function (mo) {
-      var q = isSku ? s.fhq[mo] : a.fhq[mo], sig = '<span class="sub">–</span>';
-      var loaded = m.fms.indexOf(mo) >= 0;
-      if (isSku && loaded && typeof q !== 'number' && (s.oi[m.latest] || 0) > 0) sig = '<span class="pill p-warn">Tanpa HQ</span>';
-      if (!isSku && a.noHq[mo]) sig = '<span class="pill p-warn">' + a.noHq[mo] + ' tanpa HQ</span>';
-      t += '<td class="num sep">' + (loaded ? n(q) : '<span class="sub">belum ada</span>') + '</td><td class="num ml">–</td><td>' + sig + '</td>';
+      var q = isSku ? s.fhq[mo] : a.fhq[mo], loaded = m.fms.indexOf(mo) >= 0;
+      var mlv = isSku ? (s.ml ? s.ml[mo] : undefined) : a.ml[mo];
+      var sig;
+      if (isSku) sig = loaded || typeof mlv === 'number' ? mlSignal(loaded ? q : undefined, mlv) : '<span class="sub">–</span>';
+      else { sig = typeof a.ml[mo] === 'number' && loaded ? mlSignal(a.fhq[mo] || 0, a.ml[mo]) : '<span class="sub">–</span>'; if (a.noHq[mo]) sig += ' <span class="pill p-warn">' + a.noHq[mo] + ' tanpa HQ</span>'; }
+      var tip = isSku && s.mlInfo && s.mlInfo[mo] ? ' title="Holt ' + n(s.mlInfo[mo].holt === null ? null : Math.round(s.mlInfo[mo].holt)) + ' · HQ terkoreksi ' + n(s.mlInfo[mo].hqc === null ? null : Math.round(s.mlInfo[mo].hqc)) + ' (×' + fmt.format(Math.round(s.mlInfo[mo].r * 100) / 100) + ') · bobot Holt ' + Math.round(s.mlInfo[mo].w * 100) + '%"' : '';
+      t += '<td class="num sep">' + (loaded ? n(q) : '<span class="sub">belum ada</span>') + '</td><td class="num ml"' + tip + '>' + n(mlv) + '</td><td>' + sig + '</td>';
     });
     return t;
   };
@@ -1316,14 +1433,17 @@ function openChart(kind) {
     title = 'Order in dan Forecast HQ, histori sampai M+3';
     spec = { kind: 'line', labels: months.map(monthLabel), yfmt: n, shadeFrom: nc, shadeLabel: 'Forecast berjalan',
       series: [{ name: 'Order in', color: s1, values: mt2.map(function (t, i) { return i < nc ? t.oi : null; }) },
-        { name: 'Forecast HQ', color: s2, values: mt2.map(function (t, i) { return i < nc ? t.hq : t.hasF ? t.fhq : null; }) }],
-      extra: mt2.map(function (t, i) { return i < nc ? 'Closing' : (m.fms.indexOf(t.m) >= 0 ? 'Forecast HQ versi ' + m.fver[t.m] + ' · Forecast ML belum ada' : 'Forecast HQ belum diunggah'); }) };
+        { name: 'Forecast HQ', color: s2, values: mt2.map(function (t, i) { return i < nc ? t.hq : t.hasF ? t.fhq : null; }) },
+        { name: 'Forecast ML', color: cssVar('--s3'), dash: true, values: months.map(function (mo, i) {
+          if (i >= nc) { var a = 0, any = false; m.skus.forEach(function (s) { if (s.ml && typeof s.ml[mo] === 'number') { a += s.ml[mo]; any = true; } }); return any ? a : null; }
+          var b = m.bt.filter(function (t) { return t.m === mo; })[0]; return b ? b.ml : null; }) }],
+      extra: mt2.map(function (t, i) { return i < nc ? 'Closing' : (m.fms.indexOf(t.m) >= 0 ? 'Forecast HQ versi ' + m.fver[t.m] : 'Forecast HQ belum diunggah') + ' · ML prototipe'; }) };
     var f1 = m.future[0];
     var rows4 = m.skus.filter(function (s) { return typeof s.fhq[f1] === 'number' || (s.oi[L] || 0) > 0; }).map(function (s) { return { s: s, fam: famOf(s), v: (s.fhq[f1] || 0) - (s.oi[L] || 0) }; })
       .sort(function (a, b) { return Math.abs(b.v) - Math.abs(a.v); }).slice(0, 8);
     rows4.slice(0, 3).forEach(function (r) { r.hot = true; });
-    sub = 'Bagian berarsir adalah bulan forecast. Forecast ML akan tampil sebagai garis ketiga setelah model dilatih.';
-    below = contribTable(rows4, [['Order in ' + monthLabel(L), function (r) { return r.s.oi[L]; }], ['Forecast HQ ' + monthLabel(f1), function (r) { return r.s.fhq[f1]; }], ['Perubahan', function (r) { return r.v; }, 1]], 'Perubahan terbesar dari order in terakhir ke Forecast HQ ' + monthLabel(f1));
+    sub = 'Bagian berarsir adalah bulan forecast. Garis ungu putus-putus: Forecast ML. Di bulan closing, titik ML adalah hasil uji mundur (prediksi hanya dari data sebelum bulan itu).';
+    below = contribTable(rows4, [['Order in ' + monthLabel(L), function (r) { return r.s.oi[L]; }], ['Forecast HQ ' + monthLabel(f1), function (r) { return r.s.fhq[f1]; }], ['Forecast ML', function (r) { return r.s.ml ? r.s.ml[f1] : null; }], ['HQ − order in', function (r) { return r.v; }, 1]], 'Perubahan terbesar dari order in terakhir ke Forecast HQ ' + monthLabel(f1));
   } else if (kind === 'nohq') {
     title = 'SKU dengan order in tapi tanpa Forecast HQ, per bulan';
     spec = { kind: 'bar', labels: lab, yfmt: function (v) { return fmt.format(v) + ' SKU'; }, tick: function (v) { return fmt.format(v); }, intTicks: true, series: [{ name: 'SKU tanpa HQ', color: warn, values: mt.map(function (t) { return t.noHq; }) }],
@@ -1333,10 +1453,25 @@ function openChart(kind) {
       .sort(function (a, b) { return b.v - a.v; }).slice(0, 10);
     sub = 'Batang: berapa SKU di closing yang punya order in tetapi Forecast HQ (REV/ORIG) kosong. Tabel: SKU aktif di ' + monthLabel(L) + ' yang tidak ada di Forecast HQ ' + monthLabel(f1b) + '.';
     below = contribTable(rows5, [['Order in ' + monthLabel(L), function (r) { return r.v; }]], 'Tanpa Forecast HQ ' + monthLabel(f1b));
+  } else if (kind === 'ml') {
+    title = 'Uji mundur: akurasi Forecast ML vs Forecast HQ';
+    var bl = m.bt.map(function (t) { return monthLabel(t.m); });
+    spec = { kind: 'line', labels: bl, yfmt: function (v) { return fmt.format(v) + '%'; }, tick: function (v) { return fmt.format(v) + '%'; }, zero: true, ref: { value: 70, label: 'Target 70%' },
+      series: [{ name: 'Forecast ML', color: cssVar('--s3'), dash: true, values: m.bt.map(function (t) { return t.mlAcc; }) }, { name: 'Forecast HQ', color: s2, values: m.bt.map(function (t) { return t.hqAcc; }) }],
+      extra: m.bt.map(function (t) { return 'Order in ' + n(t.oi) + ' · ML ' + n(Math.round(t.ml)) + ' · HQ ' + n(t.hq); }) };
+    var f1c = m.future[0];
+    var rows6 = m.skus.filter(function (s) { return s.ml && typeof s.ml[f1c] === 'number' && typeof s.fhq[f1c] === 'number'; }).map(function (s) { return { s: s, fam: famOf(s), v: s.fhq[f1c] - s.ml[f1c] }; })
+      .sort(function (a, b) { return Math.abs(b.v) - Math.abs(a.v); }).slice(0, 8);
+    rows6.slice(0, 3).forEach(function (r) { r.hot = true; });
+    sub = 'Setiap bulan closing diprediksi ulang hanya dengan data sebelum bulan itu, lalu dibandingkan dengan order in sebenarnya. Cara hitung ML per SKU: ' +
+      'bobot × Holt (level + tren teredam dari order in) + (1 − bobot) × Forecast HQ × rasio koreksi (order in ÷ HQ, 3 bulan terakhir). Bobot lebih besar untuk bagian yang kesalahannya lebih kecil. ' +
+      (m.bt.length < 3 ? 'Baru ' + m.bt.length + ' bulan uji, jadi anggap ini indikasi awal.' : '');
+    below = contribTable(rows6, [['Forecast HQ ' + monthLabel(f1c), function (r) { return r.s.fhq[f1c]; }], ['Forecast ML', function (r) { return r.s.ml[f1c]; }],
+      ['Rasio koreksi', function (r) { return Math.round(r.s.mlInfo[f1c].r * 100) / 100; }], ['Bobot Holt %', function (r) { return Math.round(r.s.mlInfo[f1c].w * 100); }], ['HQ − ML', function (r) { return r.v; }, 1]], 'Beda terbesar HQ vs ML · ' + monthLabel(f1c));
   } else return;
   spec.title = title;
   CH.spec = spec;
-  var one = cms.length < 2 && kind !== 'm1' ? '<p class="note">Baru ada ' + cms.length + ' bulan closing. Garis tren akan terbentuk setelah bulan berikutnya diunggah.</p>' : '';
+  var one = cms.length < 2 && kind !== 'm1' && kind !== 'ml' ? '<p class="note">Baru ada ' + cms.length + ' bulan closing. Garis tren akan terbentuk setelah bulan berikutnya diunggah.</p>' : '';
   $('chTitle').textContent = title;
   $('chBody').innerHTML = (state.sample ? '<span class="pill p-warn">CONTOH SIMULASI</span> ' : '') + '<p class="note">' + esc(sub) + '</p>' + one +
     '<div class="chwrap" id="chWrap">' + drawChart(spec) + '<div class="chtip" id="chTip" hidden></div></div>' + legendHtml(spec.series) +
@@ -1506,7 +1641,9 @@ var canDownload = window.self === window.top;
 $('dlXlsx').hidden = !canDownload;
 $('dlXlsx').addEventListener('click', function () {
   var c = combined(), wb = XLSX.utils.book_new();
-  [['bulanan', c.monthly], ['mingguan', c.weekly], ['forecast_hq', c.forecast], ['kelas_sku', c.kelas], ['log', c.log]].forEach(function (s) {
+  var fm = forecastModel(c), mlRows = [];
+  fm.skus.forEach(function (sk) { Object.keys(sk.ml || {}).forEach(function (mo) { var i = sk.mlInfo[mo]; mlRows.push({ forecast_month: mo, after_closing: fm.latest, nomat: sk.nomat, article_code: sk.art, description: sk.name, forecast_ml_ctn: sk.ml[mo], holt_ctn: i.holt === null ? null : Math.round(i.holt), hq_corrected_ctn: i.hqc === null ? null : Math.round(i.hqc), hq_ratio: Math.round(i.r * 1000) / 1000, holt_weight: Math.round(i.w * 100) / 100, forecast_hq_ctn: typeof sk.fhq[mo] === 'number' ? sk.fhq[mo] : null, model: 'holt+hq_corrected v1 (prototipe)' }); }); });
+  [['bulanan', c.monthly], ['mingguan', c.weekly], ['forecast_hq', c.forecast], ['forecast_ml', mlRows], ['kelas_sku', c.kelas], ['log', c.log]].forEach(function (s) {
     XLSX.utils.book_append_sheet(wb, s[1].length ? XLSX.utils.json_to_sheet(s[1]) : XLSX.utils.aoa_to_sheet([['(kosong)']]), s[0]);
   });
   var ms = c.monthly.map(function (r) { return r.closing_month; }).sort();
