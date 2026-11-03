@@ -58,7 +58,8 @@ except ImportError:  # pragma: no cover
 # --------------------------------------------------------------------------
 FIELDS: list[tuple[str, list[str]]] = [
     ("article_code",          [r"article\s*code", r"kode\s*artikel", r"^article$"]),
-    ("nomat",                 [r"\bnomat\b", r"\bno\.?\s*mat\b", r"sap\s*(no|number|material)"]),
+    ("nomat",                 [r"\bnomat\b", r"\bno\.?\s*mat\b", r"nomor\s*material", r"material\s*(no|number)",
+                               r"sap\s*(no|number|material)"]),
     ("description",           [r"description", r"deskripsi", r"nama\s*barang"]),
     ("uom",                   [r"^uom$", r"\bunit\b", r"satuan"]),
     ("net_weight_kg",         [r"net+\s*weight", r"berat\s*bersih"]),
@@ -105,7 +106,7 @@ def unit_from_sheet(name: str) -> str | None:
         return "MT"
     return None
 
-SNAPSHOT_COLUMNS = ["article_code", "nomat", "description", "family", "uom",
+SNAPSHOT_COLUMNS = ["sku_id", "nomat", "article_code", "description", "family", "uom",
                     "net_weight_kg", "code_status"] + [
     f for f in NUMERIC_FIELDS if f != "net_weight_kg"]
 
@@ -366,10 +367,11 @@ def extract(ws, layout):
     seen = {}
     for r in range(layout["first_data"], ws.max_row + 1):
         code_cell = ws.cell(r, code_c)
+        nomat_v = ws.cell(r, cols["nomat"]).value if "nomat" in cols else None
         desc = ws.cell(r, desc_c).value if desc_c else None
         row_text = norm(" ".join(str(ws.cell(r, c).value) for c in range(1, min(code_c + 4, ws.max_column) + 1)
                                  if ws.cell(r, c).value is not None))
-        if not looks_like_code(code_cell.value):
+        if not looks_like_code(code_cell.value) and not looks_like_code(nomat_v):
             if row_text and not TOTAL_RE.search(row_text):
                 # A label-only row is treated as a family / category header.
                 numbers = [ws.cell(r, c).value for c in cols.values() if c != code_c and c != desc_c]
@@ -378,10 +380,10 @@ def extract(ws, layout):
             continue
         if uom_c and norm(ws.cell(r, uom_c).value) in {"kg", "kgs", "kilogram"}:
             continue  # cartons only
-        code = clean_code(code_cell.value)
-        rec = {"article_code": code, "family": family, "source_row": r,
-               "nomat": clean_code(ws.cell(r, cols["nomat"]).value)
-                        if "nomat" in cols and ws.cell(r, cols["nomat"]).value is not None else None,
+        art = clean_code(code_cell.value) if looks_like_code(code_cell.value) else None
+        nomat = clean_code(nomat_v) if looks_like_code(nomat_v) else None
+        code = nomat or art  # primary key: Nomat (nomor material); Article Code kept for the HQ class list
+        rec = {"sku_id": code, "article_code": art, "family": family, "source_row": r, "nomat": nomat,
                "description": str(desc).strip() if desc is not None else None,
                "uom": (str(ws.cell(r, uom_c).value).strip().upper()
                        if uom_c and ws.cell(r, uom_c).value is not None else layout.get("unit")),
@@ -398,12 +400,14 @@ def extract(ws, layout):
             issues.append((code, r, "duplicate_code", f"also on row {seen[code]}; kept the first"))
             continue
         seen[code] = r
+        if not nomat:
+            issues.append((code, r, "no_nomat", "no Nomat on this row; Article Code used as key"))
         rows.append(rec)
         for (measure, week), c in sorted(weekly.items()):
             val, prob = parse_number(ws.cell(r, c).value)
             if prob:
                 issues.append((code, r, "bad_value", f"{measure} W{week}: {prob}"))
-            weekly_rows.append({"article_code": code, "measure": measure, "week": week, "qty": val})
+            weekly_rows.append({"sku_id": code, "measure": measure, "week": week, "qty": val})
     return rows, weekly_rows, issues
 
 
@@ -412,9 +416,9 @@ def quality_checks(rows, weekly_rows):
     by_code_weeks = {}
     for w in weekly_rows:
         if w["measure"] == "order_in" and w["qty"] is not None:
-            by_code_weeks[w["article_code"]] = by_code_weeks.get(w["article_code"], 0) + w["qty"]
+            by_code_weeks[w["sku_id"]] = by_code_weeks.get(w["sku_id"], 0) + w["qty"]
     for r in rows:
-        code = r["article_code"]
+        code = r["sku_id"]
         oi = r.get("order_in") or 0
         orig, rev = r.get("forecast_hq_orig"), r.get("forecast_hq_rev")
         if oi > 0 and not orig and not rev:
@@ -456,21 +460,21 @@ CREATE TABLE IF NOT EXISTS sku_snapshot (
   snapshot_date  TEXT NOT NULL,
   source_row     INTEGER,
   {", ".join(f"{c} {'REAL' if c in NUMERIC_FIELDS else 'TEXT'}" for c in SNAPSHOT_COLUMNS)},
-  PRIMARY KEY (load_id, article_code)
+  PRIMARY KEY (load_id, sku_id)
 );
 CREATE TABLE IF NOT EXISTS sku_weekly (
   load_id        INTEGER NOT NULL REFERENCES load_log(load_id),
   plant          TEXT NOT NULL,
   snapshot_date  TEXT NOT NULL,
-  article_code   TEXT NOT NULL,
+  sku_id         TEXT NOT NULL,          -- Nomat, or Article Code when the row has no Nomat
   measure        TEXT NOT NULL,          -- order_in | delivery_gi | outstanding
   week           INTEGER NOT NULL,       -- 1..5 of the closing month
   qty            REAL,
-  PRIMARY KEY (load_id, article_code, measure, week)
+  PRIMARY KEY (load_id, sku_id, measure, week)
 );
 CREATE TABLE IF NOT EXISTS load_issue (
   load_id        INTEGER NOT NULL REFERENCES load_log(load_id),
-  article_code   TEXT,
+  sku_id         TEXT,
   source_row     INTEGER,
   check_name     TEXT,
   detail         TEXT
@@ -505,7 +509,7 @@ def store(db_path, plant, closing, source, sheet, sha, rows, weekly_rows, issues
         [[load_id, plant, snap, r["source_row"]] + [r.get(c) for c in SNAPSHOT_COLUMNS] for r in rows])
     con.executemany(
         "INSERT INTO sku_weekly VALUES (?,?,?,?,?,?,?)",
-        [(load_id, plant, snap, w["article_code"], w["measure"], w["week"], w["qty"]) for w in weekly_rows])
+        [(load_id, plant, snap, w["sku_id"], w["measure"], w["week"], w["qty"]) for w in weekly_rows])
     con.executemany("INSERT INTO load_issue VALUES (?,?,?,?,?)",
                     [(load_id, *i) for i in issues])
     con.commit()
@@ -544,7 +548,7 @@ def cmd_inspect(args):
     issues += quality_checks(rows, weekly)
     print(f"\n{len(rows)} SKU rows, {len(issues)} issues. First 5 rows:")
     for r in rows[:5]:
-        print("  ", {k: r.get(k) for k in ("article_code", "description", "family",
+        print("  ", {k: r.get(k) for k in ("sku_id", "article_code", "description", "family",
                                             "forecast_hq_orig", "forecast_hq_rev", "order_in", "free_stock")})
     summarize_issues(issues)
 
