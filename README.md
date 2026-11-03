@@ -4,16 +4,16 @@ PPIC Forecast Desk for The Univenus Serang (plan 7079): extract the monthly clos
 
 ## Input tab (web)
 
-`public/index.html` is the **Input Data & Model** tab, served by a Cloudflare Worker (`wrangler.jsonc`). Open it and drop in the
-"Daily Report Prod & Sales All Mills Closing" Excel file. Everything runs in the browser; the file is not uploaded anywhere.
+`public/index.html` is the **Input Data & Model** tab, served by a Cloudflare Worker (`wrangler.jsonc`). Everything runs in the browser; files are not uploaded anywhere.
 
-It shows:
+Three inputs:
 
-1. **Data yang diambil**: which report column feeds each field, and which headers are ignored.
-2. **Pemeriksaan file**: missing HQ forecast, gap check (opening + actual − ORIG), W1–W5 vs monthly order in, #REF! values, kg rows, duplicate codes.
-3. **Pratinjau**: the extracted SKU rows, copyable and downloadable as monthly and weekly CSV.
+1. **Histori closing** (required): one "Daily Report Prod & Sales Closing" file per month, several at once. The month is read from the file name (e.g. `AUG26`) and can be edited. A previously downloaded `Histori_Serang_*.xlsx` can be added to continue it.
+2. **Forecast HQ M+1 – M+3** (required): assumed to use the same template as the closing; Sales Forecast ORIG / REV are taken per SKU and forecast month.
+3. **Kelas SKU** (optional): built in from the Stock Level Check of 21 Oct 2026; upload a newer Stock Level Check only to replace it.
 
-The page opens with a simulated sample so it can be tried without a file.
+**Unduh Histori_Serang.xlsx** writes one workbook with sheets `bulanan` (one row per SKU per closing month), `mingguan` (W1–W5),
+`forecast_hq`, `kelas_sku` and `log`. Re-uploading a month replaces that month and is noted in `log`.
 
 ## Deploy (Cloudflare Worker)
 
@@ -63,7 +63,7 @@ python ingest/ingest_closing.py export  --db ppic.sqlite --out exports/
 | File | What | Source |
 | --- | --- | --- |
 | `data/sku_class_hq.csv` | 356 SKUs: Pareto type, HQ class (A / B / C / NPD), DOI target days | Stock Level Check, 21 Oct 2026 |
-| `data/stock_level_2026-10-21.csv` | Per SKU, all mills, in cartons: SOH, OS, stock status (Good / Overstock), forecast, PO | same report |
+| `data/stock_level_2026-10-21.csv` | Per SKU in cartons: avg sales L3M and stock target (all mills), Serang (TUB) SOH and sisa PP, all-mill SOH, OS, forecast, PO, status | same report |
 
 HQ class is reference only: A = Pareto (DOI target 15 days), B and C = Non Pareto (30 days), NPD = new product (45 days).
 The input tab shows each SKU's HQ class and DOI target and flags SKUs missing from the list.
