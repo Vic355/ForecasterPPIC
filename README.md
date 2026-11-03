@@ -10,6 +10,8 @@ PPIC Forecast Desk for The Univenus Serang (plan 7079): extract the monthly clos
   (Order in, Forecast HQ = REV or else ORIG, Selisih = HQ − Order in), then M+1..M+3 (Forecast HQ from the Summary Forecast files,
   adj preferred over original; **Forecast ML stays empty** until a model is trained). Cards: Order in vs HQ, HQ accuracy
   (1 − WAPE per SKU vs the 70% target), 3-month bias trend, Forecast M+1, SKUs without HQ, ML status.
+  Clicking a card (all but ML) opens a chart of that measure over all closing months, with the SKUs behind it listed and the
+  biggest contributors highlighted.
 - **Input Data & Model**: the upload and extraction check below.
 
 SKUs are keyed by **Nomat** (nomor material). Article Code is kept alongside, used to look up the HQ class, and used as the
