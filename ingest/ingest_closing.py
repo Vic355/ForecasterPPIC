@@ -83,16 +83,29 @@ FIELDS: list[tuple[str, list[str]]] = [
 NUMERIC_FIELDS = [f for f, _ in FIELDS
                   if f not in ("article_code", "nomat", "description", "uom")]
 
-# Weekly blocks: a header with W1..W5 (or "week 1", "minggu 1") under a parent
-# header that names the measure. Month names in these headers are ignored.
-WEEK_RE = re.compile(r"(?:^|\s|\b)(?:w|wk|week|minggu|mg)\s*\.?\s*([1-5])\b")
-WEEKLY_MEASURES = [  # parent-header pattern -> measure name (order matters)
-    (r"outs", "outstanding"),
+# Weekly blocks: a run of W1..W5 (+ Total) headers, e.g. "W1 (1-05 JUL)", under a
+# group label (OI, GI, OS, GAP OS vs SOH) one or more rows above. The weekly table
+# sits to the right of the main table, after an empty column, and its header row
+# may be above the "Article Code" row. Month names in these headers are ignored.
+WEEK_HEAD = re.compile(r"^(?:w|wk|week|minggu|mg)\s*\.?\s*([1-5])\b")
+WEEKLY_MEASURES = [  # group-label pattern -> measure name (order matters)
+    (r"gap", "gap_os_vs_soh"),
+    (r"outs|\bos\b", "outstanding"),
     (r"\(gi\)|\bgi\b|deliver", "delivery_gi"),
     (r"order\s*in|\boi\b", "order_in"),
 ]
 
-SNAPSHOT_COLUMNS = ["article_code", "nomat", "description", "family",
+
+def unit_from_sheet(name: str) -> str | None:
+    """The unit is in the sheet name: CT = carton, MT = metric ton."""
+    s = norm(name)
+    if re.search(r"\bct\b|\bctn\b|carton|karton", s):
+        return "CT"
+    if re.search(r"\bmt\b|\bton\b", s):
+        return "MT"
+    return None
+
+SNAPSHOT_COLUMNS = ["article_code", "nomat", "description", "family", "uom",
                     "net_weight_kg", "code_status"] + [
     f for f in NUMERIC_FIELDS if f != "net_weight_kg"]
 
@@ -181,6 +194,8 @@ def find_sheet(wb, plant: str, wanted: str | None):
             score += 3
         if "stock" in name and ("prod" in name or "control" in name):
             score += 1
+        unit = unit_from_sheet(ws.title)
+        score += 2 if unit == "CT" else (-4 if unit == "MT" else 0)
         # look at the top-left block for the plant code / mill name
         for row in ws.iter_rows(min_row=1, max_row=12, max_col=15, values_only=True):
             text = norm(" ".join(str(v) for v in row if v is not None))
@@ -238,6 +253,60 @@ def detect_layout(ws, mapping_override: dict | None = None):
     band = range(anchor, last_header + 1)
     grid = merged_value_grid(ws, band, max_col)
 
+    # Weekly blocks (see WEEK_HEAD): scan from 3 rows above the anchor.
+    lo = max(1, anchor - 3)
+    wgrid = merged_value_grid(ws, range(lo, last_header + 1), max_col)
+    txt = lambda r, c: norm(wgrid[r][c - 1]) if lo <= r <= last_header and 1 <= c <= max_col else ""
+    weekly: dict[tuple[str, int], int] = {}
+    weekly_cols: set[int] = set()
+    groups = []
+    for r in range(lo, last_header + 1):
+        c = 1
+        while c <= max_col:
+            m1 = WEEK_HEAD.match(txt(r, c))
+            if not m1 or m1.group(1) != "1":
+                c += 1
+                continue
+            parent = ""
+            for rp in range(r - 1, max(lo, r - 3) - 1, -1):
+                parent = next((txt(rp, cp) for cp in range(c, min(c + 5, max_col) + 1) if txt(rp, cp)), "")
+                if parent:
+                    break
+            g = {"row": r, "start": c, "label": parent, "cols": [], "total": None}
+            cc = c
+            while cc <= min(c + 6, max_col):
+                h = txt(r, cc)
+                mw = WEEK_HEAD.match(h)
+                if mw and (cc == c or mw.group(1) != "1"):
+                    g["cols"].append((cc, int(mw.group(1))))
+                elif h.startswith("total"):
+                    g["total"] = cc
+                    break
+                elif cc > c:
+                    break
+                cc += 1
+            groups.append(g)
+            weekly_cols.update(col for col, _ in g["cols"])
+            if g["total"]:
+                weekly_cols.add(g["total"])
+            c = (g["total"] or g["cols"][-1][0]) + 1
+    # A group with no label straight above it takes the labels of that row in order.
+    if groups:
+        lr = groups[0]["row"] - 1
+        row_labels = []
+        for cl in range(groups[0]["start"], max_col + 1):
+            v = txt(lr, cl)
+            if v and v not in row_labels:
+                row_labels.append(v)
+        for k, g in enumerate(groups):
+            if not g["label"] and k < len(row_labels):
+                g["label"] = row_labels[k]
+    for g in groups:
+        g["measure"] = next((name for pat, name in WEEKLY_MEASURES if re.search(pat, g["label"])), None)
+        for col, wk in g["cols"]:
+            if g["measure"]:
+                weekly.setdefault((g["measure"], wk), col)
+
     headers = {}
     for c in range(1, max_col + 1):
         parts = []
@@ -250,26 +319,20 @@ def detect_layout(ws, mapping_override: dict | None = None):
 
     override = {norm(k): v for k, v in (mapping_override or {}).items()}
     columns: dict[str, int] = {}
-    weekly: dict[tuple[str, int], int] = {}
     unmapped = {}
     for c, parts in headers.items():
         full = " | ".join(parts)
         leaf = parts[-1]
+        if c in weekly_cols and not (full in override or leaf in override):
+            continue
         if full in override or leaf in override:
             field = override.get(full) or override.get(leaf)
-            m = re.fullmatch(r"(order_in|delivery_gi|outstanding)_w([1-5])", field)
+            m = re.fullmatch(r"(order_in|delivery_gi|outstanding|gap_os_vs_soh)_w([1-5])", field)
             if m:
                 weekly[(m.group(1), int(m.group(2)))] = c
             elif field:
                 columns.setdefault(field, c)
             continue
-        wk = WEEK_RE.search(leaf)
-        if wk:
-            parent = " ".join(parts[:-1]) or leaf
-            measure = next((name for pat, name in WEEKLY_MEASURES if re.search(pat, parent)), None)
-            if measure:
-                weekly.setdefault((measure, int(wk.group(1))), c)
-                continue
         for field, pats in FIELDS:
             if field in columns:
                 continue
@@ -279,7 +342,11 @@ def detect_layout(ws, mapping_override: dict | None = None):
         else:
             unmapped[c] = full
     columns.setdefault("article_code", code_col)
-    return {"anchor": anchor, "first_data": last_header + 1, "headers": headers,
+    for g in groups:
+        if not g["measure"]:
+            for col, wk in g["cols"]:
+                unmapped[col] = f"{g['label'] or '(no label)'} | W{wk}"
+    return {"unit": unit_from_sheet(ws.title), "weekly_groups": groups, "anchor": anchor, "first_data": last_header + 1, "headers": headers,
             "columns": columns, "weekly": weekly, "unmapped": unmapped}
 
 
@@ -316,6 +383,8 @@ def extract(ws, layout):
                "nomat": clean_code(ws.cell(r, cols["nomat"]).value)
                         if "nomat" in cols and ws.cell(r, cols["nomat"]).value is not None else None,
                "description": str(desc).strip() if desc is not None else None,
+               "uom": (str(ws.cell(r, uom_c).value).strip().upper()
+                       if uom_c and ws.cell(r, uom_c).value is not None else layout.get("unit")),
                "code_status": "old" if (is_old_code(code_cell)
                                         or (desc_c and is_old_code(ws.cell(r, desc_c)))) else "active"}
         for f in NUMERIC_FIELDS:
@@ -456,7 +525,8 @@ def open_sheet(args):
 
 def cmd_inspect(args):
     ws, lay = open_sheet(args)
-    print(f"Sheet: {ws.title!r}   header row {lay['anchor']}, data from row {lay['first_data']}")
+    print(f"Sheet: {ws.title!r}   unit {lay['unit'] or 'unknown'} (CT = carton, MT = metric ton)   "
+          f"header row {lay['anchor']}, data from row {lay['first_data']}")
     print("\nMapped columns:")
     for f, _ in FIELDS:
         c = lay["columns"].get(f)
@@ -464,7 +534,8 @@ def cmd_inspect(args):
                                 f"{' | '.join(lay['headers'].get(c, []))}" if c else "-- NOT FOUND"))
     print("\nWeekly columns:")
     for (m, w), c in sorted(lay["weekly"].items()):
-        print(f"  {m:12s} W{w}  col {openpyxl.utils.get_column_letter(c):>3}  {' | '.join(lay['headers'][c])}")
+        label = next((g["label"] for g in lay["weekly_groups"] if any(col == c for col, _ in g["cols"])), "")
+        print(f"  {m:14s} W{w}  col {openpyxl.utils.get_column_letter(c):>3}  {label}")
     if lay["unmapped"]:
         print("\nHeaders not mapped (ignored unless added with --mapping):")
         for c, h in lay["unmapped"].items():
@@ -492,6 +563,8 @@ def cmd_load(args):
                if f not in lay["columns"]]
     if missing:
         raise SystemExit(f"Required columns not found: {missing}. Run 'inspect' and add --mapping.")
+    if lay["unit"] == "MT":
+        raise SystemExit(f"Sheet {ws.title!r} is in metric tons. Load the CT (carton) sheet; use --sheet to pick it.")
     rows, weekly, issues = extract(ws, lay)
     issues += quality_checks(rows, weekly)
     sha = hashlib.sha256(Path(args.file).read_bytes()).hexdigest()

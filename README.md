@@ -42,7 +42,8 @@ Or connect this repo in the Cloudflare dashboard (Workers & Pages → Create →
 | delivery_gi, outstanding_delivery | Delivery (GI), Outs. Delivery | fulfilment |
 | sc_block, waiting_prod | SC Block, Waiting Prod. | ML features |
 | gap_vs_forecast | gap column | quality check |
-| weekly W1–W5 | under Order In, GI, Outstanding | order timing |
+| weekly W1–W5 | weekly table right of the main one: OI, GI, OS, GAP OS vs SOH (Total columns skipped) | order timing |
+| uom | sheet name: CT = carton, MT = metric ton (MT sheets are not loaded) | unit |
 
 Month names on the week headers (JUL/APR on an AUG report) are ignored.
 

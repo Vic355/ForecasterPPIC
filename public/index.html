@@ -191,7 +191,11 @@ var REQUIRED = ['article_code', 'description', 'forecast_hq_orig', 'forecast_hq_
 var TEXT_FIELDS = ['article_code', 'nomat', 'description', 'uom'];
 var NUMERIC = FIELDS.map(function (f) { return f[0]; }).filter(function (f) { return TEXT_FIELDS.indexOf(f) < 0; });
 var WEEK_RE = /(?:^|\s|\b)(?:w|wk|week|minggu|mg)\s*\.?\s*([1-5])\b/;
-var WEEKLY = [[/outs/, 'outstanding', 'Outstanding'], [/\(gi\)|\bgi\b|deliver/, 'delivery_gi', 'Delivery (GI)'], [/order\s*in|\boi\b/, 'order_in', 'Order in']];
+var WEEK_HEAD = /^(?:w|wk|week|minggu|mg)\s*\.?\s*([1-5])\b/;
+// Weekly blocks: a W1..W5 (+Total) run under a group label such as OI, GI, OS, GAP OS vs SOH.
+var WEEKLY = [[/gap/, 'gap_os_vs_soh', 'Gap OS vs SOH'], [/outs|\bos\b/, 'outstanding', 'Outstanding (OS)'], [/\(gi\)|\bgi\b|deliver/, 'delivery_gi', 'Delivery (GI)'], [/order\s*in|\boi\b/, 'order_in', 'Order in (OI)']];
+// Unit comes from the sheet name: CT = carton, MT = metric ton.
+function unitFromSheet(name) { var s = norm(name); if (/\bct\b|\bctn\b|carton|karton/.test(s)) return 'CT'; if (/\bmt\b|\bton\b/.test(s)) return 'MT'; return null; }
 var CHECKS = {
   no_hq_forecast: ['Order in tanpa Forecast HQ', 'warn'],
   gap_check_failed: ['Cek gap tidak cocok (stok awal + aktual − ORIG)', 'bad'],
@@ -246,9 +250,17 @@ function gridFromSheet(ws) {
   };
 }
 function gridFromText(text) {
-  var lines = text.replace(/\r/g, '').split('\n');
-  while (lines.length && lines[lines.length - 1].trim() === '') lines.pop();
-  var data = lines.map(function (l) { return l.split('\t'); });
+  var data = [], row = [], cell = '', q = false, i = 0, s = text.replace(/\r\n?/g, '\n');
+  for (; i < s.length; i++) {
+    var ch = s.charAt(i);
+    if (q) { if (ch === '"') { if (s.charAt(i + 1) === '"') { cell += '"'; i++; } else q = false; } else cell += ch; }
+    else if (ch === '"' && cell === '') q = true;
+    else if (ch === '\t') { row.push(cell); cell = ''; }
+    else if (ch === '\n') { row.push(cell); data.push(row); row = []; cell = ''; }
+    else cell += ch;
+  }
+  if (cell !== '' || row.length) { row.push(cell); data.push(row); }
+  while (data.length && data[data.length - 1].join('').trim() === '') data.pop();
   var cols = data.reduce(function (m, r) { return Math.max(m, r.length); }, 0);
   return { rows: data.length, cols: cols, merges: [], get: function (r, c) { var v = (data[r] || [])[c]; return v === undefined || v === '' ? null : v; } };
 }
@@ -257,6 +269,9 @@ function sheetScore(name, g, plant) {
   var score = 0, nm = norm(name);
   if (plant && nm.indexOf(plant) >= 0) score += 3;
   if (nm.indexOf('stock') >= 0 && (nm.indexOf('prod') >= 0 || nm.indexOf('control') >= 0)) score += 1;
+  var u = unitFromSheet(name);
+  if (u === 'CT') score += 2;
+  if (u === 'MT') score -= 4;
   for (var r = 0; r < Math.min(12, g.rows); r++) {
     var t = '';
     for (var c = 0; c < Math.min(15, g.cols); c++) { var v = g.get(r, c); if (v !== null) t += ' ' + v; }
@@ -292,22 +307,54 @@ function detect(g) {
     var v = g.get(m.s.r, m.s.c);
     for (var rr = m.s.r; rr <= m.e.r; rr++) if (band[rr]) for (var cc = m.s.c; cc <= Math.min(m.e.c, g.cols - 1); cc++) band[rr][cc] = v;
   });
+  // weekly blocks: find each W1 cell in the rows around the header, read its group label above it
+  var mergeAt = {};
+  g.merges.forEach(function (m) { for (var rr = m.s.r; rr <= m.e.r; rr++) for (var cc = m.s.c; cc <= m.e.c; cc++) mergeAt[rr + ',' + cc] = g.get(m.s.r, m.s.c); });
+  var txt = function (r, c) { var v = g.get(r, c); if ((v === null || v === '') && ((r + ',' + c) in mergeAt)) v = mergeAt[r + ',' + c]; return norm(v); };
+  var weekly = {}, weeklyCols = {}, weeklyGroups = [];
+  for (var rw = Math.max(0, anchor - 3); rw <= last; rw++) {
+    for (var cw = 0; cw < g.cols; cw++) {
+      var m1 = WEEK_HEAD.exec(txt(rw, cw));
+      if (!m1 || m1[1] !== '1') continue;
+      var parent = '';
+      for (var rp = rw - 1; rp >= Math.max(0, rw - 3) && !parent; rp--) {
+        for (var cp = cw; cp <= Math.min(cw + 5, g.cols - 1) && !parent; cp++) parent = txt(rp, cp);
+      }
+      var meas = null;
+      for (var i = 0; i < WEEKLY.length; i++) if (WEEKLY[i][0].test(parent)) { meas = WEEKLY[i]; break; }
+      var group = { label: parent || '(tanpa judul)', measure: meas ? meas[1] : null, cols: [], total: null };
+      for (var cc2 = cw; cc2 <= Math.min(cw + 6, g.cols - 1); cc2++) {
+        var h2 = txt(rw, cc2), mw = WEEK_HEAD.exec(h2);
+        if (mw && (cc2 === cw || mw[1] !== '1')) { group.cols.push(cc2); weeklyCols[cc2] = rw; if (meas && !((meas[1] + '_' + mw[1]) in weekly)) weekly[meas[1] + '_' + mw[1]] = cc2; }
+        else if (/^total/.test(h2)) { group.total = cc2; weeklyCols[cc2] = rw; break; }
+        else if (cc2 > cw) break;
+      }
+      group.row = rw; group.start = cw;
+      weeklyGroups.push(group);
+      cw = group.total !== null ? group.total : group.cols[group.cols.length - 1];
+    }
+  }
+  // Fallback when a group has no label straight above it: take the labels in that row in order.
+  if (weeklyGroups.some(function (gr) { return !gr.measure; }) && weeklyGroups.length) {
+    var lr = weeklyGroups[0].row - 1, labels = [];
+    for (var cl = weeklyGroups[0].start; lr >= 0 && cl < g.cols; cl++) { var lt = txt(lr, cl); if (lt && labels.indexOf(lt) < 0) labels.push(lt); }
+    weeklyGroups.forEach(function (gr, k) {
+      if (gr.measure || !labels[k]) return;
+      for (var i = 0; i < WEEKLY.length; i++) if (WEEKLY[i][0].test(labels[k])) { gr.measure = WEEKLY[i][1]; gr.label = labels[k]; break; }
+      if (!gr.measure) return;
+      gr.cols.forEach(function (c) { var mw = WEEK_HEAD.exec(txt(gr.row, c)); var key = gr.measure + '_' + mw[1]; if (!(key in weekly)) weekly[key] = c; });
+    });
+  }
   var headers = {};
   for (var ch = 0; ch < g.cols; ch++) {
     var parts = [];
     for (var rh = anchor; rh <= last; rh++) { var t = norm(band[rh][ch]); if (t && parts.indexOf(t) < 0) parts.push(t); }
     if (parts.length) headers[ch] = parts;
   }
-  var columns = {}, weekly = {}, unmapped = {};
+  var columns = {}, unmapped = {};
   Object.keys(headers).forEach(function (k) {
-    var c = +k, parts = headers[c], full = parts.join(' | '), leaf = parts[parts.length - 1];
-    var wk = WEEK_RE.exec(leaf);
-    if (wk) {
-      var parent = parts.slice(0, -1).join(' ') || leaf;
-      for (var i = 0; i < WEEKLY.length; i++) {
-        if (WEEKLY[i][0].test(parent)) { var key = WEEKLY[i][1] + '_' + wk[1]; if (!(key in weekly)) weekly[key] = c; return; }
-      }
-    }
+    var c = +k, parts = headers[c], full = parts.join(' | ');
+    if (c in weeklyCols) return;
     for (var j = 0; j < FIELDS.length; j++) {
       var f = FIELDS[j];
       if (f[0] in columns) continue;
@@ -316,7 +363,8 @@ function detect(g) {
     unmapped[c] = full;
   });
   if (!('article_code' in columns)) columns.article_code = codeCol;
-  return { anchor: anchor, firstData: last + 1, headers: headers, columns: columns, weekly: weekly, unmapped: unmapped };
+  weeklyGroups.forEach(function (gr) { if (!gr.measure) gr.cols.forEach(function (c) { unmapped[c] = gr.label + ' | ' + txt(weeklyCols[c], c); }); });
+  return { anchor: anchor, firstData: last + 1, headers: headers, columns: columns, weekly: weekly, weeklyGroups: weeklyGroups, weeklyText: txt, unmapped: unmapped };
 }
 
 /* ---------- row extraction + checks ---------- */
@@ -345,6 +393,7 @@ function extract(g, lay) {
     var rec = { article_code: code, family: family, source_row: r + 1,
       nomat: cols.nomat !== undefined && g.get(r, cols.nomat) !== null ? cleanCode(g.get(r, cols.nomat)) : null,
       description: desc !== null ? String(desc).trim() : null, issues: [] };
+    rec.uom = uomC !== undefined && g.get(r, uomC) !== null ? String(g.get(r, uomC)).trim().toUpperCase() : (lay.unit || null);
     NUMERIC.forEach(function (f) {
       if (cols[f] === undefined) return;
       var p = parseNumber(g.get(r, cols[f]));
@@ -377,15 +426,25 @@ function extract(g, lay) {
 
 /* ---------- sample (simulated) so the page opens in a working state ---------- */
 function sampleGrid() {
-  var H1 = ['Article Code', 'NOMAT', 'Description', 'UOM', 'Nett Weight', 'BUFFER SUGGESTION', 'OPENING STOCK', 'STOCK ON HAND', 'FREE STOCK', 'PLANNING PROD.', 'ACTUAL (TP to W/H)', 'BALANCE PROD.', 'SALES FORECAST', null, 'INQ.Ord (SDD)', 'ORDER IN', 'DELIVERY (GI)', 'OUTS. DELIVERY', 'SC BLOCK', 'WAITING PROD.', 'SC READY STOCK', 'GAP', 'ORDER IN JUL', null, null, null, null, 'GI APR', null, null, null, null];
-  var H2 = [null, null, null, null, null, null, null, null, null, null, null, null, '(ORIG)', '(REV)', null, null, null, null, null, null, null, null, 'W1', 'W2', 'W3', 'W4', 'W5', 'W1', 'W2', 'W3', 'W4', 'W5'];
-  var data = [['STOCK & PRODUCTION CONTROL'], ['THE UNIVENUS SERANG · PLAN 7079 · CONTOH SIMULASI'], [], H1, H2];
+  // Mirrors the real sheet: unit in the sheet name, weekly table to the right after an empty column,
+  // group labels (OI / GI / OS / GAP OS vs SOH) one row above the W1..W5 + Total headers.
+  var main = ['Article Code', 'NOMAT', 'Description', 'Nett Weight', 'BUFFER SUGGESTION', 'OPENING STOCK', 'STOCK ON HAND', 'FREE STOCK', 'PLANNING PROD.', 'ACTUAL (TP to W/H)', 'BALANCE PROD.', 'SALES FORECAST', null, 'INQ.Ord (SDD)', 'ORDER IN', 'DELIVERY (GI)', 'OUTS. DELIVERY', 'SC BLOCK', 'WAITING PROD.', 'SC READY STOCK', 'GAP'];
+  var W = ['W1 (1-05 JUL)', 'W2 (06-12 JUL)', 'W3 (13-19 JUL)', 'W4 (20-26 JUL)', 'W5 (27-31 JUL)'];
+  var WA = W.map(function (x) { return x.replace('JUL', 'APR'); });
+  var blank = function (k) { var a = []; for (var i = 0; i < k; i++) a.push(null); return a; };
+  var G = blank(main.length + 1).concat(['OI'], blank(5), ['GI'], blank(5), ['OS'], blank(5), ['GAP OS vs SOH'], blank(4));
+  var H1 = main.concat([null], W, ['Total'], W, ['Total'], W, ['Total'], WA);
+  var H2 = blank(11).concat(['(ORIG)', '(REV)']);
+  var data = [['STOCK & PRODUCTION CONTROL'], ['THE UNIVENUS SERANG · PLAN 7079 · CONTOH SIMULASI'], G, H1, H2];
+  function tot(a) { return a.reduce(function (s, x) { return s + x; }, 0); }
   function sku(code, nomat, desc, orig, rev, oi, wk, opening, actual, opt) {
     opt = opt || {};
     var gap = opt.gap !== undefined ? opt.gap : opening + actual - (orig || 0);
-    var gi = wk.map(function (x) { return Math.round(x * 0.95); });
-    data.push([code, nomat, desc, opt.uom || 'CTN', 4.2, Math.round(oi * 0.35), opening, opening + actual - Math.round(oi * 0.9), Math.max(0, opening + actual - oi), actual + 1200, actual, 1200,
-      orig, rev, Math.round(oi * 1.02), oi, Math.round(oi * 0.95), Math.round(oi * 0.05), 0, opt.wait || 0, Math.round(opening * 0.4), gap].concat(wk, gi));
+    var gi = wk.map(function (x) { return Math.round(x * 0.95); }), os = wk.map(function (x, i) { return x - gi[i]; });
+    var soh = opening + actual - Math.round(oi * 0.9);
+    data.push([code, nomat, desc, 4.2, Math.round(oi * 0.35), opening, soh, Math.max(0, opening + actual - oi), actual + 1200, actual, 1200,
+      orig, rev, Math.round(oi * 1.02), oi, tot(gi), tot(os), 0, opt.wait || 0, Math.round(opening * 0.4), gap, null]
+      .concat(wk, [opt.wkTotal !== undefined ? opt.wkTotal : tot(wk)], gi, [tot(gi)], os, [tot(os)], os.map(function (x) { return soh - x; })));
   }
   data.push([null, null, 'PASEO']);
   sku('101120103014', '69920889', 'Paseo Bundle 8 Travel Packs', 75000, 75000, 32683, [21000, 7000, 3000, 1683, 0], 41000, 30000);
@@ -394,12 +453,13 @@ function sampleGrid() {
   data.push([null, null, 'JOLLY']);
   sku('101120203010', '69920900', "Jolly Toilet Core 212's", 30000, 30000, 44800, [38500, 4000, 2300, 0, 0], 12000, 33000);
   sku('101120203011', '69920901', "Jolly Popup 160's 200 mL", null, null, 14912, [14912, 0, 0, 0, 0], 3000, 15000);
-  sku('101120203011', '69920901', "Jolly Popup 160's 200 mL", null, null, 62.6, [0, 0, 0, 0, 0], 12, 60, { uom: 'KG' });
   sku('101120203012', '69920902', 'Jolly Facial 2 Ply 180s', 24000, '#REF!', 21500, [6000, 6000, 5000, 3000, 1000], 9000, 18000, { wait: 1500 });
-  data.push([null, null, 'TOTAL SERANG', null, null, null, null, null, null, null, null, null, null, null, null, 298593]);
+  data.push([null, null, 'TOTAL SERANG', null, null, null, null, null, null, null, null, null, null, null, 298593]);
   var g = gridFromText(data.map(function (r) { return r.map(function (v) { return v === null || v === undefined ? '' : v; }).join('\t'); }).join('\n'));
   var raw = g.get; g.get = function (r, c) { var v = raw(r, c); if (v !== null && /^-?\d+(\.\d{1,2})?$/.test(v)) return Number(v); return v; };
-  g.merges = [{ s: { r: 3, c: 12 }, e: { r: 3, c: 13 } }, { s: { r: 3, c: 22 }, e: { r: 3, c: 26 } }, { s: { r: 3, c: 27 }, e: { r: 3, c: 31 } }];
+  var o = main.length + 1;
+  g.merges = [{ s: { r: 3, c: 11 }, e: { r: 3, c: 12 } }, { s: { r: 2, c: o }, e: { r: 2, c: o + 5 } }, { s: { r: 2, c: o + 6 }, e: { r: 2, c: o + 11 } },
+    { s: { r: 2, c: o + 12 }, e: { r: 2, c: o + 17 } }, { s: { r: 2, c: o + 18 }, e: { r: 2, c: o + 22 } }];
   return g;
 }
 
@@ -409,14 +469,16 @@ var state = { wb: null, source: '', sample: false, result: null, lay: null };
 
 function setStatus(text, kind) { var s = $('status'); s.textContent = text; s.className = 'status' + (kind ? ' ' + kind : ''); }
 
-function run(g, sourceLabel) {
+function run(g, sourceLabel, sheetName) {
   var lay = detect(g);
+  if (!lay.error) lay.unit = unitFromSheet(sheetName || '');
   if (lay.error) { state.result = null; state.lay = null; render(); setStatus(lay.error + ' Pilih lembar lain di atas.', 'bad'); return; }
   var res = extract(g, lay);
   state.lay = lay; state.result = res;
   var missing = REQUIRED.filter(function (f) { return !(f in lay.columns); });
   render();
   if (missing.length) setStatus(sourceLabel + ': kolom wajib tidak ditemukan: ' + missing.map(label).join(', ') + '.', 'bad');
+  else if (lay.unit === 'MT') setStatus(sourceLabel + ': lembar ini dalam metrik ton (MT). Untuk forecast pilih lembar CT (karton) di daftar "Lembar".', 'warn');
   else setStatus(sourceLabel + ': ' + res.rows.length + ' SKU diambil dari baris judul ' + (lay.anchor + 1) + ', data mulai baris ' + (lay.firstData + 1) + '. Snapshot ' + snapshotDate() + '.', res.issues.some(function (i) { return CHECKS[i[2]][1] === 'bad'; }) ? 'warn' : 'ok');
 }
 function label(f) { for (var i = 0; i < FIELDS.length; i++) if (FIELDS[i][0] === f) return FIELDS[i][1]; return f; }
@@ -451,6 +513,13 @@ function render() {
   var found = 0;
   FIELDS.forEach(function (f) {
     var c = lay ? lay.columns[f[0]] : undefined, req = REQUIRED.indexOf(f[0]) >= 0;
+    if (f[0] === 'uom' && c === undefined && lay) {
+      var u = lay.unit;
+      if (u) found++;
+      h += '<tr><td><b>Satuan</b></td><td class="col"></td><td class="wr">dari nama lembar</td><td>CT = karton, MT = metrik ton</td><td>' +
+        (u === 'CT' ? '<span class="pill p-ok">✓ CT (karton)</span>' : u === 'MT' ? '<span class="pill p-warn">MT: pilih lembar CT</span>' : '<span class="pill p-off">tidak terbaca</span>') + '</td></tr>';
+      return;
+    }
     if (c !== undefined) found++;
     h += '<tr><td><b>' + esc(f[1]) + '</b>' + (req ? ' <span class="pill p-acc">wajib</span>' : '') + '</td><td class="col">' + (c !== undefined ? colName(c) : '') + '</td><td class="wr">' +
       (c !== undefined ? esc(lay.headers[c].join(' | ')) : '<span class="sub">–</span>') + '</td><td>' + esc(f[2]) + '</td><td>' +
@@ -462,7 +531,7 @@ function render() {
     for (var w = 1; w <= 5; w++) if ((m[1] + '_' + w) in wk) cs.push(wk[m[1] + '_' + w]);
     nweek += cs.length;
     h += '<tr><td><b>' + m[2] + ' W1–W5</b></td><td class="col">' + (cs.length ? colName(Math.min.apply(null, cs)) + '–' + colName(Math.max.apply(null, cs)) : '') + '</td><td class="wr">' +
-      (cs.length ? esc(lay.headers[cs[0]].slice(0, -1).join(' ')) + ' <span class="sub">(nama bulan diabaikan)</span>' : '<span class="sub">–</span>') + '</td><td>Pola order per minggu</td><td>' +
+      (cs.length ? esc(weekLabel(lay, m[1], cs[0])) + ' <span class="sub">(nama bulan diabaikan)</span>' : '<span class="sub">–</span>') + '</td><td>' + (m[1] === 'order_in' ? 'Pola order per minggu' : m[1] === 'gap_os_vs_soh' ? 'Cek kualitas' : 'Pemenuhan per minggu') + '</td><td>' +
       (cs.length ? '<span class="pill p-ok">✓ ' + cs.length + ' minggu</span>' : '<span class="pill p-off">tidak ada</span>') + '</td></tr>';
   });
   $('mapTable').innerHTML = h + '</tbody>';
@@ -482,6 +551,12 @@ function render() {
   }
   $('checks').innerHTML = ch || '<p class="note">Belum ada data.</p>';
   renderPreview();
+}
+function weekLabel(lay, measure, c) {
+  var gr = lay.weeklyGroups.filter(function (x) { return x.measure === measure; })[0];
+  var rowOf = null;
+  for (var r = Math.max(0, lay.anchor - 3); r < lay.firstData && rowOf === null; r++) if (WEEK_HEAD.test(lay.weeklyText(r, c))) rowOf = r;
+  return (gr ? gr.label.toUpperCase() : '') + ' | ' + (rowOf !== null ? lay.weeklyText(rowOf, c) : '') + (gr && gr.total !== null ? ' … + Total' : '');
 }
 function card(k, v, note) { return '<div class="card"><span class="k">' + esc(k) + '</span><span class="v">' + esc(v) + '</span><span class="n">' + esc(note) + '</span></div>'; }
 
@@ -505,7 +580,7 @@ function renderPreview() {
 }
 
 /* ---------- CSV output (same columns as the Python script) ---------- */
-var SNAP_COLS = ['article_code', 'nomat', 'description', 'family', 'net_weight_kg'].concat(NUMERIC.filter(function (f) { return f !== 'net_weight_kg'; }));
+var SNAP_COLS = ['article_code', 'nomat', 'description', 'family', 'uom', 'net_weight_kg'].concat(NUMERIC.filter(function (f) { return f !== 'net_weight_kg'; }));
 function csvCell(v) { if (v === null || v === undefined) return ''; var s = String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
 function monthlyCsv() {
   var plant = $('plant').value.trim(), snap = snapshotDate();
@@ -556,7 +631,7 @@ function runWorkbook(pick) {
     if (!name) { fillSheets(wb.SheetNames, wb.SheetNames[0]); state.result = null; state.lay = null; render(); setStatus('Tidak ada lembar yang menyebut plant ' + plant + '. Pilih lembarnya di daftar "Lembar".', 'bad'); return; }
   }
   fillSheets(wb.SheetNames, name);
-  run(gridFromSheet(wb.Sheets[name]), state.source + ' · lembar "' + name + '"');
+  run(gridFromSheet(wb.Sheets[name]), state.source + ' · lembar "' + name + '"', name);
 }
 function readFile(file) {
   if (typeof XLSX === 'undefined') { setStatus('Pustaka pembaca Excel gagal dimuat. Muat ulang halaman.', 'bad'); return; }
@@ -593,7 +668,7 @@ function loadSample() {
   state.wb = null; state.sample = true; fillSheets(['(contoh simulasi)'], '(contoh simulasi)');
   $('dropTitle').textContent = 'Pilih atau tarik file Excel ke sini';
   $('dropSub').textContent = 'Saat ini menampilkan CONTOH SIMULASI, bukan data Anda';
-  run(sampleGrid(), 'Contoh simulasi (angka Agustus sebagian dari laporan, sisanya rekaan)');
+  run(sampleGrid(), 'Contoh simulasi (angka Agustus sebagian dari laporan, sisanya rekaan)', '7079 CT');
 }
 $('useSample').addEventListener('click', loadSample);
 loadSample();
