@@ -108,7 +108,7 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
   <header>
     <div>
       <h1>PPIC Forecast Desk · The Univenus Serang</h1>
-      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-03d</span></div>
+      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-03e</span></div>
     </div>
     <nav class="tabs" aria-label="Lembar">
       <span class="tab">Forecast</span><span class="tab">Saran Buffer</span><span class="tab on" aria-current="page">Input Data &amp; Model</span>
@@ -126,7 +126,7 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
       </div>
       <div class="slot">
         <div class="slot-h"><b>Forecast HQ M+1 – M+3</b><span class="pill p-acc">wajib</span></div>
-        <p class="note">Sementara dianggap memakai templat yang sama dengan closing; kolom Sales Forecast ORIG / REV yang diambil.</p>
+        <p class="note">Format Summary Forecast per bulan (mis. <i>Sales Forecast Nov26 adj - TUB</i>): Qty (ctn), W1–W4 dan per zona. Versi <i>adj</i> dibaca dari nama file.</p>
         <label class="drop" data-kind="forecast"><input type="file" multiple accept=".xlsx,.xlsm,.xls" data-kind="forecast"><b>Pilih atau tarik file forecast</b><span class="sub">Satu file per bulan forecast</span></label>
       </div>
       <div class="slot">
@@ -233,6 +233,8 @@ function unitFromSheet(name) { var s = norm(name); if (/\bct\b|\bctn\b|carton|ka
 var CLASS_BUILTIN = { asof: '2026-10-21', source: 'Stock Level Check 21 Okt 2026 (bawaan)', cols: ["article_code", "pareto_type", "hq_class", "doi_target_days", "avg_l3m_ct", "stock_target_ct", "tub_soh_ct", "tub_sisa_pp_ct", "all_soh_ct", "all_os_ct", "forecast_ct", "po_ct", "stock_status"],
   rows: [["1011001010020","Non Pareto","C",30,0,0,25,0,72,0,0,0,"Overstock"],["1011001010040","Non Pareto","C",30,0,0,11,0,54,0,0,0,"Overstock"],["1011001010050","Non Pareto","C",30,0,0,0,0,242,0,0,0,"Overstock"],["1011001010070","Non Pareto","C",30,0,0,9,0,77,0,0,0,"Overstock"],["1011001010120","Non Pareto","C",30,0,0,10,0,37,0,0,0,"Overstock"],["1011001010130","Non Pareto","C",30,0,0,15,0,81,0,0,0,"Overstock"],["1011001020220","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001030010","Non Pareto","C",30,0,0,1,0,25,0,0,0,"Overstock"],["1011001030011","Pareto","A",15,42058,21029,13922,3000,22736,15354,53000,53128,"Good"],["1011001030030","Non Pareto","C",30,0,0,31,0,137,0,0,0,"Overstock"],["1011001030031","Non Pareto","C",30,0,0,14,0,20,0,0,0,"Overstock"],["1011001030040","Non Pareto","C",30,0,0,58,0,67,0,0,0,"Overstock"],["1011001030041","Non Pareto","C",30,0,0,66,0,71,0,0,0,"Overstock"],["1011001030050","Non Pareto","C",30,0,0,35,0,58,0,0,0,"Overstock"],["1011001030051","Non Pareto","C",30,0,0,6,0,54,0,0,0,"Overstock"],["1011001030061","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001030069","Non Pareto","C",30,0,0,32,0,32,0,0,0,"Overstock"],["1011001030070","Non Pareto","C",30,0,0,0,0,30,0,0,0,"Overstock"],["1011001030079","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001030080","Non Pareto","B",30,11422,11422,5691,0,8614,4879,14000,14272,"Good"],["1011001030089","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001030090","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001030099","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001030100","Non Pareto","C",30,2710,2710,3027,0,4372,606,4240,2529,"Overstock"],["1011001030101","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001030231","Non Pareto","C",30,862,862,3001,0,3222,354,2753,569,"Overstock"],["1011001030111","Non Pareto","C",30,2,2,150,0,352,0,0,0,"Overstock"],["1011001030120","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001030121","Non Pareto","B",30,13464,13464,7548,3000,11995,2228,18000,9267,"Overstock"],["1011001030130","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001030140","Non Pareto","C",30,0,0,173,0,174,1,0,1,"Overstock"],["1011001030160","Non Pareto","C",30,0,0,12,0,12,0,0,0,"Overstock"],["1011001030170","Non Pareto","C",30,0,0,20,0,236,0,0,0,"Overstock"],["1011001030180","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001030190","Non Pareto","B",30,10149,10149,5479,0,9699,2113,11000,6755,"Good"],["1011001030200","Non Pareto","C",30,219,219,43,0,1378,77,237,281,"Overstock"],["1011001030210","Pareto","A",15,185273,92637,71073,57120,109070,109490,230000,230911,"Good"],["1011001030220","Non Pareto","B",30,16335,16335,16156,0,20084,3074,20000,8789,"Overstock"],["1011001040010","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001040020","Non Pareto","C",30,0,0,0,0,536,0,0,0,"Overstock"],["1011001040030","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001040040","Non Pareto","C",30,0,0,63,0,297,0,0,0,"Overstock"],["1011001040050","Non Pareto","B",30,4058,4058,4336,0,4731,1120,4500,4317,"Good"],["1011001040060","Non Pareto","B",30,3288,3288,466,0,3421,661,4000,2203,"Good"],["1011001040100","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001040110","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001040120","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001040130","Non Pareto","C",30,50,50,1,0,326,0,90,0,"Overstock"],["1011001040140","Non Pareto","C",30,97,97,159,0,663,179,700,488,"Overstock"],["1011001040150","Non Pareto","C",30,40,40,5,0,93,0,90,5,"Overstock"],["1011001040160","Non Pareto","B",30,15129,15129,12015,1300,14880,6361,20000,16885,"Good"],["1011001040170","Pareto","A",15,96050,48025,20900,24000,31213,35172,115000,125967,"Good"],["1011001040190","Non Pareto","C",30,278,278,0,0,28,32,900,32,"Good"],["1011001040200","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001050010","Non Pareto","C",30,26,26,188,0,303,0,0,21,"Overstock"],["1011001070020","Non Pareto","C",30,0,0,13,0,163,0,0,0,"Overstock"],["1011001070050","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001070060","Non Pareto","C",30,0,0,123,0,150,0,0,0,"Overstock"],["1011001070061","Non Pareto","B",30,8336,8336,443,2554,1530,5849,7200,10526,"Good"],["1011001070110","Non Pareto","C",30,0,0,10,0,55,0,0,0,"Overstock"],["1011001070140","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001070150","Non Pareto","C",30,0,0,0,0,10,0,0,0,"Overstock"],["1011001070160","Non Pareto","C",30,0,0,96,0,96,0,0,0,"Overstock"],["1011001070170","Non Pareto","C",30,0,0,26,0,133,0,0,0,"Overstock"],["1011001070181","Non Pareto","B",30,13040,13040,3802,1208,6754,4364,14500,12896,"Good"],["1011001070191","Non Pareto","C",30,562,562,186,0,456,13,0,166,"Good"],["1011001320011","Non Pareto","C",30,0,0,70,0,70,0,0,0,"Overstock"],["1011002090040","Non Pareto","C",30,0,0,35,0,167,0,0,0,"Overstock"],["1011002090060","Non Pareto","C",30,0,0,1,0,26,0,0,0,"Overstock"],["1011002090090","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011002090100","Non Pareto","C",30,0,0,5,0,5,0,0,0,"Overstock"],["1011002090110","Non Pareto","C",30,1804,1804,1728,712,1984,287,2400,1920,"Overstock"],["1011002090210","Non Pareto","C",30,0,0,0,0,7,0,0,0,"Overstock"],["1011002090220","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011002090230","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011002090270","Non Pareto","C",30,1189,1189,137,0,860,555,1654,1302,"Overstock"],["1011002090240","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011002090280","Non Pareto","C",30,113,113,55,0,2001,51,217,112,"Overstock"],["1011002090251","Non Pareto","B",30,5472,5472,2626,2522,2967,940,6000,4049,"Good"],["1011002090261","Non Pareto","B",30,7545,7545,1602,2726,2183,1036,8000,7511,"Good"],["1011002100021","Non Pareto","C",30,327,327,993,0,1017,104,874,231,"Overstock"],["1011003170010","Non Pareto","C",30,0,0,0,0,61,0,0,0,"Overstock"],["1011003190010","Non Pareto","C",30,6,6,4,0,55,0,0,0,"Overstock"],["1011004140040","Non Pareto","C",30,0,0,204,0,204,0,0,0,"Overstock"],["1011004140050","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011004140060","Non Pareto","C",30,0,0,1,0,1,0,0,0,"Overstock"],["1011004140070","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011004140080","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011004140120","Non Pareto","B",30,8900,8900,9380,839,10169,1774,11000,6293,"Overstock"],["1011004140130","Pareto","A",15,50511,25256,24997,2930,26415,10412,57000,57031,"Good"],["1011004140160","Non Pareto","NPD",45,1322,1983,121,0,307,385,1500,658,"Good"],["1011004140161","Non Pareto","NPD",45,817,1226,3683,0,3896,151,1000,381,"Overstock"],["1011004150020","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011005040010","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011006210030","Non Pareto","B",30,8749,8749,3283,0,22973,2149,10406,8110,"Overstock"],["1011006210043","Non Pareto","C",30,0,0,7,0,7,0,0,0,"Overstock"],["1011006210063","Pareto","A",15,37259,18630,2762,0,11844,14557,47000,35690,"Good"],["1011006210070","Non Pareto","C",30,2465,2465,333,0,4377,603,2586,2506,"Overstock"],["1011006210083","Non Pareto","C",30,0,0,0,0,20,0,0,0,"Overstock"],["1011006210093","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011006210103","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011106210020","Non Pareto","NPD",45,591,886,159,0,7629,168,1000,551,"Overstock"],["1011006210113","Pareto","A",15,41007,20504,8632,0,58687,9721,56000,32797,"Overstock"],["1011006210123","Pareto","A",15,18256,9128,6915,0,32342,4876,27000,16391,"Overstock"],["1011006200041","Non Pareto","NPD",45,642,964,321,0,2599,242,2300,687,"Overstock"],["1011104340020","Non Pareto","NPD",45,732,1098,290,0,2306,106,900,309,"Overstock"],["1011101010030","Non Pareto","C",30,0,0,10,0,491,0,0,0,"Overstock"],["1011101010040","Non Pareto","C",30,0,0,20,0,348,0,0,0,"Overstock"],["1011101020010","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011101020030","Non Pareto","C",30,0,0,31,0,31,0,0,0,"Overstock"],["1011101020040","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011101020060","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011101020080","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011101020090","Non Pareto","C",30,0,0,24,0,39,0,0,0,"Overstock"],["1011101020100","Pareto","A",15,32467,16234,8502,8500,18892,11129,45000,26986,"Overstock"],["1011101020110","Non Pareto","B",30,9933,9933,1099,1820,2764,1953,12000,9181,"Good"],["1011101020120","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011101020130","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011101020140","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011101020150","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011101030010","Non Pareto","C",30,0,0,2,0,2,0,0,0,"Overstock"],["1011101030013","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011101030020","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011101030021","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011101030031","Non Pareto","C",30,0,0,15,0,124,0,0,0,"Overstock"],["1011101030040","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011101030041","Pareto","A",15,42908,21454,25185,10910,38316,13269,56000,31144,"Overstock"],["1011101030050","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011101030060","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011101030070","Non Pareto","B",30,10605,10605,19222,0,27070,6585,25000,12292,"Overstock"],["1011101030080","Non Pareto","C",30,0,0,6,0,6,0,0,0,"Overstock"],["1011101030100","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011101030023","Pareto","A",15,113501,56750,6627,28500,25104,47458,87000,91474,"Good"],["1011101030110","Pareto","A",15,133487,66744,34511,7400,164081,29832,160000,98464,"Overstock"],["1011101030120","Pareto","A",15,26457,13229,12888,650,19636,7037,35000,29727,"Overstock"],["1011101040010","Non Pareto","C",30,0,0,0,0,43,0,0,0,"Overstock"],["1011101040011","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011101050010","Non Pareto","C",30,0,0,0,0,0,1,0,1,"Good"],["1011101050011","Non Pareto","C",30,0,0,1,0,5,0,0,0,"Overstock"],["1011102090010","Non Pareto","C",30,0,0,0,0,10,0,0,0,"Overstock"],["1011102090030","Non Pareto","C",30,0,0,0,0,3,0,0,0,"Overstock"],["1011102090040","Non Pareto","C",30,18,18,0,0,24,0,0,0,"Overstock"],["1011102090120","Non Pareto","C",30,508,508,441,0,773,188,1003,792,"Overstock"],["1011102090060","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011102090071","Non Pareto","C",30,0,0,13,0,13,0,0,0,"Overstock"],["1011102090080","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011102090090","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011102090110","Non Pareto","C",30,3474,3474,57,3150,423,948,4890,2659,"Good"],["1011102090130","Non Pareto","C",30,2632,2632,887,0,2223,1553,2700,3379,"Good"],["1011102090141","Non Pareto","C",30,4211,4211,3704,0,3733,2867,4795,5876,"Good"],["1011102100010","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011102100020","Non Pareto","C",30,0,0,0,0,87,0,0,0,"Overstock"],["1011104150010","Non Pareto","NPD",45,2419,3629,8238,0,10105,453,2500,1770,"Overstock"],["1011104150020","Non Pareto","NPD",45,1470,2205,2893,0,3223,201,1900,2097,"Overstock"],["1011104140010","Non Pareto","C",30,0,0,0,0,6,0,0,0,"Overstock"],["1011104140031","Non Pareto","C",30,642,642,163,0,302,117,581,310,"Good"],["1011104160013","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011104160023","Non Pareto","B",30,4460,4460,2078,213,2200,1979,4998,4171,"Good"],["1011201020040","Non Pareto","C",30,0,0,20,0,20,0,0,0,"Overstock"],["1011201020070","Non Pareto","C",30,0,0,55,0,55,0,0,0,"Overstock"],["1011201020080","Non Pareto","C",30,7,7,3,0,3,0,0,0,"Good"],["1011201020090","Pareto","A",15,19438,9719,10109,0,15004,8162,25000,20464,"Overstock"],["1011201030041","Non Pareto","C",30,0,0,25,0,117,0,0,0,"Overstock"],["1011201030050","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011201030051","Non Pareto","C",30,0,0,136,0,136,0,0,0,"Overstock"],["1011203170011","Non Pareto","NPD",45,7960,11941,418,0,6189,7701,13000,13382,"Good"],["1011203370010","Non Pareto","NPD",45,2096,3145,530,0,2810,391,1600,646,"Good"],["1011201030190","Pareto","A",15,17653,8827,6142,0,20627,3829,22000,16933,"Overstock"],["1011201030070","Non Pareto","C",30,0,0,70,0,147,0,0,0,"Overstock"],["1011201030080","Non Pareto","C",30,0,0,0,0,219,0,0,0,"Overstock"],["1011201030121","Non Pareto","C",30,0,0,0,0,119,0,0,0,"Overstock"],["1011201030211","Pareto","A",15,44329,22165,10079,4000,31049,14743,60000,42514,"Overstock"],["1011201030140","Pareto","A",15,329625,164812,609,0,131114,13468,383000,66042,"Good"],["1011201030150","Pareto","A",15,65391,32695,371,0,7554,2901,22000,8900,"Good"],["1011201030160","Pareto","A",15,7989,3995,141,0,544,402,0,402,"Good"],["1011201050010","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011201050023","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011201050031","Non Pareto","C",30,0,0,12,0,12,0,0,0,"Overstock"],["1011201050011","Pareto","A",15,112057,56028,32849,23761,48463,24242,115000,80682,"Overstock"],["1011201050040","Non Pareto","C",30,0,0,296,0,350,0,0,0,"Overstock"],["1011201290010","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011202090020","Non Pareto","C",30,0,0,214,0,232,0,0,0,"Overstock"],["1011202090040","Non Pareto","C",30,0,0,78,0,78,0,0,0,"Overstock"],["1011202090050","Non Pareto","B",30,22838,22838,7970,0,9895,7199,23000,17098,"Good"],["1011202100030","Non Pareto","C",30,0,0,12,0,12,0,0,0,"Overstock"],["1011202100070","Non Pareto","C",30,0,0,150,0,150,0,0,0,"Overstock"],["1011202100080","Pareto","A",15,62196,31098,5497,11528,27395,18381,65000,47046,"Overstock"],["1011203190010","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011203190030","Non Pareto","B",30,5703,5703,2103,0,3121,1649,6200,7053,"Good"],["1011303190060","Non Pareto","C",30,1481,1481,616,793,785,477,1500,1248,"Good"],["1011303190090","Non Pareto","B",30,5094,5094,1442,0,2714,2182,5211,6015,"Good"],["1011303190091","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011401010030","Non Pareto","C",30,1375,1375,46,550,87,632,1479,1388,"Good"],["1011401010040","Non Pareto","C",30,655,655,1237,0,1278,56,1054,614,"Overstock"],["1011401020010","Non Pareto","C",30,1722,1722,57,0,801,128,1934,1666,"Good"],["1011401020030","Non Pareto","C",30,3133,3133,828,130,1295,217,3732,2622,"Good"],["1011401020040","Non Pareto","B",30,14051,14051,1328,1830,2697,2793,16129,12916,"Good"],["1011402090020","Non Pareto","C",30,3582,3582,2017,0,2267,306,4599,4341,"Good"],["1011402090030","Non Pareto","C",30,672,672,26,0,785,70,1007,499,"Overstock"],["1011402090070","Pareto","A",15,46253,23127,8661,22322,8803,7523,48000,46738,"Overstock"],["1011402090130","Non Pareto","C",30,4857,4857,162,0,2618,765,4042,5187,"Good"],["1011402090160","Non Pareto","C",30,3717,3717,2715,0,2776,334,4161,3085,"Good"],["1011402100020","Non Pareto","C",30,1577,1577,168,470,205,235,2158,2620,"Good"],["1011402100030","Pareto","A",15,50635,25318,13183,13500,15382,4838,57000,45819,"Good"],["1011402110020","Non Pareto","C",30,0,0,0,0,0,10,0,10,"Good"],["1011402110030","Non Pareto","B",30,3278,3278,449,3108,542,243,4000,1720,"Overstock"],["1011402110040","Pareto","A",15,49931,24966,7576,12955,9204,5903,50000,42919,"Good"],["1011402110060","Non Pareto","NPD",45,2766,4150,2876,0,3568,570,2500,918,"Good"],["1011403170010","Non Pareto","B",30,3746,3746,1914,460,2231,942,4000,4212,"Good"],["1011403170020","Non Pareto","B",30,6703,6703,618,3900,678,2247,7500,6969,"Good"],["1011403170030","Non Pareto","C",30,297,297,90,0,434,0,343,178,"Overstock"],["1011403170040","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011403170050","Non Pareto","C",30,755,755,23,0,982,159,1166,595,"Overstock"],["1011403170060","Non Pareto","C",30,0,0,20,0,20,0,0,0,"Overstock"],["1011403170070","Non Pareto","C",30,0,0,2772,4000,2772,0,0,0,"Overstock"],["1011403170080","Non Pareto","C",30,13,13,65,0,65,0,53,50,"Overstock"],["1011403180010","Non Pareto","C",30,400,400,32,0,242,8,368,329,"Good"],["1011403180020","Non Pareto","C",30,3214,3214,1040,1440,1290,843,3800,3536,"Good"],["1011403190010","Non Pareto","C",30,457,457,677,0,702,35,599,639,"Overstock"],["1011403190030","Non Pareto","C",30,3610,3610,598,2312,782,919,4500,3474,"Good"],["1011403190040","Non Pareto","C",30,1299,1299,756,0,802,46,1600,1262,"Good"],["1011404120010","Non Pareto","C",30,1308,1308,409,0,1296,135,1800,1528,"Good"],["1011404130020","Non Pareto","B",30,7269,7269,445,0,3108,635,7200,7992,"Good"],["1011404140010","Non Pareto","C",30,332,332,154,0,159,7,425,196,"Good"],["1011404140030","Non Pareto","C",30,138,138,11,0,11,125,100,140,"Good"],["1011404150010","Non Pareto","C",30,161,161,285,0,291,0,217,120,"Overstock"],["1011404160010","Non Pareto","C",30,0,0,19,0,19,0,0,0,"Overstock"],["1011404160050","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011404160060","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011404160070","Non Pareto","C",30,213,213,0,0,48,521,450,695,"Good"],["1011404160080","Pareto","A",15,137317,68659,3736,25830,17962,45595,140000,139056,"Good"],["1011404160110","Non Pareto","NPD",45,5986,8979,1206,0,1890,1580,5500,2398,"Good"],["1011404160090","Pareto","A",15,28889,14445,5242,0,14695,4513,37000,24505,"Overstock"],["1011601020080","Non Pareto","C",30,502,502,847,0,847,228,873,532,"Overstock"],["1011601020120","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011601020140","Non Pareto","C",30,661,661,0,0,307,186,332,1014,"Good"],["1011601020310","Non Pareto","B",30,7266,7266,183,3200,251,2281,5000,5817,"Good"],["1011601020200","Non Pareto","C",30,0,0,0,0,45,0,0,0,"Overstock"],["1011601020280","Non Pareto","C",30,38,38,120,0,120,0,60,0,"Overstock"],["1011601020290","Non Pareto","C",30,16,16,342,0,342,0,30,0,"Overstock"],["1011601020300","Non Pareto","C",30,0,0,0,0,41,0,0,0,"Overstock"],["1011601020320","Non Pareto","C",30,270,270,330,0,544,27,0,57,"Overstock"],["1011601030090","Non Pareto","C",30,615,615,3076,0,3076,320,1001,968,"Overstock"],["1011601030100","Non Pareto","C",30,10,10,0,0,0,0,0,0,"Good"],["1011601030120","Non Pareto","C",30,354,354,707,0,722,0,250,0,"Overstock"],["1011601030130","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011601030160","Non Pareto","C",30,694,694,394,0,415,97,834,1058,"Good"],["1011601030190","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011601030210","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011601030261","Non Pareto","C",30,309,309,94,0,94,0,350,0,"Good"],["1011601030270","Non Pareto","C",30,66,66,143,0,143,0,85,0,"Overstock"],["1011601030280","Non Pareto","C",30,0,0,4,0,189,0,0,0,"Overstock"],["1011601030290","Non Pareto","C",30,0,0,36,0,36,0,0,0,"Overstock"],["1011601030310","Non Pareto","C",30,149,149,78,0,78,73,0,167,"Good"],["1011601030320","Non Pareto","B",30,1559,1559,0,0,43,0,0,0,"Good"],["1011601030370","Non Pareto","B",30,7449,7449,5,8500,606,10314,9000,16640,"Good"],["1011601040161","Non Pareto","NPD",45,2083,3124,1105,0,1256,1491,1000,2317,"Good"],["1011601040040","Non Pareto","B",30,279,279,0,0,13,0,0,0,"Good"],["1011601040160","Non Pareto","B",30,3974,3974,731,2800,1113,1479,4000,4577,"Good"],["1011601040050","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011601040150","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011601050060","Non Pareto","C",30,0,0,45,0,45,0,0,0,"Overstock"],["1011601050110","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011601070030","Non Pareto","C",30,0,0,7,0,13,0,0,0,"Overstock"],["1011601070060","Non Pareto","C",30,151,151,688,450,793,3,600,77,"Overstock"],["1011602090170","Non Pareto","C",30,0,0,2812,0,2896,0,0,0,"Overstock"],["1011602090260","Non Pareto","C",30,952,952,720,0,720,500,2000,2635,"Good"],["1011602090410","Non Pareto","B",30,0,0,1,0,2,97,0,97,"Good"],["1011602090690","Non Pareto","C",30,89,89,394,0,394,0,71,0,"Overstock"],["1011602090700","Non Pareto","C",30,201,201,123,0,123,0,221,0,"Good"],["1011602090710","Non Pareto","C",30,219,219,1210,0,1210,0,206,0,"Overstock"],["1011602090750","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011602090760","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011602090011","Non Pareto","C",30,321,321,1476,0,1553,161,330,272,"Overstock"],["1011602090830","Non Pareto","C",30,11,11,193,0,193,0,0,6,"Overstock"],["1011602100060","Non Pareto","C",30,0,0,59,0,59,0,0,0,"Overstock"],["1011603170040","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011603170050","Non Pareto","C",30,334,334,153,0,153,0,400,150,"Good"],["1011603170060","Non Pareto","C",30,172,172,1,0,1,277,399,300,"Good"],["1011603190111","Non Pareto","C",30,0,0,1,0,1,0,0,0,"Overstock"],["1011603190151","Non Pareto","C",30,111,111,192,0,211,0,23,5,"Overstock"],["1011603190140","Non Pareto","C",30,257,257,603,0,603,0,350,0,"Overstock"],["1011603190160","Non Pareto","C",30,383,383,1607,0,1781,0,1000,100,"Overstock"],["1011604130050","Non Pareto","C",30,0,0,1,0,4,0,0,0,"Overstock"],["1011604130060","Non Pareto","C",30,0,0,0,0,32,0,0,0,"Overstock"],["1011604130070","Non Pareto","C",30,75,75,738,0,740,69,256,139,"Overstock"],["1011604140060","Non Pareto","C",30,3972,3972,100,0,2208,3759,5000,6470,"Good"],["1011604160010","Non Pareto","C",30,1011,1011,1265,0,1373,618,1658,1725,"Good"],["1011606210013","Non Pareto","B",30,15758,15758,197,0,10610,5566,13000,20912,"Good"],["1011606210023","Non Pareto","B",30,14624,14624,4480,0,15931,3456,12000,18964,"Good"],["1011701020030","Non Pareto","C",30,0,0,58,0,58,0,0,0,"Overstock"],["1011701040020","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011702110010","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011702110020","Non Pareto","C",30,163,163,218,0,268,121,500,261,"Good"],["1011703190010","Non Pareto","C",30,601,601,693,0,730,354,909,913,"Good"],["1011703190030","Non Pareto","C",30,0,0,142,0,142,0,0,0,"Overstock"],["1011703190050","Non Pareto","C",30,543,543,777,0,809,0,925,670,"Overstock"],["1011703190070","Non Pareto","C",30,1799,1799,752,603,752,1000,2100,2000,"Good"],["1011704160031","Non Pareto","C",30,2267,2267,3002,0,3212,814,2994,1934,"Overstock"],["1012106210020","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1012106210030","Non Pareto","C",30,0,0,0,0,1,0,0,0,"Overstock"],["1012110300020","Non Pareto","C",30,18,18,87,0,474,6,0,12,"Overstock"],["1012110310010","Non Pareto","C",30,0,0,20,0,2858,0,0,0,"Overstock"],["1012110310030","Non Pareto","C",30,0,0,31,0,996,0,0,0,"Overstock"],["1012110310040","Non Pareto","C",30,0,0,68,0,1585,0,0,0,"Overstock"],["1012504130011","Non Pareto","C",30,325,325,717,0,717,2,250,22,"Overstock"],["1011602090660","Non Pareto","C",30,0,0,0,0,32,0,0,0,"Overstock"],["1011002100011","Non Pareto","C",30,88,88,227,0,453,0,497,11,"Overstock"],["1011006210051","Non Pareto","C",30,2301,2301,944,0,2462,1223,2031,3712,"Good"],["1011006210061","Non Pareto","C",30,8,8,497,0,1056,0,0,0,"Overstock"],["1011606210041","Non Pareto","C",30,127,127,23,0,323,86,102,140,"Overstock"],["1011606210031","Non Pareto","C",30,110,110,35,0,245,89,118,128,"Overstock"],["1011601030350","Non Pareto","C",30,97,97,292,0,339,3,81,24,"Overstock"],["1011601020330","Non Pareto","C",30,2320,2320,542,0,542,502,1200,1299,"Good"],["1012502090011","Non Pareto","C",30,706,706,226,0,226,174,562,302,"Good"],["1011602090590","Non Pareto","C",30,0,0,856,0,856,0,0,0,"Overstock"],["1011601050100","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011104340010","Non Pareto","C",30,0,0,22,0,22,0,0,0,"Overstock"],["1012504350010","Non Pareto","C",30,468,468,84,0,1234,44,248,162,"Overstock"],["1012504350020","Non Pareto","C",30,203,203,116,0,209,90,219,196,"Good"],["1012503370010","Non Pareto","C",30,318,318,206,0,770,101,427,133,"Overstock"],["1011403180040","Non Pareto","C",30,7,7,801,0,844,0,5,0,"Overstock"],["1011403190060","Non Pareto","C",30,0,0,233,0,238,0,0,0,"Overstock"],["1011403170090","Non Pareto","C",30,41,41,80,0,90,30,0,630,"Overstock"],["1011404160100","Non Pareto","C",30,9,9,3,0,13,0,0,0,"Overstock"],["1011001030131","Pareto","A",15,70729,35365,50632,64000,50632,8650,80000,49230,"Overstock"],["1011001040011","Non Pareto","NPD",45,3616,5424,4897,6700,4897,242,2000,2113,"Overstock"],["1011001030353","Non Pareto","B",30,24283,24283,21571,26297,21571,1283,28000,9415,"Overstock"],["1011101030140","Non Pareto","NPD",45,9170,13755,4590,397,4590,7081,5500,9754,"Good"],["1011104160033","Non Pareto","C",30,0,0,47,0,56,0,0,0,"Overstock"],["1011001380020","Non Pareto","NPD",45,0,0,0,0,0,0,0,0,"Good"],["1012501380011","Non Pareto","B",30,7991,7991,5280,0,5280,1375,6000,5286,"Good"],["1012501380010","Non Pareto","C",30,52,52,961,0,961,0,399,150,"Overstock"],["1012501380021","Non Pareto","C",30,3574,3574,5606,300,5606,381,3000,2476,"Overstock"],["1012501380020","Non Pareto","C",30,232,232,104,0,112,52,134,206,"Good"],["1011101020160","Non Pareto","C",30,0,0,14,0,14,0,0,0,"Overstock"],["1011201030230","Pareto","A",15,5856,2928,6879,0,15634,600,12000,1939,"Overstock"],["1011201030221","Pareto","A",15,80396,40198,124188,27200,156232,88864,0,243334,"Overstock"],["1011603170110","Non Pareto","C",30,0,0,10,0,10,12,0,12,"Good"],["1011005250032","Non Pareto","C",30,0,0,1745,0,2208,38,0,4775,"Overstock"],["1012501380031","Non Pareto","NPD",45,333,500,4251,0,4251,0,6000,500,"Overstock"],["1012501380041","Non Pareto","NPD",45,1433,2150,4424,8500,4424,886,9000,1600,"Overstock"],["1011404140040","Non Pareto","NPD",45,0,0,4320,3600,4420,6177,0,11722,"Overstock"],["1011101380010","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001030360","Non Pareto","C",30,0,0,5438,14400,5438,4333,0,6500,"Overstock"],["1011101380020","Non Pareto","C",30,0,0,0,2800,0,552,0,552,"Overstock"],["1011001380040","Non Pareto","C",30,0,0,0,4000,0,350,0,350,"Overstock"],["1011601040101","Non Pareto","NPD",45,192,288,57,700,57,1,1000,1,"Overstock"],["1011001030380","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001040210","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001030370","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011001040220","Non Pareto","C",30,0,0,0,0,0,0,0,0,"Good"],["1011404160130","Non Pareto","NPD",45,153,229,55,0,432,10,1922,169,"Overstock"],["1011404160120","Non Pareto","NPD",45,427,641,100,0,2357,56,2987,324,"Overstock"],["1011404160140","Non Pareto","NPD",45,4875,7313,1055,0,8784,3481,40641,12920,"Overstock"],["1011404160150","Non Pareto","NPD",45,494,741,311,0,4813,413,5223,1027,"Overstock"]] };
 var CHECKS = {
+  fc_week_mismatch: ['Jumlah W1–W4 ≠ total forecast', 'warn'],
+  fc_zone_mismatch: ['Total zona ≠ total forecast', 'warn'],
   no_hq_class: ['Tidak ada di daftar kelas HQ', 'off'],
   no_hq_forecast: ['Order in tanpa Forecast HQ', 'warn'],
   gap_check_failed: ['Cek gap tidak cocok (stok awal + aktual − ORIG)', 'bad'],
@@ -505,6 +507,28 @@ function sampleGrid() {
   return g;
 }
 
+function sampleForecastGrid() {
+  // Same layout as "Sales Forecast <Mon> adj - TUB" (Summary Forecast). Codes and names are real; quantities simulated.
+  var Z = ['Zone01', 'Zone 02A', 'Zone 02B', 'Zone 02 AFH', 'Zone03', 'Zone04', 'Zone 05', 'Zone 06', 'Zone 07', 'Zone 08', 'Zone09', 'Ecomm', 'TOTAL'];
+  var r0 = ['Summary Forecast Sep 2026'], r1 = ['Mill : The Univenus Serang'];
+  var top = [null, null, null, null, null, null, null, 'Original Sales Forecast', null, 'SalesForecast (Qty)', null, null, null, 'SalesForecast (Ton)', null, null, null, 'SalesForecast per Zone (ctn)'];
+  var head = ['No', 'Article Code', 'Nomat Forecast', 'Brand', 'Category', 'Description', 'NW (kg/ctn)', 'Qty(ctn)', 'NW (Ton)', 'W1', 'W2', 'W3', 'W4', 'W1', 'W2', 'W3', 'W4'].concat(Z);
+  var share = [0.12, 0.02, 0.03, 0, 0.08, 0.11, 0.12, 0.1, 0.09, 0.08, 0.2, 0.05];
+  var data = [r0, r1, [], top, head];
+  [['1011001030190', '69920930', 'PASEO', 'Facial Soft Pack', 'Paseo Elegant Facial Soft Pack 510 Ply', 12.66, 3520],
+   ['1011001030011', '69921310', 'PASEO', 'Facial Soft Pack', 'Paseo Smart Facial Softpack 390 Ply B2LH', 11.88, 23100],
+   ['1011001030210', '69920671', 'PASEO', 'Facial Soft Pack', 'Paseo Smart Facial Soft Pack 540 Ply GT', 13.16, 119600],
+   ['1011001040170', '69920852', 'PASEO', 'Facial Travel Pack', 'Paseo Elegant Facial Travel Pack 108 Ply GT', 3.81, 77796],
+   ['1011201030140', '69920900', 'JOLLY', 'Facial Soft Pack', "Jolly Facial Soft Pack 250's (4 Pack) SLO", 12.86, 30000]].forEach(function (s, i) {
+    var q = s[6], wk = [q / 4, q / 4, q / 4, q / 4].map(Math.round), zs = share.map(function (x) { return Math.round(q * x); });
+    zs[10] += q - zs.reduce(function (a, b) { return a + b; }, 0);
+    data.push([i + 1, s[0], s[1], s[2], s[3], s[4], s[5], q, Math.round(q * s[5] / 1000)].concat(wk, wk.map(function (x) { return Math.round(x * s[5] / 1000); }), zs, [q]));
+  });
+  var g = gridFromText(data.map(function (r) { return r.map(function (v) { return v === null || v === undefined ? '' : v; }).join('\t'); }).join('\n'));
+  var raw = g.get; g.get = function (r, c) { var v = raw(r, c); if (v !== null && /^-?\d+(\.\d{1,2})?$/.test(v)) return Number(v); return v; };
+  return g;
+}
+
 /* ---------- state ---------- */
 var $ = function (id) { return document.getElementById(id); };
 var state = { items: [], view: null, history: null, cls: null, sample: false, nextId: 1 };
@@ -586,6 +610,95 @@ function guessDate(text) {
   return y + '-' + (mo < 10 ? '0' : '') + mo + '-' + (+m[1] < 10 ? '0' : '') + +m[1];
 }
 
+/* ---------- Forecast HQ file (Summary Forecast <Mon YYYY>, one month per file) ---------- */
+// Columns: No, Article Code, Nomat, Brand, Category, Description, NW (kg/ctn), Original Sales Forecast Qty(ctn) / NW (Ton),
+// Sales Forecast (Qty) W1..W4, Sales Forecast (Ton) W1..W4, Sales Forecast per Zone (ctn) Zone 01..09, Ecomm, TOTAL, then per Zone (ton).
+var FC_FIELDS = [
+  ['article_code', 'Kode artikel', /article/], ['nomat', 'Nomat', /nomat/], ['brand', 'Brand', /brand/], ['category', 'Kategori', /categor/],
+  ['description', 'Deskripsi', /descr/], ['net_weight_kg', 'Berat bersih (kg/karton)', /\bnw\b.*kg|kg\s*\/\s*ctn/],
+  ['forecast_qty_ctn', 'Forecast HQ (karton)', /qty\s*\(?ctn|original.*qty/]
+];
+function fcSheetScore(g) {
+  var t = '';
+  for (var r = 0; r < Math.min(15, g.rows); r++) for (var c = 0; c < Math.min(30, g.cols); c++) { var v = g.get(r, c); if (v !== null) t += ' ' + v; }
+  t = norm(t);
+  return (/article\s*code/.test(t) ? 2 : 0) + (/forecast/.test(t) ? 2 : 0) + (/zone/.test(t) ? 1 : 0);
+}
+function parseForecastGrid(g) {
+  var anchor = -1, codeCol = -1;
+  for (var r = 0; r < Math.min(40, g.rows) && anchor < 0; r++) for (var c = 0; c < Math.min(30, g.cols); c++) if (/article\s*code/.test(norm(g.get(r, c)))) { anchor = r; codeCol = c; break; }
+  if (anchor < 0) return { error: 'Tidak ada kolom "Article Code".' };
+  var first = anchor + 1;
+  while (first < Math.min(anchor + 10, g.rows) && !looksLikeCode(g.get(first, codeCol))) first++;
+  var lo = Math.max(0, anchor - 3), mergeAt = {};
+  g.merges.forEach(function (m) { for (var rr = m.s.r; rr <= m.e.r; rr++) for (var cc = m.s.c; cc <= m.e.c; cc++) mergeAt[rr + ',' + cc] = g.get(m.s.r, m.s.c); });
+  var cell = function (r, c) { var v = g.get(r, c); if ((v === null || v === '') && (r + ',' + c) in mergeAt) v = mergeAt[r + ',' + c]; return norm(v); };
+  // Leaf headers sit on the last header row; group labels ("SalesForecast (Qty)", "... per Zone (ctn)") on the rows above.
+  // W1..W4 and Zone01..TOTAL runs take the group label found anywhere over their span, so merged, centred or
+  // left-aligned labels all work, and a repeated run (the ton copy) gets its own label.
+  var leafRow = first - 1, leafOf = function (c) { return cell(leafRow, c); };
+  var labelIn = function (a, b) {
+    for (var r = lo; r < leafRow; r++) for (var c = a; c <= b; c++) { if (c <= codeCol) continue; var v = cell(r, c); if (v && !/^mill\b|summary forecast/.test(v)) return v; }
+    return '';
+  };
+  var headers = {}, c2 = 0;
+  while (c2 < g.cols) {
+    var leaf = leafOf(c2), end = c2, kind = null;
+    if (/^w\s*1\b/.test(leaf)) { kind = 'w'; while (end + 1 < g.cols && /^w\s*[2-5]\b/.test(leafOf(end + 1))) end++; }
+    else if (/^zone\s*0?1\b/.test(leaf)) { kind = 'z'; while (end + 1 < g.cols && /zone|ecomm|total/.test(leafOf(end + 1)) && !/^zone\s*0?1\b/.test(leafOf(end + 1))) { end++; if (/total/.test(leafOf(end))) break; } }
+    if (kind) {
+      var lab = labelIn(c2, end);
+      for (var k = c2; k <= end; k++) headers[k] = lab ? [lab, leafOf(k)] : [leafOf(k)];
+      c2 = end + 1; continue;
+    }
+    var parts = [];
+    for (var r2 = lo; r2 <= leafRow; r2++) { var v = cell(r2, c2); if (r2 < leafRow && (c2 < codeCol || /^mill\b|summary forecast/.test(v))) continue; if (v && parts.indexOf(v) < 0) parts.push(v); }
+    if (parts.length) headers[c2] = parts;
+    c2++;
+  }
+  var cols = {}, weekly = {}, zones = {}, zoneTotal = null, unmapped = {};
+  Object.keys(headers).forEach(function (k) {
+    var c = +k, parts = headers[c], full = parts.join(' | '), leaf = parts[parts.length - 1];
+    if (/\bton\b|\(ton\)/.test(full) && !/kg/.test(full)) { unmapped[c] = full + ' (ton, dilewati)'; return; }
+    var wk = /^(?:w|wk|week|minggu)\s*\.?\s*([1-5])\b/.exec(leaf);
+    if (wk && /qty|ctn|forecast/.test(full)) { weekly['w' + wk[1]] = c; return; }
+    if (/zone|ecomm/.test(full) && /zone|ecomm|total/.test(leaf)) {
+      if (/total/.test(leaf)) { zoneTotal = c; return; }
+      var z = leaf.replace(/\s+/g, ' ').replace(/zone\s*0?/, 'zone_').replace(/[^a-z0-9_]+/g, '_').replace(/_+$/, '');
+      zones[z] = c; return;
+    }
+    for (var i = 0; i < FC_FIELDS.length; i++) if (!(FC_FIELDS[i][0] in cols) && FC_FIELDS[i][2].test(full)) { cols[FC_FIELDS[i][0]] = c; return; }
+    if (!/^no\.?$/.test(full)) unmapped[c] = full;
+  });
+  if (!('article_code' in cols)) cols.article_code = codeCol;
+  var rows = [], issues = [], seen = {};
+  for (var r3 = first; r3 < g.rows; r3++) {
+    var cv = g.get(r3, cols.article_code);
+    if (!looksLikeCode(cv)) continue;
+    var code = cleanCode(cv);
+    if (seen[code] !== undefined) { issues.push([code, r3, 'duplicate_code', 'juga di baris ' + (seen[code] + 1)]); continue; }
+    seen[code] = r3;
+    var o = { article_code: code, source_row: r3 + 1, issues: [] };
+    ['nomat', 'brand', 'category', 'description'].forEach(function (f) { var x = cols[f] !== undefined ? g.get(r3, cols[f]) : null; o[f] = x === null ? null : (f === 'nomat' ? cleanCode(x) : String(x).trim()); });
+    var num = function (c, label) { if (c === undefined || c === null) return null; var p = parseNumber(g.get(r3, c)); if (p[1]) { issues.push([code, r3, 'bad_value', label + ': ' + p[1]]); o.issues.push('bad_value'); } return p[0]; };
+    o.net_weight_kg = num(cols.net_weight_kg, 'NW');
+    o.forecast_qty_ctn = num(cols.forecast_qty_ctn, 'Qty');
+    Object.keys(weekly).sort().forEach(function (w) { o['fc_' + w + '_ctn'] = num(weekly[w], w.toUpperCase()); });
+    Object.keys(zones).forEach(function (z) { o[z + '_ctn'] = num(zones[z], z); });
+    o.zone_total_ctn = num(zoneTotal, 'Total zona');
+    var hc = classLookup()[code];
+    o.hq_class = hc ? hc.hq_class : null; o.doi_target_days = hc ? hc.doi_target_days : null;
+    if (!hc) { issues.push([code, r3, 'no_hq_class', 'kelas HQ per ' + state.cls.asof]); o.issues.push('no_hq_class'); }
+    var ws = Object.keys(weekly).reduce(function (a, w) { return a + (o['fc_' + w + '_ctn'] || 0); }, 0);
+    if (Object.keys(weekly).length && o.forecast_qty_ctn !== null && Math.abs(ws - o.forecast_qty_ctn) > 2) { issues.push([code, r3, 'fc_week_mismatch', 'W ' + n(ws) + ', total ' + n(o.forecast_qty_ctn)]); o.issues.push('fc_week_mismatch'); }
+    if (o.zone_total_ctn !== null && o.forecast_qty_ctn !== null && Math.abs(o.zone_total_ctn - o.forecast_qty_ctn) > 2) { issues.push([code, r3, 'fc_zone_mismatch', 'zona ' + n(o.zone_total_ctn) + ', total ' + n(o.forecast_qty_ctn)]); o.issues.push('fc_zone_mismatch'); }
+    rows.push(o);
+  }
+  if (!('forecast_qty_ctn' in cols)) return { error: 'Kolom Qty (ctn) forecast tidak ditemukan.' };
+  return { lay: { fc: true, anchor: anchor, firstData: first, headers: headers, columns: cols, weekly: weekly, zones: zones, zoneTotal: zoneTotal, unmapped: unmapped }, res: { rows: rows, weekly: [], issues: issues } };
+}
+function fcVersion(name) { return /\badj|revis|\brev\b/i.test(name) ? 'adj' : 'orig'; }
+
 /* ---------- items (one per uploaded closing / forecast file) ---------- */
 function processItem(it) {
   it.error = null; it.lay = null; it.res = null;
@@ -595,18 +708,23 @@ function processItem(it) {
     var name = it.sheet;
     if (!name) {
       var bestScore = 0;
-      it.wb.SheetNames.forEach(function (nm) { var s = sheetScore(nm, gridFromSheet(it.wb.Sheets[nm]), plant); if (s > bestScore) { bestScore = s; name = nm; } });
+      it.wb.SheetNames.forEach(function (nm) { var gg = gridFromSheet(it.wb.Sheets[nm]), s = it.kind === 'forecast' ? fcSheetScore(gg) : sheetScore(nm, gg, plant); if (s > bestScore) { bestScore = s; name = nm; } });
       if (!name) { it.error = 'Tidak ada lembar yang menyebut plant ' + plant + '. Pilih lembarnya.'; it.sheet = it.wb.SheetNames[0]; return; }
       it.sheet = name;
     }
     g = gridFromSheet(it.wb.Sheets[name]);
+  }
+  if (it.kind === 'forecast') {
+    var f = parseForecastGrid(g);
+    if (f.error) { it.error = f.error; return; }
+    it.lay = f.lay; it.res = f.res; it.version = it.version || fcVersion(it.name);
+    return;
   }
   var lay = detect(g);
   if (lay.error) { it.error = lay.error; return; }
   lay.unit = unitFromSheet(it.sheet || '');
   it.lay = lay; it.res = extract(g, lay);
   var missing = REQUIRED.filter(function (f) { return !(f in lay.columns); });
-  if (it.kind === 'forecast') missing = missing.filter(function (f) { return f !== 'order_in'; });
   if (missing.length) it.error = 'Kolom wajib tidak ditemukan: ' + missing.map(label).join(', ');
   else if (lay.unit === 'MT') it.error = 'Lembar MT (metrik ton). Pilih lembar CT.';
 }
@@ -661,11 +779,11 @@ function combined() {
   var cl = ok.filter(function (it) { return it.kind === 'closing'; }), fc = ok.filter(function (it) { return it.kind === 'forecast'; });
   var newClosing = {}, newFc = {};
   cl.forEach(function (it) { newClosing[it.month] = it; });
-  fc.forEach(function (it) { newFc[it.month] = it; });
+  fc.forEach(function (it) { newFc[it.month + '|' + (it.version || 'orig')] = it; });
   var h = state.history || { monthly: [], weekly: [], forecast: [], log: [] };
   var monthly = h.monthly.filter(function (r) { return !(r.closing_month in newClosing); });
   var weekly = h.weekly.filter(function (r) { return !(r.closing_month in newClosing); });
-  var forecast = h.forecast.filter(function (r) { return !(r.forecast_month in newFc); });
+  var forecast = h.forecast.filter(function (r) { return !((r.forecast_month + '|' + (r.version || 'orig')) in newFc); });
   var log = h.log.slice(), now = new Date().toISOString().slice(0, 16).replace('T', ' ');
   Object.keys(newClosing).sort().forEach(function (m) {
     var it = newClosing[m], replaced = h.monthly.some(function (r) { return r.closing_month === m; });
@@ -674,10 +792,14 @@ function combined() {
     log.push({ loaded_at: now, kind: 'closing', month: m, file: it.name, sheet: it.sheet || '', sku_rows: it.res.rows.length, issues: it.res.issues.length, note: replaced ? 'menggantikan data bulan yang sama' : '' });
   });
   var latestClosing = monthly.reduce(function (a, r) { return r.closing_month > a ? r.closing_month : a; }, '');
-  Object.keys(newFc).sort().forEach(function (m) {
-    var it = newFc[m], replaced = h.forecast.some(function (r) { return r.forecast_month === m; });
-    it.res.rows.forEach(function (r) { forecast.push({ forecast_month: m, after_closing: latestClosing || null, plant: plant, source_file: it.name, article_code: r.article_code, description: r.description, forecast_hq_orig: r.forecast_hq_orig === undefined ? null : r.forecast_hq_orig, forecast_hq_rev: r.forecast_hq_rev === undefined ? null : r.forecast_hq_rev }); });
-    log.push({ loaded_at: now, kind: 'forecast', month: m, file: it.name, sheet: it.sheet || '', sku_rows: it.res.rows.length, issues: it.res.issues.length, note: replaced ? 'menggantikan data bulan yang sama' : '' });
+  Object.keys(newFc).sort().forEach(function (key) {
+    var it = newFc[key], m = it.month, ver = it.version || 'orig', replaced = h.forecast.some(function (r) { return r.forecast_month === m && (r.version || 'orig') === ver; });
+    it.res.rows.forEach(function (r) {
+      var o = { forecast_month: m, version: ver, after_closing: latestClosing || null, plant: plant, source_file: it.name };
+      Object.keys(r).forEach(function (k) { if (k !== 'issues' && k !== 'source_row') o[k] = r[k]; });
+      forecast.push(o);
+    });
+    log.push({ loaded_at: now, kind: 'forecast ' + ver, month: m, file: it.name, sheet: it.sheet || '', sku_rows: it.res.rows.length, issues: it.res.issues.length, note: replaced ? 'menggantikan data bulan yang sama' : '' });
   });
   monthly.sort(function (a, b) { return a.closing_month < b.closing_month ? -1 : a.closing_month > b.closing_month ? 1 : 0; });
   forecast.sort(function (a, b) { return a.forecast_month < b.forecast_month ? -1 : a.forecast_month > b.forecast_month ? 1 : 0; });
@@ -717,7 +839,7 @@ function renderFiles() {
     var sheets = it.wb ? it.wb.SheetNames : [it.sheet || '(contoh)'];
     h += '<tr' + (it.id === state.view ? ' class="viewing"' : '') + '><td>' + esc(it.name) + '</td>' +
       '<td><select data-id="' + it.id + '" data-f="kind" aria-label="Jenis"><option value="closing"' + (it.kind === 'closing' ? ' selected' : '') + '>Closing</option><option value="forecast"' + (it.kind === 'forecast' ? ' selected' : '') + '>Forecast HQ</option></select></td>' +
-      '<td><input type="month" data-id="' + it.id + '" data-f="month" value="' + esc(it.month) + '" aria-label="Bulan"></td>' +
+      '<td><input type="month" data-id="' + it.id + '" data-f="month" value="' + esc(it.month) + '" aria-label="Bulan">' + (it.kind === 'forecast' ? ' <select data-id="' + it.id + '" data-f="version" aria-label="Versi"><option value="orig"' + (it.version !== 'adj' ? ' selected' : '') + '>Original</option><option value="adj"' + (it.version === 'adj' ? ' selected' : '') + '>Adj</option></select>' : '') + '</td>' +
       '<td><select data-id="' + it.id + '" data-f="sheet" aria-label="Lembar">' + sheets.map(function (s) { return '<option' + (s === it.sheet ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') + '</select></td>' +
       '<td class="num">' + (it.res ? n(it.res.rows.length) : '–') + '</td>' +
       '<td>' + (it.error ? '<span class="pill p-bad">' + esc(it.error) + '</span>' : !it.month ? '<span class="pill p-warn">isi bulan</span>' : '<span class="pill p-ok">✓ siap</span>') + '</td>' +
@@ -746,8 +868,63 @@ function renderHistory(c) {
   $('histNote').textContent = nc + ' bulan closing · ' + Object.keys(fm).length + ' bulan forecast · minimal 12 bulan closing untuk keluar dari mode bayangan';
 }
 
+var CLOSING_CHECKS = ['no_hq_class', 'no_hq_forecast', 'gap_check_failed', 'weekly_sum_mismatch', 'bad_value', 'duplicate_code', 'kg_row'];
+var FC_CHECKS = ['no_hq_class', 'fc_week_mismatch', 'fc_zone_mismatch', 'bad_value', 'duplicate_code'];
+function renderChecks(res, keys) {
+  var ch = '';
+  keys.forEach(function (k) {
+    var list = res.issues.filter(function (i) { return i[2] === k; }), kind = list.length ? CHECKS[k][1] : 'ok';
+    ch += '<div class="check"><span class="pill p-' + kind + '">' + (list.length ? list.length : '✓') + '</span><span class="t">' + CHECKS[k][0] + '</span><span></span>' +
+      (list.length ? '<span class="d">' + list.slice(0, 4).map(function (i) { return esc(i[0]) + ' · ' + esc(i[3]); }).join('<br>') + (list.length > 4 ? '<br>+' + (list.length - 4) + ' lainnya' : '') + '</span>' : '') + '</div>';
+  });
+  $('checks').innerHTML = ch;
+}
+function renderForecast(it) {
+  var lay = it.lay, res = it.res, rows = res.rows;
+  var sum = function (f) { return rows.reduce(function (a, r) { return a + (r[f] || 0); }, 0); };
+  var tot = sum('forecast_qty_ctn'), tons = rows.reduce(function (a, r) { return a + (r.forecast_qty_ctn || 0) * (r.net_weight_kg || 0) / 1000; }, 0);
+  var hist = combined().monthly, prev = {};
+  hist.forEach(function (r) { if (r.closing_month === addMonths(it.month, -1) || r.closing_month === addMonths(it.month, -2) || r.closing_month === addMonths(it.month, -3)) prev[r.closing_month] = (prev[r.closing_month] || 0) + (r.order_in || 0); });
+  var pm = Object.keys(prev), avg = pm.length ? pm.reduce(function (a, m) { return a + prev[m]; }, 0) / pm.length : null;
+  $('cards').innerHTML = card('SKU di forecast', n(rows.length), 'versi ' + (it.version || 'orig') + ' · ' + monthLabel(it.month)) +
+    card('Forecast HQ', n(tot), 'karton · ' + n(Math.round(tons)) + ' ton') +
+    card('Rata-rata order in', avg === null ? '–' : n(Math.round(avg)), avg === null ? 'belum ada histori 3 bulan sebelumnya' : pm.length + ' bulan sebelumnya · forecast ' + (tot >= avg ? '+' : '') + fmt.format((tot / avg - 1) * 100) + '%') +
+    card('Kelas HQ', ['A', 'B', 'C', 'NPD'].map(function (k) { return [k, rows.filter(function (r) { return r.hq_class === k; }).length]; }).filter(function (x) { return x[1]; }).map(function (x) { return x[0] + ' ' + x[1]; }).join(' · ') || '–', 'referensi ' + state.cls.asof) +
+    card('Masalah data', n(res.issues.filter(function (i) { return CHECKS[i[2]][1] !== 'off'; }).length), 'lihat bagian 3');
+  $('cards').hidden = false;
+  var h = '<thead><tr><th>Data</th><th>Kolom</th><th>Judul di file</th><th>Dipakai untuk</th><th>Status</th></tr></thead><tbody>', found = 0;
+  var use = { article_code: 'Kunci SKU', nomat: 'Kunci SKU', brand: 'Famili', category: 'Famili', description: 'Nama', net_weight_kg: 'Karton → ton', forecast_qty_ctn: 'Forecast HQ bulan ini' };
+  FC_FIELDS.forEach(function (f) {
+    var c = lay.columns[f[0]], req = f[0] === 'article_code' || f[0] === 'forecast_qty_ctn';
+    if (c !== undefined) found++;
+    h += '<tr><td><b>' + esc(f[1]) + '</b>' + (req ? ' <span class="pill p-acc">wajib</span>' : '') + '</td><td class="col">' + (c !== undefined ? colName(c) : '') + '</td><td class="wr">' + (c !== undefined ? esc(lay.headers[c].join(' | ')) : '–') + '</td><td>' + use[f[0]] + '</td><td>' +
+      (c !== undefined ? '<span class="pill p-ok">✓ diambil</span>' : (req ? '<span class="pill p-bad">tidak ditemukan</span>' : '<span class="pill p-off">tidak ada</span>')) + '</td></tr>';
+  });
+  var wc = Object.keys(lay.weekly).map(function (k) { return lay.weekly[k]; }), zc = Object.keys(lay.zones).map(function (k) { return lay.zones[k]; });
+  var rng = function (cs) { return cs.length ? colName(Math.min.apply(null, cs)) + '–' + colName(Math.max.apply(null, cs)) : ''; };
+  h += '<tr><td><b>Forecast per minggu</b></td><td class="col">' + rng(wc) + '</td><td class="wr">Sales Forecast (Qty) W1–W4</td><td>Pola per minggu</td><td>' + (wc.length ? '<span class="pill p-ok">✓ ' + wc.length + ' minggu</span>' : '<span class="pill p-off">tidak ada</span>') + '</td></tr>';
+  h += '<tr><td><b>Forecast per zona</b></td><td class="col">' + rng(zc) + '</td><td class="wr">' + esc(Object.keys(lay.zones).join(', ')) + '</td><td>Fitur ML (sebaran wilayah)</td><td>' + (zc.length ? '<span class="pill p-ok">✓ ' + zc.length + ' zona</span>' : '<span class="pill p-off">tidak ada</span>') + '</td></tr>';
+  h += '<tr><td><b>Total zona</b></td><td class="col">' + (lay.zoneTotal !== null ? colName(lay.zoneTotal) : '') + '</td><td class="wr">TOTAL (ctn)</td><td>Cek kualitas</td><td>' + (lay.zoneTotal !== null ? '<span class="pill p-ok">✓ diambil</span>' : '<span class="pill p-off">tidak ada</span>') + '</td></tr>';
+  $('mapTable').innerHTML = h + '</tbody>';
+  $('mapNote').textContent = found + ' dari ' + FC_FIELDS.length + ' kolom · ' + wc.length + ' minggu · ' + zc.length + ' zona · kolom ton dilewati';
+  var ign = Object.keys(lay.unmapped).map(function (c) { return '<span class="chip"><span class="col">' + colName(+c) + '</span> ' + esc(lay.unmapped[c]) + '</span>'; });
+  $('ignored').innerHTML = ign.length ? ign.join('') : '<span class="sub">Tidak ada.</span>';
+  renderChecks(res, FC_CHECKS);
+  var flt = $('filter').value;
+  var list = rows.filter(function (r) { return flt === 'all' || flt === 'nohq' ? true : r.issues.length > 0; });
+  var cols = [['article_code', 'Kode artikel', 0], ['description', 'Deskripsi', 0], ['brand', 'Brand', 0], ['category', 'Kategori', 0], ['hq_class', 'Kelas HQ', 0], ['forecast_qty_ctn', 'Forecast (ctn)', 1],
+    ['fc_w1_ctn', 'W1', 1], ['fc_w2_ctn', 'W2', 1], ['fc_w3_ctn', 'W3', 1], ['fc_w4_ctn', 'W4', 1]].concat(Object.keys(lay.zones).map(function (z) { return [z + '_ctn', z.replace('zone_', 'Z').replace('ecomm', 'Ecomm'), 1]; }));
+  var t2 = '<thead><tr><th class="num">Baris</th>' + cols.map(function (c) { return '<th' + (c[2] ? ' class="num"' : '') + '>' + c[1] + '</th>'; }).join('') + '<th>Catatan</th></tr></thead><tbody>';
+  list.forEach(function (r) {
+    t2 += '<tr><td class="num col">' + r.source_row + '</td>' + cols.map(function (c) { var v = r[c[0]]; return c[2] ? '<td class="num">' + n(v) + '</td>' : '<td>' + esc(v === null || v === undefined ? '–' : v) + '</td>'; }).join('') +
+      '<td>' + r.issues.filter(function (x, i, a) { return a.indexOf(x) === i; }).map(function (k) { return '<span class="pill p-' + CHECKS[k][1] + '">' + CHECKS[k][0] + '</span>'; }).join(' ') + '</td></tr>';
+  });
+  $('preview').innerHTML = t2 + '</tbody>';
+}
 function render() {
   var lay = state.lay, res = state.result;
+  var vit = viewed();
+  if (vit && vit.kind === 'forecast' && vit.lay && vit.lay.fc) { renderForecast(vit); return; }
   // cards
   var cards = '';
   if (res) {
@@ -798,17 +975,8 @@ function render() {
   var ign = lay ? Object.keys(lay.unmapped).map(function (c) { return '<span class="chip"><span class="col">' + colName(+c) + '</span> ' + esc(lay.unmapped[c]) + '</span>'; }) : [];
   $('ignored').innerHTML = ign.length ? ign.join('') : '<span class="sub">Tidak ada.</span>';
 
-  // checks
-  var ch = '';
-  if (res) {
-    Object.keys(CHECKS).forEach(function (k) {
-      var list = res.issues.filter(function (i) { return i[2] === k; });
-      var kind = list.length ? CHECKS[k][1] : 'ok';
-      ch += '<div class="check"><span class="pill p-' + kind + '">' + (list.length ? list.length : '✓') + '</span><span class="t">' + CHECKS[k][0] + '</span><span></span>' +
-        (list.length ? '<span class="d">' + list.slice(0, 4).map(function (i) { return esc(i[0]) + ' · ' + esc(i[3]); }).join('<br>') + (list.length > 4 ? '<br>+' + (list.length - 4) + ' lainnya' : '') + '</span>' : '') + '</div>';
-    });
-  }
-  $('checks').innerHTML = ch || '<p class="note">Belum ada data.</p>';
+  if (res) renderChecks(res, CLOSING_CHECKS); else $('checks').innerHTML = '<p class="note">Belum ada data.</p>';
+
   renderPreview();
 }
 function weekLabel(lay, measure, c) {
@@ -877,7 +1045,7 @@ Array.prototype.forEach.call(document.querySelectorAll('.drop'), function (drop)
 $('files').addEventListener('change', function (e) {
   var id = +e.target.getAttribute('data-id'), f = e.target.getAttribute('data-f');
   var it = state.items.filter(function (x) { return x.id === id; })[0]; if (!it) return;
-  it[f] = e.target.value; if (f !== 'month') processItem(it); state.view = id; renderAll();
+  it[f] = e.target.value; if (f === 'kind') it.sheet = null; if (f !== 'month' && f !== 'version') processItem(it); state.view = id; renderAll();
 });
 $('files').addEventListener('click', function (e) {
   var b = e.target.closest('button'); if (!b) return;
@@ -888,12 +1056,12 @@ $('files').addEventListener('click', function (e) {
   renderAll();
 });
 $('plant').addEventListener('change', function () { state.items.forEach(function (it) { if (it.wb) it.sheet = null; processItem(it); }); renderAll(); });
-$('filter').addEventListener('change', renderPreview);
+$('filter').addEventListener('change', function () { var it = viewed(); if (it && it.lay && it.lay.fc) renderForecast(it); else renderPreview(); });
 $('clearAll').addEventListener('click', function () { state.items = []; state.history = null; state.view = null; state.sample = false; state.clsFromFile = false; state.cls = builtinClass(); _clsFor = null; $('dropMsg').textContent = ''; renderAll(); });
 function loadSample() {
   state.items = []; state.history = null; state.cls = builtinClass(); _clsFor = null; state.sample = true;
   var a = { id: state.nextId++, name: 'Contoh closing AUG26 (simulasi)', kind: 'closing', month: '2026-08', grid: sampleGrid(), sheet: '7079 CT' };
-  var b = { id: state.nextId++, name: 'Contoh forecast SEP26 (simulasi)', kind: 'forecast', month: '2026-09', grid: sampleGrid(), sheet: '7079 CT' };
+  var b = { id: state.nextId++, name: 'Contoh Sales Forecast Sep26 adj (simulasi)', kind: 'forecast', month: '2026-09', grid: sampleForecastGrid(), sheet: 'Summary' };
   processItem(a); processItem(b); state.items = [a, b]; state.view = a.id;
   renderAll();
 }
