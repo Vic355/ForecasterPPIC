@@ -1,0 +1,5 @@
+*.sqlite
+exports/
+__pycache__/
+.wrangler/
+node_modules/
