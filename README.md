@@ -17,6 +17,26 @@ PPIC Forecast Desk for The Univenus Serang (plan 7079): extract the monthly clos
 SKUs are keyed by **Nomat** (nomor material). Article Code is kept alongside, used to look up the HQ class, and used as the
 key only when a row has no Nomat (flagged "Tanpa Nomat"). Closing and forecast are joined by Nomat, then by Article Code.
 
+## Cek Data SKU (status rules)
+
+Closing sheets are not standardised, so every SKU gets a status before anything is counted:
+**Aktif**, **Perlu cek**, **Diskontinu** or **Diganti** (replaced by another SKU). Diskontinu and Diganti are left out
+of totals, accuracy and the ML; a replaced SKU's order in is added to its successor's history for the ML.
+
+| Rule | Gives |
+| --- | --- |
+| Stock > 0, no Forecast HQ (REV/ORIG in the latest closing, none in M+1) | Diskontinu if order in was 0 for N months, else Perlu cek |
+| Code / Nomat / name red (font or fill) or struck through in the .xlsx | Diskontinu (read from styles.xml; .xls not supported) |
+| Keyword in the name (editable list: disc, old, stop, tidak produksi, …) | Perlu cek |
+| Flagged SKU within N rows of an active SKU with a similar name or near-identical article code | Diganti → that SKU |
+| Brand at the start of the name matches another family, not its own | Perlu cek (only when families are brands) |
+| HQ and order in more than N× apart, or HQ with zero orders for N months | Perlu cek |
+
+Rules can be switched off and their numbers changed; any SKU can be set by hand. Settings and manual statuses are stored
+in the browser and in the history workbook (sheets `status_sku` and `aturan`), and are restored when it is uploaded again.
+The Forecast table can show all SKUs per family and the excluded ones (greyed). The realised side uses **Forecast HQ REV**
+(ORIG only when REV is empty); the accuracy card and chart also show ORIG.
+
 ## Forecast ML (prototype v1)
 
 Per SKU (Nomat), in the browser, recomputed from whatever history is loaded:
