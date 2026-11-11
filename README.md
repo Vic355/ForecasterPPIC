@@ -147,6 +147,8 @@ Tab order: Forecast, Saran Buffer, Rencana Produksi (bulanan, belum ada isi, tah
 
 ## Rencana Produksi (mockup)
 
+The core of the tab is **Jadwal mesin**: one row per machine across the production days of the month, with a bar per SKU. Bar length = PP in tonnes ÷ (machine capacity ÷ production days). SKUs of a machine type are spread over that type's active machines: bermasalah SKUs first, then fewest days of stock cover; each SKU goes to the machine that frees up first and continues on the next machine when it does not fit (shown as 1/2, 2/2). Clicking a bar shows the detail and lets you move the SKU to another machine (saved). Capacity is a reference (average production of last month), so bars past the dashed end-of-month line are flagged for checking, not as hard over-capacity. Month (rencana / berjalan) and production days are adjustable. With sample data and no uploaded machine list, a labelled demo machine list is used. Below the schedule, a switch shows either the per-SKU table or the per-machine-type summary.
+
 Tab **Rencana Produksi** is a mockup of the monthly production plan, modelled on the PPIC Excel:
 
 - Bulan berjalan M1 = closing + 1 (PP mostly fixed), bulan rencana M2 = closing + 2.
