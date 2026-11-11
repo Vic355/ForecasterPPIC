@@ -130,3 +130,14 @@ python ingest/ingest_closing.py export  --db ppic.sqlite --out exports/
 
 HQ class is reference only: A = Pareto (DOI target 15 days), B and C = Non Pareto (30 days), NPD = new product (45 days).
 The input tab shows each SKU's HQ class and DOI target and flags SKUs missing from the list.
+
+## Saran Buffer
+
+Tab **Saran Buffer** menghitung buffer per SKU untuk bulan forecast pertama setelah closing terakhir:
+
+- Buffer = z × sebaran error × forecast × √(lead time ÷ 30) × faktor strategi. z: 90% = 1,28, 95% = 1,64, 98% = 2,05.
+- Sebaran error per famili dari 6 closing terakhir (×1,4 di level SKU); 25% bila histori kurang dari 2 bulan.
+- Rencana produksi = forecast + buffer final − stok bebas.
+- Dasar forecast bisa Forecast HQ (bawaan, karena ML masih mode bayangan), Forecast ML atau rata-rata keduanya. Service level dan lead time (7/14/21 hari) bisa diganti di atas tabel.
+- Strategi per famili atau SKU: Standar, Defensif, Ikuti tren, Batas atas (≤ 10 hari), Habiskan stok. Bila tidak dipilih, strategi dipilih otomatis dan alasannya tampil di tombol status.
+- Buffer final bisa diubah manual dengan alasan wajib. Perubahan dan strategi manual disimpan di browser dan di lembar `saran_buffer` file Histori_Serang, lalu dibaca kembali saat file itu diunggah.

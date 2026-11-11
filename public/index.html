@@ -149,6 +149,37 @@ tr.st-diskontinu td, tr.st-diganti td { color: var(--muted); }
 .stmenu .mr label { font-size: 11px; display: flex; flex-direction: column; gap: 2px; flex: 1; }
 .stmenu .mr input { min-height: 28px; padding: 3px 6px; }
 .stmenu .mw { font-size: 11px; color: var(--muted); padding: 4px 6px; border-top: 1px solid var(--line-soft); }
+.stmenu.wide { width: 320px; }
+.stmenu .bw { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; font-size: 12px; padding: 4px 6px; }
+.stmenu .bw .num { text-align: right; font-variant-numeric: tabular-nums; }
+.stmenu .bw .tt { border-top: 1px solid var(--line-soft); font-weight: 700; padding-top: 3px; }
+.stmenu .ba { display: flex; gap: 6px; padding: 6px; border-top: 1px solid var(--line-soft); }
+.stmenu .ba button { flex: 1; min-height: 30px; }
+.stmenu .berr { color: var(--bad, #c0392b); font-size: 11px; padding: 0 6px; }
+.panel.bfctl { flex-direction: row; display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; padding: 10px 12px; }
+.seg { display: inline-flex; align-items: center; gap: 0; flex-wrap: wrap; }
+.seg > span { font-size: 12px; color: var(--muted); margin-right: 8px; }
+.seg button { border-radius: 0; margin-left: -1px; min-height: 30px; padding: 3px 10px; }
+.seg button:nth-of-type(1) { border-radius: 6px 0 0 6px; margin-left: 0; }
+.seg button:last-child { border-radius: 0 6px 6px 0; }
+.seg button.on { background: var(--s1); border-color: var(--s1); color: #fff; position: relative; z-index: 1; }
+.bft td.bsug { color: var(--s3); }
+.bft td.zero { color: var(--muted); }
+.bft td.bfin { cursor: pointer; font-weight: 700; }
+.bft td.bfin:hover, .bft td.bfin:focus { outline: 2px solid var(--s1); outline-offset: -2px; }
+.bft td.bfin.edited { background: rgba(240, 190, 40, .22); }
+.mtag { font-size: 10px; font-weight: 600; color: var(--muted); }
+.bft select.bfst { font-size: 12px; min-height: 26px; padding: 1px 4px; max-width: 150px; }
+.bst { display: inline-block; font-size: 11px; font-weight: 600; border-radius: 999px; padding: 2px 8px; border: 1px solid transparent; white-space: nowrap; cursor: pointer; line-height: 1.5; min-height: 0; }
+span.bst { cursor: default; }
+.b-low { background: rgba(214, 57, 57, .14); color: #b42323; border-color: rgba(214,57,57,.35); }
+.b-noprod { background: rgba(240, 160, 30, .16); color: #9a5b00; border-color: rgba(240,160,30,.4); }
+.b-up { background: rgba(235, 104, 52, .12); color: #b04a1c; border-color: rgba(235,104,52,.35); }
+.b-down { background: rgba(42, 120, 214, .12); color: #1d5ca8; border-color: rgba(42,120,214,.35); }
+.b-new { background: rgba(98, 80, 214, .12); color: #4c3cb0; border-color: rgba(98,80,214,.35); }
+.b-same { background: rgba(40, 150, 90, .12); color: #1f7a48; border-color: rgba(40,150,90,.35); }
+.b-hab { background: var(--line-soft); color: var(--muted); border-color: var(--line); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .b-low { color: #ff8a8a; } :root:not([data-theme="light"]) .b-noprod { color: #f5b955; } :root:not([data-theme="light"]) .b-up { color: #f39a72; } :root:not([data-theme="light"]) .b-down { color: #7fb2f0; } :root:not([data-theme="light"]) .b-new { color: #aea4f2; } :root:not([data-theme="light"]) .b-same { color: #6fd29a; } }
 .edhint { margin-top: -4px; }
 .empty { padding: 28px; text-align: center; color: var(--muted); }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
@@ -218,10 +249,10 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
   <header>
     <div>
       <h1>PPIC Forecast Desk · The Univenus Serang</h1>
-      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-11b</span></div>
+      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-11c</span></div>
     </div>
     <nav class="tabs" aria-label="Lembar">
-      <button type="button" class="tab on" data-tab="Forecast" aria-current="page">Forecast</button><button type="button" class="tab" data-tab="Cek">Cek Data SKU</button><button type="button" class="tab" disabled title="Belum tersedia">Saran Buffer</button><button type="button" class="tab" data-tab="Input">Input Data &amp; Model</button>
+      <button type="button" class="tab on" data-tab="Forecast" aria-current="page">Forecast</button><button type="button" class="tab" data-tab="Cek">Cek Data SKU</button><button type="button" class="tab" data-tab="Buffer">Saran Buffer</button><button type="button" class="tab" data-tab="Input">Input Data &amp; Model</button>
     </nav>
   </header>
 
@@ -237,6 +268,24 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
       <p class="note edhint">Seperti Excel: klik dua kali atau langsung ketik di sel Stok, Order in, Forecast HQ untuk mengoreksi. Enter/Tab untuk lanjut, Esc batal, Delete mengosongkan, Ctrl+Z membatalkan. Sel yang dikoreksi bertanda kuning; nilai file tetap tersimpan. Klik label status di bawah nama SKU untuk mengubah statusnya. <span id="fcEditMsg" role="status"></span></p>
       <div class="scroll" style="max-height: 680px"><table id="fcTable" class="fct"></table></div>
       <div class="legend"><span><b>Selisih</b> = Forecast HQ − Order in. <b class="pos">Merah</b>: HQ di atas order in.</span><span><b>Forecast ML</b> (prototipe): Holt pada order in + Forecast HQ dikoreksi biasnya per SKU. Arahkan kursor ke angka ML untuk rinciannya.</span><span><b>Sinyal</b> HQ dibanding ML: <span class="sg s-dn2">▼</span> HQ ≥20% di atas, <span class="sg s-dn1">▼</span> 5–20% di atas, <span class="sg s-eq">≈</span> beda &lt;5%, <span class="sg s-up1">▲</span> 5–20% di bawah, <span class="sg s-up2">▲</span> ≥20% di bawah.</span><span><span class="pill p-warn">Tanpa HQ</span> ada order in / ML tapi Forecast HQ kosong.</span></div>
+    </section>
+  </div>
+
+  <div class="tabpage" id="tabBuffer" hidden>
+    <div class="ctx" id="bfCtx"></div>
+    <section class="cards fcards" id="bfCards" aria-label="Ringkasan buffer"></section>
+    <section class="panel bfctl" id="bfCtl" aria-label="Pengaturan buffer">
+      <div class="seg"><span>Dasar forecast</span><button type="button" data-bk="basis" data-bv="hq">Forecast HQ</button><button type="button" data-bk="basis" data-bv="ml">Forecast ML</button><button type="button" data-bk="basis" data-bv="avg">Rata-rata</button></div>
+      <div class="seg"><span>Service level</span><button type="button" data-bk="sl" data-bv="90">90%</button><button type="button" data-bk="sl" data-bv="95">95%</button><button type="button" data-bk="sl" data-bv="98">98%</button></div>
+      <div class="seg"><span>Lead time bahan baku</span><button type="button" data-bk="lt" data-bv="7">7 hari</button><button type="button" data-bk="lt" data-bv="14">14 hari</button><button type="button" data-bk="lt" data-bv="21">21 hari</button></div>
+      <span class="sub">Rencana produksi = Forecast + Buffer final − Stok bebas</span>
+    </section>
+    <section class="panel" aria-label="Buffer per famili">
+      <div class="ph"><h2>Saran buffer per famili dan SKU</h2>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><button type="button" id="bfOpenAll">Buka semua famili</button><button type="button" id="bfCloseAll">Tutup semua</button><button type="button" id="bfReset">Hapus perubahan manual</button></div></div>
+      <p class="note">Buffer = z × sebaran error × forecast × √(lead time ÷ 30) × faktor strategi. z: 90% = 1,28 · 95% = 1,64 · 98% = 2,05. Sebaran error dihitung per famili dari error forecast 6 closing terakhir (×1,4 di level SKU); bila histori kurang dari 2 bulan dipakai 25%. Klik angka <b>Buffer final</b> untuk mengubah (alasan wajib), pilih <b>Strategi</b> per famili atau SKU, klik <b>Status</b> untuk rincian hitungan. SKU diskontinu/diganti tidak dihitung.</p>
+      <div class="scroll" style="max-height: 680px"><table id="bfTable" class="fct bft"></table></div>
+      <div class="legend"><span class="bst b-low">Stok &lt; buffer</span><span class="bst b-noprod">Stok cukup, tanpa produksi</span><span class="bst b-up">Buffer naik</span><span class="bst b-down">Buffer turun</span><span class="bst b-new">Buffer baru</span><span class="bst b-same">Sesuai</span><span class="bst b-hab">Habiskan stok</span><span>Hari = buffer ÷ (forecast ÷ 30)</span></div>
     </section>
   </div>
 
@@ -777,7 +826,7 @@ function sampleForecastGrid(title, f) {
 
 /* ---------- state ---------- */
 var $ = function (id) { return document.getElementById(id); };
-var state = { items: [], view: null, history: null, cls: null, sample: false, nextId: 1, fcOpen: {}, rulesCfg: {}, overrides: {}, fcAll: false, fcShowExcl: false, edits: {}, undo: [] };
+var state = { items: [], view: null, history: null, cls: null, sample: false, nextId: 1, fcOpen: {}, rulesCfg: {}, overrides: {}, fcAll: false, fcShowExcl: false, edits: {}, undo: [], bfOpen: {}, bufCfg: {}, bufStrat: {}, bufEdits: {} };
 var MONTHS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, mei: 5, jun: 6, jul: 7, aug: 8, agu: 8, ags: 8, agt: 8, sep: 9, oct: 10, okt: 10, nov: 11, dec: 12, des: 12 };
 var MON_ID = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 function monthLabel(m) { return m ? MON_ID[+m.slice(5, 7)] + ' ' + m.slice(2, 4) : '–'; }
@@ -1006,6 +1055,17 @@ function statusRows(fm) {
       reasons: s.hits.map(function (x) { return x.why; }).join('; ') };
   });
 }
+function bufRows(fm) {
+  if (!fm.skus.length || !fm.future.length) return [];
+  var bm = bufferModel(fm);
+  return bm.rows.map(function (s) {
+    var b = s.bf;
+    return { bulan: bm.month, sku_key: s.key, nomat: s.nomat, article_code: s.art, description: s.name, family: s.family, dasar: b.src, forecast_ctn: Math.round(b.F),
+      service_level: bm.cfg.sl, lead_time_hari: bm.cfg.lt, z: b.z, sebaran_error: Math.round(b.spread * 1000) / 1000, strategi: b.st, strategi_manual: state.bufStrat[s.key] ? 'sku' : '', faktor: Math.round(b.fac * 100) / 100,
+      stok_bebas: b.fs, buffer_lama: b.old, buffer_saran: b.sug, buffer_final: b.fin, manual: b.ed ? 'ya' : 'tidak', alasan: b.ed ? b.ed.reason : null, tanggal_manual: b.ed ? b.ed.at : null,
+      rencana_produksi: b.prod, bahan_baku_ton: b.rm === null ? null : Math.round(b.rm * 100) / 100, status: b.status[0] };
+  }).concat(Object.keys(state.bufStrat).filter(function (k) { return k.indexOf('fam:') === 0; }).map(function (k) { return { bulan: bm.month, sku_key: k, strategi: state.bufStrat[k], strategi_manual: 'famili' }; }));
+}
 function loadHistory(name, wb) {
   var read = function (sh) { return wb.Sheets[sh] ? XLSX.utils.sheet_to_json(wb.Sheets[sh], { defval: null }) : []; };
   // manual statuses and rule settings saved with the history win over this browser's
@@ -1015,6 +1075,12 @@ function loadHistory(name, wb) {
     var c = state.rulesCfg[rule.id] = { on: r.aktif !== 'tidak' };
     Object.keys(rule.params).forEach(function (k) { if (r[k] !== null && r[k] !== undefined) c[k] = r[k]; });
   });
+  read('saran_buffer').forEach(function (r) {
+    if (!r.sku_key) return; var k = String(r.sku_key);
+    if (r.strategi_manual && STRATS[r.strategi]) state.bufStrat[k] = r.strategi;
+    if (r.manual === 'ya' && typeof r.buffer_final === 'number') state.bufEdits[k] = { v: r.buffer_final, reason: r.alasan || '', at: r.tanggal_manual || '', sug: r.buffer_saran, name: r.description };
+  });
+  saveBuf();
   read('koreksi').forEach(function (r) { if (r.sku_key && r.data) state.edits[editKey(String(r.sku_key), r.data, r.bulan || '')] = { v: typeof r.koreksi === 'number' ? r.koreksi : null, src: typeof r.nilai_file === 'number' ? r.nilai_file : null, at: r.waktu || '' }; });
   saveEdits();
   saveRuleState();
@@ -1356,6 +1422,141 @@ function renderEditLog() {
   });
   $('editLog').innerHTML = h + '</tbody>';
 }
+/* ---------- Saran Buffer (brief §7) ---------- */
+// Buffer = z × error spread × forecast × √(lead time ÷ 30) × strategy factor
+// Production plan = forecast + final buffer − free stock (not below 0). Raw material = production × net weight.
+// Error spread per family from the last 6 closings of the chosen basis (RMSE of family forecast − order in, ÷ mean order in), × 1,4 at SKU level.
+var BUF_Z = { 90: 1.28, 95: 1.64, 98: 2.05 };
+var STRATS = {
+  standar: ['Standar', 'Rumus apa adanya.'],
+  defensif: ['Defensif', 'z minimal 2,05 dan ×1,15: untuk SKU yang sering di-forecast terlalu rendah.'],
+  tren: ['Ikuti tren', 'Buffer ikut arah order in bulan terakhir vs 2 bulan sebelumnya (×0,8–1,3).'],
+  batas: ['Batas atas', 'Buffer paling banyak 10 hari forecast.'],
+  habiskan: ['Habiskan stok', 'Buffer 0 dan tidak produksi: untuk SKU edisi atau yang akan berhenti.']
+};
+var DEFAULT_SPREAD = 0.25;
+function bufCfg() { var c = state.bufCfg || {}; return { basis: c.basis || 'hq', sl: c.sl || 95, lt: c.lt || 14 }; }
+function saveBuf() { try { localStorage.setItem('ppic_buf', JSON.stringify({ cfg: state.bufCfg || {}, strat: state.bufStrat || {}, edits: state.bufEdits || {} })); } catch (e) {} }
+function loadBuf() { try { var o = JSON.parse(localStorage.getItem('ppic_buf') || '{}') || {}; state.bufCfg = o.cfg || {}; state.bufStrat = o.strat || {}; state.bufEdits = o.edits || {}; } catch (e) { state.bufCfg = {}; state.bufStrat = {}; state.bufEdits = {}; } }
+// basis forecast for a month: HQ, ML or the average of the two that exist
+function basisOf(s, mo, basis, past) {
+  var hq = past ? s.hq[mo] : s.fhq[mo], ml = past ? (s.bt ? s.bt[mo] : undefined) : (s.ml ? s.ml[mo] : undefined);
+  hq = typeof hq === 'number' ? hq : null; ml = typeof ml === 'number' ? ml : null;
+  if (basis === 'hq') return hq !== null ? { v: hq, src: 'HQ' } : ml !== null ? { v: ml, src: 'ML (HQ kosong)' } : null;
+  if (basis === 'ml') return ml !== null ? { v: ml, src: 'ML' } : hq !== null ? { v: hq, src: 'HQ (ML kosong)' } : null;
+  if (hq !== null && ml !== null) return { v: (hq + ml) / 2, src: 'Rata-rata' };
+  return hq !== null ? { v: hq, src: 'HQ' } : ml !== null ? { v: ml, src: 'ML' } : null;
+}
+function autoStrategy(s, m) {
+  if (/\b(edition|edisi|limited|beli \d+ gratis|ramadh?an|lebaran|timnas|pokemon)\b/i.test(s.name || '') || s.status === 'cek' && s.hits.some(function (h) { return h.id === 'kata'; })) return ['habiskan', 'nama menunjukkan edisi/akan berhenti'];
+  var ms = m.closingMonths.slice(-3), u = 0, o = 0;
+  ms.forEach(function (mo) { if (typeof s.hq[mo] === 'number' && s.oi[mo] !== undefined) { u += s.hq[mo]; o += s.oi[mo] || 0; } });
+  if (o > 0 && u < o * 0.9) return ['defensif', 'HQ ' + fmt.format(Math.round((1 - u / o) * 100)) + '% di bawah order in 3 bulan terakhir'];
+  var L = m.latest, prev = ms.slice(0, -1).map(function (mo) { return s.oi[mo] || 0; });
+  if (L && prev.length) { var avg = prev.reduce(function (a, b) { return a + b; }, 0) / prev.length; if (avg > 0 && Math.abs((s.oi[L] || 0) / avg - 1) >= 0.15) return ['tren', 'order in ' + monthLabel(L) + ' ' + pctS(((s.oi[L] || 0) / avg - 1) * 100) + ' vs rata-rata sebelumnya']; }
+  return ['standar', 'tidak ada pola khusus'];
+}
+function familySpread(f, m, basis) {
+  var ms = m.closingMonths.slice(-6), se = 0, so = 0, k = 0;
+  ms.forEach(function (mo) {
+    var F = 0, O = 0, any = false;
+    f.skus.forEach(function (s) { if (s.oi[mo] === undefined) return; var b = basisOf(s, mo, basis, true); if (!b) return; F += b.v; O += s.oi[mo] || 0; any = true; });
+    if (any && O > 0) { se += (F - O) * (F - O); so += O; k++; }
+  });
+  return k >= 2 ? { v: Math.sqrt(se / k) / (so / k), n: k } : { v: DEFAULT_SPREAD, n: k, dflt: true };
+}
+function bufferModel(m) {
+  var cfg = bufCfg(), z0 = BUF_Z[cfg.sl] || 1.64, ltF = Math.sqrt(cfg.lt / 30), mo = m.future[0], rows = [];
+  m.fams.forEach(function (f) {
+    var sp = familySpread(f, m, cfg.basis), spS = sp.v * 1.4;
+    f.buf = { spread: sp };
+    f.skus.forEach(function (s) {
+      var b = basisOf(s, mo, cfg.basis, false), F = b ? Math.max(0, b.v) : 0;
+      var auto = autoStrategy(s, m), st = state.bufStrat[s.key] || state.bufStrat['fam:' + f.key] || auto[0];
+      var z = z0, fac = 1, note = '';
+      if (st === 'defensif') { z = Math.max(z0, 2.05); fac = 1.15; }
+      if (st === 'tren') { var ms = m.closingMonths.slice(-3), prev = ms.slice(0, -1).map(function (x) { return s.oi[x] || 0; }), avg = prev.length ? prev.reduce(function (a, c) { return a + c; }, 0) / prev.length : 0; fac = avg > 0 ? Math.min(1.3, Math.max(0.8, (s.oi[m.latest] || 0) / avg)) : 1; note = '×' + fmt.format(Math.round(fac * 100) / 100) + ' tren'; }
+      var sug = z * spS * F * ltF * fac;
+      if (st === 'batas') { var cap = F * 10 / 30; if (sug > cap) { sug = cap; note = 'dibatasi 10 hari'; } }
+      if (st === 'habiskan') sug = 0;
+      sug = Math.round(sug);
+      var ed = state.bufEdits[s.key], fin = ed && typeof ed.v === 'number' ? ed.v : sug;
+      var fs = s.fs || 0, prod = st === 'habiskan' ? 0 : Math.max(0, Math.round(F + fin - fs));
+      var old = typeof s.buf0 === 'number' ? s.buf0 : null;
+      var status;
+      if (st === 'habiskan') status = ['Habiskan stok', 'hab'];
+      else if (fs < fin) status = ['Stok < buffer', 'low'];
+      else if (prod === 0) status = ['Stok cukup, tanpa produksi', 'noprod'];
+      else if (!old && fin > 0) status = ['Buffer baru', 'new'];
+      else if (old && fin > old * 1.1) status = ['Buffer naik', 'up'];
+      else if (old && fin < old * 0.9) status = ['Buffer turun', 'down'];
+      else status = ['Sesuai', 'same'];
+      s.bf = { F: F, src: b ? b.src : 'tidak ada forecast', z: z, spread: spS, spreadInfo: sp, ltF: ltF, fac: fac, st: st, auto: auto, sug: sug, fin: fin, ed: ed || null, days: F > 0 ? fin / (F / 30) : null, prod: prod, rm: s.nw ? prod * s.nw / 1000 : null, old: old, fs: fs, status: status, note: note };
+      rows.push(s);
+    });
+  });
+  return { cfg: cfg, month: mo, rows: rows };
+}
+function bfAgg(list) {
+  var a = { fs: 0, F: 0, old: 0, sug: 0, fin: 0, prod: 0, rm: 0, rmN: 0 };
+  list.forEach(function (s) { var b = s.bf; a.fs += b.fs; a.F += b.F; a.old += b.old || 0; a.sug += b.sug; a.fin += b.fin; a.prod += b.prod; if (b.rm !== null) { a.rm += b.rm; a.rmN++; } });
+  a.days = a.F > 0 ? a.fin / (a.F / 30) : null; return a;
+}
+function renderBuffer(m) {
+  if (!m.skus.length || !m.future.length) { $('bfCards').innerHTML = ''; $('bfTable').innerHTML = '<tbody><tr><td class="empty">Belum ada data. Unggah closing dan Forecast HQ di lembar <b>Input Data &amp; Model</b>.</td></tr></tbody>'; return; }
+  var bm = bufferModel(m), cfg = bm.cfg, mo = bm.month, L = m.latest, tot = bfAgg(bm.rows);
+  document.querySelectorAll('#bfCtl button[data-bk]').forEach(function (b) { var on = String(cfg[b.getAttribute('data-bk')]) === b.getAttribute('data-bv'); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+  // old rule production with HQ, for comparison
+  var oldProd = 0, oldRm = 0;
+  bm.rows.forEach(function (s) { var q = typeof s.fhq[mo] === 'number' ? s.fhq[mo] : 0, p = Math.max(0, q + (s.bf.old || 0) - s.bf.fs); oldProd += p; if (s.nw) oldRm += p * s.nw / 1000; });
+  var low = bm.rows.filter(function (s) { return s.bf.status[1] === 'low'; }), noP = bm.rows.filter(function (s) { return s.bf.status[1] === 'noprod'; }), man = bm.rows.filter(function (s) { return s.bf.ed; });
+  var basisName = { hq: 'Forecast HQ', ml: 'Forecast ML', avg: 'Rata-rata HQ & ML' }[cfg.basis];
+  var dflt = m.fams.filter(function (f) { return f.buf && f.buf.spread.dflt && f.skus.length; }).length;
+  $('bfCards').innerHTML =
+    fcCard('Buffer final · total mill', n(tot.fin), (tot.old ? 'Aturan lama ' + n(tot.old) + ' → ' + pctS((tot.fin / tot.old - 1) * 100) + '. ' : '') + 'Dasar: ' + basisName + ', SL ' + cfg.sl + '%, lead time ' + cfg.lt + ' hari.', tot.old ? (tot.fin <= tot.old ? 'Lebih ramping' : 'Lebih tebal') : '', tot.old ? (tot.fin <= tot.old ? 'ok' : 'warn') : '') +
+    fcCard('Rencana produksi ' + monthLabel(mo), n(tot.prod), 'Dengan aturan lama + Forecast HQ: ' + n(Math.round(oldProd)) + ' (' + signed(tot.prod - oldProd) + ').', 'Hasil', '') +
+    fcCard('Kebutuhan bahan baku ' + monthLabel(mo), tot.rmN ? fmt.format(Math.round(tot.rm)) + ' t' : '–', tot.rmN ? 'Aturan lama ' + fmt.format(Math.round(oldRm)) + ' t → selisih ' + signed(tot.rm - oldRm) + ' t.' + (tot.rmN < bm.rows.length ? ' ' + (bm.rows.length - tot.rmN) + ' SKU tanpa berat bersih.' : '') : 'Berat bersih per karton belum ada.', tot.rmN ? (tot.rm <= oldRm ? 'Hemat' : 'Lebih banyak') : '', tot.rmN ? (tot.rm <= oldRm ? 'ok' : 'warn') : '') +
+    fcCard('SKU stok di bawah buffer', n(low.length) + ' SKU', low.length ? 'Stok bebas ' + n(low.reduce(function (a, s) { return a + s.bf.fs; }, 0)) + ' vs buffer ' + n(low.reduce(function (a, s) { return a + s.bf.fin; }, 0)) + '. Perlu produksi di awal ' + monthLabel(mo) + '.' : 'Semua SKU punya stok di atas buffer.', low.length ? 'Risiko kurang' : 'Aman', low.length ? 'bad' : 'ok') +
+    fcCard('SKU tanpa produksi ' + monthLabel(mo), n(noP.length) + ' SKU', noP.length ? 'Stok bebas ' + n(noP.reduce(function (a, s) { return a + s.bf.fs; }, 0)) + ' karton sudah menutup forecast + buffer.' : 'Semua SKU perlu produksi.', noP.length ? 'Stok berlebih' : '', noP.length ? 'warn' : '') +
+    fcCard('Buffer diubah manual', n(man.length) + ' SKU', man.length ? 'Klik angka buffer final untuk melihat atau mengubah alasan.' : 'Klik angka di kolom Buffer final untuk mengubah; alasan wajib diisi.' + (dflt ? ' ' + dflt + ' famili memakai sebaran error bawaan 25% (histori < 2 bulan).' : ''), man.length ? 'Ada' : 'Belum ada', '');
+  var h = '<thead><tr><th rowspan="2" class="l">Famili + SKU</th><th colspan="2" class="grp sep">DASAR · ' + monthLabel(mo) + '</th><th colspan="5" class="grp sep">BUFFER</th><th colspan="3" class="grp sep">HASIL · ' + monthLabel(mo) + '</th></tr><tr>' +
+    '<th class="num sep wrap2">Stok bebas akhir ' + monthLabel(L) + '</th><th class="num wrap2">' + esc(basisName) + '</th>' +
+    '<th class="num sep wrap2">Buffer saat ini (aturan lama)</th><th class="num">Buffer saran</th><th class="num">Buffer final</th><th class="num">Hari</th><th>Strategi</th>' +
+    '<th class="num sep wrap2">Rencana produksi</th><th class="num wrap2">Bahan baku (ton)</th><th>Status · klik untuk alasan</th></tr></thead><tbody>';
+  var stratSel = function (key, cur, auto, fam) {
+    return '<select class="bfst" data-strat="' + esc(key) + '" aria-label="Strategi">' + (fam ? '<option value="">Otomatis per SKU</option>' : '<option value="">Otomatis (' + STRATS[auto][0] + ')</option>') +
+      Object.keys(STRATS).map(function (k) { return '<option value="' + k + '"' + (cur === k ? ' selected' : '') + '>' + STRATS[k][0] + '</option>'; }).join('') + '</select>';
+  };
+  var lim = state.fcAll ? Infinity : 10;
+  m.fams.forEach(function (f) {
+    if (!f.skus.length) return;
+    var a = bfAgg(f.skus), open = !!state.bfOpen[f.key], fst = state.bufStrat['fam:' + f.key] || '';
+    h += '<tr class="fam"><td><div class="fl"><button type="button" class="exp" data-bfam="' + esc(f.key) + '" aria-expanded="' + open + '">' + (open ? '▼' : '▶') + '</button><div>' + esc(f.name) + '<span class="code">' + f.skus.length + ' SKU · sebaran error ' + fmt.format(Math.round(f.buf.spread.v * 100)) + '%' + (f.buf.spread.dflt ? ' (bawaan)' : ' (' + f.buf.spread.n + ' bln)') + '</span></div></div></td>' +
+      '<td class="num sep">' + n(a.fs) + '</td><td class="num">' + n(Math.round(a.F)) + '</td><td class="num sep">' + n(a.old) + '</td><td class="num bsug">' + n(a.sug) + '</td><td class="num">' + n(a.fin) + '</td><td class="num">' + (a.days === null ? '–' : fmt.format(Math.round(a.days * 10) / 10)) + '</td><td>' + stratSel('fam:' + f.key, fst, null, true) + '</td>' +
+      '<td class="num sep' + (a.prod === 0 ? ' zero' : '') + '">' + n(a.prod) + '</td><td class="num">' + (a.rmN ? fmt.format(Math.round(a.rm * 10) / 10) : '–') + '</td><td></td></tr>';
+    if (open) {
+      f.skus.slice(0, lim).forEach(function (s) {
+        var b = s.bf;
+        h += '<tr class="sku"><td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + esc(s.nomat || s.art || '') + (b.src !== 'HQ' && b.src !== 'ML' && b.src !== 'Rata-rata' ? ' · ' + esc(b.src) : '') + '</span></td>' +
+          '<td class="num sep">' + n(b.fs) + '</td><td class="num">' + n(Math.round(b.F)) + '</td><td class="num sep">' + n(b.old) + '</td><td class="num bsug">' + n(b.sug) + '</td>' +
+          '<td class="num bfin' + (b.ed ? ' edited' : '') + '" tabindex="0" data-bfin="' + esc(s.key) + '" title="' + (b.ed ? 'Manual: ' + esc(b.ed.reason || '') + ' (saran ' + n(b.sug) + ')' : 'Klik untuk mengubah; alasan wajib') + '">' + n(b.fin) + (b.ed ? ' <span class="mtag">manual</span>' : '') + '</td>' +
+          '<td class="num">' + (b.days === null ? '–' : fmt.format(Math.round(b.days * 10) / 10)) + '</td><td>' + stratSel(s.key, state.bufStrat[s.key] || '', b.auto[0], false) + '</td>' +
+          '<td class="num sep' + (b.prod === 0 ? ' zero' : '') + '">' + n(b.prod) + '</td><td class="num">' + (b.rm === null ? '–' : fmt.format(Math.round(b.rm * 10) / 10)) + '</td>' +
+          '<td><button type="button" class="bst b-' + b.status[1] + '" data-bwhy="' + esc(s.key) + '">' + b.status[0] + '</button></td></tr>';
+      });
+      if (f.skus.length > lim) h += '<tr class="more"><td colspan="11">+' + (f.skus.length - lim) + ' SKU lainnya sudah termasuk di baris famili.</td></tr>';
+    }
+  });
+  h += '<tr class="tot"><td>Total Serang<span class="code">' + bm.rows.length + ' SKU aktif</span></td><td class="num sep">' + n(tot.fs) + '</td><td class="num">' + n(Math.round(tot.F)) + '</td><td class="num sep">' + n(tot.old) + '</td><td class="num bsug">' + n(tot.sug) + '</td><td class="num">' + n(tot.fin) + '</td><td class="num">' + (tot.days === null ? '–' : fmt.format(Math.round(tot.days * 10) / 10)) + '</td><td></td><td class="num sep">' + n(tot.prod) + '</td><td class="num">' + (tot.rmN ? fmt.format(Math.round(tot.rm)) : '–') + '</td><td></td></tr>';
+  $('bfTable').innerHTML = h + '</tbody>';
+  CH.bm = bm;
+}
+function bufPopover(anchor, html) {
+  var mnu = $('stMenu'); mnu.innerHTML = html;
+  var r = anchor.getBoundingClientRect(); mnu.style.left = Math.max(8, Math.min(r.left + window.scrollX, window.scrollX + document.documentElement.clientWidth - 346)) + 'px'; mnu.style.top = (r.bottom + window.scrollY + 4) + 'px';
+  mnu.classList.add('wide'); mnu.hidden = false;
+}
+function skuByKey(k) { var m = CH.bm; return m ? m.rows.filter(function (s) { return s.key === k; })[0] : null; }
 function forecastModel(c) {
   var cms = Object.keys(c.monthly.reduce(function (s, r) { s[r.closing_month] = 1; return s; }, {})).sort();
   var latest = cms.length ? cms[cms.length - 1] : null;
@@ -1379,11 +1580,13 @@ function forecastModel(c) {
     s.hq[m] = typeof rev === 'number' ? rev : typeof orig === 'number' ? orig : null;
     s.rev[m] = typeof rev === 'number' ? rev : null; s.orig[m] = typeof orig === 'number' ? orig : null;
     s.row[m] = r.source_row ? +r.source_row : null; s.flag[m] = r.font_flag || null;
-    if (m === latest) { s.fs = typeof r.free_stock === 'number' ? r.free_stock : null; s.soh = typeof r.stock_on_hand === 'number' ? r.stock_on_hand : s.fs; }
+    if (m === latest) { s.fs = typeof r.free_stock === 'number' ? r.free_stock : null; s.soh = typeof r.stock_on_hand === 'number' ? r.stock_on_hand : s.fs; s.buf0 = typeof r.buffer_suggestion === 'number' ? r.buffer_suggestion : null; }
+    if (typeof r.net_weight_kg === 'number' && r.net_weight_kg > 0) s.nw = r.net_weight_kg;
   });
   fcRows.forEach(function (r) {
     var s = find(r.nomat, r.article_code) || make(r.nomat, r.article_code);
     if (!s.name) s.name = r.description; if (!s.family && r.brand) s.family = r.brand;
+    if (!s.nw && typeof r.net_weight_kg === 'number' && r.net_weight_kg > 0) s.nw = r.net_weight_kg;
     s.fhq[r.forecast_month] = typeof r.forecast_qty_ctn === 'number' ? r.forecast_qty_ctn : null; s.fver[r.forecast_month] = r.version;
   });
   var fver = {}; fcRows.forEach(function (r) { fver[r.forecast_month] = r.version; });
@@ -1537,7 +1740,8 @@ function renderForecastScreen(c) {
   if (m.excl.length || nCekAll) ctx.push('<a href="#" data-goto="Cek">' + (m.excl.length ? m.excl.length + ' SKU dikecualikan' : '') + (m.excl.length && nCekAll ? ', ' : '') + (nCekAll ? nCekAll + ' perlu cek' : '') + ' → Cek Data SKU</a>');
   ctx.push('Satuan: <b>karton</b>');
   $('fcCtx').innerHTML = ctx.map(function (x) { return '<span>' + x + '</span>'; }).join('');
-  renderCek(m); renderEditLog();
+  renderCek(m); renderEditLog(); renderBuffer(m);
+  $('bfCtx').innerHTML = $('fcCtx').innerHTML.replace(/Forecast ML: <b>[^<]*<\/b>/, 'Forecast ML: <b>mode bayangan</b> (HQ tetap dasar bawaan sampai ML lebih akurat 6 closing)');
   if (!m.skus.length) {
     $('fcCards').innerHTML = '';
     $('fcTable').innerHTML = '<tbody><tr><td class="empty">Belum ada data. Unggah closing dan Forecast HQ di lembar <b>Input Data &amp; Model</b>.</td></tr></tbody>';
@@ -2020,7 +2224,7 @@ $('dlXlsx').addEventListener('click', function () {
   var c = combined(), wb = XLSX.utils.book_new();
   var fm = forecastModel(c), mlRows = [];
   fm.skus.forEach(function (sk) { Object.keys(sk.ml || {}).forEach(function (mo) { var i = sk.mlInfo[mo]; mlRows.push({ forecast_month: mo, after_closing: fm.latest, nomat: sk.nomat, article_code: sk.art, description: sk.name, forecast_ml_ctn: sk.ml[mo], holt_ctn: i.holt === null ? null : Math.round(i.holt), hq_corrected_ctn: i.hqc === null ? null : Math.round(i.hqc), hq_ratio: Math.round(i.r * 1000) / 1000, holt_weight: Math.round(i.w * 100) / 100, forecast_hq_ctn: typeof sk.fhq[mo] === 'number' ? sk.fhq[mo] : null, model: 'holt+hq_corrected v1 (prototipe)' }); }); });
-  [['bulanan', c.monthly], ['mingguan', c.weekly], ['forecast_hq', c.forecast], ['forecast_ml', mlRows], ['kelas_sku', c.kelas], ['status_sku', statusRows(fm)], ['koreksi', Object.keys(state.edits).map(function (id) { var e = state.edits[id], p = id.split('|'); return { sku_key: p[0], description: e.name || null, data: p[1], data_label: EDIT_FIELDS[p[1]], bulan: p[2] || null, nilai_file: e.src, koreksi: e.v, waktu: e.at }; })], ['aturan', RULES.map(function (r) { var cf = ruleCfg(r.id), o = { aturan: r.id, nama: r.label, aktif: cf.on ? 'ya' : 'tidak' }; Object.keys(r.params).forEach(function (k) { o[k] = cf[k]; }); return o; })], ['log', c.log]].forEach(function (s) {
+  [['bulanan', c.monthly], ['mingguan', c.weekly], ['forecast_hq', c.forecast], ['forecast_ml', mlRows], ['kelas_sku', c.kelas], ['status_sku', statusRows(fm)], ['koreksi', Object.keys(state.edits).map(function (id) { var e = state.edits[id], p = id.split('|'); return { sku_key: p[0], description: e.name || null, data: p[1], data_label: EDIT_FIELDS[p[1]], bulan: p[2] || null, nilai_file: e.src, koreksi: e.v, waktu: e.at }; })], ['saran_buffer', bufRows(fm)], ['aturan', RULES.map(function (r) { var cf = ruleCfg(r.id), o = { aturan: r.id, nama: r.label, aktif: cf.on ? 'ya' : 'tidak' }; Object.keys(r.params).forEach(function (k) { o[k] = cf[k]; }); return o; })], ['log', c.log]].forEach(function (s) {
     XLSX.utils.book_append_sheet(wb, s[1].length ? XLSX.utils.json_to_sheet(s[1]) : XLSX.utils.aoa_to_sheet([['(kosong)']]), s[0]);
   });
   var ms = c.monthly.map(function (r) { return r.closing_month; }).sort();
@@ -2067,7 +2271,7 @@ function loadSample() {
 $('useSample').addEventListener('click', loadSample);
 function showTab(name) {
   document.querySelectorAll('.tab[data-tab]').forEach(function (b) { var on = b.getAttribute('data-tab') === name; b.classList.toggle('on', on); if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
-  $('tabForecast').hidden = name !== 'Forecast'; $('tabInput').hidden = name !== 'Input'; $('tabCek').hidden = name !== 'Cek';
+  $('tabForecast').hidden = name !== 'Forecast'; $('tabInput').hidden = name !== 'Input'; $('tabCek').hidden = name !== 'Cek'; $('tabBuffer').hidden = name !== 'Buffer';
   try { localStorage.setItem('ppic_tab', name); } catch (e) {}
 }
 document.querySelectorAll('.tab[data-tab]').forEach(function (b) { b.addEventListener('click', function () { showTab(b.getAttribute('data-tab')); }); });
@@ -2083,6 +2287,7 @@ $('chDlg').addEventListener('click', function (e) { if (e.target === $('chDlg') 
 $('fcLimit').addEventListener('change', function () { state.fcAll = this.value === 'all'; renderForecastScreen(combined()); });
 $('fcShowExcl').addEventListener('change', function () { state.fcShowExcl = this.checked; renderForecastScreen(combined()); });
 $('fcCtx').addEventListener('click', function (e) { var a = e.target.closest('[data-goto]'); if (a) { e.preventDefault(); showTab(a.getAttribute('data-goto')); } });
+$('bfCtx').addEventListener('click', function (e) { var a = e.target.closest('[data-goto]'); if (a) { e.preventDefault(); showTab(a.getAttribute('data-goto')); } });
 $('rules').addEventListener('change', function (e) {
   var el = e.target, id = el.getAttribute('data-rule'); if (!id) return;
   var c = state.rulesCfg[id] = state.rulesCfg[id] || {};
@@ -2162,7 +2367,7 @@ document.addEventListener('keydown', function (e) {
   }
 });
 // status menu from the row chip
-function closeStMenu() { var mnu = $('stMenu'); mnu.hidden = true; mnu.innerHTML = ''; }
+function closeStMenu() { var mnu = $('stMenu'); mnu.hidden = true; mnu.innerHTML = ''; mnu.classList.remove('wide'); mnu.removeAttribute('data-bk'); }
 $('fcTable').addEventListener('click', function (e) {
   var b = e.target.closest('button[data-st]'); if (!b) return;
   e.stopPropagation();
@@ -2192,9 +2397,82 @@ $('editLog').addEventListener('click', function (e) {
 $('editClear').addEventListener('click', function () { state.undo = (state.undo || []).concat(Object.keys(state.edits).map(function (id) { return { id: id, prev: state.edits[id] }; })); state.edits = {}; saveEdits(); renderAll(); });
 
 $('fcCloseAll').addEventListener('click', function () { state.fcOpen = {}; renderForecastScreen(combined()); });
-(function () { var t = 'Forecast'; try { t = localStorage.getItem('ppic_tab') || t; } catch (e) {} showTab(t === 'Input' || t === 'Cek' ? t : 'Forecast'); })();
+/* ---------- buffer sheet ---------- */
+$('bfCtl').addEventListener('click', function (e) {
+  var b = e.target.closest('button[data-bk]'); if (!b) return;
+  var k = b.getAttribute('data-bk'), v = b.getAttribute('data-bv');
+  state.bufCfg[k] = k === 'basis' ? v : +v; saveBuf(); renderAll();
+});
+$('bfOpenAll').addEventListener('click', function () { forecastModel(combined()).fams.forEach(function (f) { state.bfOpen[f.key] = true; }); renderAll(); });
+$('bfCloseAll').addEventListener('click', function () { state.bfOpen = {}; renderAll(); });
+$('bfReset').addEventListener('click', function () {
+  var n0 = Object.keys(state.bufEdits).length + Object.keys(state.bufStrat).length;
+  if (n0 && !confirm('Hapus ' + n0 + ' perubahan manual (buffer final dan strategi)?')) return;
+  state.bufEdits = {}; state.bufStrat = {}; saveBuf(); renderAll();
+});
+$('bfTable').addEventListener('change', function (e) {
+  var sel = e.target.closest('select.bfst'); if (!sel) return;
+  var k = sel.getAttribute('data-strat');
+  if (sel.value) state.bufStrat[k] = sel.value; else delete state.bufStrat[k];
+  if (k.indexOf('fam:') === 0 && sel.value) { var fk = k.slice(4); forecastModel(combined()).fams.forEach(function (f) { if (f.key === fk) f.skus.forEach(function (s) { delete state.bufStrat[s.key]; }); }); }
+  saveBuf(); renderAll();
+});
+function openBufEdit(td) {
+  var k = td.getAttribute('data-bfin'), s = skuByKey(k); if (!s) return;
+  var b = s.bf, ed = state.bufEdits[k];
+  bufPopover(td, '<div class="mh">' + esc(s.name || k) + '</div>' +
+    '<div class="bw"><span>Buffer saran</span><span class="num">' + n(b.sug) + '</span><span>Buffer aturan lama</span><span class="num">' + n(b.old) + '</span></div>' +
+    '<div class="mr"><label>Buffer final (karton)<input type="number" min="0" step="1" id="bfV" value="' + (ed ? ed.v : b.sug) + '"></label></div>' +
+    '<div class="mr"><label>Alasan (wajib)<input type="text" id="bfR" maxlength="200" value="' + esc(ed ? ed.reason || '' : '') + '" placeholder="mis. promo Lebaran, stok gudang transit"></label></div>' +
+    '<div class="berr" id="bfErr" role="alert"></div>' +
+    '<div class="ba"><button type="button" class="pri" data-bact="save">Simpan</button>' + (ed ? '<button type="button" data-bact="clear">Kembalikan ke saran</button>' : '') + '</div>');
+  $('stMenu').setAttribute('data-bk', k);
+  var i = $('bfV'); i.focus(); i.select();
+}
+function bufWhy(k, anchor) {
+  var s = skuByKey(k); if (!s) return;
+  var b = s.bf, cfg = CH.bm.cfg, r = function (a, c) { return '<span>' + a + '</span><span class="num">' + c + '</span>'; }, d2 = function (x) { return (Math.round(x * 100) / 100).toLocaleString('id-ID', { maximumFractionDigits: 2 }); };
+  var h = '<div class="mh">' + esc(s.name || k) + '</div><div class="bw">' +
+    r('Forecast ' + monthLabel(CH.bm.month) + ' (' + esc(b.src) + ')', n(Math.round(b.F))) +
+    r('z (SL ' + cfg.sl + '%' + (b.z !== BUF_Z[cfg.sl] ? ', defensif' : '') + ')', d2(b.z)) +
+    r('Sebaran error SKU (famili ' + fmt.format(Math.round(b.spreadInfo.v * 100)) + '% × 1,4)', fmt.format(Math.round(b.spread * 100)) + '%') +
+    r('√(' + cfg.lt + ' ÷ 30)', d2(b.ltF)) +
+    r('Faktor strategi', '×' + d2(b.fac)) +
+    '<span class="tt">Buffer saran</span><span class="num tt">' + n(b.sug) + '</span>' +
+    (b.ed ? r('Buffer final (manual)', n(b.fin)) : '') +
+    r('Stok bebas', n(b.fs)) +
+    '<span class="tt">Rencana produksi</span><span class="num tt">' + n(b.prod) + '</span>' +
+    r('Buffer aturan lama', n(b.old)) + '</div>' +
+    '<div class="mw"><b>Strategi: ' + STRATS[b.st][0] + '</b>' + (b.st === b.auto[0] && !state.bufStrat[s.key] ? ' (otomatis: ' + esc(b.auto[1]) + ')' : ' (dipilih manual)') + '. ' + STRATS[b.st][1] + (b.note ? ' ' + esc(b.note) + '.' : '') +
+    (b.ed ? '<br><b>Diubah manual</b> ' + esc(b.ed.at || '') + ': ' + esc(b.ed.reason || '') : '') + '</div>';
+  bufPopover(anchor, h);
+}
+$('bfTable').addEventListener('click', function (e) {
+  var fb = e.target.closest('button[data-bfam]');
+  if (fb) { var fk = fb.getAttribute('data-bfam'); state.bfOpen[fk] = !state.bfOpen[fk]; renderAll(); return; }
+  var td = e.target.closest('td[data-bfin]');
+  if (td) { e.stopPropagation(); openBufEdit(td); return; }
+  var w = e.target.closest('button[data-bwhy]');
+  if (w) { e.stopPropagation(); bufWhy(w.getAttribute('data-bwhy'), w); }
+});
+$('bfTable').addEventListener('keydown', function (e) {
+  var td = e.target.closest('td[data-bfin]'); if (td && (e.key === 'Enter' || e.key === 'F2')) { e.preventDefault(); e.stopPropagation(); openBufEdit(td); }
+});
+function bufSave(clear) {
+  var mnu = $('stMenu'), k = mnu.getAttribute('data-bk'); if (!k) return;
+  if (clear) { delete state.bufEdits[k]; saveBuf(); closeStMenu(); renderAll(); return; }
+  var v = $('bfV').value.trim(), reason = $('bfR').value.trim();
+  if (v === '' || isNaN(+v) || +v < 0) { $('bfErr').textContent = 'Isi angka buffer 0 atau lebih.'; $('bfV').focus(); return; }
+  if (!reason) { $('bfErr').textContent = 'Alasan wajib diisi.'; $('bfR').focus(); return; }
+  var s = skuByKey(k);
+  state.bufEdits[k] = { v: Math.round(+v), reason: reason, at: new Date().toISOString().slice(0, 10), sug: s ? s.bf.sug : null, name: s ? s.name : null };
+  saveBuf(); closeStMenu(); renderAll();
+}
+$('stMenu').addEventListener('click', function (e) { var b = e.target.closest('button[data-bact]'); if (b) { e.stopPropagation(); bufSave(b.getAttribute('data-bact') === 'clear'); } });
+$('stMenu').addEventListener('keydown', function (e) { if (e.key === 'Enter' && $('stMenu').getAttribute('data-bk') && e.target.tagName === 'INPUT') { e.preventDefault(); bufSave(false); } });
+(function () { var t = 'Forecast'; try { t = localStorage.getItem('ppic_tab') || t; } catch (e) {} showTab(t === 'Input' || t === 'Cek' || t === 'Buffer' ? t : 'Forecast'); })();
 state.cls = builtinClass();
-loadRuleState();
+loadRuleState(); loadBuf();
 loadSample();
 })();
 </script>
