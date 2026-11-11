@@ -97,7 +97,37 @@ h1 .h1sub b { color: var(--text, inherit); font-weight: 600; }
 .schk.bad { background: var(--bad); } .schk.man { background: var(--s1); border: 1px dashed var(--fg); } .schk.ovr { background: repeating-linear-gradient(135deg, var(--s1) 0 3px, var(--warn-soft) 3px 6px); }
 .schun { margin-top: 8px; font-size: 12px; }
 .schun ul { margin: 4px 0; padding-left: 18px; }
-#ppViewSeg { margin-bottom: 4px; }
+.ppctl { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.ppctl label { display: flex; gap: 6px; align-items: center; }
+.ppctl input[type=number] { width: 60px; min-height: 28px; }
+.ppctl input[type=search] { min-height: 28px; width: 170px; padding: 2px 8px; }
+.ppctl select { min-height: 28px; font-size: 12px; width: auto; max-width: 200px; }
+.ppg tr.sku .bst { margin-top: 2px; font-size: 10px; padding: 0 6px; }
+.ppg tr.sku td:first-child .bst { display: inline-block; }
+.ppg td.tl, .ppg th.tl { min-width: 400px; width: 44%; padding: 0 6px; position: relative; }
+.ppg .trk { position: relative; height: 26px; background-image: repeating-linear-gradient(90deg, transparent 0, transparent calc(var(--dw) - 1px), var(--line-soft) calc(var(--dw) - 1px), var(--line-soft) var(--dw)); }
+.ppg tr.sku .trk { height: 18px; }
+.ppg .ax { position: relative; height: 18px; font-size: 10.5px; color: var(--muted); font-weight: 400; }
+.ppg .ax span { position: absolute; top: 2px; transform: translateX(-50%); }
+.ppg .endl { position: absolute; top: 0; bottom: 0; border-left: 2px dashed var(--muted); pointer-events: none; z-index: 1; }
+.ppg .ovz { position: absolute; top: 0; bottom: 0; right: 0; background: repeating-linear-gradient(135deg, transparent 0 5px, var(--warn-soft) 5px 10px); pointer-events: none; }
+.ppg .bar { position: absolute; top: 3px; height: 20px; background: var(--s1); color: #fff; border-radius: 3px; font-size: 10.5px; line-height: 20px; padding: 0 4px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; border: 1px solid var(--panel); cursor: pointer; box-sizing: border-box; z-index: 2; min-width: 3px; font-weight: 400; }
+.ppg tr.sku .bar { top: 2px; height: 14px; line-height: 14px; font-size: 10px; }
+.ppg .bar:hover, .ppg .bar:focus { outline: 2px solid var(--fg); outline-offset: 0; }
+.ppg .bar.bad { background: var(--bad); }
+.ppg .bar.man { box-shadow: inset 0 0 0 2px #fff; border-style: dashed; }
+.ppg .bar.ovr { background-image: repeating-linear-gradient(135deg, transparent 0 5px, rgba(255,255,255,.35) 5px 10px); }
+.ppg .bar.dim { opacity: .25; }
+.ppg tr.mach td { background: var(--panel); font-weight: 600; border-top: 1px solid var(--line-soft); }
+.ppg tr.mach td:first-child { padding-left: 22px; }
+.ppg tr.sku td:first-child { padding-left: 52px; }
+.ppg tr.fam td .ldp { font-size: 11px; font-weight: 400; color: var(--muted); }
+.ppg td.cap { cursor: cell; }
+.ppg td.cap.edited { background: linear-gradient(225deg, var(--warn) 7px, transparent 7px), var(--warn-soft); }
+.ppg td.cap input { width: 64px; text-align: right; font: inherit; min-height: 22px; border: 2px solid var(--s1); border-radius: 3px; }
+.ppg td.ld2 { white-space: nowrap; }
+.ppg td.ld2 b.hi { color: var(--warn); }
+.ppg td .mt { display: block; font-size: 10.5px; color: var(--muted); font-weight: 400; }
 .ppsum tr.mach td { font-size: 11.5px; color: var(--muted); }
 .ppsum tr.fam.idle td { color: var(--muted); font-weight: 400; }
 .ppsum tr.mach td:first-child { padding-left: 34px; }
@@ -324,7 +354,7 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
   <header>
     <div>
       <h1>PPIC Decision Support System <span class="h1sub">· The Univenus Serang · <b>PPIC Forecast Desk (bulanan)</b></span></h1>
-      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-12a</span></div>
+      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-12b</span></div>
     </div>
     <nav class="tabs" aria-label="Lembar">
       <button type="button" class="tab on" data-tab="Forecast" aria-current="page">Forecast</button><button type="button" class="tab" data-tab="Buffer">Saran Buffer</button><button type="button" class="tab" data-tab="Plan">Rencana Produksi</button><button type="button" class="tab" data-tab="Cek">Cek Data SKU</button><button type="button" class="tab" data-tab="Input">Input Data &amp; Model</button>
@@ -367,36 +397,19 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
   <div class="tabpage" id="tabPlan" hidden>
     <div class="ctx" id="ppCtx"></div>
     <section class="cards fcards" id="ppCards" aria-label="Ringkasan rencana produksi"></section>
-    <section class="panel" aria-label="Jadwal mesin">
-      <div class="ph"><h2 id="schH">Jadwal mesin</h2>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <div class="seg" id="schMonSeg"><span>Bulan</span><button type="button" data-sm="M2">Rencana</button><button type="button" data-sm="M1">Berjalan</button></div>
-          <label class="sub" style="display:flex;gap:6px;align-items:center">Hari produksi <input type="number" id="schDays" min="1" max="31" step="1" style="width:64px;min-height:28px"></label>
-          <button type="button" id="schReset">Kembalikan jadwal otomatis</button>
-        </div></div>
-      <p class="note" id="schNote"></p>
-      <div id="schBoard" class="sch"></div>
-      <div id="schUnplaced"></div>
-      <div class="legend"><span><i class="schk"></i> PP SKU (panjang = ton ÷ kapasitas harian mesin)</span><span><i class="schk bad"></i> SKU bermasalah (diprioritaskan di awal bulan)</span><span><i class="schk man"></i> dipindah manual</span><span><i class="schk ovr"></i> lewat hari produksi</span><span>Klik bar untuk rincian atau memindahkan SKU ke mesin lain.</span></div>
-    </section>
-    <section class="panel" aria-label="Detail rencana produksi">
-      <div class="seg" id="ppViewSeg"><span>Detail</span><button type="button" data-pv="sku">Per SKU</button><button type="button" data-pv="mesin">Per jenis mesin</button></div>
-      <div id="ppViewSku">
-      <div class="ph"><h2>Rencana produksi per SKU</h2>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <div class="seg" id="ppGroupSeg"><span>Kelompok</span><button type="button" data-pg="mesin">Jenis mesin</button><button type="button" data-pg="famili">Famili (brand)</button></div>
+    <section class="panel" aria-label="Rencana produksi bulanan">
+      <div class="ph"><h2 id="schH">Rencana produksi per mesin</h2>
+        <div class="ppctl">
+          <div class="seg" id="schMonSeg"><span>Jadwal</span><button type="button" data-sm="M2">Bulan rencana</button><button type="button" data-sm="M1">Bulan berjalan</button></div>
+          <label class="sub">Hari produksi <input type="number" id="schDays" min="1" max="31" step="1"></label>
           <div class="seg" id="ppUnitSeg"><span>Satuan</span><button type="button" data-pu="ct">Karton</button><button type="button" data-pu="mt">Ton</button></div>
-          <button type="button" id="ppOpenAll">Buka semua</button><button type="button" id="ppCloseAll">Tutup semua</button><button type="button" id="ppReset">Hapus perubahan manual</button>
+          <select id="ppFam" aria-label="Filter famili"></select>
+          <input type="search" id="ppQ" placeholder="Cari SKU / Nomat" aria-label="Cari SKU">
         </div></div>
-      <p class="note" id="ppNote"></p>
-      <div class="scroll" style="max-height: 680px"><table id="ppTable" class="fct bft ppt"></table></div>
-      <div class="legend"><span class="bst b-low">Bermasalah</span> stok bebas tidak cukup untuk forecast bulan berjalan<span class="bst b-noprod">Stok berlebih</span> tanpa produksi, stok akhir &gt; 2× buffer<span class="bst b-same">OK</span><span>Klik dua kali sel <b>PP bulan berjalan</b> untuk mengetik PP yang sudah fixed.</span></div>
-      </div>
-      <div id="ppViewMach" hidden>
-      <div class="ph"><h2 id="ppMachH">Ringkasan per jenis mesin</h2><div style="display:flex;gap:6px;align-items:center"><button type="button" id="ppMOpen">Buka semua mesin</button><button type="button" id="ppMClose">Tutup semua</button></div></div>
-      <p class="note" id="ppMachNote"></p>
-      <div class="scroll" style="max-height: 640px"><table id="ppMach" class="fct ppsum"></table></div>
-      </div>
+      <div class="ppctl"><button type="button" id="ppOpenAll">Buka semua mesin</button><button type="button" id="ppCloseAll">Tutup semua</button><button type="button" id="schReset">Kembalikan jadwal otomatis</button><button type="button" id="ppReset">Hapus perubahan manual</button><span class="sub" id="ppHint"></span></div>
+      <p class="note" id="schNote"></p>
+      <div class="scroll" style="max-height: 78vh"><table id="ppTable" class="fct ppt ppg"></table></div>
+      <div class="legend"><span><i class="schk"></i> PP SKU (panjang = ton ÷ kapasitas harian mesin)</span><span><i class="schk bad"></i> bermasalah, didahulukan</span><span><i class="schk man"></i> dipindah manual</span><span><i class="schk ovr"></i> lewat hari produksi (cek)</span><span class="bst b-low">Bermasalah</span> stok bebas &lt; forecast bulan berjalan <span class="bst b-noprod">Stok berlebih</span> stok akhir &gt; 2× buffer</div>
     </section>
   </div>
 
@@ -945,7 +958,7 @@ function sampleForecastGrid(title, f) {
 
 /* ---------- state ---------- */
 var $ = function (id) { return document.getElementById(id); };
-var state = { items: [], view: null, history: null, cls: null, sample: false, nextId: 1, fcOpen: {}, rulesCfg: {}, overrides: {}, fcAll: false, fcShowExcl: false, edits: {}, undo: [], bfOpen: {}, bufCfg: {}, bufStrat: {}, bufEdits: {}, ppEdits: {}, ppAssign: {}, ppDays: null, schMon: 'M2', ppView: 'sku', machines: {}, machFile: {}, machMaster: null, machMasterSrc: null, capEdits: {}, ppOpenM: {}, ppGroup: 'mesin', ppUnit: 'ct' };
+var state = { items: [], view: null, history: null, cls: null, sample: false, nextId: 1, fcOpen: {}, rulesCfg: {}, overrides: {}, fcAll: false, fcShowExcl: false, edits: {}, undo: [], bfOpen: {}, bufCfg: {}, bufStrat: {}, bufEdits: {}, ppEdits: {}, ppOpenT: {}, ppOpenMc: {}, ppFam: '', ppQ: '', ppAssign: {}, ppDays: null, schMon: 'M2', ppView: 'sku', machines: {}, machFile: {}, machMaster: null, machMasterSrc: null, capEdits: {}, ppOpenM: {}, ppGroup: 'mesin', ppUnit: 'ct' };
 var MONTHS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, mei: 5, jun: 6, jul: 7, aug: 8, agu: 8, ags: 8, agt: 8, sep: 9, oct: 10, okt: 10, nov: 11, dec: 12, des: 12 };
 var MON_ID = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 function monthLabel(m) { return m ? MON_ID[+m.slice(5, 7)] + ' ' + m.slice(2, 4) : '–'; }
@@ -1829,42 +1842,19 @@ function schedModel(pm, MST) {
 function renderSched(pm, MST, demo) {
   var sm = schedModel(pm, MST); CH.sm = sm;
   document.querySelectorAll('#schMonSeg button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-sm') === sm.M); });
-  $('schDays').value = sm.N; $('schH').textContent = 'Jadwal mesin · ' + monthLabel(sm.mo) + (sm.M === 'M1' ? ' (berjalan)' : ' (rencana)');
-  $('schNote').innerHTML = (demo ? '<span class="pill p-warn">MESIN CONTOH</span> Daftar mesin belum diunggah, jadi dipakai mesin contoh rekaan. ' : '') +
-    'PP per SKU dari tabel di bawah (forecast + buffer − stok), dalam ton, dibagi ke mesin aktif dalam jenis mesinnya. Urutan: SKU bermasalah dulu, lalu hari cover stok paling sedikit; tiap SKU ke mesin yang paling cepat kosong. Panjang bar = ton ÷ (kapasitas ÷ ' + sm.N + ' hari produksi). <b>Kapasitas adalah referensi</b> (rata-rata produksi bulan lalu), jadi bar yang lewat garis putus-putus berarti perlu dicek, bukan pasti over.';
-  if (!MST.length) { $('schBoard').innerHTML = '<div class="empty2">Daftar mesin belum dimuat. Unggah Excel PP (tab summary dengan kolom MACHINE dan CAPACITY) di <a href="#" data-goto="Input">Input Data &amp; Model</a>.</div>'; $('schUnplaced').innerHTML = ''; return; }
-  var A = sm.axis, pct = function (d) { return (d / A * 100).toFixed(3) + '%'; }, h = '';
-  h += '<div class="ml sub" style="border-top:0">Mesin</div><div class="ax">' + [1].concat(Array.apply(null, Array(Math.floor(A / 5))).map(function (_, i) { return (i + 1) * 5; })).filter(function (d) { return d <= A; }).map(function (d) { return '<span style="left:' + pct(d - 0.5) + '">' + d + '</span>'; }).join('') + '<span style="left:' + pct(sm.N) + ';font-weight:700;color:var(--fg)">▼</span></div><div class="mr sub" style="border-top:0">Beban ref.</div>';
-  var types = []; sm.machines.forEach(function (x) { if (types.indexOf(x.type) < 0) types.push(x.type); });
-  types.forEach(function (g) {
-    var ms = sm.machines.filter(function (x) { return x.type === g; }), tl = ms.reduce(function (a, x) { return a + x.load; }, 0), tc = ms.reduce(function (a, x) { return a + x.cap; }, 0), ns = ms.reduce(function (a, x) { return a + x.items.length; }, 0);
-    if (!ns && state.schHideIdle !== false && !demo) { }
-    h += '<div class="sh">' + esc(g) + '<span>' + ns + ' SKU · ' + fmt.format(Math.round(tl)) + ' / ' + fmt.format(Math.round(tc)) + ' t · ' + (tc ? fmt.format(Math.round(tl / tc * 100)) : '–') + '%</span></div>';
-    ms.forEach(function (x) {
-      var d = x.load / x.rate;
-      h += '<div class="ml" title="' + esc(x.name + (x.rem ? ' · ' + x.rem : '')) + '">' + esc(x.name) + '<small>' + fmt.format(Math.round(x.cap)) + ' t/bln · ' + fmt.format(Math.round(x.rate * 10) / 10) + ' t/hari</small></div>' +
-        '<div class="tr" style="--dw:' + pct(1) + '">' + (A > sm.N ? '<div class="ovz" style="left:' + pct(sm.N) + '"></div>' : '') + '<div class="endl" style="left:' + pct(sm.N) + '"></div>' +
-        x.items.map(function (it) {
-          var end = it.start + it.dur, cls = (it.r.st[1] === 'low' ? ' bad' : '') + (it.man ? ' man' : '') + (end > sm.N + 1e-9 ? ' ovr' : '');
-          var tip = (it.r.s.name || it.r.s.key) + ' · ' + (it.r.s.nomat || '') + '\nPP ' + n(it.r[sm.key]) + ' ctn; di mesin ini ' + fmt.format(Math.round(it.t * 10) / 10) + ' t\nHari ' + fmt.format(Math.round(it.start * 10) / 10 + 1) + '–' + fmt.format(Math.round(end * 10) / 10) + ' (' + fmt.format(Math.round(it.dur * 10) / 10) + ' hari)\n' + it.r.st[0] + (it.cov < 999 ? ' · cover stok ' + fmt.format(Math.round(it.cov)) + ' hari' : '') + (it.man ? '\nDipindah manual' : '');
-          return '<div class="bar' + cls + '" tabindex="0" role="button" data-sch="' + esc(it.r.s.key) + '" style="left:' + pct(it.start) + ';width:' + pct(it.dur) + '" title="' + esc(tip + (it.part ? '\nBagian ' + it.part + ' (dijalankan di beberapa mesin)' : '')) + '">' + (it.part ? '<b>' + it.part + '</b> ' : '') + esc(it.r.s.name || it.r.s.key) + '</div>';
-        }).join('') + '</div>' +
-        '<div class="mr"><b' + (d > sm.N + 1e-9 ? ' style="color:var(--warn)"' : '') + '>' + fmt.format(Math.round(x.load / x.cap * 100)) + '%</b><small>' + fmt.format(Math.round(d * 10) / 10) + ' / ' + sm.N + ' hari</small></div>';
-    });
-  });
-  $('schBoard').innerHTML = h;
-  $('schUnplaced').innerHTML = sm.unplaced.length ? '<div class="schun"><b>' + sm.unplaced.length + ' SKU belum terjadwal</b><ul>' + sm.unplaced.slice(0, 12).map(function (u) { return '<li>' + esc(u.r.s.name || u.r.s.key) + ' <span class="code" style="display:inline">' + esc(u.r.s.nomat || '') + '</span>: PP ' + n(u.r[sm.key]) + ' ctn, ' + esc(u.why) + '</li>'; }).join('') + '</ul></div>' : '';
+  $('schDays').value = sm.N; $('schH').textContent = 'Rencana produksi per mesin · ' + monthLabel(pm.M2);
+  $('schNote').innerHTML = (demo ? '<span class="pill p-warn">MESIN CONTOH</span> Daftar mesin belum diunggah, jadi dipakai mesin contoh rekaan. ' : (!MST.length ? '<b>Daftar mesin belum dimuat.</b> Unggah Excel PP (tab summary: MACHINE, CAPACITY) di <a href="#" data-goto="Input">Input Data &amp; Model</a>. ' : '')) +
+    'Satu tabel: <b>jenis mesin</b> (total), <b>mesin</b> (bar jadwal SKU-nya), klik ▶ untuk <b>SKU</b> dengan angkanya. PP ' + monthLabel(pm.M2) + ' = forecast + buffer − stok akhir ' + monthLabel(pm.M1) + '. Jadwal ' + (sm.M === 'M1' ? 'bulan berjalan ' + monthLabel(pm.M1) + ' memakai PP fixed' : 'bulan rencana ' + monthLabel(pm.M2)) + ': SKU bermasalah dulu, lalu cover stok paling sedikit; tiap SKU ke mesin yang paling cepat kosong, dilanjut ke mesin lain bila tidak muat. Panjang bar = ton ÷ (kapasitas ÷ ' + sm.N + ' hari). Kapasitas = rata-rata produksi bulan lalu, <b>hanya acuan</b>.';
+  return sm;
 }
 function renderPlan(m) {
   var bm = CH.bm;
-  if (!m.skus.length || m.future.length < 2 || !bm) { $('ppCards').innerHTML = ''; $('ppMach').innerHTML = ''; $('ppTable').innerHTML = '<tbody><tr><td class="empty">Belum ada data. Unggah closing dan Forecast HQ (minimal 2 bulan ke depan) di lembar <b>Input Data &amp; Model</b>.</td></tr></tbody>'; return; }
+  if (!m.skus.length || m.future.length < 2 || !bm) { $('ppCards').innerHTML = ''; $('ppTable').innerHTML = '<tbody><tr><td class="empty">Belum ada data. Unggah closing dan Forecast HQ (minimal 2 bulan ke depan) di lembar <b>Input Data &amp; Model</b>.</td></tr></tbody>'; return; }
   var pm = planModel(m, bm), M1 = pm.M1, M2 = pm.M2, mt = state.ppUnit === 'mt', all = ppAgg(pm.rows);
   CH.pm = pm;
   var demo = !master().length && !!state.sample, MST = master().length ? master() : demo ? demoMaster(pm) : []; CH.MST = MST;
-  document.querySelectorAll('#ppViewSeg button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-pv') === state.ppView); }); $('ppViewSku').hidden = state.ppView !== 'sku'; $('ppViewMach').hidden = state.ppView === 'sku';
-  renderSched(pm, MST, demo);
+  var sm = renderSched(pm, MST, demo);
   $('ppCtx').innerHTML = '<span><span class="pill p-warn">MOCKUP</span></span><span>Closing terakhir: <b>' + monthLabel(m.latest) + '</b></span><span>Bulan berjalan: <b>' + monthLabel(M1) + '</b> (PP sebagian besar sudah fixed)</span><span>Bulan rencana: <b>' + monthLabel(M2) + '</b></span><span>Dasar forecast: <b>' + { hq: 'Forecast HQ', ml: 'Forecast ML', avg: 'Rata-rata HQ & ML' }[pm.cfg.basis] + '</b> · buffer dari <a href="#" data-goto="Buffer">Saran Buffer</a></span>' + (state.sample ? '<span><span class="pill p-warn">CONTOH SIMULASI</span></span>' : '');
-  document.querySelectorAll('#ppGroupSeg button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-pg') === state.ppGroup); });
   document.querySelectorAll('#ppUnitSeg button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-pu') === state.ppUnit); });
   var bad = pm.rows.filter(function (r) { return r.st[1] === 'low'; }), over = pm.rows.filter(function (r) { return r.st[1] === 'noprod'; }), guess = pm.rows.filter(function (r) { return r.mach.guess; }), noM = pm.rows.filter(function (r) { return !r.mach.v; }), man = pm.rows.filter(function (r) { return r.ed; });
   var t1 = function (v) { return fmt.format(Math.round(v)) + ' t'; };
@@ -1887,56 +1877,77 @@ function renderPlan(m) {
     fcCard('PP ' + monthLabel(M2) + ' (bulan rencana)', mt ? t1(all.t.pp2) : n(all.pp2), (mt ? n(all.pp2) + ' karton' : t1(all.t.pp2)) + ' · forecast ' + (mt ? t1(all.t.F2) : n(all.F2)) + ' + buffer ' + (mt ? t1(all.t.buf2) : n(all.buf2)) + ' − stok akhir ' + monthLabel(M1) + '.', 'Mockup', '') +
     fcCard('PP ' + monthLabel(M1) + ' (berjalan)', mt ? t1(all.t.pp1) : n(all.pp1), man.length ? man.length + ' SKU diisi manual (PP fixed). Sisanya saran dari Saran Buffer.' : 'Masih saran dari Saran Buffer. Ketik PP yang sudah fixed di tabel.', man.length ? man.length + ' manual' : 'Saran', '') +
     fcCard('Beban mesin ' + monthLabel(CH.sm.mo) + ' (referensi)', CH.sm.machines.length ? fmt.format(Math.round(CH.sm.machines.reduce(function (a, x) { return a + x.load; }, 0) / Math.max(1, CH.sm.machines.reduce(function (a, x) { return a + x.cap; }, 0)) * 100)) + '%' : '–', CH.sm.machines.length ? CH.sm.machines.filter(function (x) { return x.items.length; }).length + ' dari ' + CH.sm.machines.length + ' mesin terisi. Kapasitas = rata-rata produksi bulan lalu, hanya acuan.' : 'Daftar mesin belum dimuat.', demo ? 'Mesin contoh' : 'Acuan', '') +
-    fcCard('SKU belum terjadwal', n(CH.sm.unplaced.length) + ' SKU', CH.sm.unplaced.length ? 'Tanpa berat bersih atau jenis mesinnya belum punya mesin aktif. Lihat daftar di bawah jadwal.' : 'Semua SKU dengan PP sudah masuk jadwal mesin.', CH.sm.unplaced.length ? 'Cek' : 'Lengkap', CH.sm.unplaced.length ? 'warn' : 'ok') +
+    fcCard('SKU belum terjadwal', n(CH.sm.unplaced.length) + ' SKU', CH.sm.unplaced.length ? 'Tanpa berat bersih atau jenis mesinnya belum punya mesin aktif. Lihat grup Tidak di jadwal di tabel.' : 'Semua SKU dengan PP sudah masuk jadwal mesin.', CH.sm.unplaced.length ? 'Cek' : 'Lengkap', CH.sm.unplaced.length ? 'warn' : 'ok') +
     fcCard('SKU bermasalah ' + monthLabel(M1), n(bad.length) + ' SKU', bad.length ? 'Stok bebas di bawah forecast bulan berjalan. Perlu PP fixed ' + monthLabel(M1) + '.' : 'Stok bebas semua SKU menutup forecast bulan berjalan.', bad.length ? 'Perlu PP' : 'Aman', bad.length ? 'bad' : 'ok') +
     fcCard('Pemetaan mesin', n(pm.rows.length - guess.length) + ' / ' + pm.rows.length + ' SKU', guess.length ? guess.length + ' SKU masih tebakan dari nama' + (noM.length ? ', ' + noM.length + ' belum ada mesin' : '') + '. Unggah file PP Excel (kolom Material + Mesin) di Input untuk memetakan.' : 'Semua SKU dari file PP atau dipilih manual.', guess.length ? 'Tebakan' : 'Lengkap', guess.length ? 'warn' : 'ok');
-  // summary table
-  $('ppMachH').textContent = 'Ringkasan per jenis mesin · ton';
-  $('ppMachNote').innerHTML = (master().length ? 'Seperti tab summary di Excel PP: forecast, buffer dan PP final per jenis mesin dalam ton (karton × berat bersih), dibanding kapasitas per bulan. <b>Balance = kapasitas referensi − PP final</b>. Kapasitas = rata-rata produksi bulan lalu, jadi hanya acuan. Daftar mesin dan kapasitas dari ' + esc(state.machMasterSrc || 'file yang diunggah') + ', hanya disimpan di browser ini dan di file Histori Anda. Klik dua kali angka kapasitas mesin untuk mengubah.' : '<b>Daftar mesin dan kapasitas belum dimuat.</b> Unggah file Excel PP (tab summary dengan kolom MACHINE dan CAPACITY) di lembar <a href="#" data-goto="Input">Input Data &amp; Model</a>. Data mesin tidak disimpan di aplikasi; hanya di browser ini dan di file Histori Anda. Sementara, jenis mesin ditebak dari nama SKU tanpa kapasitas.') + (all.nwMiss ? ' ' + all.nwMiss + ' SKU tanpa berat bersih tidak masuk ton.' : '');
-  var f1 = function (v) { return v ? fmt.format(Math.round(v)) : '–'; };
-  var ld = function (pp, cap) { if (!cap) return ''; var pct = pp / cap * 100; return '<span class="ld" title="' + fmt.format(Math.round(pct)) + '% kapasitas"><i class="' + (pct > 100 ? 'over' : '') + '" style="width:' + Math.min(100, pct).toFixed(0) + '%"></i></span>'; };
-  var mh = '<thead><tr><th rowspan="2" class="l">Jenis mesin / mesin</th><th colspan="5" class="grp sep">BERJALAN · ' + monthLabel(M1) + '</th><th colspan="5" class="grp sep">RENCANA · ' + monthLabel(M2) + '</th><th rowspan="2" class="sep">Catatan</th></tr><tr>' +
-    '<th class="num sep">Forecast</th><th class="num">Buffer</th><th class="num">PP final</th><th class="num">Kapasitas ref.</th><th class="num">Balance</th>' +
-    '<th class="num sep">Forecast</th><th class="num">Buffer</th><th class="num plan">PP final</th><th class="num">Kapasitas ref.</th><th class="num">Balance</th></tr></thead><tbody>';
-  sum.forEach(function (x) {
-    var open = !!state.ppOpenM[x.g], bal1 = x.cap - x.a.t.pp1, bal2 = x.cap - x.a.t.pp2, live = x.ms.filter(function (mm) { return capOf(mm[0], mm[1]) > 0; }).length;
-    mh += '<tr class="fam' + (x.n ? '' : ' idle') + '"><td><div class="fl">' + (x.ms.length ? '<button type="button" class="exp" data-ppm2="' + esc(x.g) + '" aria-expanded="' + open + '">' + (open ? '▼' : '▶') + '</button>' : '<span style="width:30px;display:inline-block"></span>') + '<div>' + esc(x.g) + '<span class="code">' + x.n + ' SKU · ' + live + '/' + x.ms.length + ' mesin aktif' + (x.unknown ? ' · tidak ada di daftar mesin' : '') + '</span></div></div></td>' +
-      '<td class="num sep">' + f1(x.a.t.F1) + '</td><td class="num">' + f1(x.b1) + '</td><td class="num">' + f1(x.a.t.pp1) + '</td><td class="num">' + f1(x.cap) + '</td><td class="num bal' + (x.cap && bal1 < 0 ? ' negv' : '') + '">' + ld(x.a.t.pp1, x.cap) + (x.cap ? fmt.format(Math.round(bal1)) : '–') + '</td>' +
-      '<td class="num sep">' + f1(x.a.t.F2) + '</td><td class="num">' + f1(x.a.t.buf2) + '</td><td class="num plan">' + f1(x.a.t.pp2) + '</td><td class="num">' + f1(x.cap) + '</td><td class="num bal' + (x.cap && bal2 < 0 ? ' negv' : '') + '">' + ld(x.a.t.pp2, x.cap) + (x.cap ? fmt.format(Math.round(bal2)) : '–') + '</td><td class="sep rem">' + (!x.cap && x.n ? 'Kapasitas belum ada' : bal2 < 0 ? 'Di atas kapasitas referensi ' + fmt.format(Math.round(-bal2)) + ' t' : '') + '</td></tr>';
-    if (open) x.ms.forEach(function (mm) {
-      var c = capOf(mm[0], mm[1]), e = state.capEdits[mm[0]];
-      var cc = '<td class="num cap' + (e ? ' edited' : '') + '" tabindex="0" data-cap="' + esc(mm[0]) + '" title="' + (e ? 'Diubah ' + esc(e.at || '') + '. Excel: ' + n(mm[1]) : 'Klik dua kali untuk mengubah kapasitas (ton/bulan)') + '">' + n(c) + '</td>';
-      mh += '<tr class="mach' + (c ? '' : ' off') + '"><td>' + esc(mm[0]) + '</td><td class="sep"></td><td></td><td></td>' + cc + '<td></td><td class="sep"></td><td></td><td></td>' + cc.replace('tabindex="0" ', '') + '<td></td><td class="sep rem">' + esc(mm[2] || '') + '</td></tr>';
+  renderPlanGrid(m, pm, MST, sm, mt, all);
+}
+function renderPlanGrid(m, pm, MST, sm, mt, all) {
+  var M1 = pm.M1, M2 = pm.M2, A = sm.axis, pct = function (d) { return (d / A * 100).toFixed(3) + '%'; };
+  // family filter + search
+  var fams = []; pm.rows.forEach(function (r) { var f = r.s.family ? titleCase(r.s.family) : '(tanpa famili)'; if (fams.indexOf(f) < 0) fams.push(f); }); fams.sort();
+  var fsel = $('ppFam'), fv = state.ppFam || ''; fsel.innerHTML = '<option value="">Semua famili</option>' + fams.map(function (f) { return '<option' + (f === fv ? ' selected' : '') + '>' + esc(f) + '</option>'; }).join('');
+  var q = normName(state.ppQ || ''), filt = !!(fv || q);
+  var hit = function (r) { if (fv && (r.s.family ? titleCase(r.s.family) : '(tanpa famili)') !== fv) return false; if (q && normName((r.s.name || '') + ' ' + (r.s.nomat || '') + ' ' + (r.s.art || '')).indexOf(q) < 0) return false; return true; };
+  $('ppHint').textContent = filt ? 'Filter aktif: hanya mesin dengan SKU yang cocok, SKU lain diredupkan.' : '';
+  var v = function (ct, nw) { if (typeof ct !== 'number') return '–'; if (!mt) return n(ct); return nw ? fmt.format(Math.round(ct * nw / 100) / 10) : '–'; };
+  var sub = function (ct, nw) { return mt || typeof ct !== 'number' ? '' : '<span class="mt">' + (nw ? fmt.format(Math.round(ct * nw / 100) / 10) + ' t' : '–') + '</span>'; };
+  var c = function (ct, nw, cls, extra) { return '<td class="num' + (cls ? ' ' + cls : '') + '"' + (extra || '') + '>' + v(ct, nw) + sub(ct, nw) + '</td>'; };
+  var ag = function (a, k, cls) { return '<td class="num' + (cls ? ' ' + cls : '') + '">' + (mt ? fmt.format(Math.round(a.t[k] * 10) / 10) : n(a[k])) + (mt ? '' : '<span class="mt">' + fmt.format(Math.round(a.t[k] * 10) / 10) + ' t</span>') + '</td>'; };
+  var ticks = [1].concat([5, 10, 15, 20, 25, 30]).filter(function (d) { return d <= A; });
+  var trk = function (inner) { return '<div class="trk" style="--dw:' + pct(1) + '">' + (A > sm.N ? '<div class="ovz" style="left:' + pct(sm.N) + '"></div>' : '') + '<div class="endl" style="left:' + pct(sm.N) + '"></div>' + inner + '</div>'; };
+  var bar = function (it, label) {
+    var end = it.start + it.dur, cls = (it.r.st[1] === 'low' ? ' bad' : '') + (it.man ? ' man' : '') + (end > sm.N + 1e-9 ? ' ovr' : '') + (filt && !hit(it.r) ? ' dim' : '');
+    var tip = (it.r.s.name || it.r.s.key) + ' · ' + (it.r.s.nomat || '') + '\nPP ' + n(it.r[sm.key]) + ' ctn; di mesin ini ' + fmt.format(Math.round(it.t * 10) / 10) + ' t\nHari ' + fmt.format(Math.round(it.start * 10) / 10 + 1) + '–' + fmt.format(Math.round(end * 10) / 10) + '\n' + it.r.st[0] + (it.part ? '\nBagian ' + it.part : '') + (it.man ? '\nDipindah manual' : '');
+    return '<div class="bar' + cls + '" tabindex="0" role="button" data-sch="' + esc(it.r.s.key) + '" style="left:' + pct(it.start) + ';width:' + pct(it.dur) + '" title="' + esc(tip) + '">' + (label ? (it.part ? '<b>' + it.part + '</b> ' : '') + esc(it.r.s.name || it.r.s.key) : '') + '</div>';
+  };
+  var COLS = 11;
+  var h = '<thead><tr><th rowspan="2" class="l">Jenis mesin › mesin › SKU</th><th colspan="3" class="grp sep">BERJALAN · ' + monthLabel(M1) + '</th><th colspan="4" class="grp sep">RENCANA · ' + monthLabel(M2) + '</th><th rowspan="2" class="tl sep"><div class="sub" style="font-weight:700;text-align:left">Jadwal ' + (sm.M === 'M1' ? monthLabel(M1) + ' (berjalan)' : monthLabel(M2)) + ' · hari ke-</div><div class="ax">' + ticks.map(function (d) { return '<span style="left:' + pct(d - 0.5) + '">' + d + '</span>'; }).join('') + '</div></th><th rowspan="2" class="num">Beban ref.</th></tr><tr>' +
+    '<th class="num sep wrap2">Stok bebas</th><th class="num wrap2">PP fixed</th><th class="num wrap2">Stok akhir</th><th class="num sep">Forecast</th><th class="num">Buffer</th><th class="num plan">PP</th><th class="num">Cover</th></tr></thead><tbody>';
+  var skuRow = function (r, it, opt) {
+    var s = r.s;
+    return '<tr class="sku' + (filt && !hit(r) ? ' dimrow' : '') + '"><td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + esc(s.nomat || s.art || '') + ' · ' + (r.nw ? fmt.format(r.nw) + ' kg/ct' : 'tanpa berat') + (it && it.part ? ' · bagian ' + it.part : '') + '</span><span class="bst b-' + r.st[1] + '" title="' + esc(r.st[2]) + '">' + r.st[0] + '</span>' + (opt || '') + '</td>' +
+      c(r.fs, r.nw, 'sep', ' title="Stock on hand ' + n(r.soh) + ' − DN ' + n(r.dn) + ' − block ' + n(r.blk) + '"') +
+      c(r.pp1, r.nw, 'ppin' + (r.ed ? ' edited' : ''), ' tabindex="0" data-pp="' + esc(s.key) + '" title="' + (r.ed ? 'PP fixed diisi ' + esc(r.ed.at || '') + '. Saran: ' + n(r.pp1sug) : 'Saran. Klik dua kali atau ketik untuk mengisi PP fixed.') + '"') +
+      c(r.end1, r.nw, r.end1 < 0 ? 'neg' : '') + c(r.F2, r.nw, 'sep') + c(r.buf2, r.nw, '', ' title="' + (r.cover === null ? 'tanpa forecast' : fmt.format(Math.round(r.cover * 100)) + '% dari forecast') + '"') + c(r.pp2, r.nw, 'plan' + (r.pp2 === 0 ? ' zero' : '')) +
+      '<td class="num">' + (r.days2 === null ? '–' : fmt.format(Math.round(r.days2)) + ' hr') + '</td>' +
+      '<td class="tl sep">' + (it ? trk(bar(it, false)) : '') + '</td><td class="num">' + (it ? fmt.format(Math.round(it.t * 10) / 10) + ' t' : '') + '</td></tr>';
+  };
+  if (!state.ppOpenT) state.ppOpenT = {}; if (!state.ppOpenMc) state.ppOpenMc = {};
+  var types = []; sm.machines.forEach(function (x) { if (types.indexOf(x.type) < 0) types.push(x.type); });
+  var rowsByType = {}; pm.rows.forEach(function (r) { var g = r.mach.v || ''; (rowsByType[g] = rowsByType[g] || []).push(r); });
+  types.forEach(function (g) {
+    var ms = sm.machines.filter(function (x) { return x.type === g; }), rr = rowsByType[g] || [], a = ppAgg(rr);
+    var anyHit = !filt || ms.some(function (x) { return x.items.some(function (it) { return hit(it.r); }); }); if (!anyHit) return;
+    var cap = ms.reduce(function (x, y) { return x + y.cap; }, 0), load = ms.reduce(function (x, y) { return x + y.load; }, 0), openT = filt || state.ppOpenT[g] !== false;
+    h += '<tr class="fam"><td><div class="fl"><button type="button" class="exp" data-ppt="' + esc(g) + '" aria-expanded="' + openT + '">' + (openT ? '▼' : '▶') + '</button><div>' + esc(g) + '<span class="code">' + rr.length + ' SKU · ' + ms.length + ' mesin</span></div></div></td>' +
+      ag(a, 'fs', 'sep') + ag(a, 'pp1') + ag(a, 'end1') + ag(a, 'F2', 'sep') + ag(a, 'buf2') + ag(a, 'pp2', 'plan') + '<td></td>' +
+      '<td class="tl sep"><span class="ldp">PP ' + fmt.format(Math.round(load)) + ' t dari kapasitas ref. ' + fmt.format(Math.round(cap)) + ' t · balance ' + fmt.format(Math.round(cap - load)) + ' t</span></td><td class="num ld2"><b' + (load > cap ? ' class="hi"' : '') + '>' + (cap ? fmt.format(Math.round(load / cap * 100)) + '%' : '–') + '</b></td></tr>';
+    if (!openT) return;
+    ms.forEach(function (x) {
+      var hasHit = !filt || x.items.some(function (it) { return hit(it.r); }); if (!hasHit) return;
+      var openM = filt || !!state.ppOpenMc[x.name], e = state.capEdits[x.name], d = x.load / x.rate;
+      h += '<tr class="mach"><td><div class="fl"><button type="button" class="exp" data-ppmc="' + esc(x.name) + '" aria-expanded="' + openM + '"' + (x.items.length ? '' : ' disabled') + '>' + (openM ? '▼' : '▶') + '</button><div>' + esc(x.name) + '<span class="code">' + x.items.length + ' SKU · ' + fmt.format(Math.round(x.rate * 10) / 10) + ' t/hari' + (x.rem ? ' · ' + esc(x.rem) : '') + '</span></div></div></td>' +
+        '<td class="sep" colspan="3"></td><td class="sep" colspan="2"></td><td class="num plan">' + fmt.format(Math.round(x.load * 10) / 10) + ' t</td><td></td>' +
+        '<td class="tl sep">' + trk(x.items.map(function (it) { return bar(it, true); }).join('')) + '</td>' +
+        '<td class="num ld2 cap' + (e ? ' edited' : '') + '" tabindex="0" data-cap="' + esc(x.name) + '" title="Kapasitas ref. ' + fmt.format(x.cap) + ' t/bln. Klik dua kali untuk mengubah."><b' + (d > sm.N + 1e-9 ? ' class="hi"' : '') + '>' + fmt.format(Math.round(x.load / x.cap * 100)) + '%</b><span class="mt">' + fmt.format(Math.round(x.cap)) + ' t · ' + fmt.format(Math.round(d * 10) / 10) + '/' + sm.N + ' hr</span></td></tr>';
+      if (openM) x.items.forEach(function (it) { if (!filt || hit(it.r)) h += skuRow(it.r, it); });
     });
   });
-  mh += '<tr class="tot"><td>Total</td><td class="num sep">' + f1(tsum.F1) + '</td><td class="num">' + f1(tsum.b1) + '</td><td class="num">' + f1(tsum.pp1) + '</td><td class="num">' + f1(tsum.cap) + '</td><td class="num">' + (tsum.cap ? fmt.format(Math.round(tsum.cap - tsum.pp1)) : '–') + '</td><td class="num sep">' + f1(tsum.F2) + '</td><td class="num">' + f1(tsum.buf2) + '</td><td class="num plan">' + f1(tsum.pp2) + '</td><td class="num">' + f1(tsum.cap) + '</td><td class="num">' + (tsum.cap ? fmt.format(Math.round(tsum.cap - tsum.pp2)) : '–') + '</td><td class="sep"></td></tr>';
-  $('ppMach').innerHTML = mh + '</tbody>';
-  $('ppNote').innerHTML = 'Stok bebas = stock on hand − outstanding delivery (DN) − SC block, dari closing ' + monthLabel(m.latest) + '. Stok akhir ' + monthLabel(M1) + ' = stok bebas + PP ' + monthLabel(M1) + ' − forecast ' + monthLabel(M1) + '. Buffer ' + monthLabel(M2) + ' = buffer final ' + monthLabel(M1) + ' dari Saran Buffer, dalam bulan-cover yang sama (buffer ÷ forecast) × forecast ' + monthLabel(M2) + '. <b>PP ' + monthLabel(M2) + ' = forecast + buffer − stok akhir ' + monthLabel(M1) + '</b> (minimal 0). ' + (mt ? 'Ton = karton × berat bersih (kg) ÷ 1000.' : 'Angka kecil di bawah = ton.');
-  var u = function (r, k) { var v = r[k]; return v === null || v === undefined ? '–' : n(v); };
-  var cell = function (ct, nw, cls, extra) { var tv = nw && typeof ct === 'number' ? ct * nw / 1000 : null; return '<td class="num' + (cls ? ' ' + cls : '') + '"' + (extra || '') + '>' + (mt ? (tv === null ? '–' : fmt.format(Math.round(tv * 100) / 100)) : n(ct)) + (mt ? '' : '<span class="mt">' + (tv === null ? '–' : fmt.format(Math.round(tv * 100) / 100) + ' t') + '</span>') + '</td>'; };
-  var gcell = function (a, k, cls) { return '<td class="num' + (cls ? ' ' + cls : '') + '">' + (mt ? fmt.format(Math.round(a.t[k] * 10) / 10) : n(a[k])) + (mt ? '' : '<span class="mt">' + fmt.format(Math.round(a.t[k] * 10) / 10) + ' t</span>') + '</td>'; };
-  var h = '<thead><tr><th rowspan="2" class="l">' + (state.ppGroup === 'famili' ? 'Famili' : 'Mesin') + ' + SKU</th><th rowspan="2" class="l">Mesin</th><th colspan="1" class="grp sep">STOK · akhir ' + monthLabel(m.latest) + '</th><th colspan="3" class="grp sep">BERJALAN · ' + monthLabel(M1) + '</th><th colspan="5" class="grp sep">RENCANA · ' + monthLabel(M2) + '</th><th rowspan="2">Cek</th></tr><tr>' +
-    '<th class="num sep wrap2">Stok bebas</th><th class="num sep">Forecast</th><th class="num wrap2">PP (fixed)</th><th class="num wrap2">Stok akhir</th>' +
-    '<th class="num sep">Forecast</th><th class="num">Buffer</th><th class="num plan">PP</th><th class="num wrap2">Stok akhir</th><th class="num">Hari</th></tr></thead><tbody>';
-  if (!state.ppOpen) state.ppOpen = {};
-  order.sort(function (x, y) { return (x.charAt(0) === '(') - (y.charAt(0) === '(') || ppAgg(groups[y]).t.pp2 - ppAgg(groups[x]).t.pp2; });
-  order.forEach(function (g) {
-    var list = groups[g], a = ppAgg(list), open = state.ppOpen[g] !== false;
-    h += '<tr class="fam"><td colspan="2"><div class="fl"><button type="button" class="exp" data-ppg="' + esc(g) + '" aria-expanded="' + open + '">' + (open ? '▼' : '▶') + '</button><div>' + esc(g) + '<span class="code">' + list.length + ' SKU</span></div></div></td>' +
-      gcell(a, 'fs', 'sep') + gcell(a, 'F1', 'sep') + gcell(a, 'pp1') + gcell(a, 'end1') + gcell(a, 'F2', 'sep') + gcell(a, 'buf2') + gcell(a, 'pp2', 'plan') + gcell(a, 'end2') + '<td class="num">' + (a.F2 > 0 ? fmt.format(Math.round(a.end2 / (a.F2 / 30) * 10) / 10) : '–') + '</td><td></td></tr>';
-    if (!open) return;
-    list.forEach(function (r) {
-      var s = r.s, opts = machTypes(); if (r.mach.v && opts.indexOf(r.mach.v) < 0) opts.push(r.mach.v);
-      h += '<tr class="sku"><td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + esc(s.nomat || s.art || '') + ' · ' + (r.nw ? fmt.format(r.nw) + ' kg/ct' : 'tanpa berat') + '</span></td>' +
-        '<td><select class="ppm" data-ppm="' + esc(s.key) + '" aria-label="Mesin"><option value="">' + (r.mach.src === 'manual' ? '(kembali ke otomatis)' : r.mach.v ? (r.mach.src === 'file' ? 'File PP: ' : 'Tebakan: ') + esc(r.mach.v) : '(pilih mesin)') + '</option>' + opts.map(function (o) { return '<option' + (r.mach.src === 'manual' && o === r.mach.v ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select>' + (r.mach.guess && r.mach.v ? '<span class="gtag">tebakan</span>' : '') + '</td>' +
-        cell(r.fs, r.nw, 'sep', ' title="Stock on hand ' + n(r.soh) + ' − DN ' + n(r.dn) + ' − block ' + n(r.blk) + '"') + cell(r.F1, r.nw, 'sep') +
-        cell(r.pp1, r.nw, 'ppin' + (r.ed ? ' edited' : ''), ' tabindex="0" data-pp="' + esc(s.key) + '" title="' + (r.ed ? 'PP fixed diisi ' + esc(r.ed.at || '') + '. Saran: ' + n(r.pp1sug) : 'Saran dari Saran Buffer. Klik dua kali atau ketik untuk mengisi PP fixed.') + '"') +
-        cell(r.end1, r.nw, r.end1 < 0 ? 'neg' : '') + cell(r.F2, r.nw, 'sep', r.src2 !== 'HQ' ? ' title="' + esc(r.src2) + '"' : '') +
-        cell(r.buf2, r.nw, '', ' title="' + (r.cover === null ? 'tanpa forecast' : fmt.format(Math.round(r.cover * 100)) + '% dari forecast') + '"') + cell(r.pp2, r.nw, 'plan' + (r.pp2 === 0 ? ' zero' : '')) + cell(r.end2, r.nw, r.end2 < 0 ? 'neg' : '') +
-        '<td class="num">' + (r.days2 === null ? '–' : fmt.format(Math.round(r.days2 * 10) / 10)) + '</td><td><span class="bst b-' + r.st[1] + '" title="' + esc(r.st[2]) + '">' + r.st[0] + '</span></td></tr>';
+  // SKUs not on the schedule
+  var placed = {}; sm.machines.forEach(function (x) { x.items.forEach(function (it) { placed[it.r.s.key] = 1; }); });
+  var un = pm.rows.filter(function (r) { return !placed[r.s.key] && (!filt || hit(r)); });
+  if (un.length) {
+    var openU = filt || state.ppOpenT['__un'] !== false, au = ppAgg(un);
+    h += '<tr class="fam"><td><div class="fl"><button type="button" class="exp" data-ppt="__un" aria-expanded="' + openU + '">' + (openU ? '▼' : '▶') + '</button><div>Tidak di jadwal<span class="code">' + un.length + ' SKU · PP 0, tanpa berat, atau jenis mesin tanpa mesin aktif</span></div></div></td>' +
+      ag(au, 'fs', 'sep') + ag(au, 'pp1') + ag(au, 'end1') + ag(au, 'F2', 'sep') + ag(au, 'buf2') + ag(au, 'pp2', 'plan') + '<td></td><td class="tl sep"></td><td></td></tr>';
+    if (openU) un.forEach(function (r) {
+      var opts = machTypes(); if (r.mach.v && opts.indexOf(r.mach.v) < 0) opts.push(r.mach.v);
+      var sel = '<select class="ppm" data-ppm="' + esc(r.s.key) + '" aria-label="Jenis mesin"><option value="">' + (r.mach.src === 'manual' ? '(otomatis)' : r.mach.v ? (r.mach.src === 'file' ? 'File PP: ' : 'Tebakan: ') + esc(r.mach.v) : '(pilih jenis mesin)') + '</option>' + opts.map(function (o) { return '<option' + (r.mach.src === 'manual' && o === r.mach.v ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select>';
+      h += skuRow(r, null, sel);
     });
-  });
-  h += '<tr class="tot"><td colspan="2">Total Serang<span class="code">' + pm.rows.length + ' SKU aktif' + (all.nwMiss ? ' · ' + all.nwMiss + ' tanpa berat' : '') + '</span></td>' + gcell(all, 'fs', 'sep') + gcell(all, 'F1', 'sep') + gcell(all, 'pp1') + gcell(all, 'end1') + gcell(all, 'F2', 'sep') + gcell(all, 'buf2') + gcell(all, 'pp2', 'plan') + gcell(all, 'end2') + '<td class="num">' + (all.F2 > 0 ? fmt.format(Math.round(all.end2 / (all.F2 / 30) * 10) / 10) : '–') + '</td><td></td></tr>';
+  }
+  h += '<tr class="tot"><td>Total Serang<span class="code">' + pm.rows.length + ' SKU aktif' + (all.nwMiss ? ' · ' + all.nwMiss + ' tanpa berat' : '') + '</span></td>' + ag(all, 'fs', 'sep') + ag(all, 'pp1') + ag(all, 'end1') + ag(all, 'F2', 'sep') + ag(all, 'buf2') + ag(all, 'pp2', 'plan') + '<td></td><td class="tl sep"></td><td class="num">' + (sm.machines.length ? fmt.format(Math.round(sm.machines.reduce(function (a, x) { return a + x.load; }, 0) / Math.max(1, sm.machines.reduce(function (a, x) { return a + x.cap; }, 0)) * 100)) + '%' : '–') + '</td></tr>';
   $('ppTable').innerHTML = h + '</tbody>';
 }
 function capRows() {
@@ -2796,15 +2807,14 @@ $('editClear').addEventListener('click', function () { state.undo = (state.undo 
 
 $('fcCloseAll').addEventListener('click', function () { state.fcOpen = {}; renderForecastScreen(combined()); });
 /* ---------- production plan sheet ---------- */
-$('ppGroupSeg').addEventListener('click', function (e) { var b = e.target.closest('button[data-pg]'); if (b) { state.ppGroup = b.getAttribute('data-pg'); state.ppOpen = {}; savePP(); renderAll(); } });
 $('ppUnitSeg').addEventListener('click', function (e) { var b = e.target.closest('button[data-pu]'); if (b) { state.ppUnit = b.getAttribute('data-pu'); savePP(); renderAll(); } });
-$('ppViewSeg').addEventListener('click', function (e) { var b = e.target.closest('button[data-pv]'); if (b) { state.ppView = b.getAttribute('data-pv'); savePP(); renderAll(); } });
 $('schMonSeg').addEventListener('click', function (e) { var b = e.target.closest('button[data-sm]'); if (b) { state.schMon = b.getAttribute('data-sm'); renderAll(); } });
 $('schDays').addEventListener('change', function () { var v = Math.round(+$('schDays').value); state.ppDays = v >= 1 && v <= 31 ? v : null; savePP(); renderAll(); });
 $('schReset').addEventListener('click', function () { var k = Object.keys(state.ppAssign).length; if (k && !confirm('Kembalikan ' + k + ' SKU yang dipindah manual ke jadwal otomatis?')) return; state.ppAssign = {}; savePP(); renderAll(); });
 $('schNote').addEventListener('click', function (e) { var a = e.target.closest('[data-goto]'); if (a) { e.preventDefault(); showTab(a.getAttribute('data-goto')); } });
-$('schBoard').addEventListener('click', function (e) { var a = e.target.closest('[data-goto]'); if (a) { e.preventDefault(); showTab(a.getAttribute('data-goto')); return; } var b = e.target.closest('[data-sch]'); if (b) { e.stopPropagation(); schMenu(b); } });
-$('schBoard').addEventListener('keydown', function (e) { var b = e.target.closest('[data-sch]'); if (b && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.stopPropagation(); schMenu(b); } });
+$('ppFam').addEventListener('change', function () { state.ppFam = $('ppFam').value; renderAll(); });
+$('ppQ').addEventListener('input', function () { state.ppQ = $('ppQ').value; clearTimeout(state._ppQt); state._ppQt = setTimeout(function () { renderAll(); $('ppQ').focus(); }, 250); });
+$('ppTable').addEventListener('keydown', function (e) { var b = e.target.closest('[data-sch]'); if (b && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.stopPropagation(); schMenu(b); } });
 function schMenu(bar) {
   var k = bar.getAttribute('data-sch'), sm = CH.sm, it = null, on = null;
   var parts = []; sm.machines.forEach(function (x) { x.items.forEach(function (y) { if (y.r.s.key === k) { parts.push(y); if (!it) { it = y; on = x; } } }); }); if (!it) return;
@@ -2814,7 +2824,7 @@ function schMenu(bar) {
     '<span>PP ' + monthLabel(sm.mo) + '</span><span class="num">' + n(it.r[sm.key]) + ' ctn</span><span>Ton</span><span class="num">' + fmt.format(Math.round(parts.reduce(function (a, y) { return a + y.t; }, 0) * 10) / 10) + '</span>' + (parts.length > 1 ? '<span>Dibagi ke</span><span class="num">' + parts.map(function (y) { return esc(y.mc.name); }).join(', ') + '</span>' : '') +
     '<span>Hari produksi</span><span class="num">' + fmt.format(Math.round(it.start * 10) / 10 + 1) + '–' + fmt.format(Math.round((it.start + it.dur) * 10) / 10) + '</span><span>Cover stok</span><span class="num">' + (it.cov < 999 ? fmt.format(Math.round(it.cov)) + ' hari' : '–') + '</span><span>Cek</span><span class="num">' + it.r.st[0] + '</span></div>' +
     '<div class="mr"><label>Mesin<select id="schSel">' + '<optgroup label="' + esc(on.type) + '">' + same.map(opt).join('') + '</optgroup>' + (other.length ? '<optgroup label="Jenis lain">' + other.map(opt).join('') + '</optgroup>' : '') + '</select></label></div>' +
-    '<div class="ba"><button type="button" class="pri" data-schact="move">Pindahkan semua ke sini</button>' + (state.ppAssign[k] ? '<button type="button" data-schact="auto">Otomatis</button>' : '') + '</div>');
+    '<div class="ba"><button type="button" class="pri" data-schact="move">Pindahkan ke mesin ini</button>' + (state.ppAssign[k] ? '<button type="button" data-schact="auto">Otomatis</button>' : '') + '</div>');
   $('stMenu').setAttribute('data-schk', k);
 }
 $('stMenu').addEventListener('click', function (e) {
@@ -2823,39 +2833,40 @@ $('stMenu').addEventListener('click', function (e) {
   if (b.getAttribute('data-schact') === 'auto') delete state.ppAssign[k]; else state.ppAssign[k] = $('schSel').value;
   $('stMenu').removeAttribute('data-schk'); savePP(); closeStMenu(); renderAll();
 });
-$('ppMOpen').addEventListener('click', function () { master().map(function (g) { return g[0]; }).forEach(function (g) { state.ppOpenM[g] = true; }); renderAll(); });
-$('ppMClose').addEventListener('click', function () { state.ppOpenM = {}; renderAll(); });
-$('ppMachNote').addEventListener('click', function (e) { var a = e.target.closest('[data-goto]'); if (a) { e.preventDefault(); showTab(a.getAttribute('data-goto')); } });
-$('ppMach').addEventListener('click', function (e) { var b = e.target.closest('button[data-ppm2]'); if (b) { var g = b.getAttribute('data-ppm2'); state.ppOpenM[g] = !state.ppOpenM[g]; renderAll(); } });
 function capStartEdit(td, initial) {
   if (td.querySelector('input')) return;
   var k = td.getAttribute('data-cap'), base = null; master().forEach(function (g) { g[1].forEach(function (mm) { if (mm[0] === k) base = mm[1]; }); });
   td.innerHTML = '<input type="text" inputmode="decimal" aria-label="Kapasitas ton per bulan">';
+  if (base === null) (CH.MST || []).forEach(function (g) { g[1].forEach(function (mm) { if (mm[0] === k) base = mm[1]; }); });
   var i = td.querySelector('input'), done = false; i.value = initial !== undefined ? initial : String(capOf(k, base)); i.focus(); if (initial === undefined) i.select();
   var finish = function (save) {
     if (done) return; done = true;
     if (save) { var raw = i.value.trim().replace(/\./g, '').replace(',', '.'); if (raw === '' || +raw === base) delete state.capEdits[k]; else if (!isNaN(+raw) && +raw >= 0) state.capEdits[k] = { v: +raw, at: new Date().toISOString().slice(0, 10) }; savePP(); }
-    renderAll(); var nx = $('ppMach').querySelector('td[data-cap="' + k.replace(/"/g, '\\"') + '"]'); if (nx) nx.focus();
+    renderAll(); var nx = $('ppTable').querySelector('td[data-cap="' + k.replace(/"/g, '\\"') + '"]'); if (nx) nx.focus();
   };
   i.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === 'Tab') { ev.preventDefault(); finish(true); } else if (ev.key === 'Escape') { ev.preventDefault(); finish(false); } });
   i.addEventListener('blur', function () { finish(true); });
 }
-$('ppMach').addEventListener('dblclick', function (e) { var td = e.target.closest('td[data-cap]'); if (td) capStartEdit(td); });
-$('ppMach').addEventListener('keydown', function (e) {
+$('ppTable').addEventListener('dblclick', function (e) { var td = e.target.closest('td[data-cap]'); if (td) capStartEdit(td); });
+$('ppTable').addEventListener('keydown', function (e) {
   var td = e.target.closest('td[data-cap]'); if (!td || e.target.tagName === 'INPUT') return;
   if (e.key === 'Enter' || e.key === 'F2') { e.preventDefault(); capStartEdit(td); }
   else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); delete state.capEdits[td.getAttribute('data-cap')]; savePP(); renderAll(); }
   else if (/^[0-9]$/.test(e.key)) { e.preventDefault(); capStartEdit(td, e.key); }
 });
-$('ppOpenAll').addEventListener('click', function () { state.ppOpen = {}; renderAll(); });
-$('ppCloseAll').addEventListener('click', function () { state.ppOpen = {}; $('ppTable').querySelectorAll('button[data-ppg]').forEach(function (b) { state.ppOpen[b.getAttribute('data-ppg')] = false; }); renderAll(); });
+$('ppOpenAll').addEventListener('click', function () { state.ppOpenT = {}; (CH.sm ? CH.sm.machines : []).forEach(function (x) { state.ppOpenMc[x.name] = true; }); renderAll(); });
+$('ppCloseAll').addEventListener('click', function () { state.ppOpenMc = {}; renderAll(); });
 $('ppReset').addEventListener('click', function () {
   var n0 = Object.keys(state.ppEdits).length + Object.keys(state.machines).length + Object.keys(state.capEdits).length + Object.keys(state.ppAssign).length;
   if (n0 && !confirm('Hapus ' + n0 + ' perubahan manual (PP fixed, mesin dan kapasitas)? Pemetaan dari file PP tetap.')) return;
   state.ppEdits = {}; state.machines = {}; state.capEdits = {}; state.ppAssign = {}; savePP(); renderAll();
 });
 $('ppCtx').addEventListener('click', function (e) { var a = e.target.closest('[data-goto]'); if (a) { e.preventDefault(); showTab(a.getAttribute('data-goto')); } });
-$('ppTable').addEventListener('click', function (e) { var b = e.target.closest('button[data-ppg]'); if (b) { var g = b.getAttribute('data-ppg'); state.ppOpen[g] = state.ppOpen[g] === false; renderAll(); } });
+$('ppTable').addEventListener('click', function (e) {
+  var t = e.target.closest('button[data-ppt]'); if (t) { var g = t.getAttribute('data-ppt'); state.ppOpenT[g] = state.ppOpenT[g] === false; renderAll(); return; }
+  var mc = e.target.closest('button[data-ppmc]'); if (mc) { var k = mc.getAttribute('data-ppmc'); state.ppOpenMc[k] = !state.ppOpenMc[k]; renderAll(); return; }
+  var b = e.target.closest('[data-sch]'); if (b) { e.stopPropagation(); schMenu(b); }
+});
 $('ppTable').addEventListener('change', function (e) {
   var sel = e.target.closest('select[data-ppm]'); if (!sel) return;
   var k = sel.getAttribute('data-ppm'); if (sel.value) state.machines[k] = sel.value; else delete state.machines[k];
