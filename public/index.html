@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>body{margin:0}[hidden]{display:none!important}</style>
-<title>Input Data Serang</title>
+<title>PPIC Decision Support System</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono&display=swap">
 <style>
@@ -36,6 +36,9 @@ body { background: var(--bg); color: var(--fg); font-family: var(--font); font-s
   display: flex; flex-direction: column; gap: 14px; }
 header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
 h1 { margin: 0; font-size: 20px; font-weight: 700; text-wrap: balance; }
+h1 .h1sub { font-weight: 400; font-size: 15px; color: var(--muted); }
+h1 .h1sub b { color: var(--text, inherit); font-weight: 600; }
+.dummy { color: var(--muted); font-style: italic; }
 h2 { margin: 0; font-size: 16px; font-weight: 700; }
 .sub { color: var(--muted); font-size: 12px; }
 .tabs { display: flex; gap: 4px; }
@@ -248,11 +251,11 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
 <div class="wrap">
   <header>
     <div>
-      <h1>PPIC Forecast Desk · The Univenus Serang</h1>
-      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-11c</span></div>
+      <h1>PPIC Decision Support System <span class="h1sub">· The Univenus Serang · <b>PPIC Forecast Desk (bulanan)</b></span></h1>
+      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-11d</span></div>
     </div>
     <nav class="tabs" aria-label="Lembar">
-      <button type="button" class="tab on" data-tab="Forecast" aria-current="page">Forecast</button><button type="button" class="tab" data-tab="Cek">Cek Data SKU</button><button type="button" class="tab" data-tab="Buffer">Saran Buffer</button><button type="button" class="tab" data-tab="Input">Input Data &amp; Model</button>
+      <button type="button" class="tab on" data-tab="Forecast" aria-current="page">Forecast</button><button type="button" class="tab" data-tab="Buffer">Saran Buffer</button><button type="button" class="tab" data-tab="Plan">Rencana Produksi</button><button type="button" class="tab" data-tab="Cek">Cek Data SKU</button><button type="button" class="tab" data-tab="Input">Input Data &amp; Model</button>
     </nav>
   </header>
 
@@ -286,6 +289,13 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
       <p class="note">Buffer = z × sebaran error × forecast × √(lead time ÷ 30) × faktor strategi. z: 90% = 1,28 · 95% = 1,64 · 98% = 2,05. Sebaran error dihitung per famili dari error forecast 6 closing terakhir (×1,4 di level SKU); bila histori kurang dari 2 bulan dipakai 25%. Klik angka <b>Buffer final</b> untuk mengubah (alasan wajib), pilih <b>Strategi</b> per famili atau SKU, klik <b>Status</b> untuk rincian hitungan. SKU diskontinu/diganti tidak dihitung.</p>
       <div class="scroll" style="max-height: 680px"><table id="bfTable" class="fct bft"></table></div>
       <div class="legend"><span class="bst b-low">Stok &lt; buffer</span><span class="bst b-noprod">Stok cukup, tanpa produksi</span><span class="bst b-up">Buffer naik</span><span class="bst b-down">Buffer turun</span><span class="bst b-new">Buffer baru</span><span class="bst b-same">Sesuai</span><span class="bst b-hab">Habiskan stok</span><span>Hari = buffer ÷ (forecast ÷ 30)</span></div>
+    </section>
+  </div>
+
+  <div class="tabpage" id="tabPlan" hidden>
+    <section class="panel" aria-label="Rencana produksi bulanan" id="planPanel">
+      <div class="ph"><h2>Rencana Produksi (bulanan)</h2><span class="pill p-warn">Belum ada isi</span></div>
+      <p class="note">Lembar ini disiapkan untuk rencana produksi bulanan. Isinya dibangun setelah Saran Buffer selesai. Sementara itu, angka rencana produksi per SKU (forecast + buffer final − stok bebas) bisa dilihat di lembar <a href="#" data-goto="Buffer">Saran Buffer</a>.</p>
     </section>
   </div>
 
@@ -1063,7 +1073,7 @@ function bufRows(fm) {
     return { bulan: bm.month, sku_key: s.key, nomat: s.nomat, article_code: s.art, description: s.name, family: s.family, dasar: b.src, forecast_ctn: Math.round(b.F),
       service_level: bm.cfg.sl, lead_time_hari: bm.cfg.lt, z: b.z, sebaran_error: Math.round(b.spread * 1000) / 1000, strategi: b.st, strategi_manual: state.bufStrat[s.key] ? 'sku' : '', faktor: Math.round(b.fac * 100) / 100,
       stok_bebas: b.fs, buffer_lama: b.old, buffer_saran: b.sug, buffer_final: b.fin, manual: b.ed ? 'ya' : 'tidak', alasan: b.ed ? b.ed.reason : null, tanggal_manual: b.ed ? b.ed.at : null,
-      rencana_produksi: b.prod, bahan_baku_ton: b.rm === null ? null : Math.round(b.rm * 100) / 100, status: b.status[0] };
+      rencana_produksi: b.prod, status: b.status[0] };
   }).concat(Object.keys(state.bufStrat).filter(function (k) { return k.indexOf('fam:') === 0; }).map(function (k) { return { bulan: bm.month, sku_key: k, strategi: state.bufStrat[k], strategi_manual: 'famili' }; }));
 }
 function loadHistory(name, wb) {
@@ -1515,14 +1525,14 @@ function renderBuffer(m) {
   $('bfCards').innerHTML =
     fcCard('Buffer final · total mill', n(tot.fin), (tot.old ? 'Aturan lama ' + n(tot.old) + ' → ' + pctS((tot.fin / tot.old - 1) * 100) + '. ' : '') + 'Dasar: ' + basisName + ', SL ' + cfg.sl + '%, lead time ' + cfg.lt + ' hari.', tot.old ? (tot.fin <= tot.old ? 'Lebih ramping' : 'Lebih tebal') : '', tot.old ? (tot.fin <= tot.old ? 'ok' : 'warn') : '') +
     fcCard('Rencana produksi ' + monthLabel(mo), n(tot.prod), 'Dengan aturan lama + Forecast HQ: ' + n(Math.round(oldProd)) + ' (' + signed(tot.prod - oldProd) + ').', 'Hasil', '') +
-    fcCard('Kebutuhan bahan baku ' + monthLabel(mo), tot.rmN ? fmt.format(Math.round(tot.rm)) + ' t' : '–', tot.rmN ? 'Aturan lama ' + fmt.format(Math.round(oldRm)) + ' t → selisih ' + signed(tot.rm - oldRm) + ' t.' + (tot.rmN < bm.rows.length ? ' ' + (bm.rows.length - tot.rmN) + ' SKU tanpa berat bersih.' : '') : 'Berat bersih per karton belum ada.', tot.rmN ? (tot.rm <= oldRm ? 'Hemat' : 'Lebih banyak') : '', tot.rmN ? (tot.rm <= oldRm ? 'ok' : 'warn') : '') +
+    fcCard('Kebutuhan bahan baku ' + monthLabel(mo), '–', 'Dummy: data BOM belum ada, jadi kebutuhan bahan baku belum dihitung. Kolom bahan baku di tabel hanya tempat.', 'Dummy', '') +
     fcCard('SKU stok di bawah buffer', n(low.length) + ' SKU', low.length ? 'Stok bebas ' + n(low.reduce(function (a, s) { return a + s.bf.fs; }, 0)) + ' vs buffer ' + n(low.reduce(function (a, s) { return a + s.bf.fin; }, 0)) + '. Perlu produksi di awal ' + monthLabel(mo) + '.' : 'Semua SKU punya stok di atas buffer.', low.length ? 'Risiko kurang' : 'Aman', low.length ? 'bad' : 'ok') +
     fcCard('SKU tanpa produksi ' + monthLabel(mo), n(noP.length) + ' SKU', noP.length ? 'Stok bebas ' + n(noP.reduce(function (a, s) { return a + s.bf.fs; }, 0)) + ' karton sudah menutup forecast + buffer.' : 'Semua SKU perlu produksi.', noP.length ? 'Stok berlebih' : '', noP.length ? 'warn' : '') +
     fcCard('Buffer diubah manual', n(man.length) + ' SKU', man.length ? 'Klik angka buffer final untuk melihat atau mengubah alasan.' : 'Klik angka di kolom Buffer final untuk mengubah; alasan wajib diisi.' + (dflt ? ' ' + dflt + ' famili memakai sebaran error bawaan 25% (histori < 2 bulan).' : ''), man.length ? 'Ada' : 'Belum ada', '');
   var h = '<thead><tr><th rowspan="2" class="l">Famili + SKU</th><th colspan="2" class="grp sep">DASAR · ' + monthLabel(mo) + '</th><th colspan="5" class="grp sep">BUFFER</th><th colspan="3" class="grp sep">HASIL · ' + monthLabel(mo) + '</th></tr><tr>' +
     '<th class="num sep wrap2">Stok bebas akhir ' + monthLabel(L) + '</th><th class="num wrap2">' + esc(basisName) + '</th>' +
     '<th class="num sep wrap2">Buffer saat ini (aturan lama)</th><th class="num">Buffer saran</th><th class="num">Buffer final</th><th class="num">Hari</th><th>Strategi</th>' +
-    '<th class="num sep wrap2">Rencana produksi</th><th class="num wrap2">Bahan baku (ton)</th><th>Status · klik untuk alasan</th></tr></thead><tbody>';
+    '<th class="num sep wrap2">Rencana produksi</th><th class="num wrap2">Bahan baku <span class="dummy">(dummy)</span></th><th>Status · klik untuk alasan</th></tr></thead><tbody>';
   var stratSel = function (key, cur, auto, fam) {
     return '<select class="bfst" data-strat="' + esc(key) + '" aria-label="Strategi">' + (fam ? '<option value="">Otomatis per SKU</option>' : '<option value="">Otomatis (' + STRATS[auto][0] + ')</option>') +
       Object.keys(STRATS).map(function (k) { return '<option value="' + k + '"' + (cur === k ? ' selected' : '') + '>' + STRATS[k][0] + '</option>'; }).join('') + '</select>';
@@ -1533,7 +1543,7 @@ function renderBuffer(m) {
     var a = bfAgg(f.skus), open = !!state.bfOpen[f.key], fst = state.bufStrat['fam:' + f.key] || '';
     h += '<tr class="fam"><td><div class="fl"><button type="button" class="exp" data-bfam="' + esc(f.key) + '" aria-expanded="' + open + '">' + (open ? '▼' : '▶') + '</button><div>' + esc(f.name) + '<span class="code">' + f.skus.length + ' SKU · sebaran error ' + fmt.format(Math.round(f.buf.spread.v * 100)) + '%' + (f.buf.spread.dflt ? ' (bawaan)' : ' (' + f.buf.spread.n + ' bln)') + '</span></div></div></td>' +
       '<td class="num sep">' + n(a.fs) + '</td><td class="num">' + n(Math.round(a.F)) + '</td><td class="num sep">' + n(a.old) + '</td><td class="num bsug">' + n(a.sug) + '</td><td class="num">' + n(a.fin) + '</td><td class="num">' + (a.days === null ? '–' : fmt.format(Math.round(a.days * 10) / 10)) + '</td><td>' + stratSel('fam:' + f.key, fst, null, true) + '</td>' +
-      '<td class="num sep' + (a.prod === 0 ? ' zero' : '') + '">' + n(a.prod) + '</td><td class="num">' + (a.rmN ? fmt.format(Math.round(a.rm * 10) / 10) : '–') + '</td><td></td></tr>';
+      '<td class="num sep' + (a.prod === 0 ? ' zero' : '') + '">' + n(a.prod) + '</td><td class="num dummy">–</td><td></td></tr>';
     if (open) {
       f.skus.slice(0, lim).forEach(function (s) {
         var b = s.bf;
@@ -1541,13 +1551,13 @@ function renderBuffer(m) {
           '<td class="num sep">' + n(b.fs) + '</td><td class="num">' + n(Math.round(b.F)) + '</td><td class="num sep">' + n(b.old) + '</td><td class="num bsug">' + n(b.sug) + '</td>' +
           '<td class="num bfin' + (b.ed ? ' edited' : '') + '" tabindex="0" data-bfin="' + esc(s.key) + '" title="' + (b.ed ? 'Manual: ' + esc(b.ed.reason || '') + ' (saran ' + n(b.sug) + ')' : 'Klik untuk mengubah; alasan wajib') + '">' + n(b.fin) + (b.ed ? ' <span class="mtag">manual</span>' : '') + '</td>' +
           '<td class="num">' + (b.days === null ? '–' : fmt.format(Math.round(b.days * 10) / 10)) + '</td><td>' + stratSel(s.key, state.bufStrat[s.key] || '', b.auto[0], false) + '</td>' +
-          '<td class="num sep' + (b.prod === 0 ? ' zero' : '') + '">' + n(b.prod) + '</td><td class="num">' + (b.rm === null ? '–' : fmt.format(Math.round(b.rm * 10) / 10)) + '</td>' +
+          '<td class="num sep' + (b.prod === 0 ? ' zero' : '') + '">' + n(b.prod) + '</td><td class="num dummy" title="Dummy: BOM belum ada">–</td>' +
           '<td><button type="button" class="bst b-' + b.status[1] + '" data-bwhy="' + esc(s.key) + '">' + b.status[0] + '</button></td></tr>';
       });
       if (f.skus.length > lim) h += '<tr class="more"><td colspan="11">+' + (f.skus.length - lim) + ' SKU lainnya sudah termasuk di baris famili.</td></tr>';
     }
   });
-  h += '<tr class="tot"><td>Total Serang<span class="code">' + bm.rows.length + ' SKU aktif</span></td><td class="num sep">' + n(tot.fs) + '</td><td class="num">' + n(Math.round(tot.F)) + '</td><td class="num sep">' + n(tot.old) + '</td><td class="num bsug">' + n(tot.sug) + '</td><td class="num">' + n(tot.fin) + '</td><td class="num">' + (tot.days === null ? '–' : fmt.format(Math.round(tot.days * 10) / 10)) + '</td><td></td><td class="num sep">' + n(tot.prod) + '</td><td class="num">' + (tot.rmN ? fmt.format(Math.round(tot.rm)) : '–') + '</td><td></td></tr>';
+  h += '<tr class="tot"><td>Total Serang<span class="code">' + bm.rows.length + ' SKU aktif</span></td><td class="num sep">' + n(tot.fs) + '</td><td class="num">' + n(Math.round(tot.F)) + '</td><td class="num sep">' + n(tot.old) + '</td><td class="num bsug">' + n(tot.sug) + '</td><td class="num">' + n(tot.fin) + '</td><td class="num">' + (tot.days === null ? '–' : fmt.format(Math.round(tot.days * 10) / 10)) + '</td><td></td><td class="num sep">' + n(tot.prod) + '</td><td class="num dummy">–</td><td></td></tr>';
   $('bfTable').innerHTML = h + '</tbody>';
   CH.bm = bm;
 }
@@ -2271,7 +2281,7 @@ function loadSample() {
 $('useSample').addEventListener('click', loadSample);
 function showTab(name) {
   document.querySelectorAll('.tab[data-tab]').forEach(function (b) { var on = b.getAttribute('data-tab') === name; b.classList.toggle('on', on); if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
-  $('tabForecast').hidden = name !== 'Forecast'; $('tabInput').hidden = name !== 'Input'; $('tabCek').hidden = name !== 'Cek'; $('tabBuffer').hidden = name !== 'Buffer';
+  $('tabForecast').hidden = name !== 'Forecast'; $('tabInput').hidden = name !== 'Input'; $('tabCek').hidden = name !== 'Cek'; $('tabBuffer').hidden = name !== 'Buffer'; $('tabPlan').hidden = name !== 'Plan';
   try { localStorage.setItem('ppic_tab', name); } catch (e) {}
 }
 document.querySelectorAll('.tab[data-tab]').forEach(function (b) { b.addEventListener('click', function () { showTab(b.getAttribute('data-tab')); }); });
@@ -2287,6 +2297,7 @@ $('chDlg').addEventListener('click', function (e) { if (e.target === $('chDlg') 
 $('fcLimit').addEventListener('change', function () { state.fcAll = this.value === 'all'; renderForecastScreen(combined()); });
 $('fcShowExcl').addEventListener('change', function () { state.fcShowExcl = this.checked; renderForecastScreen(combined()); });
 $('fcCtx').addEventListener('click', function (e) { var a = e.target.closest('[data-goto]'); if (a) { e.preventDefault(); showTab(a.getAttribute('data-goto')); } });
+$('planPanel').addEventListener('click', function (e) { var a = e.target.closest('[data-goto]'); if (a) { e.preventDefault(); showTab(a.getAttribute('data-goto')); } });
 $('bfCtx').addEventListener('click', function (e) { var a = e.target.closest('[data-goto]'); if (a) { e.preventDefault(); showTab(a.getAttribute('data-goto')); } });
 $('rules').addEventListener('change', function (e) {
   var el = e.target, id = el.getAttribute('data-rule'); if (!id) return;
@@ -2470,7 +2481,7 @@ function bufSave(clear) {
 }
 $('stMenu').addEventListener('click', function (e) { var b = e.target.closest('button[data-bact]'); if (b) { e.stopPropagation(); bufSave(b.getAttribute('data-bact') === 'clear'); } });
 $('stMenu').addEventListener('keydown', function (e) { if (e.key === 'Enter' && $('stMenu').getAttribute('data-bk') && e.target.tagName === 'INPUT') { e.preventDefault(); bufSave(false); } });
-(function () { var t = 'Forecast'; try { t = localStorage.getItem('ppic_tab') || t; } catch (e) {} showTab(t === 'Input' || t === 'Cek' || t === 'Buffer' ? t : 'Forecast'); })();
+(function () { var t = 'Forecast'; try { t = localStorage.getItem('ppic_tab') || t; } catch (e) {} showTab(['Input', 'Cek', 'Buffer', 'Plan'].indexOf(t) >= 0 ? t : 'Forecast'); })();
 state.cls = builtinClass();
 loadRuleState(); loadBuf();
 loadSample();

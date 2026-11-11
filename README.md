@@ -1,6 +1,6 @@
 # ForecasterPPIC
 
-PPIC Forecast Desk for The Univenus Serang (plan 7079): extract the monthly closing report into tables that feed the ML forecast.
+PPIC Decision Support System for The Univenus Serang (plan 7079). PPIC Forecast Desk is its monthly view: extract the monthly closing report into tables that feed the ML forecast.
 
 ## Web app
 
@@ -140,4 +140,7 @@ Tab **Saran Buffer** menghitung buffer per SKU untuk bulan forecast pertama sete
 - Rencana produksi = forecast + buffer final − stok bebas.
 - Dasar forecast bisa Forecast HQ (bawaan, karena ML masih mode bayangan), Forecast ML atau rata-rata keduanya. Service level dan lead time (7/14/21 hari) bisa diganti di atas tabel.
 - Strategi per famili atau SKU: Standar, Defensif, Ikuti tren, Batas atas (≤ 10 hari), Habiskan stok. Bila tidak dipilih, strategi dipilih otomatis dan alasannya tampil di tombol status.
+- Kebutuhan bahan baku masih dummy: data BOM belum ada.
 - Buffer final bisa diubah manual dengan alasan wajib. Perubahan dan strategi manual disimpan di browser dan di lembar `saran_buffer` file Histori_Serang, lalu dibaca kembali saat file itu diunggah.
+
+Tab order: Forecast, Saran Buffer, Rencana Produksi (bulanan, belum ada isi, tahap berikutnya), Cek Data SKU, Input Data & Model.
