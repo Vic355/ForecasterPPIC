@@ -158,3 +158,11 @@ Tab **Rencana Produksi** is a mockup of the monthly production plan, modelled on
 - Summary per machine type in tonnes for both months: forecast, buffer, PP final, capacity, balance (capacity − PP final). The machine list and capacities are NOT in this repository: the user uploads the PP Excel (summary tab with MACHINE and CAPACITY columns) and they stay in the browser and in the user's Histori file. Capacity cells are editable.
 - Machine per SKU: manual choice > uploaded PP Excel (any sheet with Material + Mesin columns) > guess from the name. Machine names from the uploaded summary map to their machine type.
 - Manual PP M1 and machines are saved in the browser and in the `rencana_produksi` sheet; capacities and the Material → Mesin list in `kapasitas_mesin`.
+
+## Asisten (prototipe)
+
+The **Asisten** button (bottom right, every tab) opens a chat panel.
+
+- **Rules engine (always on, free, instant).** Commands: `pp fixed <SKU> = n`, `buffer <SKU> = n alasan …`, `strategi <SKU|famili X> <strategi>`, `mesin <SKU> = <jenis>`, `status <SKU> <aktif|cek|diskontinu|otomatis>`, `order in|forecast hq|stok <SKU> [bulan] = n`, `kapasitas <mesin> = n`, `undo`. Questions: `ringkasan`, `kenapa <SKU>`, `sku bermasalah`, `stok di bawah buffer`, `stok berlebih`, `kapasitas`, `selisih terbesar`, `cari <nama>`, `apa itu buffer/pp/...`. SKU = Nomat, article code or part of the name.
+- Every change is shown as a proposal and applied only after **Terapkan**; it goes through the same stores as manual edits (correction log, reasons) and `undo` reverts it.
+- **Optional local model.** "Aktifkan model lokal" loads a small Qwen2.5 model (0.5B / 1.5B / 3B) in the browser with WebLLM (`@mlc-ai/web-llm@0.2.86`, WebGPU; Chrome/Edge). It is free and nothing leaves the PC; the first load downloads the weights. It answers free-form questions from facts the app computes, and data changes it suggests are turned back into rule commands that still need Terapkan. The engine sits behind one function (`aiAskModel`), so it can later point at Ollama or Claude.

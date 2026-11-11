@@ -39,6 +39,30 @@ h1 { margin: 0; font-size: 20px; font-weight: 700; text-wrap: balance; }
 h1 .h1sub { font-weight: 400; font-size: 15px; color: var(--muted); }
 h1 .h1sub b { color: var(--text, inherit); font-weight: 600; }
 .dummy { color: var(--muted); font-style: italic; }
+.aibtn { position: fixed; right: 18px; bottom: 18px; z-index: 30; border-radius: 999px; padding: 10px 18px; background: var(--accent); color: #fff; border: 0; font-weight: 700; box-shadow: 0 6px 18px rgba(0,0,0,.2); }
+.aipanel { position: fixed; right: 18px; bottom: 70px; z-index: 31; width: min(420px, calc(100vw - 32px)); height: min(640px, calc(100vh - 100px)); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,.22); display: flex; flex-direction: column; overflow: hidden; }
+.aipanel[hidden] { display: none; }
+.aihead { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--line-soft); }
+.aihead button { margin-left: auto; min-height: 28px; width: 28px; padding: 0; }
+.aimodel { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--line-soft); align-items: center; }
+.aimodel select { font-size: 12px; min-height: 28px; flex: 1; }
+.aimodel button { min-height: 28px; font-size: 12px; }
+.aisub { font-size: 11px; color: var(--muted); width: 100%; }
+.ailog { flex: 1; overflow-y: auto; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; font-size: 12.5px; }
+.aimsg { padding: 8px 10px; border-radius: 10px; max-width: 92%; line-height: 1.45; }
+.aimsg.me { align-self: flex-end; background: var(--accent-soft); white-space: pre-wrap; }
+.aimsg.bot { align-self: flex-start; background: var(--head); }
+.aimsg ul { margin: 4px 0; padding-left: 18px; }
+.aimsg code { font-family: var(--mono); font-size: 11px; background: var(--panel); padding: 0 3px; border-radius: 3px; }
+.aimsg .red { color: var(--bad); }
+.aiprop { border-left: 3px solid var(--s1); padding-left: 8px; }
+.aibtns { display: flex; gap: 6px; margin-top: 6px; }
+.aibtns button { min-height: 28px; font-size: 12px; }
+.aichips { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px 12px 0; }
+.aichips button { font-size: 11px; min-height: 24px; padding: 1px 8px; border-radius: 999px; }
+.aiform { display: flex; gap: 6px; padding: 8px 12px 12px; }
+.aiform textarea { flex: 1; resize: none; font: inherit; font-size: 12.5px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--fg); }
+@media print { .aibtn, .aipanel { display: none !important; } }
 .ppt td .mt { display: block; font-size: 10.5px; color: var(--muted); font-weight: 400; }
 .ppt select.ppm { font-size: 12px; min-height: 26px; padding: 1px 4px; max-width: 170px; }
 .gtag { font-size: 10px; color: var(--muted); border: 1px dashed var(--line); border-radius: 4px; padding: 0 4px; margin-left: 4px; white-space: nowrap; }
@@ -277,7 +301,7 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
   <header>
     <div>
       <h1>PPIC Decision Support System <span class="h1sub">· The Univenus Serang · <b>PPIC Forecast Desk (bulanan)</b></span></h1>
-      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-11g</span></div>
+      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-11h</span></div>
     </div>
     <nav class="tabs" aria-label="Lembar">
       <button type="button" class="tab on" data-tab="Forecast" aria-current="page">Forecast</button><button type="button" class="tab" data-tab="Buffer">Saran Buffer</button><button type="button" class="tab" data-tab="Plan">Rencana Produksi</button><button type="button" class="tab" data-tab="Cek">Cek Data SKU</button><button type="button" class="tab" data-tab="Input">Input Data &amp; Model</button>
@@ -362,6 +386,14 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
   </div>
 
   <div id="stMenu" class="stmenu" role="menu" hidden></div>
+  <button type="button" id="aiBtn" class="aibtn" aria-expanded="false" aria-controls="aiPanel">Asisten</button>
+  <section id="aiPanel" class="aipanel" aria-label="Asisten" hidden>
+    <div class="aihead"><b>Asisten PPIC</b><span class="pill p-warn">Prototipe</span><button type="button" id="aiClose" aria-label="Tutup">✕</button></div>
+    <div class="aimodel"><select id="aiModelSel" aria-label="Model lokal"></select><button type="button" id="aiModelBtn">Aktifkan model lokal</button><div class="aisub" id="aiModelSt">Gratis, jalan di browser ini; data tidak dikirim ke mana pun. Unduhan pertama sesuai ukuran model.</div></div>
+    <div id="aiLog" class="ailog" aria-live="polite"></div>
+    <div id="aiChips" class="aichips"><button type="button" data-aiq="ringkasan">Ringkasan</button><button type="button" data-aiq="sku bermasalah">SKU bermasalah</button><button type="button" data-aiq="stok di bawah buffer">Di bawah buffer</button><button type="button" data-aiq="kapasitas">Kapasitas</button><button type="button" data-aiq="selisih terbesar">Selisih HQ</button><button type="button" data-aiq="bantuan">Bantuan</button></div>
+    <form id="aiForm" class="aiform"><textarea id="aiIn" rows="2" placeholder="Tanya atau beri perintah, mis. kenapa 69920852 / pp fixed 69920671 = 500"></textarea><button type="submit" class="pri">Kirim</button></form>
+  </section>
   <dialog id="chDlg" aria-labelledby="chTitle">
     <div class="ph"><h2 id="chTitle">Grafik</h2><button type="button" id="chClose" aria-label="Tutup">Tutup ✕</button></div>
     <div id="chBody"></div>
@@ -2803,6 +2835,218 @@ $('stMenu').addEventListener('click', function (e) { var b = e.target.closest('b
 $('stMenu').addEventListener('keydown', function (e) { if (e.key === 'Enter' && $('stMenu').getAttribute('data-bk') && e.target.tagName === 'INPUT') { e.preventDefault(); bufSave(false); } });
 (function () { var t = 'Forecast'; try { t = localStorage.getItem('ppic_tab') || t; } catch (e) {} showTab(['Input', 'Cek', 'Buffer', 'Plan'].indexOf(t) >= 0 ? t : 'Forecast'); })();
 state.cls = builtinClass();
+/* ---------- Asisten: rule engine + optional in-browser model ---------- */
+// Every number comes from the app's own model. The local language model only routes questions and
+// phrases answers; any change it suggests goes back through the same rule commands and needs a click.
+var AI = { log: [], props: {}, undo: [], nextId: 1, engine: null, loading: false, model: null };
+var AI_MODELS = { 'Qwen2.5-0.5B-Instruct-q4f16_1-MLC': 'Ringan · ±0,4 GB', 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC': 'Sedang · ±1 GB (disarankan)', 'Qwen2.5-3B-Instruct-q4f16_1-MLC': 'Besar · ±2 GB' };
+var WEBLLM_URL = 'https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.86/+esm';
+function aiNum(t) { t = String(t).trim().replace(/\s/g, ''); if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(t)) t = t.replace(/\./g, '').replace(',', '.'); else t = t.replace(',', '.'); return t !== '' && !isNaN(+t) ? +t : null; }
+function aiCtx() {
+  var m = forecastModel(combined()), bm = m.skus.length && m.future.length ? bufferModel(m) : null, pm = bm && m.future.length > 1 ? planModel(m, bm) : null;
+  return { m: m, bm: bm, pm: pm, bf: function (k) { return bm ? bm.rows.filter(function (s) { return s.key === k; })[0] : null; }, pp: function (k) { return pm ? pm.rows.filter(function (r) { return r.s.key === k; })[0] : null; } };
+}
+function aiFind(q, m) {
+  q = String(q || '').trim(); if (!q) return [];
+  var code = q.replace(/\s/g, '');
+  var ex = m.all.filter(function (s) { return s.key === code || s.nomat === code || s.art === code; }); if (ex.length) return ex;
+  var toks = normName(q).split(' ').filter(function (t) { return t.length > 1 && ['sku', 'yang', 'untuk', 'the', 'di', 'ke'].indexOf(t) < 0; }); if (!toks.length) return [];
+  var sc = m.all.map(function (s) { var nm = ' ' + normName((s.name || '') + ' ' + (s.nomat || '') + ' ' + (s.art || '')) + ' '; var h = toks.filter(function (t) { return nm.indexOf(t) >= 0; }).length; return { s: s, h: h }; }).filter(function (x) { return x.h === toks.length; });
+  return sc.map(function (x) { return x.s; });
+}
+function aiMonth(t, m) {
+  t = String(t || '').trim().toLowerCase(); var y = t.match(/^(\d{4})-(\d{2})$/); if (y) return t;
+  var a = t.match(/^([a-z]+)\s*'?(\d{2,4})?$/); if (!a) return null;
+  var EN = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, mei: 5, jun: 6, jul: 7, aug: 8, agu: 8, agt: 8, sep: 9, oct: 10, okt: 10, nov: 11, dec: 12, des: 12 }, mo = EN[a[1].slice(0, 3)]; if (!mo) return null;
+  var yr = a[2] ? (a[2].length === 2 ? 2000 + +a[2] : +a[2]) : null;
+  if (!yr) { var all = m.closingMonths.concat(m.future); var hit = all.filter(function (x) { return +x.slice(5, 7) === mo; }).pop(); return hit || null; }
+  return yr + '-' + (mo < 10 ? '0' : '') + mo;
+}
+function aiSkuLabel(s) { return '<b>' + esc(s.name || s.key) + '</b> <span class="code" style="display:inline">' + esc(s.nomat || s.art || s.key) + '</span>'; }
+function aiPick(list, what) {
+  if (!list.length) return { err: 'SKU "' + esc(what) + '" tidak ditemukan. Ketik Nomat, kode artikel, atau bagian nama SKU.' };
+  if (list.length > 1) return { err: list.length + ' SKU cocok dengan "' + esc(what) + '". Pilih salah satu:<ul>' + list.slice(0, 6).map(function (s) { return '<li>' + aiSkuLabel(s) + '</li>'; }).join('') + '</ul>Ulangi perintah dengan Nomat-nya.' };
+  return { s: list[0] };
+}
+var AI_HELP = '<b>Perintah (data diubah setelah Anda klik Terapkan):</b><ul>' +
+  '<li><code>pp fixed &lt;SKU&gt; = 500</code>: PP bulan berjalan</li>' +
+  '<li><code>buffer &lt;SKU&gt; = 1200 alasan promo</code>: buffer final (alasan wajib)</li>' +
+  '<li><code>strategi &lt;SKU&gt; defensif</code> · <code>strategi famili paseo batas atas</code> · <code>… otomatis</code></li>' +
+  '<li><code>mesin &lt;SKU&gt; = softpack besar</code></li>' +
+  '<li><code>status &lt;SKU&gt; diskontinu</code> (aktif / cek / otomatis)</li>' +
+  '<li><code>order in &lt;SKU&gt; agu 26 = 5000</code> · <code>forecast hq &lt;SKU&gt; okt 26 = 4000</code> · <code>stok &lt;SKU&gt; = 300</code></li>' +
+  '<li><code>kapasitas &lt;mesin&gt; = 250</code> (ton/bulan)</li><li><code>undo</code>: batalkan perubahan terakhir dari asisten</li></ul>' +
+  '<b>Pertanyaan:</b> <code>ringkasan</code> · <code>kenapa &lt;SKU&gt;</code> · <code>sku bermasalah</code> · <code>stok di bawah buffer</code> · <code>stok berlebih</code> · <code>kapasitas</code> · <code>selisih terbesar</code> · <code>cari &lt;nama&gt;</code>. ' +
+  '&lt;SKU&gt; boleh Nomat, kode artikel atau bagian nama.';
+function aiPropose(desc, apply) { var id = AI.nextId++; AI.props[id] = { desc: desc, apply: apply }; return '<div class="aiprop"><div>' + desc + '</div><div class="aibtns"><button type="button" class="pri" data-aiapply="' + id + '">Terapkan</button><button type="button" data-aicancel="' + id + '">Batal</button></div></div>'; }
+function aiSnap() { return JSON.stringify({ ppEdits: state.ppEdits, bufEdits: state.bufEdits, bufStrat: state.bufStrat, machines: state.machines, overrides: state.overrides, edits: state.edits, capEdits: state.capEdits }); }
+function aiRestore(j) { var o = JSON.parse(j); Object.keys(o).forEach(function (k) { state[k] = o[k]; }); savePP(); saveBuf(); saveRuleState(); saveEdits(); }
+function aiExplain(s, X) {
+  var m = X.m, L = m.latest, f1 = m.future[0], st = STATUS[s.status], h = '<div>' + aiSkuLabel(s) + '<br>Famili ' + esc(s.family ? titleCase(s.family) : '–') + ' · status <b>' + st[0] + '</b>' + (s.override ? ' (manual)' : '') + '</div>';
+  if (s.hits && s.hits.length) h += '<div class="aisub">Aturan: ' + s.hits.map(function (x) { return esc(x.why); }).join('; ') + '</div>';
+  if (L) h += '<div>Closing ' + monthLabel(L) + ': order in <b>' + n(s.oi[L]) + '</b>, HQ REV <b>' + n(s.rev[L]) + '</b>' + (typeof s.oi[L] === 'number' && typeof s.rev[L] === 'number' ? ' (selisih ' + signed(s.rev[L] - s.oi[L]) + ')' : '') + ', stok bebas ' + n(s.fs) + '.</div>';
+  if (f1) h += '<div>' + monthLabel(f1) + ': Forecast HQ <b>' + n(s.fhq[f1]) + '</b>' + (s.ml && typeof s.ml[f1] === 'number' ? ', ML <b>' + n(s.ml[f1]) + '</b>' : '') + '.</div>';
+  var b = X.bf(s.key);
+  if (b) { b = b.bf; h += '<div>Buffer ' + monthLabel(X.bm.month) + ': saran ' + n(b.sug) + ', final <b>' + n(b.fin) + '</b>' + (b.ed ? ' (manual: ' + esc(b.ed.reason) + ')' : '') + ', strategi ' + STRATS[b.st][0] + (b.st === b.auto[0] && !state.bufStrat[s.key] ? ' (otomatis: ' + esc(b.auto[1]) + ')' : '') + '. Status: <b>' + b.status[0] + '</b>.</div>'; }
+  var r = X.pp(s.key);
+  if (r) h += '<div>Rencana: PP ' + monthLabel(X.pm.M1) + ' <b>' + n(r.pp1) + '</b>' + (r.ed ? ' (fixed manual)' : '') + ', stok akhir ' + n(r.end1) + '; PP ' + monthLabel(X.pm.M2) + ' <b>' + n(r.pp2) + '</b>. Mesin: ' + esc(r.mach.v || 'belum') + (r.mach.guess ? ' (tebakan)' : '') + '. Cek: <b>' + r.st[0] + '</b>' + (r.st[2] ? ' – ' + esc(r.st[2]) : '') + '</div>';
+  else if (s.status !== 'aktif' && s.status !== 'cek') h += '<div class="aisub">SKU ini dikecualikan dari buffer dan rencana produksi.</div>';
+  return h;
+}
+function aiList(title, rows, fn) { return '<b>' + title + '</b>' + (rows.length ? '<ul>' + rows.slice(0, 10).map(function (r) { return '<li>' + fn(r) + '</li>'; }).join('') + '</ul>' + (rows.length > 10 ? '<div class="aisub">+' + (rows.length - 10) + ' lainnya</div>' : '') : '<div class="aisub">Tidak ada.</div>'); }
+// returns html, or null when the rules do not understand the text
+function aiRules(text) {
+  var t = String(text).trim(), lo = t.toLowerCase().replace(/\s+/g, ' '), X = aiCtx(), m = X.m, mm;
+  if (!m.all.length && !/^(bantuan|help|\?)/.test(lo)) return 'Belum ada data. Unggah closing dan Forecast HQ di <b>Input Data &amp; Model</b> dulu.';
+  if (/^(bantuan|help|\?|perintah|apa yang bisa)/.test(lo)) return AI_HELP;
+  if (/^(undo|batalkan|kembalikan)\b/.test(lo)) { var u = AI.undo.pop(); if (!u) return 'Belum ada perubahan dari asisten untuk dibatalkan.'; aiRestore(u.snap); renderAll(); return 'Dibatalkan: ' + u.desc; }
+  // ---- commands ----
+  if ((mm = lo.match(/^pp(?:\s+(?:fixed|berjalan))?\s+(.+?)\s*(?:=|:|\bjadi\b|\bke\b)\s*([\d.,]+)$/))) {
+    var p = aiPick(aiFind(mm[1], m), mm[1]); if (p.err) return p.err; var v = aiNum(mm[2]); if (v === null) return 'Angka PP tidak terbaca.';
+    var r = X.pp(p.s.key); if (!r) return aiSkuLabel(p.s) + ' tidak ada di rencana produksi (dikecualikan atau belum ada forecast 2 bulan).';
+    return aiPropose('Isi PP fixed ' + monthLabel(X.pm.M1) + ' untuk ' + aiSkuLabel(p.s) + ': ' + n(r.pp1) + ' → <b>' + n(Math.round(v)) + '</b> karton.', function () { state.ppEdits[p.s.key] = { v: Math.round(v), at: new Date().toISOString().slice(0, 10), sug: r.pp1sug, name: p.s.name }; savePP(); });
+  }
+  if ((mm = lo.match(/^buffer\s+(.+?)\s*(?:=|:|\bjadi\b|\bke\b)\s*([\d.,]+)\s*(?:(?:alasan|karena|reason)\s*:?\s*(.+))?$/))) {
+    var p2 = aiPick(aiFind(mm[1], m), mm[1]); if (p2.err) return p2.err; var v2 = aiNum(mm[2]); if (v2 === null) return 'Angka buffer tidak terbaca.';
+    var ri = mm[3] ? t.toLowerCase().lastIndexOf(mm[3]) : -1, reason = mm[3] ? (ri >= 0 ? t.slice(ri).trim() : mm[3]) : ''; if (!reason) return 'Alasan wajib untuk mengubah buffer. Contoh: <code>buffer ' + esc(p2.s.nomat || p2.s.key) + ' = ' + n(v2) + ' alasan promo akhir tahun</code>';
+    var b2 = X.bf(p2.s.key); if (!b2) return aiSkuLabel(p2.s) + ' tidak dihitung di Saran Buffer.';
+    return aiPropose('Buffer final ' + aiSkuLabel(p2.s) + ': ' + n(b2.bf.fin) + ' → <b>' + n(Math.round(v2)) + '</b> (saran ' + n(b2.bf.sug) + '). Alasan: ' + esc(reason), function () { state.bufEdits[p2.s.key] = { v: Math.round(v2), reason: reason, at: new Date().toISOString().slice(0, 10), sug: b2.bf.sug, name: p2.s.name }; saveBuf(); });
+  }
+  if ((mm = lo.match(/^strategi\s+(.+?)\s*(?:=|:|\bjadi\b|\bke\b)?\s*(standar|defensif|ikuti tren|tren|batas atas|batas|habiskan stok|habiskan|otomatis)$/))) {
+    var sk = { 'standar': 'standar', 'defensif': 'defensif', 'ikuti tren': 'tren', 'tren': 'tren', 'batas atas': 'batas', 'batas': 'batas', 'habiskan stok': 'habiskan', 'habiskan': 'habiskan', 'otomatis': '' }[mm[2]];
+    var fm2 = mm[1].match(/^famili\s+(.+)$/);
+    if (fm2) {
+      var fam = m.fams.filter(function (f) { return normName(f.name).indexOf(normName(fm2[1])) >= 0 || normName(f.key) === normName(fm2[1]); })[0]; if (!fam) return 'Famili "' + esc(fm2[1]) + '" tidak ditemukan.';
+      return aiPropose('Strategi famili <b>' + esc(fam.name) + '</b> (' + fam.skus.length + ' SKU) → <b>' + (sk ? STRATS[sk][0] : 'otomatis per SKU') + '</b>.', function () { if (sk) { state.bufStrat['fam:' + fam.key] = sk; fam.skus.forEach(function (s) { delete state.bufStrat[s.key]; }); } else delete state.bufStrat['fam:' + fam.key]; saveBuf(); });
+    }
+    var p3 = aiPick(aiFind(mm[1], m), mm[1]); if (p3.err) return p3.err;
+    return aiPropose('Strategi ' + aiSkuLabel(p3.s) + ' → <b>' + (sk ? STRATS[sk][0] : 'otomatis') + '</b>.', function () { if (sk) state.bufStrat[p3.s.key] = sk; else delete state.bufStrat[p3.s.key]; saveBuf(); });
+  }
+  if ((mm = lo.match(/^mesin\s+(.+?)\s*(?:=|:|\bjadi\b|\bke\b)\s*(.+)$/))) {
+    var p4 = aiPick(aiFind(mm[1], m), mm[1]); if (p4.err) return p4.err; var mt = machType(t.slice(t.length - mm[2].length));
+    var known = machTypes().indexOf(mt) >= 0;
+    return aiPropose('Mesin ' + aiSkuLabel(p4.s) + ' → <b>' + esc(mt) + '</b>' + (known ? '' : ' <span class="aisub">(belum ada di daftar jenis mesin)</span>') + '.', function () { state.machines[p4.s.key] = mt; savePP(); });
+  }
+  if ((mm = lo.match(/^status\s+(.+?)\s*(?:=|:|\bjadi\b|\bke\b)?\s*(aktif|cek|diskontinu|otomatis)$/))) {
+    var p5 = aiPick(aiFind(mm[1], m), mm[1]); if (p5.err) return p5.err; var st5 = mm[2];
+    return aiPropose('Status ' + aiSkuLabel(p5.s) + ': ' + STATUS[p5.s.status][0] + ' → <b>' + (st5 === 'otomatis' ? 'otomatis (' + STATUS[p5.s.autoStatus][0] + ')' : STATUS[st5][0]) + '</b>.', function () { if (st5 === 'otomatis') delete state.overrides[p5.s.key]; else state.overrides[p5.s.key] = { status: st5, succ: '', at: new Date().toISOString().slice(0, 10) }; saveRuleState(); });
+  }
+  if ((mm = lo.match(/^(order in|oi|forecast hq|hq rev|hq|stok bebas|stok)\s+(.+?)(?:\s+((?:\d{4}-\d{2})|(?:[a-z]{3,9}\s*'?\d{2,4})))?\s*(?:=|:|\bjadi\b|\bke\b)\s*([\d.,]+|kosong|hapus)$/))) {
+    var p6 = aiPick(aiFind(mm[2], m), mm[2]); if (p6.err) return p6.err;
+    var fld = /^(order in|oi)$/.test(mm[1]) ? 'oi' : /^stok/.test(mm[1]) ? 'fs' : 'hq';
+    var mo6 = fld === 'fs' ? m.latest : aiMonth(mm[3] || (fld === 'oi' ? m.latest : ''), m); if (!mo6) return 'Sebutkan bulannya, mis. <code>agu 26</code>.';
+    if (fld === 'hq' && m.future.indexOf(mo6) >= 0) fld = 'fhq';
+    var cur = fld === 'oi' ? p6.s.oi[mo6] : fld === 'hq' ? p6.s.hq[mo6] : fld === 'fhq' ? p6.s.fhq[mo6] : p6.s.fs;
+    var clear = /kosong|hapus/.test(mm[4]), v6 = clear ? undefined : aiNum(mm[4]); if (!clear && v6 === null) return 'Angka tidak terbaca.';
+    var id6 = editKey(p6.s.key, fld, mo6), prev = state.edits[id6], fileV = prev ? prev.src : cur;
+    return aiPropose('Koreksi ' + EDIT_FIELDS[fld] + ' ' + monthLabel(mo6) + ' ' + aiSkuLabel(p6.s) + ': ' + n(cur) + ' → <b>' + (clear ? 'nilai file (' + n(fileV) + ')' : n(v6)) + '</b>. Nilai file tetap disimpan.', function () { setEdit(id6, clear ? undefined : v6, fileV === undefined ? null : fileV); });
+  }
+  if ((mm = lo.match(/^kapasitas\s+(.+?)\s*(?:=|:|\bjadi\b|\bke\b)\s*([\d.,]+)$/))) {
+    var q7 = normName(mm[1]), hits7 = []; master().forEach(function (g) { g[1].forEach(function (x) { if (normName(x[0]).indexOf(q7) >= 0) hits7.push(x); }); });
+    if (!master().length) return 'Daftar mesin belum dimuat. Unggah Excel PP (tab summary) di Input dulu.';
+    if (hits7.length !== 1) return hits7.length ? 'Beberapa mesin cocok: ' + hits7.slice(0, 6).map(function (x) { return esc(x[0]); }).join(', ') + '. Tulis lebih lengkap.' : 'Mesin "' + esc(mm[1]) + '" tidak ada di daftar.';
+    var v7 = aiNum(mm[2]), x7 = hits7[0];
+    return aiPropose('Kapasitas <b>' + esc(x7[0]) + '</b>: ' + n(capOf(x7[0], x7[1])) + ' → <b>' + n(v7) + '</b> ton/bulan.', function () { state.capEdits[x7[0]] = { v: v7, at: new Date().toISOString().slice(0, 10) }; savePP(); });
+  }
+  // ---- questions ----
+  if ((mm = lo.match(/^(?:kenapa|mengapa|why|jelaskan|explain|detail|info|cek sku|lihat)\s+(.+?)\??$/))) {
+    var q8 = mm[1].replace(/^(sku|status|buffer|pp)\s+/, '').replace(/\s+(bermasalah|merah|kurang|naik|turun|tinggi|rendah)$/, '');
+    var l8 = aiFind(q8, m); if (!l8.length) return null; if (l8.length > 1) return aiPick(l8, q8).err; return aiExplain(l8[0], X);
+  }
+  if (/ringkas|summary|ikhtisar|overview/.test(lo)) {
+    var L = m.latest, h9 = '<b>Ringkasan</b><ul><li>Closing terakhir ' + monthLabel(L) + ', ' + m.skus.length + ' SKU aktif, ' + m.excl.length + ' dikecualikan, ' + m.all.filter(function (s) { return s.status === 'cek'; }).length + ' perlu cek.</li>';
+    if (X.bm) { var tb = bfAgg(X.bm.rows); h9 += '<li>Buffer ' + monthLabel(X.bm.month) + ': ' + n(tb.fin) + ' karton (aturan lama ' + n(tb.old) + '); ' + X.bm.rows.filter(function (s) { return s.bf.status[1] === 'low'; }).length + ' SKU stok di bawah buffer.</li>'; }
+    if (X.pm) { var tp = ppAgg(X.pm.rows); h9 += '<li>PP ' + monthLabel(X.pm.M1) + ' ' + n(tp.pp1) + ' karton, PP ' + monthLabel(X.pm.M2) + ' <b>' + n(tp.pp2) + '</b> karton (' + fmt.format(Math.round(tp.t.pp2)) + ' t); ' + X.pm.rows.filter(function (r) { return r.st[1] === 'low'; }).length + ' SKU bermasalah.</li>'; }
+    return h9 + '</ul>';
+  }
+  if (/bermasalah/.test(lo)) { if (!X.pm) return 'Rencana produksi belum bisa dihitung.'; return aiList('SKU bermasalah ' + monthLabel(X.pm.M1) + ' (stok bebas < forecast)', X.pm.rows.filter(function (r) { return r.st[1] === 'low'; }).sort(function (a, b) { return (a.fs - a.F1) - (b.fs - b.F1); }), function (r) { return aiSkuLabel(r.s) + ': stok ' + n(r.fs) + ' vs forecast ' + n(r.F1) + ', PP fixed ' + n(r.pp1); }); }
+  if (/bawah buffer|< ?buffer|kurang stok|stok kurang/.test(lo)) { if (!X.bm) return 'Buffer belum bisa dihitung.'; return aiList('Stok di bawah buffer', X.bm.rows.filter(function (s) { return s.bf.status[1] === 'low'; }), function (s) { return aiSkuLabel(s) + ': stok ' + n(s.bf.fs) + ' vs buffer ' + n(s.bf.fin); }); }
+  if (/berlebih|tanpa produksi|overstock/.test(lo)) { if (!X.bm) return 'Buffer belum bisa dihitung.'; return aiList('Stok cukup, tanpa produksi ' + monthLabel(X.bm.month), X.bm.rows.filter(function (s) { return s.bf.status[1] === 'noprod'; }), function (s) { return aiSkuLabel(s) + ': stok ' + n(s.bf.fs) + ', forecast ' + n(Math.round(s.bf.F)) + ', buffer ' + n(s.bf.fin); }); }
+  if (/kapasitas|beban mesin|over ?kap|overload|mesin penuh/.test(lo)) {
+    if (!X.pm) return 'Rencana produksi belum bisa dihitung.'; if (!master().length) return 'Daftar mesin dan kapasitas belum dimuat. Unggah Excel PP (tab summary) di Input.';
+    var by = {}; X.pm.rows.forEach(function (r) { var g = r.mach.v || '(belum dipetakan)'; (by[g] = by[g] || []).push(r); });
+    var rows10 = master().map(function (g) { var cap = g[1].reduce(function (a, x) { return a + capOf(x[0], x[1]); }, 0), a = ppAgg(by[g[0]] || []); return { g: g[0], cap: cap, pp: a.t.pp2 }; }).filter(function (x) { return x.pp > 0; }).sort(function (a, b) { return (b.pp / (b.cap || 1)) - (a.pp / (a.cap || 1)); });
+    return aiList('Beban mesin ' + monthLabel(X.pm.M2) + ' (PP ÷ kapasitas)', rows10, function (x) { return '<b>' + esc(x.g) + '</b>: ' + fmt.format(Math.round(x.pp)) + ' / ' + fmt.format(Math.round(x.cap)) + ' t' + (x.cap ? ' (' + fmt.format(Math.round(x.pp / x.cap * 100)) + '%)' : '') + (x.pp > x.cap ? ' <b class="red">over ' + fmt.format(Math.round(x.pp - x.cap)) + ' t</b>' : ''); });
+  }
+  if (/selisih|meleset|akurasi|error|bias/.test(lo)) {
+    var L2 = m.latest; return aiList('Selisih HQ REV vs order in terbesar · ' + monthLabel(L2), m.skus.filter(function (s) { return typeof s.rev[L2] === 'number' && typeof s.oi[L2] === 'number'; }).sort(function (a, b) { return Math.abs(b.rev[L2] - b.oi[L2]) - Math.abs(a.rev[L2] - a.oi[L2]); }), function (s) { return aiSkuLabel(s) + ': HQ ' + n(s.rev[L2]) + ' vs order in ' + n(s.oi[L2]) + ' (' + signed(s.rev[L2] - s.oi[L2]) + ')'; });
+  }
+  if ((mm = lo.match(/^(?:cari|find|sku)\s+(.+)$/))) { var l11 = aiFind(mm[1], m); if (l11.length === 1) return aiExplain(l11[0], X); return l11.length ? aiList(l11.length + ' SKU cocok', l11, aiSkuLabel) : 'Tidak ada SKU yang cocok dengan "' + esc(mm[1]) + '".'; }
+  if (/apa itu|apa arti|artinya|rumus|cara hitung|dihitung|bagaimana|gimana|what is|how/.test(lo)) {
+    var G = [[/buffer/, '<b>Buffer</b> = z × sebaran error × forecast × √(lead time ÷ 30) × faktor strategi. z dari service level (90% = 1,28 · 95% = 1,64 · 98% = 2,05). Sebaran error per famili dari 6 closing terakhir (×1,4 di level SKU), 25% bila histori kurang. Buffer final boleh diubah manual dengan alasan.'],
+      [/\bpp\b|rencana produksi|produksi/, '<b>PP bulan rencana</b> = forecast + buffer − stok akhir bulan berjalan (minimal 0). <b>Stok akhir bulan berjalan</b> = stok bebas + PP fixed − forecast bulan berjalan. Stok bebas = stock on hand − DN − SC block.'],
+      [/bermasalah/, '<b>Bermasalah</b>: stok bebas lebih kecil dari forecast bulan berjalan, jadi perlu PP fixed bulan ini.'],
+      [/sebaran|error|spread/, '<b>Sebaran error</b>: RMSE (forecast − order in) ÷ rata-rata order in per famili, 6 closing terakhir.'],
+      [/\bml\b|holt|model/, '<b>Forecast ML</b> (prototipe): Holt teredam pada order in, dicampur dengan Forecast HQ yang dikoreksi biasnya per SKU. Masih mode bayangan; HQ tetap dasar bawaan.'],
+      [/status|diskontinu|diganti|cek/, '<b>Status SKU</b>: aktif, perlu cek, diskontinu, diganti. Diskontinu/diganti tidak dihitung di total, akurasi, ML, buffer dan PP. Status diberi aturan di Cek Data SKU dan bisa diubah manual.'],
+      [/strategi/, '<b>Strategi</b>: ' + Object.keys(STRATS).map(function (k) { return STRATS[k][0] + ' – ' + STRATS[k][1]; }).join(' ')],
+      [/balance|kapasitas/, '<b>Balance</b> = kapasitas mesin per bulan − PP final (ton). Minus berarti over kapasitas.']];
+    var g = G.filter(function (x) { return x[0].test(lo); }); if (g.length) return g.map(function (x) { return x[1]; }).join('<br>');
+  }
+  var direct = aiFind(t, m); if (direct.length === 1 && t.length >= 4) return aiExplain(direct[0], X);
+  return null;
+}
+// facts handed to the local model; it is told to use nothing else
+function aiFacts(text) {
+  var X = aiCtx(), m = X.m, f = [];
+  f.push('Closing terakhir: ' + monthLabel(m.latest) + '. Bulan forecast: ' + m.future.map(monthLabel).join(', ') + '. SKU aktif ' + m.skus.length + ', dikecualikan ' + m.excl.length + '.');
+  if (X.bm) { var tb = bfAgg(X.bm.rows); f.push('Buffer ' + monthLabel(X.bm.month) + ': total ' + n(tb.fin) + ' karton, aturan lama ' + n(tb.old) + '. Rumus buffer: z × sebaran error × forecast × √(lead time/30) × faktor strategi. Service level ' + X.bm.cfg.sl + '%, lead time ' + X.bm.cfg.lt + ' hari.'); }
+  if (X.pm) { var tp = ppAgg(X.pm.rows); f.push('PP ' + monthLabel(X.pm.M1) + ' (berjalan) ' + n(tp.pp1) + ' karton; PP ' + monthLabel(X.pm.M2) + ' (rencana) ' + n(tp.pp2) + ' karton = forecast + buffer − stok akhir bulan berjalan. SKU bermasalah: ' + X.pm.rows.filter(function (r) { return r.st[1] === 'low'; }).map(function (r) { return r.s.name; }).slice(0, 8).join('; ') + '.'); }
+  f.push('Aturan cek data: ' + RULES.filter(function (r) { return ruleCfg(r.id).on; }).map(function (r) { return r.label; }).join('; ') + '.');
+  var toks = normName(text).split(' ').filter(function (x) { return x.length > 3; }), seen = 0;
+  m.all.forEach(function (s) { if (seen >= 3) return; var nm = normName((s.name || '') + ' ' + (s.nomat || '')); if (toks.some(function (x) { return nm.indexOf(x) >= 0; })) { seen++; f.push('SKU: ' + aiExplain(s, X).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()); } });
+  return f.join('\n');
+}
+var AI_SYS = 'Kamu asisten PPIC di pabrik tisu. Jawab singkat (maks 5 kalimat) dalam bahasa Indonesia. Gunakan HANYA fakta yang diberikan; jangan menghitung dan jangan mengarang angka. Jika fakta tidak cukup, katakan tidak tahu dan sarankan perintah "bantuan". ' +
+  'Jika pengguna ingin MENGUBAH data, balas HANYA satu baris perintah tanpa penjelasan, salah satu dari: "pp fixed <nomat> = <angka>", "buffer <nomat> = <angka> alasan <teks>", "strategi <nomat> <standar|defensif|ikuti tren|batas atas|habiskan stok|otomatis>", "mesin <nomat> = <jenis mesin>", "status <nomat> <aktif|cek|diskontinu|otomatis>", "order in <nomat> <bulan> = <angka>", "kapasitas <mesin> = <angka>".';
+var AI_CMD = /^(pp|buffer|strategi|mesin|status|order in|oi|forecast hq|hq|stok|kapasitas)\b/i;
+function aiLoadModel() {
+  if (AI.engine || AI.loading) return;
+  if (!navigator.gpu) { aiSay('bot', 'Browser ini tidak mendukung WebGPU, jadi model lokal tidak bisa jalan. Pakai Chrome atau Edge terbaru di PC dengan GPU. Perintah dan pertanyaan standar tetap berfungsi.'); return; }
+  var id = $('aiModelSel').value; AI.loading = true; $('aiModelBtn').disabled = true; $('aiModelSt').textContent = 'Memuat…';
+  try { localStorage.setItem('ppic_ai', JSON.stringify({ model: id })); } catch (e) {}
+  import(WEBLLM_URL).then(function (lib) {
+    return lib.CreateMLCEngine(id, { initProgressCallback: function (p) { $('aiModelSt').textContent = (p.text || '').slice(0, 90); } });
+  }).then(function (eng) { AI.engine = eng; AI.model = id; AI.loading = false; $('aiModelSt').textContent = 'Model lokal aktif: ' + id.split('-Instruct')[0] + ' (di browser ini, gratis)'; $('aiModelBtn').textContent = 'Aktif'; aiSay('bot', 'Model lokal siap. Pertanyaan bebas sekarang dijawab model ini; perintah tetap lewat aturan.'); })
+    .catch(function (e) { AI.loading = false; $('aiModelBtn').disabled = false; $('aiModelSt').textContent = 'Gagal memuat model.'; aiSay('bot', 'Model lokal gagal dimuat: ' + esc(e && e.message || e) + '. Bila Anda membuka lewat link claude.ai, unduhan model mungkin diblokir; coba versi situs Cloudflare.'); });
+}
+function aiAskModel(text) {
+  var msgs = [{ role: 'system', content: AI_SYS + '\n\nFAKTA:\n' + aiFacts(text) }];
+  AI.log.filter(function (x) { return x.plain; }).slice(-4).forEach(function (x) { msgs.push({ role: x.who === 'me' ? 'user' : 'assistant', content: x.plain }); });
+  msgs.push({ role: 'user', content: text });
+  var waitId = aiSay('bot', '<span class="aisub">Model lokal sedang berpikir…</span>');
+  AI.engine.chat.completions.create({ messages: msgs, temperature: 0.2, max_tokens: 300 }).then(function (r) {
+    var out = (r.choices[0].message.content || '').trim(), line = out.split('\n')[0].replace(/^["'`]+|["'`]+$/g, '').trim();
+    aiDrop(waitId);
+    if (AI_CMD.test(line)) { var h = aiRules(line); aiSay('bot', '<span class="aisub">Model menerjemahkan menjadi perintah:</span> <code>' + esc(line) + '</code>' + (h ? '<br>' + h : '<br>Perintah tidak dikenali. Coba tulis langsung, lihat <code>bantuan</code>.')); }
+    else aiSay('bot', esc(out).replace(/\n/g, '<br>') + '<div class="aisub">Jawaban model lokal; bisa keliru. Angka resmi ada di tabel.</div>', out);
+  }).catch(function (e) { aiDrop(waitId); aiSay('bot', 'Model lokal error: ' + esc(e && e.message || e)); });
+}
+function aiSay(who, html, plain) { var id = 'ai' + AI.nextId++; AI.log.push({ id: id, who: who, html: html, plain: plain || (who === 'me' ? html : null) }); aiRender(); return id; }
+function aiDrop(id) { AI.log = AI.log.filter(function (x) { return x.id !== id; }); aiRender(); }
+function aiRender() { var el = $('aiLog'); el.innerHTML = AI.log.map(function (x) { return '<div class="aimsg ' + x.who + '">' + (x.who === 'me' ? esc(x.html) : x.html) + '</div>'; }).join(''); el.scrollTop = el.scrollHeight; }
+function aiSend(text) {
+  text = String(text || '').trim(); if (!text) return;
+  aiSay('me', text);
+  var h = null; try { h = aiRules(text); } catch (e) { h = 'Error: ' + esc(e.message); }
+  if (h) { aiSay('bot', h); return; }
+  if (AI.engine) { aiAskModel(text); return; }
+  aiSay('bot', 'Saya belum paham. Ketik <code>bantuan</code> untuk daftar perintah' + (navigator.gpu ? ', atau aktifkan <b>model lokal</b> di atas untuk pertanyaan bebas.' : '.'));
+}
+function aiOpen(on) { $('aiPanel').hidden = !on; $('aiBtn').setAttribute('aria-expanded', on); if (on) { if (!AI.log.length) aiSay('bot', 'Halo. Saya bisa menjawab pertanyaan tentang data yang dimuat dan mengubah data lewat perintah (selalu minta konfirmasi). Ketik <code>bantuan</code>.'); $('aiIn').focus(); } }
+$('aiBtn').addEventListener('click', function () { aiOpen($('aiPanel').hidden); });
+$('aiClose').addEventListener('click', function () { aiOpen(false); });
+$('aiForm').addEventListener('submit', function (e) { e.preventDefault(); var v = $('aiIn').value; $('aiIn').value = ''; aiSend(v); });
+$('aiIn').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('aiForm').requestSubmit ? $('aiForm').requestSubmit() : $('aiForm').dispatchEvent(new Event('submit')); } });
+$('aiChips').addEventListener('click', function (e) { var b = e.target.closest('button[data-aiq]'); if (b) aiSend(b.getAttribute('data-aiq')); });
+$('aiModelBtn').addEventListener('click', aiLoadModel);
+$('aiLog').addEventListener('click', function (e) {
+  var a = e.target.closest('button[data-aiapply]'), c = e.target.closest('button[data-aicancel]');
+  if (a) { var id = a.getAttribute('data-aiapply'), p = AI.props[id]; if (!p) return; delete AI.props[id]; var snap = aiSnap(); try { p.apply(); } catch (er) { aiSay('bot', 'Gagal: ' + esc(er.message)); return; } AI.undo.push({ snap: snap, desc: p.desc.replace(/<[^>]+>/g, '') }); a.closest('.aibtns').innerHTML = '<span class="aisub">Diterapkan.</span>'; AI.log.forEach(function (x) { if (x.html.indexOf('data-aiapply="' + id + '"') >= 0) x.html = x.html.replace(/<div class="aibtns">[\s\S]*?<\/div>/, '<div class="aisub">Diterapkan. Ketik <code>undo</code> untuk membatalkan.</div>'); }); renderAll(); aiRender(); }
+  if (c) { var id2 = c.getAttribute('data-aicancel'); delete AI.props[id2]; AI.log.forEach(function (x) { if (x.html.indexOf('data-aicancel="' + id2 + '"') >= 0) x.html = x.html.replace(/<div class="aibtns">[\s\S]*?<\/div>/, '<div class="aisub">Dibatalkan.</div>'); }); aiRender(); }
+});
+(function () { var sel = $('aiModelSel'); sel.innerHTML = Object.keys(AI_MODELS).map(function (k) { return '<option value="' + k + '">' + AI_MODELS[k] + '</option>'; }).join(''); var pref = 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC'; try { pref = (JSON.parse(localStorage.getItem('ppic_ai') || '{}') || {}).model || pref; } catch (e) {} sel.value = AI_MODELS[pref] ? pref : 'Qwen2.5-1.5B-Instruct-q4f16_1-MLC'; if (!navigator.gpu) $('aiModelSt').textContent = 'WebGPU tidak tersedia di browser ini; hanya mode aturan.'; })();
+
 loadRuleState(); loadBuf(); loadPP();
 loadSample();
 })();
