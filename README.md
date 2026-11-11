@@ -144,3 +144,15 @@ Tab **Saran Buffer** menghitung buffer per SKU untuk bulan forecast pertama sete
 - Buffer final bisa diubah manual dengan alasan wajib. Perubahan dan strategi manual disimpan di browser dan di lembar `saran_buffer` file Histori_Serang, lalu dibaca kembali saat file itu diunggah.
 
 Tab order: Forecast, Saran Buffer, Rencana Produksi (bulanan, belum ada isi, tahap berikutnya), Cek Data SKU, Input Data & Model.
+
+## Rencana Produksi (mockup)
+
+Tab **Rencana Produksi** is a mockup of the monthly production plan, modelled on the PPIC Excel:
+
+- Bulan berjalan M1 = closing + 1 (PP mostly fixed), bulan rencana M2 = closing + 2.
+- Stok bebas = stock on hand − outstanding DN − SC block (from the closing). Stok akhir M1 = stok bebas + PP M1 − forecast M1.
+- Buffer M2 = the Saran Buffer final buffer, kept at the same cover (buffer ÷ forecast) and applied to forecast M2.
+- PP M2 = forecast M2 + buffer M2 − stok akhir M1 (minimum 0). Every number shows cartons and tonnes (net weight).
+- PP M1 is editable (type the fixed PP). Machine per SKU is guessed from the name until a Material → Mesin list exists; it can be changed per SKU.
+- Grouped by machine or family, with a load bar per machine. Machine capacity is not known yet.
+- Manual PP M1 and machines are saved in the browser and in the `rencana_produksi` sheet of Histori_Serang.
