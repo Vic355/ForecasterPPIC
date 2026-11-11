@@ -131,6 +131,25 @@ tr.st-diskontinu td, tr.st-diganti td { color: var(--muted); }
 .fct tr.excl td { color: var(--muted); background: var(--off-soft); }
 .fct tr.excl td:first-child { background: var(--off-soft); }
 .ctx a { color: var(--accent); font-weight: 600; }
+.fct td.ed { cursor: cell; }
+.fct td.ed:hover { box-shadow: inset 0 0 0 1px var(--line); }
+.fct td.ed:focus { outline: 2px solid var(--accent); outline-offset: -2px; }
+.fct td.edited { background: linear-gradient(225deg, var(--warn) 7px, transparent 7px), var(--warn-soft); font-weight: 700; }
+.fct td.ed .cellin { width: 100%; min-width: 80px; min-height: 24px; padding: 2px 4px; text-align: right; font: inherit; border: 2px solid var(--accent); border-radius: 3px; box-sizing: border-box; }
+.cellin.bad { border-color: var(--bad) !important; background: var(--bad-soft); }
+.stchip { font-size: 10.5px; font-weight: 700; min-height: 18px; padding: 0 6px; border-radius: 999px; border: 0; margin-left: 4px; cursor: pointer; font-family: var(--font); }
+.stchip.p-ok { background: var(--ok-soft); color: var(--ok); } .stchip.p-warn { background: var(--warn-soft); color: var(--warn); } .stchip.p-off { background: var(--off-soft); color: var(--muted); } .stchip.p-acc { background: var(--accent-soft); color: var(--accent); }
+.stchip.quiet { opacity: 0; } tr.sku:hover .stchip.quiet, .stchip.quiet:focus { opacity: 1; }
+.stmenu { position: absolute; z-index: 20; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.18); padding: 6px; width: 270px; display: flex; flex-direction: column; gap: 2px; }
+.stmenu[hidden] { display: none; }
+.stmenu .mh { font-weight: 700; font-size: 12px; padding: 4px 6px; }
+.stmenu > button { text-align: left; border: 0; min-height: 30px; }
+.stmenu > button:hover, .stmenu > button:focus { background: var(--accent-soft); }
+.stmenu .mr { display: flex; gap: 6px; align-items: flex-end; padding: 4px 6px; border-top: 1px solid var(--line-soft); }
+.stmenu .mr label { font-size: 11px; display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.stmenu .mr input { min-height: 28px; padding: 3px 6px; }
+.stmenu .mw { font-size: 11px; color: var(--muted); padding: 4px 6px; border-top: 1px solid var(--line-soft); }
+.edhint { margin-top: -4px; }
 .empty { padding: 28px; text-align: center; color: var(--muted); }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
 .row { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }
@@ -199,7 +218,7 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
   <header>
     <div>
       <h1>PPIC Forecast Desk · The Univenus Serang</h1>
-      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-11a</span></div>
+      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-11b</span></div>
     </div>
     <nav class="tabs" aria-label="Lembar">
       <button type="button" class="tab on" data-tab="Forecast" aria-current="page">Forecast</button><button type="button" class="tab" data-tab="Cek">Cek Data SKU</button><button type="button" class="tab" disabled title="Belum tersedia">Saran Buffer</button><button type="button" class="tab" data-tab="Input">Input Data &amp; Model</button>
@@ -215,6 +234,7 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
           <select id="fcLimit" aria-label="Jumlah SKU per famili" style="width:auto"><option value="10">10 SKU teratas per famili</option><option value="all">Semua SKU</option></select>
           <label class="chk"><input type="checkbox" id="fcShowExcl"> Tampilkan SKU diskontinu / diganti</label>
           <button type="button" id="fcOpenAll">Buka semua famili</button><button type="button" id="fcCloseAll">Tutup semua</button></div></div>
+      <p class="note edhint">Seperti Excel: klik dua kali atau langsung ketik di sel Stok, Order in, Forecast HQ untuk mengoreksi. Enter/Tab untuk lanjut, Esc batal, Delete mengosongkan, Ctrl+Z membatalkan. Sel yang dikoreksi bertanda kuning; nilai file tetap tersimpan. Klik label status di bawah nama SKU untuk mengubah statusnya. <span id="fcEditMsg" role="status"></span></p>
       <div class="scroll" style="max-height: 680px"><table id="fcTable" class="fct"></table></div>
       <div class="legend"><span><b>Selisih</b> = Forecast HQ − Order in. <b class="pos">Merah</b>: HQ di atas order in.</span><span><b>Forecast ML</b> (prototipe): Holt pada order in + Forecast HQ dikoreksi biasnya per SKU. Arahkan kursor ke angka ML untuk rinciannya.</span><span><b>Sinyal</b> HQ dibanding ML: <span class="sg s-dn2">▼</span> HQ ≥20% di atas, <span class="sg s-dn1">▼</span> 5–20% di atas, <span class="sg s-eq">≈</span> beda &lt;5%, <span class="sg s-up1">▲</span> 5–20% di bawah, <span class="sg s-up2">▲</span> ≥20% di bawah.</span><span><span class="pill p-warn">Tanpa HQ</span> ada order in / ML tapi Forecast HQ kosong.</span></div>
     </section>
@@ -236,8 +256,14 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
       <div class="scroll" style="max-height: 640px"><table id="cekTable" class="cekt"></table></div>
       <datalist id="cekCodes"></datalist>
     </section>
+    <section class="panel" aria-label="Koreksi angka">
+      <div class="ph"><h2>Koreksi angka <span class="sub" id="editCount" style="font-weight:400"></span></h2><button type="button" id="editClear">Hapus semua koreksi</button></div>
+      <p class="note">Angka yang diketik di lembar Forecast. Nilai asli dari file tetap disimpan (lembar <i>bulanan</i> dan <i>forecast_hq</i> di Histori_Serang tidak diubah); koreksi disimpan di lembar <i>koreksi</i> dan dipakai untuk total, akurasi dan ML.</p>
+      <div class="scroll" style="max-height: 420px"><table id="editLog" class="cekt"></table></div>
+    </section>
   </div>
 
+  <div id="stMenu" class="stmenu" role="menu" hidden></div>
   <dialog id="chDlg" aria-labelledby="chTitle">
     <div class="ph"><h2 id="chTitle">Grafik</h2><button type="button" id="chClose" aria-label="Tutup">Tutup ✕</button></div>
     <div id="chBody"></div>
@@ -751,7 +777,7 @@ function sampleForecastGrid(title, f) {
 
 /* ---------- state ---------- */
 var $ = function (id) { return document.getElementById(id); };
-var state = { items: [], view: null, history: null, cls: null, sample: false, nextId: 1, fcOpen: {}, rulesCfg: {}, overrides: {}, fcAll: false, fcShowExcl: false };
+var state = { items: [], view: null, history: null, cls: null, sample: false, nextId: 1, fcOpen: {}, rulesCfg: {}, overrides: {}, fcAll: false, fcShowExcl: false, edits: {}, undo: [] };
 var MONTHS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, mei: 5, jun: 6, jul: 7, aug: 8, agu: 8, ags: 8, agt: 8, sep: 9, oct: 10, okt: 10, nov: 11, dec: 12, des: 12 };
 var MON_ID = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 function monthLabel(m) { return m ? MON_ID[+m.slice(5, 7)] + ' ' + m.slice(2, 4) : '–'; }
@@ -989,6 +1015,8 @@ function loadHistory(name, wb) {
     var c = state.rulesCfg[rule.id] = { on: r.aktif !== 'tidak' };
     Object.keys(rule.params).forEach(function (k) { if (r[k] !== null && r[k] !== undefined) c[k] = r[k]; });
   });
+  read('koreksi').forEach(function (r) { if (r.sku_key && r.data) state.edits[editKey(String(r.sku_key), r.data, r.bulan || '')] = { v: typeof r.koreksi === 'number' ? r.koreksi : null, src: typeof r.nilai_file === 'number' ? r.nilai_file : null, at: r.waktu || '' }; });
+  saveEdits();
   saveRuleState();
   state.history = { name: name, monthly: read('bulanan'), weekly: read('mingguan'), forecast: read('forecast_hq'), log: read('log') };
   if (wb.Sheets.kelas_sku && !state.clsFromFile) {
@@ -1231,6 +1259,7 @@ function saveRuleState() {
 }
 function loadRuleState() {
   try { state.rulesCfg = JSON.parse(localStorage.getItem('ppic_rules') || '{}') || {}; state.overrides = JSON.parse(localStorage.getItem('ppic_overrides') || '{}') || {}; } catch (e) { state.rulesCfg = {}; state.overrides = {}; }
+  try { state.edits = JSON.parse(localStorage.getItem('ppic_edits') || '{}') || {}; } catch (e) { state.edits = {}; }
 }
 function renderCek(m) {
   // rules
@@ -1276,6 +1305,57 @@ function renderCek(m) {
   $('cekTable').innerHTML = t + '</tbody>';
   $('cekCodes').innerHTML = m.all.filter(function (s) { return s.status === 'aktif' || s.status === 'cek'; }).map(function (s) { return '<option value="' + esc(s.key) + '">' + esc(s.name || '') + '</option>'; }).join('');
 }
+/* ---------- corrections typed into the Forecast table (like Excel, but logged) ---------- */
+// state.edits['<sku key>|<field>|<month>'] = { v: number|null, at, by }. The file's own value is kept (src) and never overwritten:
+// the history workbook stores originals in bulanan / forecast_hq and the corrections in sheet `koreksi`.
+var EDIT_FIELDS = { oi: 'Order in', hq: 'Forecast HQ REV', fs: 'Stok bebas', fhq: 'Forecast HQ' };
+function editKey(k, f, mo) { return k + '|' + f + '|' + (mo || ''); }
+function applyEdits(skus, latest) {
+  var by = {}; skus.forEach(function (s) { by[s.key] = s; });
+  Object.keys(state.edits || {}).forEach(function (id) {
+    var e = state.edits[id], p = id.split('|'), s = by[p[0]], f = p[1], mo = p[2];
+    if (!s) { e.missing = true; return; }
+    e.missing = false; s.edited = s.edited || {};
+    if (f === 'oi') { e.src = s.oi[mo] === undefined ? null : s.oi[mo]; s.oi[mo] = e.v; }
+    else if (f === 'hq') { e.src = s.hq[mo] === undefined ? null : s.hq[mo]; s.hq[mo] = e.v; s.rev[mo] = e.v; }
+    else if (f === 'fs') { e.src = s.fs; s.fs = e.v; if (mo === latest) s.soh = e.v; }
+    else if (f === 'fhq') { e.src = s.fhq[mo] === undefined ? null : s.fhq[mo]; s.fhq[mo] = e.v; }
+    e.name = s.name; s.edited[f + '|' + mo] = e;
+  });
+}
+function saveEdits() { try { localStorage.setItem('ppic_edits', JSON.stringify(state.edits || {})); } catch (e) {} }
+function setEdit(id, v, src) {
+  state.undo = state.undo || [];
+  state.undo.push({ id: id, prev: state.edits[id] ? JSON.parse(JSON.stringify(state.edits[id])) : null });
+  if (state.undo.length > 100) state.undo.shift();
+  var cur = state.edits[id], base = cur ? cur.src : src;
+  if (v === undefined || (base !== undefined && v === base)) delete state.edits[id];
+  else state.edits[id] = { v: v, at: new Date().toISOString().slice(0, 16).replace('T', ' '), src: base === undefined ? null : base };
+  saveEdits();
+}
+function undoEdit() {
+  var u = (state.undo || []).pop(); if (!u) return false;
+  if (u.prev) state.edits[u.id] = u.prev; else delete state.edits[u.id];
+  saveEdits(); return u.id;
+}
+// cell html for an editable SKU value
+function edCell(s, f, mo, v, extra) {
+  var e = s.edited && s.edited[f + '|' + (mo || '')];
+  return '<td class="num ed' + (e ? ' edited' : '') + (extra || '') + '" tabindex="0" data-k="' + esc(s.key) + '" data-f="' + f + '" data-m="' + (mo || '') + '"' +
+    (e ? ' title="Dikoreksi ' + esc(e.at || '') + '. Nilai file: ' + esc(n(e.src)) + '"' : ' title="Klik dua kali atau ketik untuk mengoreksi"') + '>' + n(v) + '</td>';
+}
+function renderEditLog() {
+  var ids = Object.keys(state.edits || {});
+  $('editCount').textContent = ids.length ? ids.length + ' koreksi' : 'belum ada koreksi';
+  if (!ids.length) { $('editLog').innerHTML = '<tbody><tr><td class="sub">Belum ada angka yang dikoreksi. Klik dua kali sel Order in, Forecast HQ atau Stok di lembar Forecast untuk mengoreksi.</td></tr></tbody>'; return; }
+  var h = '<thead><tr><th>Waktu</th><th>SKU</th><th>Data</th><th>Bulan</th><th class="num">Nilai file</th><th class="num">Koreksi</th><th></th></tr></thead><tbody>';
+  ids.sort(function (a, b) { return String(state.edits[b].at).localeCompare(String(state.edits[a].at)); }).forEach(function (id) {
+    var e = state.edits[id], p = id.split('|');
+    h += '<tr><td class="col">' + esc(e.at || '') + '</td><td><span class="nm">' + esc(e.name || p[0]) + '</span><span class="code">' + esc(p[0]) + (e.missing ? ' · SKU tidak ada di data sekarang' : '') + '</span></td><td>' + esc(EDIT_FIELDS[p[1]] || p[1]) + '</td><td>' + esc(p[2] ? monthLabel(p[2]) : '–') + '</td><td class="num">' + n(e.src) + '</td><td class="num"><b>' + n(e.v) + '</b></td>' +
+      '<td><button type="button" data-revert="' + esc(id) + '">Kembalikan</button></td></tr>';
+  });
+  $('editLog').innerHTML = h + '</tbody>';
+}
 function forecastModel(c) {
   var cms = Object.keys(c.monthly.reduce(function (s, r) { s[r.closing_month] = 1; return s; }, {})).sort();
   var latest = cms.length ? cms[cms.length - 1] : null;
@@ -1307,6 +1387,7 @@ function forecastModel(c) {
     s.fhq[r.forecast_month] = typeof r.forecast_qty_ctn === 'number' ? r.forecast_qty_ctn : null; s.fver[r.forecast_month] = r.version;
   });
   var fver = {}; fcRows.forEach(function (r) { fver[r.forecast_month] = r.version; });
+  applyEdits(skus, latest);
   var mm = { latest: latest, past: past, future: future, fms: fms, fver: fver, closingMonths: cms, all: skus,
     famKeys: Object.keys(skus.reduce(function (a, s) { if (s.family) a[String(s.family).trim().toUpperCase()] = 1; return a; }, {})) };
   applyRules(mm);
@@ -1456,7 +1537,7 @@ function renderForecastScreen(c) {
   if (m.excl.length || nCekAll) ctx.push('<a href="#" data-goto="Cek">' + (m.excl.length ? m.excl.length + ' SKU dikecualikan' : '') + (m.excl.length && nCekAll ? ', ' : '') + (nCekAll ? nCekAll + ' perlu cek' : '') + ' → Cek Data SKU</a>');
   ctx.push('Satuan: <b>karton</b>');
   $('fcCtx').innerHTML = ctx.map(function (x) { return '<span>' + x + '</span>'; }).join('');
-  renderCek(m);
+  renderCek(m); renderEditLog();
   if (!m.skus.length) {
     $('fcCards').innerHTML = '';
     $('fcTable').innerHTML = '<tbody><tr><td class="empty">Belum ada data. Unggah closing dan Forecast HQ di lembar <b>Input Data &amp; Model</b>.</td></tr></tbody>';
@@ -1511,11 +1592,11 @@ function renderForecastScreen(c) {
     m.past.map(function () { return '<th class="num sep">Order in</th><th class="num" title="REV; ORIG bila REV kosong">Forecast HQ REV</th><th class="num">Selisih</th>'; }).join('') +
     m.future.map(function () { return '<th class="num sep">Forecast HQ</th><th class="num">Forecast ML</th><th>Sinyal</th>'; }).join('') + '</tr></thead><tbody>';
   var cells = function (a, isSku, s) {
-    var t = '<td class="num">' + (isSku ? n(s.fs) : a.fsN ? n(a.fs) : '–') + '</td>';
+    var t = isSku ? edCell(s, 'fs', m.latest, s.fs) : '<td class="num">' + (a.fsN ? n(a.fs) : '–') + '</td>';
     m.past.forEach(function (mo) {
       var o = isSku ? s.oi[mo] : a.oi[mo], q = isSku ? s.hq[mo] : a.hq[mo], has = o !== undefined || q !== undefined;
       var d = has ? (q || 0) - (o || 0) : null;
-      t += '<td class="num sep">' + n(o) + '</td><td class="num">' + n(q) + '</td><td class="num' + (d > 0 ? ' pos' : '') + '">' + signed(d) + '</td>';
+      t += (isSku ? edCell(s, 'oi', mo, o, ' sep') + edCell(s, 'hq', mo, q) : '<td class="num sep">' + n(o) + '</td><td class="num">' + n(q) + '</td>') + '<td class="num' + (d > 0 ? ' pos' : '') + '">' + signed(d) + '</td>';
     });
     m.future.forEach(function (mo) {
       var q = isSku ? s.fhq[mo] : a.fhq[mo], loaded = m.fms.indexOf(mo) >= 0;
@@ -1524,13 +1605,13 @@ function renderForecastScreen(c) {
       if (isSku) sig = loaded || typeof mlv === 'number' ? mlSignal(loaded ? q : undefined, mlv) : '<span class="sub">–</span>';
       else { sig = typeof a.ml[mo] === 'number' && loaded ? mlSignal(a.fhq[mo] || 0, a.ml[mo]) : '<span class="sub">–</span>'; if (a.noHq[mo]) sig += ' <span class="pill p-warn">' + a.noHq[mo] + ' tanpa HQ</span>'; }
       var tip = isSku && s.mlInfo && s.mlInfo[mo] ? ' title="Holt ' + n(s.mlInfo[mo].holt === null ? null : Math.round(s.mlInfo[mo].holt)) + ' · HQ terkoreksi ' + n(s.mlInfo[mo].hqc === null ? null : Math.round(s.mlInfo[mo].hqc)) + ' (×' + fmt.format(Math.round(s.mlInfo[mo].r * 100) / 100) + ') · bobot Holt ' + Math.round(s.mlInfo[mo].w * 100) + '%"' : '';
-      t += '<td class="num sep">' + (loaded ? n(q) : '<span class="sub">belum ada</span>') + '</td><td class="num ml"' + tip + '>' + n(mlv) + '</td><td>' + sig + '</td>';
+      t += (isSku ? edCell(s, 'fhq', mo, q, ' sep') : '<td class="num sep">' + (loaded ? n(q) : '<span class="sub">belum ada</span>') + '</td>') + '<td class="num ml"' + tip + '>' + n(mlv) + '</td><td>' + sig + '</td>';
     });
     return t;
   };
   var skuRow = function (s, ex) {
     var st = STATUS[s.status], why = s.hits.map(function (x) { return x.why; }).join('; ');
-    var pill = s.status === 'aktif' ? '' : ' <span class="pill p-' + st[1] + '" title="' + esc((s.override ? 'Diubah manual. ' : '') + why) + '">' + st[0] + (s.status === 'diganti' && s.succ ? ' → ' + esc(s.succ.nomat || s.succ.art) : '') + '</span>';
+    var pill = ' <button type="button" class="stchip p-' + st[1] + (s.status === 'aktif' ? ' quiet' : '') + '" data-st="' + esc(s.key) + '" title="' + esc((s.override ? 'Diubah manual. ' : '') + (why || 'Klik untuk mengubah status')) + '">' + st[0] + (s.status === 'diganti' && s.succ ? ' → ' + esc(s.succ.nomat || s.succ.art) : '') + (s.override ? ' ✎' : '') + ' ▾</button>';
     return '<tr class="sku' + (ex ? ' excl' : '') + '"><td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + esc(s.nomat || 'tanpa Nomat') + (s.art ? ' · ' + esc(s.art) : '') + pill + '</span></td>' + cells(null, true, s) + '</tr>';
   };
   var lim = state.fcAll ? Infinity : 10;
@@ -1939,7 +2020,7 @@ $('dlXlsx').addEventListener('click', function () {
   var c = combined(), wb = XLSX.utils.book_new();
   var fm = forecastModel(c), mlRows = [];
   fm.skus.forEach(function (sk) { Object.keys(sk.ml || {}).forEach(function (mo) { var i = sk.mlInfo[mo]; mlRows.push({ forecast_month: mo, after_closing: fm.latest, nomat: sk.nomat, article_code: sk.art, description: sk.name, forecast_ml_ctn: sk.ml[mo], holt_ctn: i.holt === null ? null : Math.round(i.holt), hq_corrected_ctn: i.hqc === null ? null : Math.round(i.hqc), hq_ratio: Math.round(i.r * 1000) / 1000, holt_weight: Math.round(i.w * 100) / 100, forecast_hq_ctn: typeof sk.fhq[mo] === 'number' ? sk.fhq[mo] : null, model: 'holt+hq_corrected v1 (prototipe)' }); }); });
-  [['bulanan', c.monthly], ['mingguan', c.weekly], ['forecast_hq', c.forecast], ['forecast_ml', mlRows], ['kelas_sku', c.kelas], ['status_sku', statusRows(fm)], ['aturan', RULES.map(function (r) { var cf = ruleCfg(r.id), o = { aturan: r.id, nama: r.label, aktif: cf.on ? 'ya' : 'tidak' }; Object.keys(r.params).forEach(function (k) { o[k] = cf[k]; }); return o; })], ['log', c.log]].forEach(function (s) {
+  [['bulanan', c.monthly], ['mingguan', c.weekly], ['forecast_hq', c.forecast], ['forecast_ml', mlRows], ['kelas_sku', c.kelas], ['status_sku', statusRows(fm)], ['koreksi', Object.keys(state.edits).map(function (id) { var e = state.edits[id], p = id.split('|'); return { sku_key: p[0], description: e.name || null, data: p[1], data_label: EDIT_FIELDS[p[1]], bulan: p[2] || null, nilai_file: e.src, koreksi: e.v, waktu: e.at }; })], ['aturan', RULES.map(function (r) { var cf = ruleCfg(r.id), o = { aturan: r.id, nama: r.label, aktif: cf.on ? 'ya' : 'tidak' }; Object.keys(r.params).forEach(function (k) { o[k] = cf[k]; }); return o; })], ['log', c.log]].forEach(function (s) {
     XLSX.utils.book_append_sheet(wb, s[1].length ? XLSX.utils.json_to_sheet(s[1]) : XLSX.utils.aoa_to_sheet([['(kosong)']]), s[0]);
   });
   var ms = c.monthly.map(function (r) { return r.closing_month; }).sort();
@@ -2019,6 +2100,97 @@ $('cekTable').addEventListener('change', function (e) {
   else return;
   saveRuleState(); renderAll();
 });
+/* in-place editing on the Forecast table */
+var fcFocus = null; // {k, f, m} to refocus after a re-render
+function cellSel(k, f, mo) { return 'td.ed[data-k="' + (window.CSS && CSS.escape ? CSS.escape(k) : k) + '"][data-f="' + f + '"][data-m="' + mo + '"]'; }
+function rerenderFc(focus) {
+  fcFocus = focus || null;
+  renderAll();
+  if (fcFocus) { var td = document.querySelector('#fcTable ' + cellSel(fcFocus.k, fcFocus.f, fcFocus.m)); if (td) td.focus(); }
+}
+function edCells() { return Array.prototype.slice.call(document.querySelectorAll('#fcTable td.ed')); }
+function moveFrom(td, dir) {
+  var all = edCells(), i = all.indexOf(td); if (i < 0) return null;
+  if (dir === 'right') return all[i + 1] || null;
+  if (dir === 'left') return all[i - 1] || null;
+  var f = td.getAttribute('data-f'), mo = td.getAttribute('data-m'), step = dir === 'down' ? 1 : -1;
+  for (var j = i + step; j >= 0 && j < all.length; j += step) if (all[j].getAttribute('data-f') === f && all[j].getAttribute('data-m') === mo && all[j].parentNode !== td.parentNode) return all[j];
+  return null;
+}
+function posOf(td) { return td ? { k: td.getAttribute('data-k'), f: td.getAttribute('data-f'), m: td.getAttribute('data-m') } : null; }
+function startEdit(td, first) {
+  if (td.querySelector('input')) return;
+  var k = td.getAttribute('data-k'), f = td.getAttribute('data-f'), mo = td.getAttribute('data-m');
+  var raw = td.textContent.trim(), cur = raw === '–' || raw === 'belum ada' ? '' : raw;
+  var inp = document.createElement('input'); inp.type = 'text'; inp.inputMode = 'decimal'; inp.className = 'cellin'; inp.value = first !== undefined ? first : cur;
+  inp.setAttribute('aria-label', (EDIT_FIELDS[f] || f) + (mo ? ' ' + monthLabel(mo) : ''));
+  td.textContent = ''; td.appendChild(inp); inp.focus(); if (first === undefined) inp.select();
+  var done = false;
+  var finish = function (save, dir) {
+    if (done) return; done = true;
+    var next = dir ? moveFrom(td, dir) : td;
+    if (!save) { rerenderFc(posOf(td)); return; }
+    var txt = inp.value.trim(), v = null;
+    if (txt !== '') { var p = parseNumber(txt); if (p[1] || p[0] === null) { done = false; inp.classList.add('bad'); inp.title = 'Bukan angka'; return; } v = p[0]; }
+    if (txt === cur) { rerenderFc(posOf(next)); return; }
+    var id = editKey(k, f, mo), e = state.edits[id];
+    var src = e ? e.src : (cur === '' ? null : parseNumber(cur)[0]);
+    setEdit(id, v, src);
+    rerenderFc(posOf(next));
+  };
+  inp.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Enter') { ev.preventDefault(); finish(true, ev.shiftKey ? 'up' : 'down'); }
+    else if (ev.key === 'Tab') { ev.preventDefault(); finish(true, ev.shiftKey ? 'left' : 'right'); }
+    else if (ev.key === 'Escape') { ev.preventDefault(); finish(false); }
+    ev.stopPropagation();
+  });
+  inp.addEventListener('blur', function () { finish(true); });
+}
+$('fcTable').addEventListener('dblclick', function (e) { var td = e.target.closest('td.ed'); if (td) startEdit(td); });
+$('fcTable').addEventListener('keydown', function (e) {
+  var td = e.target.closest && e.target.closest('td.ed'); if (!td || e.target !== td) return;
+  var dirs = { ArrowDown: 'down', ArrowUp: 'up', ArrowLeft: 'left', ArrowRight: 'right' };
+  if (dirs[e.key]) { e.preventDefault(); var nx = moveFrom(td, dirs[e.key]); if (nx) nx.focus(); return; }
+  if (e.key === 'Tab') { var nt = moveFrom(td, e.shiftKey ? 'left' : 'right'); if (nt) { e.preventDefault(); nt.focus(); } return; }
+  if (e.key === 'Enter' || e.key === 'F2') { e.preventDefault(); startEdit(td); return; }
+  if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); var id = editKey(td.getAttribute('data-k'), td.getAttribute('data-f'), td.getAttribute('data-m')), ex = state.edits[id], c = td.textContent.trim(); setEdit(id, null, ex ? ex.src : (c === '–' ? null : parseNumber(c)[0])); rerenderFc(posOf(td)); return; }
+  if (e.key.length === 1 && /[0-9\-.,]/.test(e.key) && !e.ctrlKey && !e.metaKey) { e.preventDefault(); startEdit(td, e.key); }
+});
+document.addEventListener('keydown', function (e) {
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && (e.key === 'z' || e.key === 'Z') && !$('tabForecast').hidden && !(e.target && /INPUT|SELECT|TEXTAREA/.test(e.target.tagName))) {
+    var id = undoEdit(); if (id) { e.preventDefault(); var p = id.split('|'); rerenderFc({ k: p[0], f: p[1], m: p[2] }); $('fcEditMsg').textContent = 'Koreksi dibatalkan.'; }
+  }
+});
+// status menu from the row chip
+function closeStMenu() { var mnu = $('stMenu'); mnu.hidden = true; mnu.innerHTML = ''; }
+$('fcTable').addEventListener('click', function (e) {
+  var b = e.target.closest('button[data-st]'); if (!b) return;
+  e.stopPropagation();
+  var k = b.getAttribute('data-st'), ov = state.overrides[k], mnu = $('stMenu');
+  var m = forecastModel(combined()), s = m.all.filter(function (x) { return x.key === k; })[0]; if (!s) return;
+  mnu.innerHTML = '<div class="mh">' + esc(s.name || k) + '</div>' +
+    '<button type="button" data-set="">Otomatis (' + STATUS[s.autoStatus][0] + ')' + (!ov ? ' ✓' : '') + '</button>' +
+    ['aktif', 'cek', 'diskontinu'].map(function (st) { return '<button type="button" data-set="' + st + '">' + STATUS[st][0] + (ov && ov.status === st ? ' ✓' : '') + '</button>'; }).join('') +
+    '<div class="mr"><label>Diganti oleh <input type="text" list="cekCodes" id="stSucc" value="' + esc(ov && ov.status === 'diganti' ? ov.succ || '' : s.autoSucc ? s.autoSucc.key : '') + '" placeholder="Nomat"></label><button type="button" data-set="diganti">OK</button></div>' +
+    (s.hits.length ? '<div class="mw">' + s.hits.map(function (x) { return esc(x.why); }).join('<br>') + '</div>' : '');
+  var r = b.getBoundingClientRect(); mnu.style.left = Math.min(r.left + window.scrollX, window.scrollX + document.documentElement.clientWidth - 280) + 'px'; mnu.style.top = (r.bottom + window.scrollY + 4) + 'px';
+  mnu.hidden = false; mnu.setAttribute('data-k', k); var f1 = mnu.querySelector('button'); if (f1) f1.focus();
+});
+$('stMenu').addEventListener('click', function (e) {
+  var b = e.target.closest('button[data-set]'); if (!b) return;
+  var k = $('stMenu').getAttribute('data-k'), st = b.getAttribute('data-set');
+  if (!st) delete state.overrides[k];
+  else state.overrides[k] = { status: st, succ: st === 'diganti' ? $('stSucc').value.trim() : '', at: new Date().toISOString().slice(0, 10) };
+  saveRuleState(); closeStMenu(); renderAll();
+});
+document.addEventListener('click', function (e) { if (!$('stMenu').hidden && !e.target.closest('#stMenu')) closeStMenu(); });
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('stMenu').hidden) closeStMenu(); });
+$('editLog').addEventListener('click', function (e) {
+  var b = e.target.closest('button[data-revert]'); if (!b) return;
+  var id = b.getAttribute('data-revert'), ex = state.edits[id]; setEdit(id, undefined, ex ? ex.src : undefined); renderAll();
+});
+$('editClear').addEventListener('click', function () { state.undo = (state.undo || []).concat(Object.keys(state.edits).map(function (id) { return { id: id, prev: state.edits[id] }; })); state.edits = {}; saveEdits(); renderAll(); });
+
 $('fcCloseAll').addEventListener('click', function () { state.fcOpen = {}; renderForecastScreen(combined()); });
 (function () { var t = 'Forecast'; try { t = localStorage.getItem('ppic_tab') || t; } catch (e) {} showTab(t === 'Input' || t === 'Cek' ? t : 'Forecast'); })();
 state.cls = builtinClass();

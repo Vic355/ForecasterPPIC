@@ -37,6 +37,15 @@ in the browser and in the history workbook (sheets `status_sku` and `aturan`), a
 The Forecast table can show all SKUs per family and the excluded ones (greyed). The realised side uses **Forecast HQ REV**
 (ORIG only when REV is empty); the accuracy card and chart also show ORIG.
 
+## Editing in the Forecast table
+
+Free stock, Order in, Forecast HQ REV (closing months) and Forecast HQ M+1..M+3 cells can be edited like Excel: double-click
+or just type, Enter/Tab to move on, arrows to move, Esc to cancel, Delete to empty, Ctrl+Z to undo. Edited cells are marked
+yellow with the file value in the tooltip. The file's values are never overwritten: corrections are kept separately
+(browser + sheet `koreksi` in the history workbook, listed with a revert button under Cek Data SKU) and applied on top for
+totals, accuracy and the ML. The status chip under each SKU name opens a menu to set Aktif / Perlu cek / Diskontinu /
+Diganti oleh … without leaving the table.
+
 ## Forecast ML (prototype v1)
 
 Per SKU (Nomat), in the browser, recomputed from whatever history is loaded:
