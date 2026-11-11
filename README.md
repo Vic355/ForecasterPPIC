@@ -154,5 +154,7 @@ Tab **Rencana Produksi** is a mockup of the monthly production plan, modelled on
 - Buffer M2 = the Saran Buffer final buffer, kept at the same cover (buffer ÷ forecast) and applied to forecast M2.
 - PP M2 = forecast M2 + buffer M2 − stok akhir M1 (minimum 0). Every number shows cartons and tonnes (net weight).
 - PP M1 is editable (type the fixed PP). Machine per SKU is guessed from the name until a Material → Mesin list exists; it can be changed per SKU.
-- Grouped by machine or family, with a load bar per machine. Machine capacity is not known yet.
-- Manual PP M1 and machines are saved in the browser and in the `rencana_produksi` sheet of Histori_Serang.
+- SKU table groups by machine type (product type, as in the Excel summary tab) or by brand family.
+- Summary per machine type in tonnes for both months: forecast, buffer, PP final, capacity, balance (capacity − PP final). Machine types expand to machines with capacity (ton/month) and remarks from the Excel PP Okt–Nov 26; capacity cells are editable.
+- Machine per SKU: manual choice > uploaded PP Excel (any sheet with Material + Mesin columns) > guess from the name. Excel values such as SOFTPACK BSR, K-Towel and LUNCHEON are mapped to machine types.
+- Manual PP M1 and machines are saved in the browser and in the `rencana_produksi` sheet; capacities and the Material → Mesin list in `kapasitas_mesin`.
