@@ -80,6 +80,8 @@ input.act.ok { background: var(--ok-soft); } input.act.warn { background: var(--
 .drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .fstat { font-size: 12px; color: var(--muted); }
 .fstat.ok { color: var(--ok); } .fstat.bad { color: var(--bad); }
+.mock { padding: 10px 12px; border-radius: 6px; background: var(--warn-soft); color: var(--warn); display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
+.mock button { margin-left: auto; }
 .empty { padding: 28px; text-align: center; color: var(--muted); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
 input[type=month] { font: inherit; color: inherit; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); min-height: 32px; }
 </style>
@@ -110,7 +112,8 @@ input[type=month] { font: inherit; color: inherit; padding: 4px 8px; border: 1px
   </section>
   <p class="sub" style="margin:0">File dibaca di browser ini saja, tidak diunggah ke server. Data tersimpan di browser ini sampai diganti atau dihapus.</p>
 
-  <div class="empty" id="emptyMsg">Belum ada rencana produksi. Unggah file Excel rencana di kotak <b>1</b> di atas, atau unduh template-nya dulu.</div>
+  <div class="empty" id="emptyMsg">Belum ada rencana produksi. Unggah file Excel rencana di kotak <b>1</b> di atas, atau unduh template-nya dulu.<br><br><button type="button" class="primary" id="mockBtn">Lihat contoh (mockup) dengan data November 2026</button></div>
+  <div class="mock" id="mockBar" hidden><b>MOCKUP</b> · Contoh tampilan: rencana harian November 2026 dari PDF CVT Mills TUB Planning, aktual s/d kemarin adalah angka rekaan. Tidak disimpan. <button type="button" id="mockExit">Tutup contoh</button></div>
   <div id="main" hidden>
 
   <div class="bar">
@@ -190,6 +193,7 @@ input[type=month] { font: inherit; color: inherit; padding: 4px 8px; border: 1px
   // ---------- storage (browser only, like the main app) ----------
   function setState(text, cls) { var e = $('saveState'); e.textContent = text; e.className = 'chip' + (cls ? ' ' + cls : ''); }
   function saveLocal() {
+    if (plan && plan.sample) { setState('MOCKUP · tidak disimpan', 'warn'); return; }
     try { localStorage.setItem(LS_KEY, JSON.stringify({ plan: plan, actual: actual, actSrc: actSrc })); setState('Tersimpan di browser ini', 'ok'); }
     catch (e) { setState('Gagal simpan: penyimpanan browser penuh', 'bad'); }
   }
@@ -219,7 +223,7 @@ input[type=month] { font: inherit; color: inherit; padding: 4px 8px; border: 1px
     var left = days.filter(function (x) { return x > d && !off[x]; }).length;
     var need = left > 0 ? Math.max(0, PT - A) / left : null;
     var t = [
-      ['Hari ini · ' + dayLabel(d), f0(Ad) + ' CT', 'Rencana ' + f0(Pd) + ' CT · ' + fp(pct(Ad, Pd)), pct(Ad, Pd)],
+      ['Tanggal ' + dayLabel(d), f0(Ad) + ' CT', 'Rencana ' + f0(Pd) + ' CT · ' + fp(pct(Ad, Pd)), pct(Ad, Pd)],
       ['Aktual s/d hari ini', f0(A) + ' CT', f1(AM) + ' MT · rencana ' + f0(P) + ' CT', pct(A, P)],
       ['Selisih s/d hari ini', (A - P >= 0 ? '+' : '') + f0(A - P) + ' CT', fp(pct(A, P)) + ' dari rencana s/d hari ini', null],
       ['Pencapaian bulan', fp(pct(A, PT)), f0(A) + ' / ' + f0(PT) + ' CT · ' + f1(AM) + ' / ' + f1(PTM) + ' MT', pct(A, PT)],
@@ -514,6 +518,7 @@ input[type=month] { font: inherit; color: inherit; padding: 4px 8px; border: 1px
       var per = Object.keys(cnt).sort(function (x, y) { return cnt[y] - cnt[x]; })[0];
       var label = new Date(per + '-01T00:00:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
       var p = { period: per, label: label, start: start, end: end, source: file.name + ' · lembar "' + b.n + '"', loadedAt: new Date().toISOString(), lines: ls };
+      if (plan && plan.sample) { plan = null; actual = {}; actSrc = null; $('mockBar').hidden = true; }
       if (plan && plan.period !== p.period && Object.keys(actual).length && !confirm('Rencana baru untuk ' + label + '. Data aktual periode sebelumnya dihapus. Lanjut?')) return;
       if (plan && plan.period !== p.period) { actual = {}; actSrc = null; }
       start_(p); saveLocal();
@@ -594,9 +599,34 @@ input[type=month] { font: inherit; color: inherit; padding: 4px 8px; border: 1px
     $('emptyMsg').hidden = true; $('main').hidden = false;
     render();
   }
+  // ---------- mockup: sample plan + made-up actuals up to yesterday ----------
+  function showMock() {
+    $('mockBtn').disabled = true;
+    fetch('contoh-rencana-2026-11.json').then(function (r) { return r.json(); }).then(function (p) {
+      p.sample = true; actual = {}; actSrc = null;
+      var today = iso(new Date()), seed = 7;
+      function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+      var ds = enumerate(p.start, p.end), last = ds.filter(function (d) { return d < today; }).pop() || '2026-11-11';
+      p.lines.forEach(function (l, i) {
+        var bias = 0.82 + rnd() * 0.25;              // each line runs a bit above or below plan
+        ds.forEach(function (d) {
+          if (d > last) return;
+          var pl = l.plan[d] || 0; if (!pl) return;
+          var f = rnd() < 0.06 ? 0 : bias * (0.9 + rnd() * 0.2); // occasional breakdown day
+          (actual[l.id] = actual[l.id] || {})[d] = Math.round(pl * f);
+        });
+      });
+      start_(p);
+      curDay = last; $('daySel').value = last; render();
+      $('mockBar').hidden = false; setState('MOCKUP · tidak disimpan', 'warn');
+      stat('planStat', 'Sedang menampilkan MOCKUP. Unggah file Anda untuk memakai data sendiri.', '');
+    }).catch(function (e) { $('mockBtn').disabled = false; alert('Gagal memuat contoh: ' + e); });
+  }
+  $('mockBtn').addEventListener('click', showMock);
+  $('mockExit').addEventListener('click', function () { location.href = location.pathname; });
   $('planMonth').value = iso(new Date()).slice(0, 7);
   var saved = null; try { saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) {}
-  if (saved && saved.plan && saved.plan.lines && saved.plan.lines.length) {
+  if (!/[?&]contoh\b/.test(location.search) && saved && saved.plan && saved.plan.lines && saved.plan.lines.length) {
     actual = saved.actual || {}; actSrc = saved.actSrc || null;
     start_(saved.plan);
     stat('planStat', 'Dimuat dari browser: ' + saved.plan.source + '.', 'ok');
@@ -604,6 +634,7 @@ input[type=month] { font: inherit; color: inherit; padding: 4px 8px; border: 1px
     if (nA) stat('actStat', nA + ' angka aktual tersimpan' + (actSrc ? ' (terakhir dari ' + actSrc + ')' : '') + '.', 'ok');
     setState('Tersimpan di browser ini', 'ok');
   } else setState('Belum ada data');
+  if (/[?&]contoh\b/.test(location.search)) showMock();
 })();
 </script>
 </body>
