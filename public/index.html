@@ -493,7 +493,7 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
           <select id="ppFam" aria-label="Filter famili"></select>
           <input type="search" id="ppQ" placeholder="Cari SKU / Nomat" aria-label="Cari SKU">
         </div></div>
-      <div class="ppctl"><button type="button" id="ppOpenAll">Buka semua mesin</button><button type="button" id="ppCloseAll">Tutup semua</button><button type="button" id="schReset">Kembalikan jadwal otomatis</button><button type="button" id="ppReset">Hapus perubahan manual</button><button type="button" id="ppXlsx" title="Unduh rencana produksi bulan ini sebagai Excel: tabel per mesin dengan target harian, daftar bar, PP per SKU dan kalender">Ekspor Excel</button><span class="sub" id="ppHint"></span></div>
+      <div class="ppctl"><button type="button" id="ppOpenAll">Buka semua mesin</button><button type="button" id="ppCloseAll">Tutup semua</button><button type="button" id="schReset">Kembalikan jadwal otomatis</button><button type="button" id="ppReset">Hapus perubahan manual</button><button type="button" id="ppXlsx" title="Unduh rencana produksi bulan ini sebagai Excel: tabel per mesin dengan target harian, daftar bar, PP per SKU dan kalender">Ekspor Excel</button><button type="button" id="ppToMon" title="Pakai jadwal ini sebagai rencana di halaman Monitoring Produksi Harian. Data aktual yang sudah diisi tidak diubah.">Kirim ke Monitoring Harian ↗</button><span class="sub" id="ppHint"></span></div>
       <p class="note" id="schNote"></p>
       <div class="ppscroll" id="ppScroll"><table id="ppTable" class="fct ppt ppg"></table></div><div class="ppbar" id="ppBar" aria-hidden="true"><div></div></div>
       <div class="legend"><span><i class="schk"></i> SKU (geser / tarik ujung kanan)</span><span><i class="schk bad"></i> bermasalah, didahulukan</span><span><i class="schk man"></i> diatur manual</span><span><i class="schk ovr"></i> lewat akhir bulan</span><span><i class="schk clash"></i> bentrok</span><span><i class="sw offsw"></i> libur</span><span><i class="sw mntsw"></i> maintenance</span><span><i class="sw edsw"></i> target diisi manual</span><span>⚠ rencana beda dari target</span><span>Kolom SKU, Target, Rencana dan Hari dan baris tanggal tetap di tempat saat digeser (seperti freeze panes Excel)</span></div>
@@ -3065,6 +3065,34 @@ $('ppXlsx').addEventListener('click', function () {
   var kal = []; for (var d2 = 1; d2 <= D; d2++) kal.push({ tanggal: dateOfDay(P, d2), hari: DOW[dowOf(P, d2)], status: sm.cal.g[d2] ? 'libur' : 'kerja', keterangan: sm.cal.g[d2] || sm.cal.info[d2] || null });
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(kal), 'Kalender');
   XLSX.writeFile(wb, 'Rencana_Produksi_' + $('plant').value.trim() + '_' + P + '.xlsx');
+});
+
+// send this month's schedule to the daily monitoring page (/produksi/), which reads it from localStorage 'ppic_prod'.
+// Only the plan is replaced; actuals already entered there stay (moved by material if a SKU changed machine).
+$('ppToMon').addEventListener('click', function () {
+  var pm = CH.pm, sm = CH.sm; if (!pm || !sm || !sm.items.length) { alert('Belum ada jadwal rencana produksi untuk dikirim.'); return; }
+  var P = pm.P, D = pm.D, seen = {}, last = dateOfDay(P, D);
+  var lines = sm.items.slice().sort(function (a, b) { return a.mc.name < b.mc.name ? -1 : a.mc.name > b.mc.name ? 1 : a.s - b.s; }).map(function (pc) {
+    var r = pc.r, k = r.s.key, g = sm.tgt[k], mat = String(r.s.nomat || r.s.art || k), plan = {}, ct = 0, n = 0;
+    pc.days.forEach(function (d) { var x = g && g.d[d]; if (!x || x.pcs.indexOf(pc) < 0) return; var v = Math.round(x.v / x.pcs.length); if (!v) return; var iso = dateOfDay(P, d); plan[iso] = v; ct += v; n++; if (iso > last) last = iso; });
+    var id = pc.mc.name + '-' + mat; seen[id] = (seen[id] || 0) + 1; if (seen[id] > 1) id += '-' + seen[id];
+    return { id: id, machine: pc.mc.name, material: mat, desc: r.s.name || mat, category: pc.mc.type || '', net: r.nw || 0, target: n ? Math.round(ct / n) : 0, ct: ct, plan: plan };
+  }).filter(function (l) { return l.ct > 0; });
+  var off = []; for (var d = 1; d <= D; d++) if (sm.cal.g[d]) off.push(dateOfDay(P, d));
+  var store = {}; try { store = JSON.parse(localStorage.getItem('ppic_prod') || '{}') || {}; } catch (e) { store = {}; }
+  var actual = store.actual || {}, ids = {}, used = {}, moved = 0;
+  lines.forEach(function (l) { ids[l.id] = l; });
+  Object.keys(actual).forEach(function (id) {
+    if (ids[id]) { used[id] = 1; return; }
+    var mat = id.split('-')[1], to = lines.filter(function (l) { return l.material === mat && !used[l.id] && !actual[l.id]; })[0];
+    if (to) { actual[to.id] = actual[id]; delete actual[id]; used[to.id] = 1; moved++; }
+  });
+  store.plan = { period: P, label: new Date(P + '-01T00:00:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }), start: dateOfDay(P, 1), end: last, offDays: off, source: 'Rencana Produksi (tab di PPIC Forecast Desk), dikirim ' + new Date().toLocaleString('id-ID'), fromPP: true, loadedAt: new Date().toISOString(), lines: lines };
+  store.actual = actual;
+  try { localStorage.setItem('ppic_prod', JSON.stringify(store)); } catch (e) { alert('Gagal menyimpan: penyimpanan browser penuh.'); return; }
+  var w = window.open('/produksi/', 'ppic-produksi');
+  if (!w) location.href = '/produksi/';
+  setTimeout(function () { alert(lines.length + ' SKU dikirim ke Monitoring Produksi Harian (' + monthLabel(P) + ').' + (moved ? ' ' + moved + ' baris aktual dipindah karena SKU pindah mesin.' : '') + ' Data aktual tidak diubah.'); }, 50);
 });
 
 /* ---------- inputs ---------- */
