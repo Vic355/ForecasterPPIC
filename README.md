@@ -163,6 +163,14 @@ The plan is made at the start of the month, so there is **one plan month: closin
 
 ### Data the plan needs (Input → Data rencana produksi)
 
+The Input tab has two editable tables (type in them, or paste a block copied from Excel):
+
+- **Daftar mesin**: jenis mesin, mesin, kapasitas t/bulan, catatan.
+- **Kelompok SKU → jenis mesin**: a word or phrase found in the SKU name (e.g. *Soft Pack*, *Travel Pack*) or a brand family name, and the machine type it runs on. The longest matching group wins; the table shows how many active SKUs each group catches and which SKUs are still unmatched. "Isi contoh kelompok" adds a starter list. Machine choice per SKU: manual > per-SKU `sku_mesin` row > kelompok > PP Excel Material/Mesin > guess from the name.
+
+**Calendar**: Indonesian national holidays and cuti bersama for 2026–2027 (SKB 3 Menteri) are built in. Saturdays are working days, Sundays are off ("Minggu libur"), national holidays are off, cuti bersama are working days unless "Cuti bersama libur" is ticked. Click a date to turn a Sunday or holiday into a working day (lembur) or to mark an extra holiday. Saved in `kalender_produksi`.
+
+
 "Unduh template" gives a workbook pre-filled with what the app already has; fill it and upload it again. The PP Excel (summary tab + Material/Mesin columns) is still accepted.
 
 | Sheet | Columns | Needed |
