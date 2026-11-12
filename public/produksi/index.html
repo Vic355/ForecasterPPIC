@@ -9,6 +9,7 @@
 /* Daily production monitoring: monthly plan (jadwal harian per line) vs. actual CT entered by hand. Same Worker as the main app, served at /produksi/. */
 [hidden] { display: none !important; }
 :root {
+  --s1: #2a78d6;
   --bg: #F4F5F7; --panel: #FFFFFF; --line: #D5D9DD; --line-soft: #E7E9EC; --head: #F1F3F5;
   --fg: #1F2428; --muted: #5F6770; --accent: #4B2F96; --accent-soft: #EEEAF8;
   --ok: #1E6B34; --ok-soft: #E3F2E7; --warn: #8A5A00; --warn-soft: #FDF1DA; --bad: #A3170F; --bad-soft: #FBE7E5; --off: #8C939A;
@@ -16,7 +17,7 @@
 }
 @media (prefers-color-scheme: dark) { :root {
   --bg: #15171A; --panel: #1D2024; --line: #343940; --line-soft: #2A2E33; --head: #252930;
-  --fg: #E6E8EB; --muted: #9AA2AB; --accent: #B7A5F0; --accent-soft: #2B2442;
+  --s1: #3987e5; --fg: #E6E8EB; --muted: #9AA2AB; --accent: #B7A5F0; --accent-soft: #2B2442;
   --ok: #7FD39A; --ok-soft: #1B3324; --warn: #F0C46A; --warn-soft: #3A2E14; --bad: #F29A92; --bad-soft: #3E1E1B; --off: #7D858E; color-scheme: dark } }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 13px; }
@@ -66,9 +67,21 @@ input.act.ok { background: var(--ok-soft); } input.act.warn { background: var(--
 .grid th, .grid td { padding: 2px 4px; }
 .grid .fz { position: sticky; z-index: 3; }
 .grid th.fz { z-index: 4; }
-.grid .fz0 { left: 0; min-width: 64px; } .grid .fz1 { left: 64px; min-width: 240px; max-width: 240px; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid var(--line); }
-.grid input.act { width: 58px; padding: 2px 4px; }
-.grid .plan { display: block; font-size: 10px; color: var(--muted); text-align: right; line-height: 1.2; }
+.grid .fz0 { left: 0; min-width: 64px; max-width: 64px; } .grid .fz1 { left: 64px; min-width: 230px; max-width: 230px; overflow: hidden; text-overflow: ellipsis; }
+.grid .fz2 { left: 294px; min-width: 88px; max-width: 88px; text-align: right; border-right: 1px solid var(--line); font-weight: 700; }
+.grid th.fz2 { white-space: normal; line-height: 1.2; }
+.grid td.dc { padding: 3px 0; vertical-align: top; }
+.grid input.act { width: 56px; padding: 2px 4px; margin: 0 4px; display: block; }
+/* Gantt bar: one continuous band over the planned days, plan qty inside, actual entry under it */
+.grid .gb { display: block; height: 16px; line-height: 16px; margin-bottom: 3px; font-size: 10px; text-align: right; padding: 0 4px; white-space: nowrap; overflow: hidden; }
+.grid .gb.on { background: var(--s1); color: #fff; }
+.grid .gb.on.gs { margin-left: 3px; border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
+.grid .gb.on.ge { margin-right: 3px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
+.grid .gb.on.past { background: color-mix(in srgb, var(--s1) 55%, var(--panel)); }
+.grid td.off .gb.on { background-image: repeating-linear-gradient(135deg, transparent 0 4px, rgba(255,255,255,.3) 4px 8px); }
+.utang { color: var(--bad); } .utang.lebih { color: var(--ok); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; color: var(--muted); font-size: 12px; margin: -4px 0 10px; }
+.legend i { display: inline-block; width: 22px; height: 10px; border-radius: 3px; vertical-align: middle; margin-right: 4px; }
 .grid th.off, .grid td.off { background: var(--bad-soft); }
 .grid th.today { box-shadow: inset 0 -3px 0 var(--accent); color: var(--accent); }
 .data { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
@@ -138,7 +151,8 @@ input[type=month] { font: inherit; color: inherit; padding: 4px 8px; border: 1px
         <div class="scroll"><table id="dailyTbl"></table></div>
       </div>
       <div id="view-grid" hidden>
-        <p class="note">Seperti lembar Excel: angka kecil = rencana, kotak = aktual (CT). Tempel blok angka dari Excel ke satu kotak untuk mengisi ke kanan dan ke bawah. Kolom merah = hari Minggu.</p>
+        <p class="note">Batang biru = jadwal rencana (angka di dalamnya = rencana CT hari itu), kotak di bawahnya = aktual. Tempel blok angka dari Excel ke satu kotak untuk mengisi ke kanan dan ke bawah. <b>Utang</b> = rencana − aktual s/d tanggal terpilih.</p>
+        <div class="legend"><span><i style="background:var(--s1)"></i>Rencana</span><span><i style="background:color-mix(in srgb, var(--s1) 55%, var(--panel))"></i>Rencana, hari sudah lewat</span><span><i style="background:var(--ok-soft);border:1px solid var(--line)"></i>Aktual ≥ rencana</span><span><i style="background:var(--warn-soft);border:1px solid var(--line)"></i>90–99%</span><span><i style="background:var(--bad-soft);border:1px solid var(--line)"></i>&lt; 90%</span><span><i style="background:var(--bad-soft)"></i>Kolom Minggu</span></div>
         <div class="scroll"><table class="grid" id="gridTbl"></table></div>
       </div>
       <div id="view-sku" hidden>
@@ -258,24 +272,31 @@ input[type=month] { font: inherit; color: inherit; padding: 4px 8px; border: 1px
     });
     $('dailyTbl').innerHTML = h + '</tbody><tfoot>' + dailyFoot(rows) + '</tfoot>';
   }
+  function utangHtml(u) { return u > 0 ? '<span class="utang">' + f0(u) + '</span>' : u < 0 ? '<span class="utang lebih" title="Lebih dari rencana">+' + f0(-u) + '</span>' : '<span class="utang lebih">0</span>'; }
+  function lineUtang(l) { return planTo(l, curDay) - actTo(l, curDay); }
+  function gridCell(l, i) {
+    var d = days[i], p = l.plan[d] || 0, a = getA(l.id, d), cls = a === null ? '' : status(a, p);
+    var prev = i > 0 && (l.plan[days[i - 1]] || 0) > 0, next = i < days.length - 1 && (l.plan[days[i + 1]] || 0) > 0;
+    var bar = p ? '<span class="gb on' + (prev ? '' : ' gs') + (next ? '' : ' ge') + (d < curDay ? ' past' : '') + '" title="' + esc(l.desc) + ' · ' + dayLabel(d) + ': rencana ' + f0(p) + ' CT">' + f0(p) + '</span>' : '<span class="gb"></span>';
+    return '<td class="dc' + (off[d] ? ' off' : '') + '">' + bar + '<input class="act ' + cls + '" inputmode="decimal" data-line="' + esc(l.id) + '" data-day="' + d + '" value="' + (a === null ? '' : a) + '" aria-label="Aktual ' + esc(l.desc) + ' ' + dayLabel(d) + '"></td>';
+  }
   function renderGrid() {
-    var rows = filtered(), h = '<thead><tr><th class="fz fz0">Mesin</th><th class="fz fz1">Deskripsi</th>';
+    var rows = filtered(), h = '<thead><tr><th class="fz fz0">Mesin</th><th class="fz fz1">Deskripsi</th><th class="fz fz2 num" title="Rencana − aktual s/d ' + dayLabel(curDay) + '">Utang s/d ' + Number(curDay.slice(8)) + '/' + Number(curDay.slice(5, 7)) + '</th>';
     days.forEach(function (d) { h += '<th class="num' + (off[d] ? ' off' : '') + (d === curDay ? ' today' : '') + '" title="' + dayLabel(d) + '">' + Number(d.slice(8)) + '</th>'; });
     h += '<th class="num">Rencana</th><th class="num">Aktual</th><th class="num">%</th></tr></thead><tbody>';
-    var colP = {}, colA = {};
+    var colP = {}, colA = {}, TU = 0;
     rows.forEach(function (l) {
-      var sp = 0, sa = 0;
-      h += '<tr><td class="fz fz0 mono">' + esc(l.machine) + '</td><td class="fz fz1" title="' + esc(l.material + ' · ' + l.desc) + '">' + esc(l.desc) + '</td>';
-      days.forEach(function (d) {
+      var sp = 0, sa = 0, u = lineUtang(l); TU += u;
+      h += '<tr><td class="fz fz0 mono">' + esc(l.machine) + '</td><td class="fz fz1" title="' + esc(l.material + ' · ' + l.desc) + '">' + esc(l.desc) + '</td><td class="fz fz2">' + utangHtml(u) + '</td>';
+      days.forEach(function (d, i) {
         var p = l.plan[d] || 0, a = getA(l.id, d);
         sp += p; sa += a || 0; colP[d] = (colP[d] || 0) + p; colA[d] = (colA[d] || 0) + (a || 0);
-        var cls = a === null ? '' : status(a, p);
-        h += '<td class="' + (off[d] ? 'off' : '') + '"><span class="plan">' + (p ? f0(p) : '&nbsp;') + '</span><input class="act ' + cls + '" inputmode="decimal" data-line="' + esc(l.id) + '" data-day="' + d + '" value="' + (a === null ? '' : a) + '"></td>';
+        h += gridCell(l, i);
       });
       h += '<td class="num">' + f0(sp) + '</td><td class="num">' + f0(sa) + '</td><td class="num">' + fp(pct(sa, sp)) + '</td></tr>';
     });
     var TP = 0, TA = 0;
-    h += '</tbody><tfoot><tr class="total"><td class="fz fz0"></td><td class="fz fz1">Total</td>';
+    h += '</tbody><tfoot><tr class="total"><td class="fz fz0"></td><td class="fz fz1">Total aktual</td><td class="fz fz2">' + utangHtml(TU) + '</td>';
     days.forEach(function (d) { TP += colP[d] || 0; TA += colA[d] || 0; h += '<td class="num" title="Rencana ' + f0(colP[d]) + '">' + f0(colA[d] || 0) + '</td>'; });
     h += '<td class="num">' + f0(TP) + '</td><td class="num">' + f0(TA) + '</td><td class="num">' + fp(pct(TA, TP)) + '</td></tr></tfoot>';
     $('gridTbl').innerHTML = h;
@@ -339,9 +360,10 @@ input[type=month] { font: inherit; color: inherit; padding: 4px 8px; border: 1px
       var cells = inp.closest('tr').cells, n = cells.length, sp = 0, sa = 0;
       days.forEach(function (x) { sp += l.plan[x] || 0; sa += getA(id, x) || 0; });
       cells[n - 2].textContent = f0(sa); cells[n - 1].textContent = fp(pct(sa, sp));
-      var col = 0; filtered().forEach(function (m) { col += getA(m.id, d) || 0; });
-      var foot = $('gridTbl').tFoot.rows[0].cells, ci = 2 + days.indexOf(d), TA = 0, TP = 0;
-      foot[ci].textContent = f0(col);
+      cells[2].innerHTML = utangHtml(lineUtang(l));
+      var col = 0, TU = 0; filtered().forEach(function (m) { col += getA(m.id, d) || 0; TU += lineUtang(m); });
+      var foot = $('gridTbl').tFoot.rows[0].cells, ci = 3 + days.indexOf(d), TA = 0, TP = 0;
+      foot[ci].textContent = f0(col); foot[2].innerHTML = utangHtml(TU);
       filtered().forEach(function (m) { days.forEach(function (x) { TA += getA(m.id, x) || 0; TP += m.plan[x] || 0; }); });
       foot[foot.length - 2].textContent = f0(TA); foot[foot.length - 1].textContent = fp(pct(TA, TP));
     }
@@ -395,7 +417,7 @@ input[type=month] { font: inherit; color: inherit; padding: 4px 8px; border: 1px
       document.querySelectorAll('.tab[data-view]').forEach(function (x) { x.classList.toggle('on', x === b); });
       ['daily', 'grid', 'sku', 'machine'].forEach(function (v) { $('view-' + v).hidden = v !== view; });
       render();
-      if (view === 'grid') { var th = document.querySelector('#gridTbl th.today'), s = document.querySelector('#view-grid .scroll'); if (th && s) s.scrollLeft = Math.max(0, th.offsetLeft - 360); }
+      if (view === 'grid') { var th = document.querySelector('#gridTbl th.today'), s = document.querySelector('#view-grid .scroll'); if (th && s) s.scrollLeft = Math.max(0, th.offsetLeft - 520); }
     });
   });
   $('daySel').addEventListener('change', function () { curDay = this.value; render(); });
