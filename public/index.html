@@ -435,7 +435,7 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
   <header>
     <div>
       <h1>PPIC Decision Support System <span class="h1sub">· The Univenus Serang · <b>PPIC Forecast Desk (bulanan)</b></span></h1>
-      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-12f</span></div>
+      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-12g</span></div>
     </div>
     <nav class="tabs" aria-label="Lembar">
       <button type="button" class="tab on" data-tab="Forecast" aria-current="page">Forecast</button><button type="button" class="tab" data-tab="Buffer">Saran Buffer</button><button type="button" class="tab" data-tab="Plan">Rencana Produksi</button><button type="button" class="tab" data-tab="Cek">Cek Data SKU</button><button type="button" class="tab" data-tab="Input">Input Data &amp; Model</button>
@@ -1990,7 +1990,7 @@ var SCH_X = 14; // days after month end that the calendar may run into
 function schedModel(pm, MST) {
   var P = pm.P, D = pm.D, sc = schedFor(P), cal = calOff(P), H0 = D + SCH_X, machines = [], byName = {}, unplaced = [], items = [], byKey = {};
   MST.forEach(function (g) { g[1].forEach(function (x) {
-    var c = capOf(x[0], x[1]); if (!(c > 0)) return;
+    var c = capOf(x[0], x[1]); if (!(c > 0)) c = 0;
     var off = {}; [cal.per[g[0]], cal.per[x[0]]].forEach(function (o) { if (o) Object.keys(o).forEach(function (d) { off[d] = o[d]; }); });
     Object.keys(cal.g).forEach(function (d) { if (!off[d]) off[d] = cal.g[d]; });
     var avail = 0; for (var d = 1; d <= D; d++) if (!off[d]) avail++;
@@ -2021,8 +2021,9 @@ function schedModel(pm, MST) {
     var nd = pcs.reduce(function (a, pc) { return a + pc.days.length; }, 0); pcs.forEach(function (pc) { pc.t = nd ? t * pc.days.length / nd : 0; });
   });
   auto.forEach(function (r) {
+    if (r.mach.guess && !state.sample) { unplaced.push({ r: r, why: 'SKU belum dipetakan ke jenis mesin (isi Kelompok SKU di Input, atau pilih di sini)' }); return; }
     var t = r.pl * r.nw / 1000, tm = skuMachOf(r.s);
-    var cand = tm && tm.mach && byName[tm.mach] ? [byName[tm.mach]] : machines.filter(function (x) { return x.type === r.mach.v && x.rate > 0; });
+    var cand = tm && tm.mach && byName[tm.mach] && byName[tm.mach].rate > 0 ? [byName[tm.mach]] : machines.filter(function (x) { return x.type === r.mach.v && x.rate > 0; });
     if (!cand.length) { unplaced.push({ r: r, t: t, why: r.mach.v ? 'jenis mesin ' + r.mach.v + ' tidak punya mesin dengan kapasitas' : 'jenis mesin belum dipetakan' }); return; }
     var left = t, guard = 0, hz = D; // fill the month on all candidate machines first, only then run past month end
     while (left > 1e-6 && guard++ < 60) {
@@ -2060,7 +2061,7 @@ function schedModel(pm, MST) {
     dl.forEach(function (d) { ds[d].forEach(function (pc) { var v = o[d].v / ds[d].length; pc.plan += v; pc.mc.plan += v; pc.mc.planT += v * r.nw / 1000; }); });
     if (!dl.length) flag(k, r, 'bar hanya di hari libur');
     if (sum !== r.pp && dl.length) flag(k, r, 'PP rencana ' + n(sum) + ' ≠ PP target ' + n(r.pp) + (r.plMan ? ' (rencana diubah manual)' : ''));
-    dl.forEach(function (d) { ds[d].forEach(function (pc) { var rt = rateOf(r, pc.mc); if (o[d].v / ds[d].length * r.nw / 1000 > rt * 1.15) { o[d].hot = true; flag(k, r, 'target harian di atas kecepatan ' + pc.mc.name + ' (' + fmt.format(Math.round(rt * 10) / 10) + ' t/hari)'); } }); });
+    dl.forEach(function (d) { ds[d].forEach(function (pc) { var rt = rateOf(r, pc.mc); if (rt > 0 && o[d].v / ds[d].length * r.nw / 1000 > rt * 1.15) { o[d].hot = true; flag(k, r, 'target harian di atas kecepatan ' + pc.mc.name + ' (' + fmt.format(Math.round(rt * 10) / 10) + ' t/hari)'); } }); });
     pcs.forEach(function (pc) {
       if (pc.days.some(function (d) { return d > D; })) flag(k, r, 'lewat akhir bulan (selesai tgl ' + (pc.s + pc.l - 1 - D) + ' bulan berikutnya)');
       if (pc.clash) flag(k, r, 'bentrok dengan ' + (pc.clash.s.name || pc.clash.s.key) + ' di ' + pc.mc.name);
@@ -2093,11 +2094,13 @@ function renderPlan(m) {
   var demo = !master().length && !!state.sample, MST = master().length ? master() : demo ? demoMaster(pm) : []; CH.MST = MST;
   var sm = schedModel(pm, MST); CH.sm = sm;
   renderPPData(pm);
-  $('ppCtx').innerHTML = '<span><span class="pill p-warn">MOCKUP</span></span><span>Closing terakhir: <b>' + monthLabel(m.latest) + '</b></span><span>Bulan rencana: <b>' + monthLabel(P) + '</b> (' + pm.D + ' hari)</span><span>Dasar forecast: <b>' + { hq: 'Forecast HQ', ml: 'Forecast ML', avg: 'Rata-rata HQ & ML' }[pm.cfg.basis] + '</b> · buffer dari <a href="#" data-goto="Buffer">Saran Buffer</a></span>' + (state.sample ? '<span><span class="pill p-warn">CONTOH SIMULASI</span></span>' : '');
+  $('ppCtx').innerHTML = (state.sample ? '<span><span class="pill p-warn">MOCKUP</span></span>' : '') + '<span>Closing terakhir: <b>' + monthLabel(m.latest) + '</b></span><span>Bulan rencana: <b>' + monthLabel(P) + '</b> (' + pm.D + ' hari)</span><span>Dasar forecast: <b>' + { hq: 'Forecast HQ', ml: 'Forecast ML', avg: 'Rata-rata HQ & ML' }[pm.cfg.basis] + '</b> · buffer dari <a href="#" data-goto="Buffer">Saran Buffer</a></span>' + (state.sample ? '<span><span class="pill p-warn">CONTOH SIMULASI</span></span>' : '');
   document.querySelectorAll('#ppUnitSeg button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-pu') === state.ppUnit); });
   $('schSun').checked = !!state.ppSunOff; $('schCb').checked = !!state.ppCbOff;
   $('schH').textContent = 'Rencana produksi per mesin · ' + monthLabel(P);
-  $('schNote').innerHTML = (demo ? '<span class="pill p-warn">MESIN CONTOH</span> Daftar mesin belum diunggah, jadi dipakai mesin contoh rekaan. ' : (!MST.length ? '<b>Daftar mesin belum dimuat.</b> Unggah di <a href="#" data-goto="Input">Input Data &amp; Model</a> (Data rencana produksi). ' : '')) +
+  $('schNote').innerHTML = (demo ? '<span class="pill p-warn">MESIN CONTOH</span> Daftar mesin belum diunggah, jadi dipakai mesin contoh rekaan. ' : (!MST.length ? '<b>Daftar mesin belum ada</b>, jadi kalender masih kosong. Isi tabel <i>Daftar mesin</i> di <a href="#" data-goto="Input">Input Data &amp; Model</a>. ' : '')) +
+    (function () { var nc = sm.machines.filter(function (x) { return !(x.cap > 0); }).length, ng = state.sample ? 0 : pm.rows.filter(function (r) { return r.mach.guess && r.pl > 0; }).length;
+      return (nc ? '<b>' + nc + ' mesin belum punya kapasitas</b>: barisnya kosong dan tidak dipakai jadwal otomatis (klik dua kali kolom kap. atau isi di <a href="#" data-goto="Input">Input</a>). ' : '') + (ng ? '<b>' + ng + ' SKU belum dipetakan ke jenis mesin</b>: ada di grup <i>Belum terjadwal</i> sampai Kelompok SKU diisi di <a href="#" data-goto="Input">Input</a> atau jenis mesin dipilih di tabel. ' : ''); })() +
     'PP = forecast + buffer − stok bebas. Jadwal otomatis: SKU bermasalah dulu, lalu cover stok paling sedikit, ke mesin yang paling cepat kosong. <b>Geser</b> bar untuk pindah tanggal atau mesin, tarik <b>ujung kanan</b> untuk mengubah lama produksi, <b>klik dua kali</b> tempat kosong untuk menambah SKU atau maintenance, klik <b>tanggal</b> untuk libur. Klik bar untuk <b>memisah</b> dan menyisipkan SKU lain di tengah (A → B → A). Target harian = PP rencana ÷ hari produksi; klik dua kali angkanya untuk mengubah, sisa hari menyesuaikan. <b>Rencana</b> boleh diisi beda dari target; selisihnya ditandai ⚠.';
   // ----- cards (each opens a list) -----
   var t1 = function (v) { return fmt.format(Math.round(v)) + ' t'; }, mach = function (r) { return esc(r.mach.v || '–') + (r.mach.guess ? ' <span class="sub">(tebakan)</span>' : ''); };
@@ -2195,7 +2198,7 @@ function renderPlanGrid(pm, sm, mt, all) {
       if (filt && !x.items.some(function (pc) { return hit(pc.r); })) return;
       var openM = filt || !!state.ppOpenMc[x.name], e = state.capEdits[x.name];
       h += '<tr class="mach" data-m="' + esc(x.name) + '"><td><div class="fl"><button type="button" class="exp" data-ppmc="' + esc(x.name) + '" aria-expanded="' + openM + '"' + (x.items.length ? '' : ' disabled') + ' title="Tampilkan SKU dan target harian">' + (openM ? '▼' : '▶') + '</button><div>' + esc(x.name) + '<span class="code">' + x.items.length + ' SKU' + (x.rem ? ' · ' + esc(x.rem) : '') + '</span></div></div></td>' +
-        '<td class="num cap sep' + (e ? ' edited' : '') + '" tabindex="0" data-cap="' + esc(x.name) + '" title="Kapasitas ' + fmt.format(x.cap) + ' t/bulan (rata-rata produksi bulan lalu), ' + fmt.format(Math.round(x.rate * 10) / 10) + ' t/hari. Klik dua kali untuk mengubah.">kap. ' + fmt.format(Math.round(x.cap)) + ' t<span class="mt">' + fmt.format(Math.round(x.rate * 10) / 10) + ' t/hari</span></td>' +
+        '<td class="num cap sep' + (e ? ' edited' : '') + '" tabindex="0" data-cap="' + esc(x.name) + '" title="' + (x.cap > 0 ? 'Kapasitas ' + fmt.format(x.cap) + ' t/bulan, ' + fmt.format(Math.round(x.rate * 10) / 10) + ' t/hari.' : 'Kapasitas belum ada: mesin ini tidak dipakai jadwal otomatis, tapi SKU bisa ditaruh manual.') + ' Klik dua kali untuk mengubah.">' + (x.cap > 0 ? 'kap. ' + fmt.format(Math.round(x.cap)) + ' t<span class="mt">' + fmt.format(Math.round(x.rate * 10) / 10) + ' t/hari</span>' : 'kap. –<span class="mt">belum diisi</span>') + '</td>' +
         '<td class="num ppr" title="Output terencana mesin ini = jumlah target harian SKU di mesin ini">' + (mt ? fmt.format(Math.round(x.planT * 10) / 10) : n(Math.round(x.plan)) + '<span class="mt">' + fmt.format(Math.round(x.planT * 10) / 10) + ' t</span>') + '</td><td class="num" title="Hari terpakai / hari kerja">' + x.used + '/' + x.avail + '</td>' +
         '<td class="tl sep" colspan="' + H + '">' + trk(x, x.items.map(function (pc) { return bar(pc, true); }).join('')) + '</td></tr>';
       if (openM) x.items.forEach(function (pc) { if (!filt || hit(pc.r)) h += skuRow(pc.r, pc); });
