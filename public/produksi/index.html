@@ -4,43 +4,607 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Monitoring Produksi Harian · PPIC</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono&display=swap">
 <style>
-/* Daily production monitoring page. Separate page on the same Cloudflare Worker as the main app (served at /produksi/). Placeholder for now. */
+/* Daily production monitoring: monthly plan (jadwal harian per line) vs. actual CT entered by hand. Same Worker as the main app, served at /produksi/. */
+[hidden] { display: none !important; }
 :root {
-  --bg: #F4F5F7; --panel: #FFFFFF; --line: #D5D9DD; --fg: #1F2428; --muted: #5F6770;
-  --accent: #4B2F96; --accent-soft: #EEEAF8; --ok: #1E6B34; --ok-soft: #E3F2E7;
-  --font: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bg: #F4F5F7; --panel: #FFFFFF; --line: #D5D9DD; --line-soft: #E7E9EC; --head: #F1F3F5;
+  --fg: #1F2428; --muted: #5F6770; --accent: #4B2F96; --accent-soft: #EEEAF8;
+  --ok: #1E6B34; --ok-soft: #E3F2E7; --warn: #8A5A00; --warn-soft: #FDF1DA; --bad: #A3170F; --bad-soft: #FBE7E5; --off: #8C939A;
+  --font: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark) { :root {
-  --bg: #15171A; --panel: #1D2024; --line: #343940; --fg: #E6E8EB; --muted: #9AA2AB;
-  --accent: #B7A5F0; --accent-soft: #2B2442; --ok: #7FD39A; --ok-soft: #1B3324; color-scheme: dark } }
+  --bg: #15171A; --panel: #1D2024; --line: #343940; --line-soft: #2A2E33; --head: #252930;
+  --fg: #E6E8EB; --muted: #9AA2AB; --accent: #B7A5F0; --accent-soft: #2B2442;
+  --ok: #7FD39A; --ok-soft: #1B3324; --warn: #F0C46A; --warn-soft: #3A2E14; --bad: #F29A92; --bad-soft: #3E1E1B; --off: #7D858E; color-scheme: dark } }
+* { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 13px; }
-.wrap { max-width: 1320px; margin: 0 auto; padding: 16px max(16px, env(safe-area-inset-left, 0px)) 32px; display: flex; flex-direction: column; gap: 14px; }
+.wrap { max-width: 1400px; margin: 0 auto; padding: 16px max(16px, env(safe-area-inset-left, 0px)) 40px; display: flex; flex-direction: column; gap: 14px; }
 header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
 h1 { margin: 0; font-size: 20px; font-weight: 700; }
 h1 span { font-weight: 400; font-size: 15px; color: var(--muted); }
+.sub { color: var(--muted); margin-top: 4px; }
+a.back, button, select, input[type=search] { font: inherit; color: inherit; }
 a.back { color: var(--accent); font-weight: 600; text-decoration: none; padding: 6px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
-a.back:hover { background: var(--accent-soft); }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
-.badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: var(--ok-soft); color: var(--ok); font-weight: 700; font-size: 12px; }
-.muted { color: var(--muted); }
+button { padding: 6px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); cursor: pointer; font-weight: 600; min-height: 32px; }
+button:hover { background: var(--accent-soft); }
+button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+select, input[type=search] { padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); min-height: 32px; }
+.bar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.bar label { display: flex; gap: 6px; align-items: center; color: var(--muted); }
+.spacer { flex: 1; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--head); color: var(--muted); }
+.chip.ok { background: var(--ok-soft); color: var(--ok); } .chip.warn { background: var(--warn-soft); color: var(--warn); } .chip.bad { background: var(--bad-soft); color: var(--bad); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.tile { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.tile .k { color: var(--muted); font-size: 12px; }
+.tile .v { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 2px; }
+.tile .s { color: var(--muted); font-size: 12px; margin-top: 2px; font-variant-numeric: tabular-nums; }
+.meter { height: 6px; border-radius: 3px; background: var(--line-soft); margin-top: 8px; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--accent); }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
+.tab { border-radius: 6px 6px 0 0; border-bottom: 0; color: var(--muted); }
+.tab.on { color: var(--accent); box-shadow: inset 0 2px 0 var(--accent); background: var(--panel); }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 0 8px 8px 8px; padding: 12px; }
+.note { color: var(--muted); margin: 0 0 10px; }
+.scroll { overflow: auto; max-height: calc(100vh - 150px); border: 1px solid var(--line-soft); border-radius: 6px; }
+table { border-collapse: separate; border-spacing: 0; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { padding: 4px 8px; border-bottom: 1px solid var(--line-soft); text-align: left; white-space: nowrap; background: var(--panel); }
+th { background: var(--head); font-size: 12px; color: var(--muted); font-weight: 600; position: sticky; top: 0; z-index: 2; }
+td.num, th.num { text-align: right; }
+td.desc { max-width: 300px; overflow: hidden; text-overflow: ellipsis; }
+tr.total td { font-weight: 700; background: var(--head); position: sticky; bottom: 0; }
+tr.mgroup td { background: var(--head); font-weight: 700; color: var(--muted); font-size: 12px; }
+.mono { font-family: var(--mono); font-size: 12px; }
+input.act { width: 84px; text-align: right; font: inherit; font-variant-numeric: tabular-nums; padding: 3px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--fg); }
+input.act:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+input.act.ok { background: var(--ok-soft); } input.act.warn { background: var(--warn-soft); } input.act.bad { background: var(--bad-soft); }
+.pos { color: var(--ok); } .neg { color: var(--bad); }
+.st { font-weight: 700; font-size: 12px; } .st.ok { color: var(--ok); } .st.warn { color: var(--warn); } .st.bad { color: var(--bad); } .st.off { color: var(--off); }
+/* grid view */
+.grid th, .grid td { padding: 2px 4px; }
+.grid .fz { position: sticky; z-index: 3; }
+.grid th.fz { z-index: 4; }
+.grid .fz0 { left: 0; min-width: 64px; } .grid .fz1 { left: 64px; min-width: 240px; max-width: 240px; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid var(--line); }
+.grid input.act { width: 58px; padding: 2px 4px; }
+.grid .plan { display: block; font-size: 10px; color: var(--muted); text-align: right; line-height: 1.2; }
+.grid th.off, .grid td.off { background: var(--bad-soft); }
+.grid th.today { box-shadow: inset 0 -3px 0 var(--accent); color: var(--accent); }
+.data { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
+.slot { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.slot h2 { margin: 0; font-size: 14px; }
+.slot .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.drop { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 80px; border: 1.5px dashed var(--off); border-radius: 8px; padding: 12px; text-align: center; cursor: pointer; background: var(--panel); }
+.drop.over, .drop:focus-within { border-color: var(--accent); background: var(--accent-soft); }
+.drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.fstat { font-size: 12px; color: var(--muted); }
+.fstat.ok { color: var(--ok); } .fstat.bad { color: var(--bad); }
+.empty { padding: 28px; text-align: center; color: var(--muted); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+input[type=month] { font: inherit; color: inherit; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); min-height: 32px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>Monitoring Produksi Harian <span>· PPIC Decision Support System</span></h1>
+    <div>
+      <h1>Monitoring Produksi Harian <span>· TUB Mills · <b id="periodLabel">-</b></span></h1>
+      <div class="sub" id="periodSub">Unggah Excel rencana produksi untuk mulai.</div>
+    </div>
     <a class="back" href="/">← Kembali ke PPIC Forecast Desk</a>
   </header>
-  <div class="card">
-    <p><span class="badge">Halaman aktif</span></p>
-    <p>Halaman monitoring produksi harian sudah tersambung ke situs yang sama. Fitur akan ditambahkan di sini.</p>
-    <p class="muted">Hari ini: <b id="today">-</b></p>
+
+  <section class="data" aria-label="File Excel">
+    <div class="slot">
+      <h2>1. Rencana produksi harian (Excel)</h2>
+      <label class="drop" data-kind="plan"><input type="file" accept=".xlsx,.xlsm,.xls,.csv" data-kind="plan"><b>Pilih atau tarik file rencana</b><span class="sub">Satu baris per line: Mesin, Material, Deskripsi, Net (kg), Target/hari, lalu satu kolom per tanggal</span></label>
+      <div class="row"><label class="sub">Bulan rencana <input type="month" id="planMonth"></label><button type="button" id="tplPlan">Unduh template rencana</button></div>
+      <div class="fstat" id="planStat">Belum ada file rencana.</div>
+    </div>
+    <div class="slot">
+      <h2>2. Aktual produksi (Excel, opsional)</h2>
+      <label class="drop" data-kind="actual"><input type="file" accept=".xlsx,.xlsm,.xls,.csv" data-kind="actual"><b>Pilih atau tarik file aktual</b><span class="sub">Format sama dengan rencana; angka per tanggal = CT aktual. Bisa juga diketik langsung di bawah.</span></label>
+      <div class="row"><button type="button" id="tplAct">Unduh template aktual</button><button type="button" id="clearAll">Hapus semua data</button></div>
+      <div class="fstat" id="actStat">Belum ada data aktual.</div>
+    </div>
+  </section>
+  <p class="sub" style="margin:0">File dibaca di browser ini saja, tidak diunggah ke server. Data tersimpan di browser ini sampai diganti atau dihapus.</p>
+
+  <div class="empty" id="emptyMsg">Belum ada rencana produksi. Unggah file Excel rencana di kotak <b>1</b> di atas, atau unduh template-nya dulu.</div>
+  <div id="main" hidden>
+
+  <div class="bar">
+    <label>Tanggal <select id="daySel"></select></label>
+    <button type="button" id="prevDay" aria-label="Hari sebelumnya">‹</button><button type="button" id="nextDay" aria-label="Hari berikutnya">›</button>
+    <label>Mesin <select id="machSel"><option value="">Semua mesin</option></select></label>
+    <label><input type="search" id="q" placeholder="Cari SKU / material…"></label>
+    <span class="spacer"></span>
+    <span class="chip" id="saveState">-</span>
+    <button type="button" id="exportBtn">Ekspor Excel</button>
+  </div>
+
+  <div class="tiles" id="tiles"></div>
+
+  <div>
+    <nav class="tabs" aria-label="Tampilan">
+      <button type="button" class="tab on" data-view="daily">Input harian</button><button type="button" class="tab" data-view="grid">Grid bulanan</button><button type="button" class="tab" data-view="sku">Per SKU</button><button type="button" class="tab" data-view="machine">Per mesin</button>
+    </nav>
+    <div class="card">
+      <div id="view-daily">
+        <p class="note">Ketik aktual produksi (CT) untuk tanggal terpilih. Bisa juga tempel satu kolom angka dari Excel ke kotak pertama: angka mengisi ke bawah. Tersimpan otomatis.</p>
+        <div class="scroll"><table id="dailyTbl"></table></div>
+      </div>
+      <div id="view-grid" hidden>
+        <p class="note">Seperti lembar Excel: angka kecil = rencana, kotak = aktual (CT). Tempel blok angka dari Excel ke satu kotak untuk mengisi ke kanan dan ke bawah. Kolom merah = hari Minggu.</p>
+        <div class="scroll"><table class="grid" id="gridTbl"></table></div>
+      </div>
+      <div id="view-sku" hidden>
+        <p class="note">Digabung per material (beberapa line bisa membuat SKU yang sama). Rencana dan aktual s/d tanggal terpilih.</p>
+        <div class="scroll"><table id="skuTbl"></table></div>
+      </div>
+      <div id="view-machine" hidden>
+        <p class="note">Ton (MT) = CT × berat bersih (kg) / 1000. Rencana dan aktual s/d tanggal terpilih.</p>
+        <div class="scroll"><table id="machTbl"></table></div>
+      </div>
+    </div>
+  </div>
+  <p class="sub" id="srcNote"></p>
   </div>
 </div>
 <script>
-document.getElementById('today').textContent = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+(function () {
+  'use strict';
+  var LS_KEY = 'ppic_prod';
+  var plan = null, lines = [], days = [], off = {};
+  var actual = {};           // actual[lineId][day] = ct
+  var actSrc = null;         // last actual file loaded
+  var byId = {};
+  var view = 'daily', curDay = null;
+  var $ = function (id) { return document.getElementById(id); };
+  var nf0 = new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 });
+  var nf1 = new Intl.NumberFormat('id-ID', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+  function f0(v) { return v === null || v === undefined || v === '' ? '' : nf0.format(v); }
+  function f1(v) { return nf1.format(v || 0); }
+  function pct(a, p) { return p > 0 ? a / p * 100 : null; }
+  function fp(x) { return x === null ? '–' : nf0.format(x) + '%'; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function status(a, p) {
+    if (!(p > 0)) return a > 0 ? 'ok' : 'off';
+    var r = a / p; return r >= 1 ? 'ok' : r >= 0.9 ? 'warn' : 'bad';
+  }
+  var ST_LABEL = { ok: 'Sesuai', warn: 'Sedikit kurang', bad: 'Kurang', off: '-' };
+  function dayLabel(d) {
+    var dt = new Date(d + 'T00:00:00');
+    return dt.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
+  }
+  function enumerate(a, b) { var out = [], d = new Date(a + 'T00:00:00Z'), e = new Date(b + 'T00:00:00Z'); while (d <= e) { out.push(d.toISOString().slice(0, 10)); d.setUTCDate(d.getUTCDate() + 1); } return out; }
+  function mt(l, ct) { return (ct || 0) * (l.net || 0) / 1000; }
+  function getA(id, d) { var r = actual[id]; return r && r[d] !== undefined ? r[d] : null; }
+  function planTo(l, d) { var s = 0; for (var i = 0; i < days.length && days[i] <= d; i++) s += l.plan[days[i]] || 0; return s; }
+  function actTo(l, d) { var s = 0, r = actual[l.id] || {}; for (var i = 0; i < days.length && days[i] <= d; i++) s += r[days[i]] || 0; return s; }
+  function filtered() {
+    var m = $('machSel').value, q = $('q').value.trim().toLowerCase();
+    return lines.filter(function (l) { return (!m || l.machine === m) && (!q || (l.desc + ' ' + l.material + ' ' + l.category).toLowerCase().indexOf(q) >= 0); });
+  }
+
+  // ---------- storage (browser only, like the main app) ----------
+  function setState(text, cls) { var e = $('saveState'); e.textContent = text; e.className = 'chip' + (cls ? ' ' + cls : ''); }
+  function saveLocal() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ plan: plan, actual: actual, actSrc: actSrc })); setState('Tersimpan di browser ini', 'ok'); }
+    catch (e) { setState('Gagal simpan: penyimpanan browser penuh', 'bad'); }
+  }
+  function setCell(id, d, v) {
+    if (!actual[id]) actual[id] = {};
+    if (v === null) delete actual[id][d]; else actual[id][d] = v;
+    saveLocal();
+  }
+  function parseNum(s) {
+    s = String(s).trim().replace(/\s/g, '');
+    if (s === '' || s === '-') return null;
+    // Indonesian Excel: 1.234,5 ; also accept 1234.5 / 1,234
+    if (/,\d{1,2}$/.test(s)) s = s.replace(/\./g, '').replace(',', '.');
+    else s = s.replace(/[.,](?=\d{3}(\D|$))/g, '');
+    var v = Number(s); return isFinite(v) ? v : NaN;
+  }
+
+  // ---------- rendering ----------
+  function renderTiles() {
+    var d = curDay, P = 0, A = 0, PM = 0, AM = 0, Pd = 0, Ad = 0, PT = 0, PTM = 0;
+    lines.forEach(function (l) {
+      var p = planTo(l, d), a = actTo(l, d);
+      P += p; A += a; PM += mt(l, p); AM += mt(l, a);
+      Pd += l.plan[d] || 0; Ad += getA(l.id, d) || 0;
+      PT += l.ct; PTM += mt(l, l.ct);
+    });
+    var left = days.filter(function (x) { return x > d && !off[x]; }).length;
+    var need = left > 0 ? Math.max(0, PT - A) / left : null;
+    var t = [
+      ['Hari ini · ' + dayLabel(d), f0(Ad) + ' CT', 'Rencana ' + f0(Pd) + ' CT · ' + fp(pct(Ad, Pd)), pct(Ad, Pd)],
+      ['Aktual s/d hari ini', f0(A) + ' CT', f1(AM) + ' MT · rencana ' + f0(P) + ' CT', pct(A, P)],
+      ['Selisih s/d hari ini', (A - P >= 0 ? '+' : '') + f0(A - P) + ' CT', fp(pct(A, P)) + ' dari rencana s/d hari ini', null],
+      ['Pencapaian bulan', fp(pct(A, PT)), f0(A) + ' / ' + f0(PT) + ' CT · ' + f1(AM) + ' / ' + f1(PTM) + ' MT', pct(A, PT)],
+      ['Sisa hari kerja', String(left), need === null ? 'Periode selesai' : 'Perlu ±' + f0(need) + ' CT/hari untuk mengejar rencana', null]
+    ];
+    $('tiles').innerHTML = t.map(function (x) {
+      return '<div class="tile"><div class="k">' + esc(x[0]) + '</div><div class="v">' + esc(x[1]) + '</div><div class="s">' + esc(x[2]) + '</div>' +
+        (x[3] !== null ? '<div class="meter"><i style="width:' + Math.min(100, Math.max(0, x[3] || 0)).toFixed(1) + '%"></i></div>' : '') + '</div>';
+    }).join('');
+  }
+  function dailyRow(l) {
+    var d = curDay, p = l.plan[d] || 0, a = getA(l.id, d), pt = planTo(l, d), at = actTo(l, d), s = status(at, pt);
+    var cls = a === null ? '' : status(a, p);
+    return '<tr data-row="' + esc(l.id) + '"><td class="mono">' + esc(l.machine) + '</td><td class="mono">' + esc(l.material) + '</td><td class="desc" title="' + esc(l.desc + ' · ' + l.category) + '">' + esc(l.desc) + '</td>' +
+      '<td class="num">' + f0(l.target) + '</td><td class="num">' + (p ? f0(p) : '<span style="color:var(--off)">-</span>') + '</td>' +
+      '<td class="num"><input class="act ' + cls + '" inputmode="decimal" data-line="' + esc(l.id) + '" data-day="' + d + '" value="' + (a === null ? '' : a) + '"></td>' +
+      '<td class="num ' + (a === null ? '' : (a - p >= 0 ? 'pos' : 'neg')) + '">' + (a === null ? '' : (a - p >= 0 ? '+' : '') + f0(a - p)) + '</td>' +
+      '<td class="num">' + (a === null ? '' : f1(mt(l, a))) + '</td><td class="num">' + f0(pt) + '</td><td class="num">' + f0(at) + '</td>' +
+      '<td class="num">' + fp(pct(at, pt)) + '</td><td><span class="st ' + s + '">' + ST_LABEL[s] + '</span></td></tr>';
+  }
+  function dailyFoot(rows) {
+    var d = curDay, T = { p: 0, a: 0, am: 0, pt: 0, at: 0 };
+    rows.forEach(function (l) { var a = getA(l.id, d); T.p += l.plan[d] || 0; T.a += a || 0; T.am += mt(l, a); T.pt += planTo(l, d); T.at += actTo(l, d); });
+    return '<tr class="total"><td colspan="4">Total (' + rows.length + ' line)</td><td class="num">' + f0(T.p) + '</td><td class="num">' + f0(T.a) + '</td><td class="num">' + ((T.a - T.p >= 0 ? '+' : '') + f0(T.a - T.p)) + '</td><td class="num">' + f1(T.am) + '</td><td class="num">' + f0(T.pt) + '</td><td class="num">' + f0(T.at) + '</td><td class="num">' + fp(pct(T.at, T.pt)) + '</td><td></td></tr>';
+  }
+  function renderDaily() {
+    var rows = filtered(), h = '<thead><tr><th>Mesin</th><th>Material</th><th>Deskripsi</th><th class="num">Target/hari</th><th class="num">Rencana hari ini</th><th class="num">Aktual (CT)</th><th class="num">Selisih</th><th class="num">Aktual MT</th><th class="num">Rencana s/d</th><th class="num">Aktual s/d</th><th class="num">%</th><th>Status</th></tr></thead><tbody>';
+    var last = null;
+    rows.forEach(function (l) {
+      if (l.machine !== last) { h += '<tr class="mgroup"><td colspan="12">' + esc(l.machine) + '</td></tr>'; last = l.machine; }
+      h += dailyRow(l);
+    });
+    $('dailyTbl').innerHTML = h + '</tbody><tfoot>' + dailyFoot(rows) + '</tfoot>';
+  }
+  function renderGrid() {
+    var rows = filtered(), h = '<thead><tr><th class="fz fz0">Mesin</th><th class="fz fz1">Deskripsi</th>';
+    days.forEach(function (d) { h += '<th class="num' + (off[d] ? ' off' : '') + (d === curDay ? ' today' : '') + '" title="' + dayLabel(d) + '">' + Number(d.slice(8)) + '</th>'; });
+    h += '<th class="num">Rencana</th><th class="num">Aktual</th><th class="num">%</th></tr></thead><tbody>';
+    var colP = {}, colA = {};
+    rows.forEach(function (l) {
+      var sp = 0, sa = 0;
+      h += '<tr><td class="fz fz0 mono">' + esc(l.machine) + '</td><td class="fz fz1" title="' + esc(l.material + ' · ' + l.desc) + '">' + esc(l.desc) + '</td>';
+      days.forEach(function (d) {
+        var p = l.plan[d] || 0, a = getA(l.id, d);
+        sp += p; sa += a || 0; colP[d] = (colP[d] || 0) + p; colA[d] = (colA[d] || 0) + (a || 0);
+        var cls = a === null ? '' : status(a, p);
+        h += '<td class="' + (off[d] ? 'off' : '') + '"><span class="plan">' + (p ? f0(p) : '&nbsp;') + '</span><input class="act ' + cls + '" inputmode="decimal" data-line="' + esc(l.id) + '" data-day="' + d + '" value="' + (a === null ? '' : a) + '"></td>';
+      });
+      h += '<td class="num">' + f0(sp) + '</td><td class="num">' + f0(sa) + '</td><td class="num">' + fp(pct(sa, sp)) + '</td></tr>';
+    });
+    var TP = 0, TA = 0;
+    h += '</tbody><tfoot><tr class="total"><td class="fz fz0"></td><td class="fz fz1">Total</td>';
+    days.forEach(function (d) { TP += colP[d] || 0; TA += colA[d] || 0; h += '<td class="num" title="Rencana ' + f0(colP[d]) + '">' + f0(colA[d] || 0) + '</td>'; });
+    h += '<td class="num">' + f0(TP) + '</td><td class="num">' + f0(TA) + '</td><td class="num">' + fp(pct(TA, TP)) + '</td></tr></tfoot>';
+    $('gridTbl').innerHTML = h;
+  }
+  function group(key) {
+    var g = {}, order = [];
+    filtered().forEach(function (l) {
+      var k = l[key]; if (!g[k]) { g[k] = { k: k, lines: [] }; order.push(k); }
+      g[k].lines.push(l);
+    });
+    return order.map(function (k) { return g[k]; });
+  }
+  function renderSku() {
+    var d = curDay, h = '<thead><tr><th>Material</th><th>Deskripsi</th><th>Mesin</th><th class="num">Rencana bulan (CT)</th><th class="num">Rencana s/d</th><th class="num">Aktual s/d</th><th class="num">Selisih</th><th class="num">% s/d</th><th class="num">% bulan</th><th class="num">Sisa (CT)</th><th>Status</th></tr></thead><tbody>';
+    group('material').forEach(function (g) {
+      var M = 0, P = 0, A = 0, mach = [];
+      g.lines.forEach(function (l) { M += l.ct; P += planTo(l, d); A += actTo(l, d); if (mach.indexOf(l.machine) < 0) mach.push(l.machine); });
+      var s = status(A, P);
+      h += '<tr><td class="mono">' + esc(g.k) + '</td><td class="desc" title="' + esc(g.lines[0].desc) + '">' + esc(g.lines[0].desc) + '</td><td class="mono">' + esc(mach.join(', ')) + '</td><td class="num">' + f0(M) + '</td><td class="num">' + f0(P) + '</td><td class="num">' + f0(A) + '</td>' +
+        '<td class="num ' + (A - P >= 0 ? 'pos' : 'neg') + '">' + (A - P >= 0 ? '+' : '') + f0(A - P) + '</td><td class="num">' + fp(pct(A, P)) + '</td><td class="num">' + fp(pct(A, M)) + '</td><td class="num">' + f0(Math.max(0, M - A)) + '</td><td><span class="st ' + s + '">' + ST_LABEL[s] + '</span></td></tr>';
+    });
+    $('skuTbl').innerHTML = h + '</tbody>';
+  }
+  function renderMachine() {
+    var d = curDay, h = '<thead><tr><th>Mesin</th><th class="num">Line</th><th class="num">Rencana bulan (MT)</th><th class="num">Rencana s/d (MT)</th><th class="num">Aktual s/d (MT)</th><th class="num">Selisih (MT)</th><th class="num">% s/d</th><th class="num">% bulan</th><th class="num">Hari ini rencana / aktual (CT)</th><th>Status</th></tr></thead><tbody>';
+    var T = [0, 0, 0];
+    group('machine').forEach(function (g) {
+      var M = 0, P = 0, A = 0, pd = 0, ad = 0;
+      g.lines.forEach(function (l) { M += mt(l, l.ct); P += mt(l, planTo(l, d)); A += mt(l, actTo(l, d)); pd += l.plan[d] || 0; ad += getA(l.id, d) || 0; });
+      T[0] += M; T[1] += P; T[2] += A;
+      var s = status(A, P);
+      h += '<tr><td class="mono">' + esc(g.k) + '</td><td class="num">' + g.lines.length + '</td><td class="num">' + f1(M) + '</td><td class="num">' + f1(P) + '</td><td class="num">' + f1(A) + '</td><td class="num ' + (A - P >= 0 ? 'pos' : 'neg') + '">' + (A - P >= 0 ? '+' : '') + f1(A - P) + '</td><td class="num">' + fp(pct(A, P)) + '</td><td class="num">' + fp(pct(A, M)) + '</td><td class="num">' + f0(pd) + ' / ' + f0(ad) + '</td><td><span class="st ' + s + '">' + ST_LABEL[s] + '</span></td></tr>';
+    });
+    h += '</tbody><tfoot><tr class="total"><td>Total</td><td></td><td class="num">' + f1(T[0]) + '</td><td class="num">' + f1(T[1]) + '</td><td class="num">' + f1(T[2]) + '</td><td class="num">' + (T[2] - T[1] >= 0 ? '+' : '') + f1(T[2] - T[1]) + '</td><td class="num">' + fp(pct(T[2], T[1])) + '</td><td class="num">' + fp(pct(T[2], T[0])) + '</td><td></td><td></td></tr></tfoot>';
+    $('machTbl').innerHTML = h;
+  }
+  function render() {
+    renderTiles();
+    ({ daily: renderDaily, grid: renderGrid, sku: renderSku, machine: renderMachine })[view]();
+  }
+
+  // ---------- input ----------
+  function commitInput(inp) {
+    var v = parseNum(inp.value);
+    if (isNaN(v)) { inp.style.outline = '2px solid var(--bad)'; return false; }
+    inp.style.outline = '';
+    var id = inp.getAttribute('data-line'), d = inp.getAttribute('data-day');
+    if (getA(id, d) === v) return false;
+    setCell(id, d, v);
+    return true;
+  }
+  function afterEdit(inp) {
+    renderTiles();
+    var id = inp.getAttribute('data-line'), d = inp.getAttribute('data-day'), l = byId[id];
+    if (view === 'daily') {
+      var tr = inp.closest('tr'); tr.outerHTML = dailyRow(l);
+      $('dailyTbl').tFoot.innerHTML = dailyFoot(filtered());
+    } else if (view === 'grid') {
+      var a = getA(id, d), p = l.plan[d] || 0;
+      inp.className = 'act ' + (a === null ? '' : status(a, p));
+      var cells = inp.closest('tr').cells, n = cells.length, sp = 0, sa = 0;
+      days.forEach(function (x) { sp += l.plan[x] || 0; sa += getA(id, x) || 0; });
+      cells[n - 2].textContent = f0(sa); cells[n - 1].textContent = fp(pct(sa, sp));
+      var col = 0; filtered().forEach(function (m) { col += getA(m.id, d) || 0; });
+      var foot = $('gridTbl').tFoot.rows[0].cells, ci = 2 + days.indexOf(d), TA = 0, TP = 0;
+      foot[ci].textContent = f0(col);
+      filtered().forEach(function (m) { days.forEach(function (x) { TA += getA(m.id, x) || 0; TP += m.plan[x] || 0; }); });
+      foot[foot.length - 2].textContent = f0(TA); foot[foot.length - 1].textContent = fp(pct(TA, TP));
+    }
+  }
+  document.addEventListener('change', function (e) {
+    if (!e.target.classList || !e.target.classList.contains('act')) return;
+    if (commitInput(e.target)) afterEdit(e.target);
+  });
+  function focusCell(line, day) { var el = line && document.querySelector('input.act[data-line="' + CSS.escape(line) + '"][data-day="' + day + '"]'); if (el) { el.focus(); el.select(); } }
+  // Enter / arrows move like Excel
+  document.addEventListener('keydown', function (e) {
+    var t = e.target; if (!t.classList || !t.classList.contains('act')) return;
+    var dir = { Enter: [0, e.shiftKey ? -1 : 1], ArrowDown: [0, 1], ArrowUp: [0, -1] }[e.key];
+    if (!dir && view === 'grid' && (e.key === 'ArrowRight' || e.key === 'ArrowLeft') && t.selectionStart === t.selectionEnd && t.selectionStart === (e.key === 'ArrowRight' ? t.value.length : 0)) dir = [e.key === 'ArrowRight' ? 1 : -1, 0];
+    if (!dir) return;
+    e.preventDefault();
+    var all = Array.prototype.slice.call(t.closest('table').querySelectorAll('input.act'));
+    var cols = view === 'grid' ? days.length : 1, j = all.indexOf(t) + dir[0] + dir[1] * cols;
+    var next = all[j], line = next && next.getAttribute('data-line'), day = next && next.getAttribute('data-day');
+    if (commitInput(t)) afterEdit(t);
+    focusCell(line, day);
+  });
+  // paste a block from Excel
+  document.addEventListener('paste', function (e) {
+    var t = e.target; if (!t.classList || !t.classList.contains('act')) return;
+    var text = (e.clipboardData || window.clipboardData).getData('text');
+    if (!/[\t\n]/.test(text.trim())) return;
+    e.preventDefault();
+    var grid = text.replace(/\r/g, '').replace(/\n$/, '').split('\n').map(function (r) { return r.split('\t'); });
+    var rowIds = filtered().map(function (l) { return l.id; });
+    var r0 = rowIds.indexOf(t.getAttribute('data-line')), c0 = days.indexOf(t.getAttribute('data-day')), n = 0, bad = 0;
+    grid.forEach(function (row, ri) {
+      row.forEach(function (cell, ci) {
+        var id = rowIds[r0 + ri], d = view === 'grid' ? days[c0 + ci] : (ci === 0 ? days[c0] : null);
+        if (!id || !d) return;
+        var v = parseNum(cell); if (isNaN(v)) { bad++; return; }
+        if (!actual[id]) actual[id] = {};
+        if (v === null) delete actual[id][d]; else actual[id][d] = v;
+        n++;
+      });
+    });
+    saveLocal();
+    render();
+    if (bad) alert(n + ' sel terisi, ' + bad + ' sel dilewati karena bukan angka.');
+  });
+
+  // ---------- controls ----------
+  document.querySelectorAll('.tab[data-view]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      view = b.getAttribute('data-view');
+      document.querySelectorAll('.tab[data-view]').forEach(function (x) { x.classList.toggle('on', x === b); });
+      ['daily', 'grid', 'sku', 'machine'].forEach(function (v) { $('view-' + v).hidden = v !== view; });
+      render();
+      if (view === 'grid') { var th = document.querySelector('#gridTbl th.today'), s = document.querySelector('#view-grid .scroll'); if (th && s) s.scrollLeft = Math.max(0, th.offsetLeft - 360); }
+    });
+  });
+  $('daySel').addEventListener('change', function () { curDay = this.value; render(); });
+  $('prevDay').addEventListener('click', function () { var i = days.indexOf(curDay); if (i > 0) { curDay = days[i - 1]; $('daySel').value = curDay; render(); } });
+  $('nextDay').addEventListener('click', function () { var i = days.indexOf(curDay); if (i < days.length - 1) { curDay = days[i + 1]; $('daySel').value = curDay; render(); } });
+  $('machSel').addEventListener('change', render);
+  $('q').addEventListener('input', render);
+  $('exportBtn').addEventListener('click', exportXlsx);
+
+  function loadScript(src) { return new Promise(function (res, rej) { var s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
+  function exportXlsx() {
+    (window.XLSX ? Promise.resolve() : loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js')).then(function () {
+      var head = ['Mesin', 'Material', 'Deskripsi', 'Kategori', 'Net (kg)', 'Target/hari', 'Rencana CT'];
+      var hA = head.concat(days.map(function (d) { return d; }), ['Total aktual CT', 'Total aktual MT', '% rencana']);
+      var hP = head.concat(days);
+      var rowsA = [hA], rowsP = [hP];
+      lines.forEach(function (l) {
+        var base = [l.machine, l.material, l.desc, l.category, l.net, l.target, l.ct], tot = 0;
+        var ra = base.concat(days.map(function (d) { var a = getA(l.id, d); tot += a || 0; return a === null ? '' : a; }));
+        rowsA.push(ra.concat([tot, Math.round(mt(l, tot) * 10) / 10, l.ct ? Math.round(tot / l.ct * 1000) / 10 : '']));
+        rowsP.push(base.concat(days.map(function (d) { return l.plan[d] || ''; })));
+      });
+      var wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rowsA), 'Aktual');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rowsP), 'Rencana');
+      XLSX.writeFile(wb, 'Monitoring produksi ' + plan.period + ' s.d ' + curDay + '.xlsx');
+    }).catch(function () { alert('Gagal memuat pustaka Excel. Periksa koneksi internet.'); });
+  }
+
+  // ---------- Excel files ----------
+  var COLS = {
+    machine: /^(mesin|machine|mc|line|machine category)$/,
+    material: /^(material|nomat|no\.? ?mat|kode material|material code|sku)$/,
+    desc: /^(deskripsi|description|desc|nama( produk)?|produk)$/,
+    category: /^(kategori|category)$/,
+    net: /^(net|net weight|net \(kg\)|berat( bersih)?|net kg)$/,
+    target: /^(target|target\/hari|target\/day|target\/day \(ct\)|target per hari)$/
+  };
+  function norm(v) { return String(v === null || v === undefined ? '' : v).replace(/\s+/g, ' ').trim().toLowerCase(); }
+  function iso(dt) { return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0'); }
+  function cellDate(v) {
+    if (v instanceof Date && !isNaN(v)) return iso(new Date(v.getTime() + 12 * 3600e3));
+    if (typeof v === 'number' && v > 40000 && v < 60000) return iso(new Date(Math.round((v - 25569) * 864e5) + 12 * 3600e3 + new Date().getTimezoneOffset() * 6e4));
+    var t = String(v || '').trim(), m;
+    if ((m = t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return m[1] + '-' + m[2].padStart(2, '0') + '-' + m[3].padStart(2, '0');
+    if ((m = t.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/))) return m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0');
+    return null;
+  }
+  // Find the header row and the column of each field; date columns are real dates or day numbers 1-31.
+  function readTable(aoa, month) {
+    for (var r = 0; r < Math.min(aoa.length, 40); r++) {
+      var row = aoa[r] || [], col = {}, dcols = [];
+      row.forEach(function (c, i) { var n = norm(c); Object.keys(COLS).forEach(function (k) { if (col[k] === undefined && COLS[k].test(n)) col[k] = i; }); });
+      if (col.desc === undefined && col.material === undefined) continue;
+      row.forEach(function (c, i) {
+        var d = cellDate(c);
+        if (d) { dcols.push({ i: i, day: d }); return; }
+        var n = typeof c === 'number' ? c : /^\d{1,2}$/.test(String(c).trim()) ? Number(c) : null;
+        if (n >= 1 && n <= 31 && Object.keys(col).every(function (k) { return col[k] !== i; })) dcols.push({ i: i, n: n });
+      });
+      if (!dcols.length) continue;
+      // day numbers: they run in order through the month; a number bigger than the one after a wrap belongs to the month before
+      if (dcols.some(function (d) { return d.n; })) {
+        if (!month) return { error: 'Kolom tanggal berupa angka hari. Pilih "Bulan rencana" dulu.' };
+        var y = Number(month.slice(0, 4)), mo = Number(month.slice(5, 7)) - 1, nums = dcols.map(function (d) { return d.n || 0; });
+        var wrap = -1; for (var k = 1; k < nums.length; k++) if (nums[k] && nums[k - 1] && nums[k] < nums[k - 1]) { wrap = k; break; }
+        dcols.forEach(function (d, k) { if (d.n) d.day = iso(new Date(y, wrap >= 0 && k < wrap ? mo - 1 : mo, d.n)); });
+      }
+      var out = [];
+      for (var j = r + 1; j < aoa.length; j++) {
+        var x = aoa[j] || [];
+        var get = function (k) { return col[k] === undefined ? '' : x[col[k]]; };
+        var desc = String(get('desc') || '').trim(), mat = String(get('material') || '').trim().replace(/\.0$/, '');
+        if (!desc && !mat) continue;
+        if (/^(total|grand total|jumlah)/i.test(desc || mat)) continue;
+        var vals = {}, any = false;
+        dcols.forEach(function (d) { var v = x[d.i]; if (v === '' || v === null || v === undefined) return; v = typeof v === 'number' ? v : parseNum(v); if (v === null || isNaN(v)) return; vals[d.day] = (vals[d.day] || 0) + v; any = true; });
+        var net = get('net'); net = typeof net === 'number' ? net : parseNum(net || '');
+        var tg = get('target'); tg = typeof tg === 'number' ? tg : parseNum(tg || '');
+        out.push({ machine: String(get('machine') || '').trim(), material: mat, desc: desc || mat, category: String(get('category') || '').trim(), net: isNaN(net) || net === null ? 0 : net, target: isNaN(tg) || tg === null ? 0 : tg, vals: vals, any: any });
+      }
+      return { rows: out, days: dcols.map(function (d) { return d.day; }).sort(), hasNet: col.net !== undefined };
+    }
+    return { error: 'Baris judul tidak ditemukan. Perlu kolom Deskripsi atau Material, dan kolom tanggal.' };
+  }
+  function lineKey(r) { return (r.machine || '-') + '-' + (r.material || r.desc); }
+  function sheetsOf(file) {
+    return new Promise(function (res, rej) {
+      var fr = new FileReader();
+      fr.onload = function () { try { res(XLSX.read(new Uint8Array(fr.result), { type: 'array', cellDates: true })); } catch (e) { rej(e); } };
+      fr.onerror = rej; fr.readAsArrayBuffer(file);
+    });
+  }
+  function bestSheet(wb, month) {
+    var best = null;
+    wb.SheetNames.forEach(function (n) {
+      var t = readTable(XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, raw: true, defval: '' }), month);
+      if (t.error) { if (!best) best = { t: t, n: n }; return; }
+      var score = t.rows.length * t.days.length;
+      if (!best || best.t.error || score > best.score) best = { t: t, n: n, score: score };
+    });
+    return best;
+  }
+  function stat(id, text, cls) { var e = $(id); e.textContent = text; e.className = 'fstat' + (cls ? ' ' + cls : ''); }
+  function withXlsx() { return window.XLSX ? Promise.resolve() : loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'); }
+  function loadPlanFile(file) {
+    var month = $('planMonth').value;
+    stat('planStat', 'Membaca ' + file.name + '…');
+    withXlsx().then(function () { return sheetsOf(file); }).then(function (wb) {
+      var b = bestSheet(wb, month);
+      if (!b || b.t.error) { stat('planStat', file.name + ': ' + (b ? b.t.error : 'file kosong'), 'bad'); return; }
+      var seen = {}, ls = b.t.rows.filter(function (r) { return r.any; }).map(function (r) {
+        var k = lineKey(r); seen[k] = (seen[k] || 0) + 1;
+        var ct = 0; Object.keys(r.vals).forEach(function (d) { ct += r.vals[d]; });
+        return { id: k + (seen[k] > 1 ? '-' + seen[k] : ''), machine: r.machine || '-', material: r.material, desc: r.desc, category: r.category, net: r.net, target: r.target, ct: ct, plan: r.vals };
+      });
+      if (!ls.length) { stat('planStat', file.name + ': tidak ada baris dengan angka rencana per tanggal.', 'bad'); return; }
+      var ds = b.t.days, start = ds[0], end = ds[ds.length - 1];
+      var cnt = {}; enumerate(start, end).forEach(function (d) { var m = d.slice(0, 7); cnt[m] = (cnt[m] || 0) + 1; });
+      var per = Object.keys(cnt).sort(function (x, y) { return cnt[y] - cnt[x]; })[0];
+      var label = new Date(per + '-01T00:00:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+      var p = { period: per, label: label, start: start, end: end, source: file.name + ' · lembar "' + b.n + '"', loadedAt: new Date().toISOString(), lines: ls };
+      if (plan && plan.period !== p.period && Object.keys(actual).length && !confirm('Rencana baru untuk ' + label + '. Data aktual periode sebelumnya dihapus. Lanjut?')) return;
+      if (plan && plan.period !== p.period) { actual = {}; actSrc = null; }
+      start_(p); saveLocal();
+      var noNet = ls.every(function (l) { return !l.net; });
+      stat('planStat', file.name + ': ' + ls.length + ' line, ' + dayLabel(start) + ' – ' + dayLabel(end) + '.' + (noNet ? ' Kolom Net (kg) tidak ada, jadi ton (MT) tidak dihitung.' : ''), noNet ? '' : 'ok');
+    }).catch(function (e) { stat('planStat', 'Gagal membaca ' + file.name + ': ' + (e.message || e), 'bad'); });
+  }
+  function loadActualFile(file) {
+    if (!plan) { stat('actStat', 'Unggah rencana dulu, supaya aktual bisa dicocokkan ke line-nya.', 'bad'); return; }
+    stat('actStat', 'Membaca ' + file.name + '…');
+    withXlsx().then(function () { return sheetsOf(file); }).then(function (wb) {
+      var b = bestSheet(wb, plan.period);
+      if (!b || b.t.error) { stat('actStat', file.name + ': ' + (b ? b.t.error : 'file kosong'), 'bad'); return; }
+      // match rows to plan lines: machine+material in order, then material, then description
+      var used = {}, n = 0, cells = 0, miss = [], outside = 0;
+      function pick(test) { for (var i = 0; i < lines.length; i++) if (!used[lines[i].id] && test(lines[i])) return lines[i]; return null; }
+      b.t.rows.forEach(function (r) {
+        if (!r.any) return;
+        var l = (r.material && pick(function (x) { return x.material === r.material && (!r.machine || x.machine === r.machine); })) ||
+                (r.material && pick(function (x) { return x.material === r.material; })) ||
+                pick(function (x) { return norm(x.desc) === norm(r.desc) && (!r.machine || x.machine === r.machine); });
+        if (!l) { miss.push(r.material || r.desc); return; }
+        used[l.id] = true; n++;
+        Object.keys(r.vals).forEach(function (d) { if (days.indexOf(d) < 0) { outside++; return; } (actual[l.id] = actual[l.id] || {})[d] = r.vals[d]; cells++; });
+      });
+      actSrc = file.name; saveLocal(); render();
+      stat('actStat', file.name + ': ' + cells + ' angka untuk ' + n + ' line.' + (miss.length ? ' Tidak cocok dengan rencana: ' + miss.slice(0, 5).join(', ') + (miss.length > 5 ? ' (+' + (miss.length - 5) + ')' : '') + '.' : '') + (outside ? ' ' + outside + ' angka di luar periode dilewati.' : ''), miss.length ? '' : 'ok');
+    }).catch(function (e) { stat('actStat', 'Gagal membaca ' + file.name + ': ' + (e.message || e), 'bad'); });
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.drop'), function (drop) {
+    var kind = drop.getAttribute('data-kind'), input = drop.querySelector('input');
+    var go = function (f) { if (f) (kind === 'plan' ? loadPlanFile : loadActualFile)(f); };
+    input.addEventListener('change', function () { go(input.files[0]); input.value = ''; });
+    ['dragenter', 'dragover'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add('over'); }); });
+    ['dragleave', 'drop'].forEach(function (t) { drop.addEventListener(t, function () { drop.classList.remove('over'); }); });
+    drop.addEventListener('drop', function (e) { e.preventDefault(); go(e.dataTransfer.files[0]); });
+  });
+  function monthDays(m) { var y = Number(m.slice(0, 4)), mo = Number(m.slice(5, 7)); return enumerate(m + '-01', iso(new Date(y, mo, 0))); }
+  $('tplPlan').addEventListener('click', function () {
+    withXlsx().then(function () {
+      var ds = monthDays($('planMonth').value || iso(new Date()).slice(0, 7));
+      var head = ['Mesin', 'Material', 'Deskripsi', 'Kategori', 'Net (kg)', 'Target/hari'].concat(ds);
+      var ex = ['CVFI04', '69917102', 'Contoh: Livi Evo Premium Facial Plain Flat Box 50\'s', 'FACIAL BOX', 5.1, 80].concat(ds.map(function (d) { return new Date(d + 'T00:00:00').getDay() === 0 ? '' : 80; }));
+      var ws = XLSX.utils.aoa_to_sheet([head, ex]);
+      var wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Rencana');
+      XLSX.writeFile(wb, 'Template rencana produksi harian.xlsx');
+    });
+  });
+  $('tplAct').addEventListener('click', function () {
+    withXlsx().then(function () {
+      var ds = plan ? days : monthDays($('planMonth').value || iso(new Date()).slice(0, 7));
+      var rows = [['Mesin', 'Material', 'Deskripsi'].concat(ds)];
+      (plan ? lines : []).forEach(function (l) { rows.push([l.machine, l.material, l.desc].concat(ds.map(function (d) { var a = getA(l.id, d); return a === null ? '' : a; }))); });
+      var wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), 'Aktual');
+      XLSX.writeFile(wb, 'Template aktual produksi' + (plan ? ' ' + plan.period : '') + '.xlsx');
+    });
+  });
+  $('clearAll').addEventListener('click', function () {
+    if (!confirm('Hapus rencana dan semua data aktual dari browser ini?')) return;
+    localStorage.removeItem(LS_KEY); location.reload();
+  });
+
+  // ---------- start ----------
+  function start_(p) {
+    plan = p; lines = p.lines; byId = {}; off = {}; lines.forEach(function (l) { byId[l.id] = l; });
+    days = enumerate(p.start, p.end);
+    days.forEach(function (d) { if (new Date(d + 'T00:00:00').getDay() === 0) off[d] = true; });
+    $('planMonth').value = p.period;
+    $('periodLabel').textContent = p.label;
+    var work = days.filter(function (d) { return !off[d]; }).length;
+    $('periodSub').textContent = 'Periode ' + dayLabel(p.start) + ' – ' + dayLabel(p.end) + ' · ' + work + ' hari kerja (Minggu libur) · ' + lines.length + ' line produksi';
+    $('srcNote').textContent = 'Sumber rencana: ' + (p.source || '-') + '.';
+    var today = iso(new Date());
+    curDay = today < days[0] ? days[0] : today > days[days.length - 1] ? days[days.length - 1] : today;
+    $('daySel').innerHTML = days.map(function (d) { return '<option value="' + d + '"' + (d === curDay ? ' selected' : '') + '>' + dayLabel(d) + (off[d] ? ' (Minggu)' : '') + '</option>'; }).join('');
+    var ms = []; lines.forEach(function (l) { if (ms.indexOf(l.machine) < 0) ms.push(l.machine); });
+    $('machSel').innerHTML = '<option value="">Semua mesin</option>' + ms.map(function (m) { return '<option>' + esc(m) + '</option>'; }).join('');
+    $('emptyMsg').hidden = true; $('main').hidden = false;
+    render();
+  }
+  $('planMonth').value = iso(new Date()).slice(0, 7);
+  var saved = null; try { saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) {}
+  if (saved && saved.plan && saved.plan.lines && saved.plan.lines.length) {
+    actual = saved.actual || {}; actSrc = saved.actSrc || null;
+    start_(saved.plan);
+    stat('planStat', 'Dimuat dari browser: ' + saved.plan.source + '.', 'ok');
+    var nA = 0; Object.keys(actual).forEach(function (k) { nA += Object.keys(actual[k]).length; });
+    if (nA) stat('actStat', nA + ' angka aktual tersimpan' + (actSrc ? ' (terakhir dari ' + actSrc + ')' : '') + '.', 'ok');
+    setState('Tersimpan di browser ini', 'ok');
+  } else setState('Belum ada data');
+})();
 </script>
 </body>
 </html>
