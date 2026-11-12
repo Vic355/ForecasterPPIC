@@ -71,7 +71,17 @@ input.act.ok { background: var(--ok-soft); } input.act.warn { background: var(--
 .grid .plan { display: block; font-size: 10px; color: var(--muted); text-align: right; line-height: 1.2; }
 .grid th.off, .grid td.off { background: var(--bad-soft); }
 .grid th.today { box-shadow: inset 0 -3px 0 var(--accent); color: var(--accent); }
-.banner { padding: 8px 12px; border-radius: 6px; background: var(--warn-soft); color: var(--warn); }
+.data { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
+.slot { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.slot h2 { margin: 0; font-size: 14px; }
+.slot .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.drop { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 80px; border: 1.5px dashed var(--off); border-radius: 8px; padding: 12px; text-align: center; cursor: pointer; background: var(--panel); }
+.drop.over, .drop:focus-within { border-color: var(--accent); background: var(--accent-soft); }
+.drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.fstat { font-size: 12px; color: var(--muted); }
+.fstat.ok { color: var(--ok); } .fstat.bad { color: var(--bad); }
+.empty { padding: 28px; text-align: center; color: var(--muted); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+input[type=month] { font: inherit; color: inherit; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); min-height: 32px; }
 </style>
 </head>
 <body>
@@ -79,12 +89,29 @@ input.act.ok { background: var(--ok-soft); } input.act.warn { background: var(--
   <header>
     <div>
       <h1>Monitoring Produksi Harian <span>· TUB Mills · <b id="periodLabel">-</b></span></h1>
-      <div class="sub" id="periodSub">Memuat rencana…</div>
+      <div class="sub" id="periodSub">Unggah Excel rencana produksi untuk mulai.</div>
     </div>
     <a class="back" href="/">← Kembali ke PPIC Forecast Desk</a>
   </header>
 
-  <div class="banner" id="banner" hidden></div>
+  <section class="data" aria-label="File Excel">
+    <div class="slot">
+      <h2>1. Rencana produksi harian (Excel)</h2>
+      <label class="drop" data-kind="plan"><input type="file" accept=".xlsx,.xlsm,.xls,.csv" data-kind="plan"><b>Pilih atau tarik file rencana</b><span class="sub">Satu baris per line: Mesin, Material, Deskripsi, Net (kg), Target/hari, lalu satu kolom per tanggal</span></label>
+      <div class="row"><label class="sub">Bulan rencana <input type="month" id="planMonth"></label><button type="button" id="tplPlan">Unduh template rencana</button></div>
+      <div class="fstat" id="planStat">Belum ada file rencana.</div>
+    </div>
+    <div class="slot">
+      <h2>2. Aktual produksi (Excel, opsional)</h2>
+      <label class="drop" data-kind="actual"><input type="file" accept=".xlsx,.xlsm,.xls,.csv" data-kind="actual"><b>Pilih atau tarik file aktual</b><span class="sub">Format sama dengan rencana; angka per tanggal = CT aktual. Bisa juga diketik langsung di bawah.</span></label>
+      <div class="row"><button type="button" id="tplAct">Unduh template aktual</button><button type="button" id="clearAll">Hapus semua data</button></div>
+      <div class="fstat" id="actStat">Belum ada data aktual.</div>
+    </div>
+  </section>
+  <p class="sub" style="margin:0">File dibaca di browser ini saja, tidak diunggah ke server. Data tersimpan di browser ini sampai diganti atau dihapus.</p>
+
+  <div class="empty" id="emptyMsg">Belum ada rencana produksi. Unggah file Excel rencana di kotak <b>1</b> di atas, atau unduh template-nya dulu.</div>
+  <div id="main" hidden>
 
   <div class="bar">
     <label>Tanggal <select id="daySel"></select></label>
@@ -122,17 +149,17 @@ input.act.ok { background: var(--ok-soft); } input.act.warn { background: var(--
     </div>
   </div>
   <p class="sub" id="srcNote"></p>
+  </div>
 </div>
 <script>
 (function () {
   'use strict';
-  var PERIOD = '2026-11';
-  var LS_KEY = 'ppic-produksi-actual-' + PERIOD;
+  var LS_KEY = 'ppic_prod';
   var plan = null, lines = [], days = [], off = {};
   var actual = {};           // actual[lineId][day] = ct
-  var shared = false;        // true when the Cloudflare database answers
-  var pending = {};          // unsaved cells, key line|day
-  var saveTimer = null, view = 'daily', curDay = null;
+  var actSrc = null;         // last actual file loaded
+  var byId = {};
+  var view = 'daily', curDay = null;
   var $ = function (id) { return document.getElementById(id); };
   var nf0 = new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 });
   var nf1 = new Intl.NumberFormat('id-ID', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
@@ -160,36 +187,16 @@ input.act.ok { background: var(--ok-soft); } input.act.warn { background: var(--
     return lines.filter(function (l) { return (!m || l.machine === m) && (!q || (l.desc + ' ' + l.material + ' ' + l.category).toLowerCase().indexOf(q) >= 0); });
   }
 
-  // ---------- storage ----------
+  // ---------- storage (browser only, like the main app) ----------
   function setState(text, cls) { var e = $('saveState'); e.textContent = text; e.className = 'chip' + (cls ? ' ' + cls : ''); }
-  function editKey() { return localStorage.getItem('ppic-produksi-key') || ''; }
-  function loadLocal() { try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch (e) { return {}; } }
-  function saveLocal() { localStorage.setItem(LS_KEY, JSON.stringify(actual)); }
+  function saveLocal() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ plan: plan, actual: actual, actSrc: actSrc })); setState('Tersimpan di browser ini', 'ok'); }
+    catch (e) { setState('Gagal simpan: penyimpanan browser penuh', 'bad'); }
+  }
   function setCell(id, d, v) {
     if (!actual[id]) actual[id] = {};
     if (v === null) delete actual[id][d]; else actual[id][d] = v;
-    pending[id + '|' + d] = { line: id, day: d, ct: v };
     saveLocal();
-    setState('Menyimpan…');
-    clearTimeout(saveTimer); saveTimer = setTimeout(flush, 600);
-  }
-  function flush() {
-    var cells = Object.keys(pending).map(function (k) { return pending[k]; });
-    if (!cells.length) return;
-    if (!shared) { pending = {}; setState('Tersimpan di browser ini', 'warn'); return; }
-    pending = {};
-    fetch('/api/produksi/actual?period=' + PERIOD, { method: 'PUT', headers: { 'content-type': 'application/json', 'x-edit-key': editKey() }, body: JSON.stringify({ cells: cells }) })
-      .then(function (r) { return r.json().then(function (j) { return { r: r, j: j }; }); })
-      .then(function (o) {
-        if (o.r.ok) { setState('Tersimpan · ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }), 'ok'); return; }
-        cells.forEach(function (c) { pending[c.line + '|' + c.day] = c; });
-        if (o.r.status === 401) {
-          var k = prompt('Masukkan kode edit untuk menyimpan data produksi:');
-          if (k) { localStorage.setItem('ppic-produksi-key', k); flush(); return; }
-        }
-        setState('Gagal simpan: ' + (o.j.error || o.r.status), 'bad');
-      })
-      .catch(function () { cells.forEach(function (c) { pending[c.line + '|' + c.day] = c; }); setState('Offline, akan dicoba lagi', 'bad'); setTimeout(flush, 15000); });
   }
   function parseNum(s) {
     s = String(s).trim().replace(/\s/g, '');
@@ -316,7 +323,6 @@ input.act.ok { background: var(--ok-soft); } input.act.warn { background: var(--
     setCell(id, d, v);
     return true;
   }
-  var byId = {};
   function afterEdit(inp) {
     renderTiles();
     var id = inp.getAttribute('data-line'), d = inp.getAttribute('data-day'), l = byId[id];
@@ -370,10 +376,10 @@ input.act.ok { background: var(--ok-soft); } input.act.warn { background: var(--
         var v = parseNum(cell); if (isNaN(v)) { bad++; return; }
         if (!actual[id]) actual[id] = {};
         if (v === null) delete actual[id][d]; else actual[id][d] = v;
-        pending[id + '|' + d] = { line: id, day: d, ct: v }; n++;
+        n++;
       });
     });
-    saveLocal(); setState('Menyimpan…'); clearTimeout(saveTimer); saveTimer = setTimeout(flush, 300);
+    saveLocal();
     render();
     if (bad) alert(n + ' sel terisi, ' + bad + ' sel dilewati karena bukan angka.');
   });
@@ -394,7 +400,6 @@ input.act.ok { background: var(--ok-soft); } input.act.warn { background: var(--
   $('machSel').addEventListener('change', render);
   $('q').addEventListener('input', render);
   $('exportBtn').addEventListener('click', exportXlsx);
-  window.addEventListener('beforeunload', function (e) { if (Object.keys(pending).length) { flush(); e.preventDefault(); e.returnValue = ''; } });
 
   function loadScript(src) { return new Promise(function (res, rej) { var s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
   function exportXlsx() {
@@ -412,49 +417,193 @@ input.act.ok { background: var(--ok-soft); } input.act.warn { background: var(--
       var wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rowsA), 'Aktual');
       XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rowsP), 'Rencana');
-      XLSX.writeFile(wb, 'Monitoring produksi ' + PERIOD + ' s.d ' + curDay + '.xlsx');
+      XLSX.writeFile(wb, 'Monitoring produksi ' + plan.period + ' s.d ' + curDay + '.xlsx');
     }).catch(function () { alert('Gagal memuat pustaka Excel. Periksa koneksi internet.'); });
   }
 
+  // ---------- Excel files ----------
+  var COLS = {
+    machine: /^(mesin|machine|mc|line|machine category)$/,
+    material: /^(material|nomat|no\.? ?mat|kode material|material code|sku)$/,
+    desc: /^(deskripsi|description|desc|nama( produk)?|produk)$/,
+    category: /^(kategori|category)$/,
+    net: /^(net|net weight|net \(kg\)|berat( bersih)?|net kg)$/,
+    target: /^(target|target\/hari|target\/day|target\/day \(ct\)|target per hari)$/
+  };
+  function norm(v) { return String(v === null || v === undefined ? '' : v).replace(/\s+/g, ' ').trim().toLowerCase(); }
+  function iso(dt) { return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0'); }
+  function cellDate(v) {
+    if (v instanceof Date && !isNaN(v)) return iso(new Date(v.getTime() + 12 * 3600e3));
+    if (typeof v === 'number' && v > 40000 && v < 60000) return iso(new Date(Math.round((v - 25569) * 864e5) + 12 * 3600e3 + new Date().getTimezoneOffset() * 6e4));
+    var t = String(v || '').trim(), m;
+    if ((m = t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) return m[1] + '-' + m[2].padStart(2, '0') + '-' + m[3].padStart(2, '0');
+    if ((m = t.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/))) return m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0');
+    return null;
+  }
+  // Find the header row and the column of each field; date columns are real dates or day numbers 1-31.
+  function readTable(aoa, month) {
+    for (var r = 0; r < Math.min(aoa.length, 40); r++) {
+      var row = aoa[r] || [], col = {}, dcols = [];
+      row.forEach(function (c, i) { var n = norm(c); Object.keys(COLS).forEach(function (k) { if (col[k] === undefined && COLS[k].test(n)) col[k] = i; }); });
+      if (col.desc === undefined && col.material === undefined) continue;
+      row.forEach(function (c, i) {
+        var d = cellDate(c);
+        if (d) { dcols.push({ i: i, day: d }); return; }
+        var n = typeof c === 'number' ? c : /^\d{1,2}$/.test(String(c).trim()) ? Number(c) : null;
+        if (n >= 1 && n <= 31 && Object.keys(col).every(function (k) { return col[k] !== i; })) dcols.push({ i: i, n: n });
+      });
+      if (!dcols.length) continue;
+      // day numbers: they run in order through the month; a number bigger than the one after a wrap belongs to the month before
+      if (dcols.some(function (d) { return d.n; })) {
+        if (!month) return { error: 'Kolom tanggal berupa angka hari. Pilih "Bulan rencana" dulu.' };
+        var y = Number(month.slice(0, 4)), mo = Number(month.slice(5, 7)) - 1, nums = dcols.map(function (d) { return d.n || 0; });
+        var wrap = -1; for (var k = 1; k < nums.length; k++) if (nums[k] && nums[k - 1] && nums[k] < nums[k - 1]) { wrap = k; break; }
+        dcols.forEach(function (d, k) { if (d.n) d.day = iso(new Date(y, wrap >= 0 && k < wrap ? mo - 1 : mo, d.n)); });
+      }
+      var out = [];
+      for (var j = r + 1; j < aoa.length; j++) {
+        var x = aoa[j] || [];
+        var get = function (k) { return col[k] === undefined ? '' : x[col[k]]; };
+        var desc = String(get('desc') || '').trim(), mat = String(get('material') || '').trim().replace(/\.0$/, '');
+        if (!desc && !mat) continue;
+        if (/^(total|grand total|jumlah)/i.test(desc || mat)) continue;
+        var vals = {}, any = false;
+        dcols.forEach(function (d) { var v = x[d.i]; if (v === '' || v === null || v === undefined) return; v = typeof v === 'number' ? v : parseNum(v); if (v === null || isNaN(v)) return; vals[d.day] = (vals[d.day] || 0) + v; any = true; });
+        var net = get('net'); net = typeof net === 'number' ? net : parseNum(net || '');
+        var tg = get('target'); tg = typeof tg === 'number' ? tg : parseNum(tg || '');
+        out.push({ machine: String(get('machine') || '').trim(), material: mat, desc: desc || mat, category: String(get('category') || '').trim(), net: isNaN(net) || net === null ? 0 : net, target: isNaN(tg) || tg === null ? 0 : tg, vals: vals, any: any });
+      }
+      return { rows: out, days: dcols.map(function (d) { return d.day; }).sort(), hasNet: col.net !== undefined };
+    }
+    return { error: 'Baris judul tidak ditemukan. Perlu kolom Deskripsi atau Material, dan kolom tanggal.' };
+  }
+  function lineKey(r) { return (r.machine || '-') + '-' + (r.material || r.desc); }
+  function sheetsOf(file) {
+    return new Promise(function (res, rej) {
+      var fr = new FileReader();
+      fr.onload = function () { try { res(XLSX.read(new Uint8Array(fr.result), { type: 'array', cellDates: true })); } catch (e) { rej(e); } };
+      fr.onerror = rej; fr.readAsArrayBuffer(file);
+    });
+  }
+  function bestSheet(wb, month) {
+    var best = null;
+    wb.SheetNames.forEach(function (n) {
+      var t = readTable(XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, raw: true, defval: '' }), month);
+      if (t.error) { if (!best) best = { t: t, n: n }; return; }
+      var score = t.rows.length * t.days.length;
+      if (!best || best.t.error || score > best.score) best = { t: t, n: n, score: score };
+    });
+    return best;
+  }
+  function stat(id, text, cls) { var e = $(id); e.textContent = text; e.className = 'fstat' + (cls ? ' ' + cls : ''); }
+  function withXlsx() { return window.XLSX ? Promise.resolve() : loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'); }
+  function loadPlanFile(file) {
+    var month = $('planMonth').value;
+    stat('planStat', 'Membaca ' + file.name + '…');
+    withXlsx().then(function () { return sheetsOf(file); }).then(function (wb) {
+      var b = bestSheet(wb, month);
+      if (!b || b.t.error) { stat('planStat', file.name + ': ' + (b ? b.t.error : 'file kosong'), 'bad'); return; }
+      var seen = {}, ls = b.t.rows.filter(function (r) { return r.any; }).map(function (r) {
+        var k = lineKey(r); seen[k] = (seen[k] || 0) + 1;
+        var ct = 0; Object.keys(r.vals).forEach(function (d) { ct += r.vals[d]; });
+        return { id: k + (seen[k] > 1 ? '-' + seen[k] : ''), machine: r.machine || '-', material: r.material, desc: r.desc, category: r.category, net: r.net, target: r.target, ct: ct, plan: r.vals };
+      });
+      if (!ls.length) { stat('planStat', file.name + ': tidak ada baris dengan angka rencana per tanggal.', 'bad'); return; }
+      var ds = b.t.days, start = ds[0], end = ds[ds.length - 1];
+      var cnt = {}; enumerate(start, end).forEach(function (d) { var m = d.slice(0, 7); cnt[m] = (cnt[m] || 0) + 1; });
+      var per = Object.keys(cnt).sort(function (x, y) { return cnt[y] - cnt[x]; })[0];
+      var label = new Date(per + '-01T00:00:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+      var p = { period: per, label: label, start: start, end: end, source: file.name + ' · lembar "' + b.n + '"', loadedAt: new Date().toISOString(), lines: ls };
+      if (plan && plan.period !== p.period && Object.keys(actual).length && !confirm('Rencana baru untuk ' + label + '. Data aktual periode sebelumnya dihapus. Lanjut?')) return;
+      if (plan && plan.period !== p.period) { actual = {}; actSrc = null; }
+      start_(p); saveLocal();
+      var noNet = ls.every(function (l) { return !l.net; });
+      stat('planStat', file.name + ': ' + ls.length + ' line, ' + dayLabel(start) + ' – ' + dayLabel(end) + '.' + (noNet ? ' Kolom Net (kg) tidak ada, jadi ton (MT) tidak dihitung.' : ''), noNet ? '' : 'ok');
+    }).catch(function (e) { stat('planStat', 'Gagal membaca ' + file.name + ': ' + (e.message || e), 'bad'); });
+  }
+  function loadActualFile(file) {
+    if (!plan) { stat('actStat', 'Unggah rencana dulu, supaya aktual bisa dicocokkan ke line-nya.', 'bad'); return; }
+    stat('actStat', 'Membaca ' + file.name + '…');
+    withXlsx().then(function () { return sheetsOf(file); }).then(function (wb) {
+      var b = bestSheet(wb, plan.period);
+      if (!b || b.t.error) { stat('actStat', file.name + ': ' + (b ? b.t.error : 'file kosong'), 'bad'); return; }
+      // match rows to plan lines: machine+material in order, then material, then description
+      var used = {}, n = 0, cells = 0, miss = [], outside = 0;
+      function pick(test) { for (var i = 0; i < lines.length; i++) if (!used[lines[i].id] && test(lines[i])) return lines[i]; return null; }
+      b.t.rows.forEach(function (r) {
+        if (!r.any) return;
+        var l = (r.material && pick(function (x) { return x.material === r.material && (!r.machine || x.machine === r.machine); })) ||
+                (r.material && pick(function (x) { return x.material === r.material; })) ||
+                pick(function (x) { return norm(x.desc) === norm(r.desc) && (!r.machine || x.machine === r.machine); });
+        if (!l) { miss.push(r.material || r.desc); return; }
+        used[l.id] = true; n++;
+        Object.keys(r.vals).forEach(function (d) { if (days.indexOf(d) < 0) { outside++; return; } (actual[l.id] = actual[l.id] || {})[d] = r.vals[d]; cells++; });
+      });
+      actSrc = file.name; saveLocal(); render();
+      stat('actStat', file.name + ': ' + cells + ' angka untuk ' + n + ' line.' + (miss.length ? ' Tidak cocok dengan rencana: ' + miss.slice(0, 5).join(', ') + (miss.length > 5 ? ' (+' + (miss.length - 5) + ')' : '') + '.' : '') + (outside ? ' ' + outside + ' angka di luar periode dilewati.' : ''), miss.length ? '' : 'ok');
+    }).catch(function (e) { stat('actStat', 'Gagal membaca ' + file.name + ': ' + (e.message || e), 'bad'); });
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.drop'), function (drop) {
+    var kind = drop.getAttribute('data-kind'), input = drop.querySelector('input');
+    var go = function (f) { if (f) (kind === 'plan' ? loadPlanFile : loadActualFile)(f); };
+    input.addEventListener('change', function () { go(input.files[0]); input.value = ''; });
+    ['dragenter', 'dragover'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add('over'); }); });
+    ['dragleave', 'drop'].forEach(function (t) { drop.addEventListener(t, function () { drop.classList.remove('over'); }); });
+    drop.addEventListener('drop', function (e) { e.preventDefault(); go(e.dataTransfer.files[0]); });
+  });
+  function monthDays(m) { var y = Number(m.slice(0, 4)), mo = Number(m.slice(5, 7)); return enumerate(m + '-01', iso(new Date(y, mo, 0))); }
+  $('tplPlan').addEventListener('click', function () {
+    withXlsx().then(function () {
+      var ds = monthDays($('planMonth').value || iso(new Date()).slice(0, 7));
+      var head = ['Mesin', 'Material', 'Deskripsi', 'Kategori', 'Net (kg)', 'Target/hari'].concat(ds);
+      var ex = ['CVFI04', '69917102', 'Contoh: Livi Evo Premium Facial Plain Flat Box 50\'s', 'FACIAL BOX', 5.1, 80].concat(ds.map(function (d) { return new Date(d + 'T00:00:00').getDay() === 0 ? '' : 80; }));
+      var ws = XLSX.utils.aoa_to_sheet([head, ex]);
+      var wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, 'Rencana');
+      XLSX.writeFile(wb, 'Template rencana produksi harian.xlsx');
+    });
+  });
+  $('tplAct').addEventListener('click', function () {
+    withXlsx().then(function () {
+      var ds = plan ? days : monthDays($('planMonth').value || iso(new Date()).slice(0, 7));
+      var rows = [['Mesin', 'Material', 'Deskripsi'].concat(ds)];
+      (plan ? lines : []).forEach(function (l) { rows.push([l.machine, l.material, l.desc].concat(ds.map(function (d) { var a = getA(l.id, d); return a === null ? '' : a; }))); });
+      var wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), 'Aktual');
+      XLSX.writeFile(wb, 'Template aktual produksi' + (plan ? ' ' + plan.period : '') + '.xlsx');
+    });
+  });
+  $('clearAll').addEventListener('click', function () {
+    if (!confirm('Hapus rencana dan semua data aktual dari browser ini?')) return;
+    localStorage.removeItem(LS_KEY); location.reload();
+  });
+
   // ---------- start ----------
-  function start(p) {
-    plan = p; lines = p.lines; lines.forEach(function (l) { byId[l.id] = l; }); days = enumerate(p.start, p.end);
-    (p.offDays || []).forEach(function (d) { off[d] = true; });
+  function start_(p) {
+    plan = p; lines = p.lines; byId = {}; off = {}; lines.forEach(function (l) { byId[l.id] = l; });
+    days = enumerate(p.start, p.end);
+    days.forEach(function (d) { if (new Date(d + 'T00:00:00').getDay() === 0) off[d] = true; });
+    $('planMonth').value = p.period;
     $('periodLabel').textContent = p.label;
     var work = days.filter(function (d) { return !off[d]; }).length;
-    $('periodSub').textContent = 'Periode ' + dayLabel(p.start) + ' – ' + dayLabel(p.end) + ' · ' + work + ' hari kerja · ' + lines.length + ' line produksi';
+    $('periodSub').textContent = 'Periode ' + dayLabel(p.start) + ' – ' + dayLabel(p.end) + ' · ' + work + ' hari kerja (Minggu libur) · ' + lines.length + ' line produksi';
     $('srcNote').textContent = 'Sumber rencana: ' + (p.source || '-') + '.';
-    var today = new Date(); today = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    var today = iso(new Date());
     curDay = today < days[0] ? days[0] : today > days[days.length - 1] ? days[days.length - 1] : today;
-    $('daySel').innerHTML = days.map(function (d) { return '<option value="' + d + '"' + (d === curDay ? ' selected' : '') + '>' + dayLabel(d) + (off[d] ? ' (libur)' : '') + '</option>'; }).join('');
+    $('daySel').innerHTML = days.map(function (d) { return '<option value="' + d + '"' + (d === curDay ? ' selected' : '') + '>' + dayLabel(d) + (off[d] ? ' (Minggu)' : '') + '</option>'; }).join('');
     var ms = []; lines.forEach(function (l) { if (ms.indexOf(l.machine) < 0) ms.push(l.machine); });
     $('machSel').innerHTML = '<option value="">Semua mesin</option>' + ms.map(function (m) { return '<option>' + esc(m) + '</option>'; }).join('');
+    $('emptyMsg').hidden = true; $('main').hidden = false;
     render();
   }
-  var local = loadLocal();
-  Promise.all([
-    fetch('plan-' + PERIOD + '.json').then(function (r) { return r.json(); }),
-    fetch('/api/produksi?period=' + PERIOD).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
-  ]).then(function (res) {
-    var server = res[1];
-    if (server && server.ok) {
-      shared = true; actual = {};
-      server.actual.forEach(function (c) { (actual[c.line] = actual[c.line] || {})[c.day] = c.ct; });
-      // anything typed while offline that the server doesn't have yet gets sent up
-      Object.keys(local).forEach(function (id) { Object.keys(local[id]).forEach(function (d) { if (getA(id, d) === null) { setCellQuiet(id, d, local[id][d]); } }); });
-      saveLocal();
-      setState('Tersambung · data bersama', 'ok');
-      if (Object.keys(pending).length) flush();
-      start(server.plan || res[0]);
-    } else {
-      actual = local;
-      $('banner').hidden = false;
-      $('banner').textContent = 'Database bersama belum tersambung. Data yang diketik sekarang disimpan di browser ini saja, dan akan dikirim otomatis begitu database aktif.';
-      setState('Tersimpan di browser ini', 'warn');
-      start(res[0]);
-    }
-  }).catch(function (e) { $('periodSub').textContent = 'Gagal memuat rencana: ' + e; });
-  function setCellQuiet(id, d, v) { (actual[id] = actual[id] || {})[d] = v; pending[id + '|' + d] = { line: id, day: d, ct: v }; }
+  $('planMonth').value = iso(new Date()).slice(0, 7);
+  var saved = null; try { saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) {}
+  if (saved && saved.plan && saved.plan.lines && saved.plan.lines.length) {
+    actual = saved.actual || {}; actSrc = saved.actSrc || null;
+    start_(saved.plan);
+    stat('planStat', 'Dimuat dari browser: ' + saved.plan.source + '.', 'ok');
+    var nA = 0; Object.keys(actual).forEach(function (k) { nA += Object.keys(actual[k]).length; });
+    if (nA) stat('actStat', nA + ' angka aktual tersimpan' + (actSrc ? ' (terakhir dari ' + actSrc + ')' : '') + '.', 'ok');
+    setState('Tersimpan di browser ini', 'ok');
+  } else setState('Belum ada data');
 })();
 </script>
 </body>
