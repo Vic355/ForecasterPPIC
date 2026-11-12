@@ -1,6 +1,8 @@
 {
-  // Cloudflare Worker that serves the static input tab in ./public
+  // Cloudflare Worker: serves the app in ./public, plus /api/ask (Workers AI) for the Asisten
   "name": "ppic-forecast-desk",
+  "main": "src/index.js",
   "compatibility_date": "2026-10-01",
-  "assets": { "directory": "./public" }
+  "assets": { "directory": "./public", "binding": "ASSETS" },
+  "ai": { "binding": "AI" }
 }

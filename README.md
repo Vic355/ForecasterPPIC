@@ -84,6 +84,8 @@ npx wrangler deploy        # -> https://ppic-forecast-desk.<your-subdomain>.work
 
 Or connect this repo in the Cloudflare dashboard (Workers & Pages → Create → Import a repository) to deploy on every push.
 
+The Worker (`src/index.js`) serves `./public` and `/api/ask` for the Asisten. `wrangler.jsonc` binds Workers AI as `AI`; no API key is needed.
+
 ## Fields taken (Serang SKU sheet, cartons)
 
 | Field | Report header | Used for |
@@ -143,28 +145,42 @@ Tab **Saran Buffer** menghitung buffer per SKU untuk bulan forecast pertama sete
 - Kebutuhan bahan baku masih dummy: data BOM belum ada.
 - Buffer final bisa diubah manual dengan alasan wajib. Perubahan dan strategi manual disimpan di browser dan di lembar `saran_buffer` file Histori_Serang, lalu dibaca kembali saat file itu diunggah.
 
-Tab order: Forecast, Saran Buffer, Rencana Produksi (bulanan, belum ada isi, tahap berikutnya), Cek Data SKU, Input Data & Model.
+Tab order: Forecast, Saran Buffer, Rencana Produksi, Cek Data SKU, Input Data & Model. The Saran Buffer cards (buffer final, rencana produksi, bahan baku dummy, stok di bawah buffer, tanpa produksi) each open a list of SKUs.
 
 ## Rencana Produksi (mockup)
 
-The tab is **one table**: machine type rows (totals, capacity reference and balance) › machine rows (a timeline of the month with one bar per SKU, load % of the reference capacity) › SKU rows when a machine is expanded (stock, PP fixed (editable), end stock, forecast, buffer, PP, cover, status, and the SKU's own bar). Bar length = PP in tonnes ÷ (machine capacity ÷ production days). SKUs of a machine type are spread over its active machines: bermasalah first, then fewest days of cover; each SKU goes to the machine that frees up first and continues on the next machine when it does not fit (1/2, 2/2). Click a bar to move the SKU to another machine; double-click a machine's load cell to edit its capacity. Filter by brand family or search; SKUs not on the schedule are listed in a final group where their machine type can be chosen. Capacity is a reference (average production last month). With sample data and no uploaded machine list, a labelled demo machine list is used.
+The plan is made at the start of the month, so there is **one plan month: closing + 1** (the same month as Saran Buffer). PP = forecast + buffer final − stok bebas (from Saran Buffer). Stok bebas = stock on hand − outstanding DN − SC block.
 
-Tab **Rencana Produksi** is a mockup of the monthly production plan, modelled on the PPIC Excel:
+- **Five cards**, each opens a list (click a row to jump to the SKU): PP total, SKU bermasalah (stok bebas < forecast), Belum terjadwal, Jadwal perlu dicek (past month end, clash, daily target above machine speed, targets ≠ PP), Mesin belum pasti (machine type guessed from the name).
+- **One flat table** in the page (no inner scroll box; the plan tab uses the full window width): machine type › machine (bars) › SKU (daily targets). Columns: stok bebas, forecast, buffer, PP, production days, then one column per calendar day (plus overflow days of the next month when a bar runs past month end).
+- **Auto schedule**: bermasalah first, then fewest days of cover, then biggest PP; each SKU goes to the machine of its type with the earliest free stretch; it continues on another machine when the month is full, and only then runs past month end. Machine speed = capacity ÷ working days of the month, or the SKU's own speed (template). Bar length = tonnes ÷ speed.
+- **Calendar editing**: drag a bar to move it (another day or another machine row), drag its right edge to change its length, click it for a menu (machine, start, length, fit to speed, back to auto, take off the schedule). Arrow keys move a focused bar, Shift+arrows resize. Double-click an empty day on a machine to put an SKU there or mark maintenance; click a date header to mark a holiday for all machines; "Minggu libur" makes Sundays off.
+- **Daily targets** = PP ÷ the SKU's production days. Double-click (or type into) a target to change it; the SKU's other days rebalance so the total stays at PP. Delete returns a day to automatic.
+- Capacity is a reference (average production last month); double-click a machine's capacity cell to change it.
+- With sample data and no machine list, a labelled demo machine list is used.
 
-- Bulan berjalan M1 = closing + 1 (PP mostly fixed), bulan rencana M2 = closing + 2.
-- Stok bebas = stock on hand − outstanding DN − SC block (from the closing). Stok akhir M1 = stok bebas + PP M1 − forecast M1.
-- Buffer M2 = the Saran Buffer final buffer, kept at the same cover (buffer ÷ forecast) and applied to forecast M2.
-- PP M2 = forecast M2 + buffer M2 − stok akhir M1 (minimum 0). Every number shows cartons and tonnes (net weight).
-- PP M1 is editable (type the fixed PP). Machine per SKU is guessed from the name until a Material → Mesin list exists; it can be changed per SKU.
-- SKU table groups by machine type (product type, as in the Excel summary tab) or by brand family.
-- Summary per machine type in tonnes for both months: forecast, buffer, PP final, capacity, balance (capacity − PP final). The machine list and capacities are NOT in this repository: the user uploads the PP Excel (summary tab with MACHINE and CAPACITY columns) and they stay in the browser and in the user's Histori file. Capacity cells are editable.
-- Machine per SKU: manual choice > uploaded PP Excel (any sheet with Material + Mesin columns) > guess from the name. Machine names from the uploaded summary map to their machine type.
-- Manual PP M1 and machines are saved in the browser and in the `rencana_produksi` sheet; capacities and the Material → Mesin list in `kapasitas_mesin`.
+### Data the plan needs (Input → Data rencana produksi)
+
+"Unduh template" gives a workbook pre-filled with what the app already has; fill it and upload it again. The PP Excel (summary tab + Material/Mesin columns) is still accepted.
+
+| Sheet | Columns | Needed |
+| --- | --- | --- |
+| `mesin` | jenis_mesin, mesin, kapasitas_ton_bulan, catatan | yes |
+| `sku_mesin` | material (Nomat), jenis_mesin, mesin_khusus, kecepatan_ton_hari | jenis_mesin yes; a fixed machine and the SKU's real speed are optional |
+| `kalender` | tanggal, mesin (blank = all; machine or machine type), jenis (libur/maintenance), catatan | optional |
+
+Net weight per carton comes from the closing. Machine data is never stored in this repository: it stays in the browser and in the user's Histori file.
+
+Histori sheets: `rencana_produksi` (one row per SKU with machine, dates and checks), `jadwal_produksi` (manual bars), `target_harian` (typed targets), `kalender_produksi` (file calendar + manual holidays/maintenance), `sku_mesin`, `kapasitas_mesin`. Loading a Histori file restores all of them.
 
 ## Asisten (prototipe)
 
 The **Asisten** button (bottom right, every tab) opens a chat panel.
 
-- **Rules engine (always on, free, instant).** Commands: `pp fixed <SKU> = n`, `buffer <SKU> = n alasan …`, `strategi <SKU|famili X> <strategi>`, `mesin <SKU> = <jenis>`, `status <SKU> <aktif|cek|diskontinu|otomatis>`, `order in|forecast hq|stok <SKU> [bulan] = n`, `kapasitas <mesin> = n`, `undo`. Questions: `ringkasan`, `kenapa <SKU>`, `sku bermasalah`, `stok di bawah buffer`, `stok berlebih`, `kapasitas`, `selisih terbesar`, `cari <nama>`, `apa itu buffer/pp/...`. SKU = Nomat, article code or part of the name.
+- **Rules engine (always on, free, instant).** Commands: `pindah <SKU> ke <mesin> tgl n`, `target <SKU> tgl n = v` (or `= otomatis`), `libur tgl n`, `maintenance <mesin> tgl n`, `buffer <SKU> = n alasan …`, `strategi <SKU|famili X> <strategi>`, `mesin <SKU> = <jenis>`, `status <SKU> <aktif|cek|diskontinu|otomatis>`, `order in|forecast hq|stok <SKU> [bulan] = n`, `kapasitas <mesin> = n`, `undo`. Questions: `ringkasan`, `kenapa <SKU>`, `sku bermasalah`, `jadwal`, `stok di bawah buffer`, `stok berlebih`, `kapasitas`, `selisih terbesar`, `cari <nama>`, `apa itu buffer/pp/target/...`. SKU = Nomat, article code or part of the name.
 - Every change is shown as a proposal and applied only after **Terapkan**; it goes through the same stores as manual edits (correction log, reasons) and `undo` reverts it.
-- **Optional local model.** "Aktifkan model lokal" loads a small Qwen2.5 model (0.5B / 1.5B / 3B) in the browser with WebLLM (`@mlc-ai/web-llm@0.2.86`, WebGPU; Chrome/Edge). It is free and nothing leaves the PC; the first load downloads the weights. It answers free-form questions from facts the app computes, and data changes it suggests are turned back into rule commands that still need Terapkan. The engine sits behind one function (`aiAskModel`), so it can later point at Ollama or Claude.
+- **Free-form questions, nothing to download.** The app picks the first engine available:
+  1. **Claude through claude.ai** when the page is opened as a claude.ai artifact (runtime `sample` capability). It uses the viewer's own claude.ai plan limits, not API credits; the first question asks for permission.
+  2. **Workers AI on the Cloudflare site** (`/api/ask` in `src/index.js`, model `@cf/meta/llama-3.1-8b-instruct`, override with the `AI_MODEL` variable). On the Workers Free plan the daily free allowance just runs out (no charge); on a Workers Paid plan usage beyond the allowance is billed. The endpoint only accepts calls from the app's own origin.
+  3. Otherwise rules only.
+  The engine gets the facts the app computed and is told to use nothing else; data changes it suggests come back as rule commands that still need Terapkan.
