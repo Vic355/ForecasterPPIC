@@ -181,6 +181,13 @@ section.flat > .ph { margin: 0; }
 .ppg td.ppr { white-space: nowrap; }
 .ppg td.ppr.diff { color: var(--warn); font-weight: 700; }
 .ppg td.ppr.diff .mt { color: var(--warn); }
+/* the plan table scrolls sideways in its own box (scrollbar pinned to the bottom of the screen); the page keeps one vertical scrollbar */
+.ppscroll { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; max-width: 100%; }
+.ppscroll::-webkit-scrollbar { display: none; }
+.ppbar { position: sticky; bottom: 0; overflow-x: auto; overflow-y: hidden; z-index: 12; background: var(--bg); margin-top: -4px; }
+.ppbar > div { height: 10px; }
+.ppbar[hidden] { display: none; }
+.ppg thead { position: relative; z-index: 10; will-change: transform; }
 /* frozen panes like Excel: SKU, Target, Rencana and Hari stay put when the calendar scrolls sideways */
 .ppg tbody td:nth-child(-n+4), .ppg thead tr:first-child th:nth-child(-n+3), .ppg thead tr:nth-child(2) th:nth-child(-n+2) { position: sticky; }
 .ppg tbody td:nth-child(-n+4) { z-index: 3; background-color: var(--panel); }
@@ -435,7 +442,7 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
   <header>
     <div>
       <h1>PPIC Decision Support System <span class="h1sub">· The Univenus Serang · <b>PPIC Forecast Desk (bulanan)</b></span></h1>
-      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-12g</span></div>
+      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-12h</span></div>
     </div>
     <nav class="tabs" aria-label="Lembar">
       <button type="button" class="tab on" data-tab="Forecast" aria-current="page">Forecast</button><button type="button" class="tab" data-tab="Buffer">Saran Buffer</button><button type="button" class="tab" data-tab="Plan">Rencana Produksi</button><button type="button" class="tab" data-tab="Cek">Cek Data SKU</button><button type="button" class="tab" data-tab="Input">Input Data &amp; Model</button>
@@ -488,8 +495,8 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
         </div></div>
       <div class="ppctl"><button type="button" id="ppOpenAll">Buka semua mesin</button><button type="button" id="ppCloseAll">Tutup semua</button><button type="button" id="schReset">Kembalikan jadwal otomatis</button><button type="button" id="ppReset">Hapus perubahan manual</button><button type="button" id="ppXlsx" title="Unduh rencana produksi bulan ini sebagai Excel: tabel per mesin dengan target harian, daftar bar, PP per SKU dan kalender">Ekspor Excel</button><span class="sub" id="ppHint"></span></div>
       <p class="note" id="schNote"></p>
-      <table id="ppTable" class="fct ppt ppg"></table>
-      <div class="legend"><span><i class="schk"></i> SKU (geser / tarik ujung kanan)</span><span><i class="schk bad"></i> bermasalah, didahulukan</span><span><i class="schk man"></i> diatur manual</span><span><i class="schk ovr"></i> lewat akhir bulan</span><span><i class="schk clash"></i> bentrok</span><span><i class="sw offsw"></i> libur</span><span><i class="sw mntsw"></i> maintenance</span><span><i class="sw edsw"></i> target diisi manual</span><span>⚠ rencana beda dari target</span><span>Kolom SKU, Target, Rencana dan Hari tetap terlihat saat tabel digeser ke kanan</span></div>
+      <div class="ppscroll" id="ppScroll"><table id="ppTable" class="fct ppt ppg"></table></div><div class="ppbar" id="ppBar" aria-hidden="true"><div></div></div>
+      <div class="legend"><span><i class="schk"></i> SKU (geser / tarik ujung kanan)</span><span><i class="schk bad"></i> bermasalah, didahulukan</span><span><i class="schk man"></i> diatur manual</span><span><i class="schk ovr"></i> lewat akhir bulan</span><span><i class="schk clash"></i> bentrok</span><span><i class="sw offsw"></i> libur</span><span><i class="sw mntsw"></i> maintenance</span><span><i class="sw edsw"></i> target diisi manual</span><span>⚠ rencana beda dari target</span><span>Kolom SKU, Target, Rencana dan Hari dan baris tanggal tetap di tempat saat digeser (seperti freeze panes Excel)</span></div>
     </section>
   </div>
 
@@ -2131,7 +2138,7 @@ function renderPlan(m) {
 }
 function renderPlanGrid(pm, sm, mt, all) {
   var P = pm.P, D = pm.D, H = sm.H, W0 = 260, WN = 92, WH = 46, fixedW = W0 + 2 * WN + WH;
-  var dw = Math.max(32, Math.min(64, Math.floor((document.documentElement.clientWidth - fixedW - 60) / H)));
+  var dw = Math.max(32, Math.min(64, Math.floor((($('ppScroll').clientWidth || document.documentElement.clientWidth - 60) - fixedW - 2) / H)));
   CH.dw = dw;
   // family filter + search
   var fams = []; pm.rows.forEach(function (r) { var f = r.s.family ? titleCase(r.s.family) : '(tanpa famili)'; if (fams.indexOf(f) < 0) fams.push(f); }); fams.sort();
@@ -2225,8 +2232,26 @@ function renderPlanGrid(pm, sm, mt, all) {
   grp('__un', 'Belum terjadwal', 'PP ada tapi belum di jadwal', pm.rows.filter(function (r) { return r.pp > 0 && !placed[r.s.key] && (!filt || hit(r)); }), true, true);
   grp('__np', 'Tanpa produksi ' + monthLabel(P), 'stok bebas sudah menutup forecast + buffer', pm.rows.filter(function (r) { return r.pp === 0 && !placed[r.s.key] && (!filt || hit(r)); }), false, false);
   h += '<tr class="tot"><td>Total Serang<span class="code">' + pm.rows.length + ' SKU aktif' + (all.nwMiss ? ' · ' + all.nwMiss + ' tanpa berat' : '') + '</span></td>' + paCells(pa(pm.rows)) + '<td></td>' + dayCells(dayTot, 'tsum') + '</tr>';
-  var tb = $('ppTable'); tb.style.width = (fixedW + H * dw) + 'px'; tb.style.setProperty('--fz1', W0 + 'px'); tb.style.setProperty('--fz2', (W0 + WN) + 'px'); tb.style.setProperty('--fz3', (W0 + 2 * WN) + 'px'); tb.innerHTML = h + '</tbody>';
+  var tb = $('ppTable'); tb.style.width = (fixedW + H * dw) + 'px'; tb.style.setProperty('--fz1', W0 + 'px'); tb.style.setProperty('--fz2', (W0 + WN) + 'px'); tb.style.setProperty('--fz3', (W0 + 2 * WN) + 'px'); tb.innerHTML = h + '</tbody>'; ppSyncScroll();
 }
+// Excel-like frozen panes: the first four columns are sticky inside #ppScroll; the header row follows the page scroll
+function ppSyncScroll() {
+  var box = $('ppScroll'), bar = $('ppBar'), tb = $('ppTable'); if (!box || !tb) return;
+  bar.firstChild.style.width = tb.offsetWidth + 'px'; bar.hidden = tb.offsetWidth <= box.clientWidth + 1; if (!bar.hidden) bar.scrollLeft = box.scrollLeft;
+  ppHead();
+}
+function ppHead() {
+  var tb = $('ppTable'), th = tb && tb.tHead; if (!th || $('tabPlan').hidden) return;
+  var r = tb.getBoundingClientRect(), off = Math.max(0, Math.min(-r.top, r.height - th.offsetHeight - 60));
+  th.style.transform = off > 0 ? 'translateY(' + off + 'px)' : '';
+}
+(function () {
+  var box = $('ppScroll'), bar = $('ppBar');
+  box.addEventListener('scroll', function () { if (bar.scrollLeft !== box.scrollLeft) bar.scrollLeft = box.scrollLeft; }, { passive: true });
+  bar.addEventListener('scroll', function () { if (box.scrollLeft !== bar.scrollLeft) box.scrollLeft = bar.scrollLeft; }, { passive: true });
+  window.addEventListener('scroll', ppHead, { passive: true });
+  window.addEventListener('resize', ppSyncScroll);
+})();
 // what the plan needs, shown in the Input tab
 function renderPPData(pm) {
   var el = $('ppData'); if (!el) return;
@@ -3083,6 +3108,7 @@ $('useSample').addEventListener('click', loadSample);
 function showTab(name) {
   document.querySelectorAll('.tab[data-tab]').forEach(function (b) { var on = b.getAttribute('data-tab') === name; b.classList.toggle('on', on); if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
   $('tabForecast').hidden = name !== 'Forecast'; $('tabInput').hidden = name !== 'Input'; $('tabCek').hidden = name !== 'Cek'; $('tabBuffer').hidden = name !== 'Buffer'; $('tabPlan').hidden = name !== 'Plan'; document.body.classList.toggle('wide', name === 'Plan'); if (name === 'Plan' && CH.sm && Math.abs(document.documentElement.clientWidth - (state._ppW || 0)) > 40) { state._ppW = document.documentElement.clientWidth; renderAll(); }
+  if (name === 'Plan') ppSyncScroll();
   try { localStorage.setItem('ppic_tab', name); } catch (e) {}
 }
 document.querySelectorAll('.tab[data-tab]').forEach(function (b) { b.addEventListener('click', function () { showTab(b.getAttribute('data-tab')); }); });
