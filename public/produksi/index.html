@@ -115,6 +115,7 @@ input[type=month], input[type=date] { font: inherit; color: inherit; padding: 4p
       <label class="drop" data-kind="plan"><input type="file" accept=".xlsx,.xlsm,.xls,.csv" data-kind="plan"><b>Pilih atau tarik file rencana bulanan</b><span class="sub">Satu baris per SKU per mesin: Mesin, Material, Deskripsi, Net (kg), Target/hari, Rencana (CT). Jadwal harian dibuat otomatis: tiap SKU jalan sesuai target/hari di mesinnya sampai rencananya habis, lalu SKU berikutnya.</span></label>
       <div class="row"><label class="sub">Bulan <input type="month" id="planMonth"></label><label class="sub">Mulai <input type="date" id="pStart"></label><label class="sub">Selesai <input type="date" id="pEnd"></label></div>
       <div class="row"><label class="sub"><input type="checkbox" id="sunWork"> Minggu tetap produksi</label><button type="button" id="tplPlan">Unduh template rencana bulanan</button></div>
+      <div class="row"><span class="sub">Atau pakai jadwal dari tab <b>Rencana Produksi</b> di aplikasi utama:</span><button type="button" class="primary" id="fromPP">Ambil dari Rencana Produksi</button></div>
       <div class="fstat" id="planStat">Belum ada file rencana.</div>
     </div>
     <div class="slot">
@@ -680,11 +681,12 @@ input[type=month], input[type=date] { font: inherit; color: inherit; padding: 4p
   function start_(p) {
     plan = p; lines = p.lines; byId = {}; off = {}; lines.forEach(function (l) { byId[l.id] = l; });
     days = enumerate(p.start, p.end);
-    days.forEach(function (d) { if (new Date(d + 'T00:00:00').getDay() === 0) off[d] = true; });
+    if (p.offDays) p.offDays.forEach(function (d) { off[d] = true; });   // calendar sent from Rencana Produksi
+    else days.forEach(function (d) { if (new Date(d + 'T00:00:00').getDay() === 0) off[d] = true; });
     $('planMonth').value = p.period; $('pStart').value = p.start; $('pEnd').value = p.end; $('sunWork').checked = !!p.sunWork;
     $('periodLabel').textContent = p.label;
     var work = days.filter(function (d) { return !off[d]; }).length;
-    $('periodSub').textContent = 'Periode ' + dayLabel(p.start) + ' – ' + dayLabel(p.end) + ' · ' + work + ' hari kerja (Minggu libur) · ' + lines.length + (p.monthly ? ' SKU dari rencana bulanan' : ' line produksi');
+    $('periodSub').textContent = 'Periode ' + dayLabel(p.start) + ' – ' + dayLabel(p.end) + ' · ' + work + ' hari kerja' + (p.offDays ? '' : ' (Minggu libur)') + ' · ' + lines.length + (p.fromPP ? ' bar dari Rencana Produksi' : p.monthly ? ' SKU dari rencana bulanan' : ' line produksi');
     $('srcNote').textContent = 'Sumber rencana: ' + (p.source || '-') + '.';
     var today = iso(new Date());
     curDay = today < days[0] ? days[0] : today > days[days.length - 1] ? days[days.length - 1] : today;
@@ -721,13 +723,26 @@ input[type=month], input[type=date] { font: inherit; color: inherit; padding: 4p
     }).catch(function (e) { $('mockBtn').disabled = false; alert('Gagal memuat contoh: ' + e); });
   }
   $('mockBtn').addEventListener('click', showMock);
+  // The main app's Rencana Produksi tab writes its schedule into the same storage ('Kirim ke Monitoring Harian').
+  $('fromPP').addEventListener('click', function () {
+    try { localStorage.setItem('ppic_tab', 'Plan'); } catch (e) {}
+    location.href = '/';
+  });
+  window.addEventListener('storage', function (e) {
+    if (e.key !== LS_KEY || (plan && plan.sample)) return;
+    var o = null; try { o = JSON.parse(e.newValue || 'null'); } catch (x) {}
+    if (!o || !o.plan || !o.plan.lines) return;
+    if (plan && o.plan.loadedAt === plan.loadedAt) return;
+    actual = o.actual || {}; actSrc = o.actSrc || null; start_(o.plan);
+    stat('planStat', 'Rencana diperbarui: ' + o.plan.source + '.', 'ok');
+  });
   $('mockExit').addEventListener('click', function () { location.href = location.pathname; });
   $('planMonth').value = iso(new Date()).slice(0, 7); setPeriodFromMonth();
   var saved = null; try { saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) {}
   if (!/[?&]contoh\b/.test(location.search) && saved && saved.plan && saved.plan.lines && saved.plan.lines.length) {
     actual = saved.actual || {}; actSrc = saved.actSrc || null;
     start_(saved.plan);
-    stat('planStat', 'Dimuat dari browser: ' + saved.plan.source + '.', 'ok');
+    stat('planStat', (saved.plan.fromPP ? 'Dari ' : 'Dimuat dari browser: ') + saved.plan.source + '.', 'ok');
     var nA = 0; Object.keys(actual).forEach(function (k) { nA += Object.keys(actual[k]).length; });
     if (nA) stat('actStat', nA + ' angka aktual tersimpan' + (actSrc ? ' (terakhir dari ' + actSrc + ')' : '') + '.', 'ok');
     setState('Tersimpan di browser ini', 'ok');
