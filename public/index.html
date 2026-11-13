@@ -442,7 +442,7 @@ td input[type=month], td select { min-height: 28px; padding: 3px 6px; width: aut
   <header>
     <div>
       <h1>PPIC Decision Support System <span class="h1sub">· The Univenus Serang · <b>PPIC Forecast Desk (bulanan)</b></span></h1>
-      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-12i</span></div>
+      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-13a</span></div>
     </div>
     <nav class="tabs" aria-label="Lembar">
       <button type="button" class="tab on" data-tab="Forecast" aria-current="page">Forecast</button><button type="button" class="tab" data-tab="Buffer">Saran Buffer</button><button type="button" class="tab" data-tab="Plan">Rencana Produksi</button><button type="button" class="tab" data-tab="Cek">Cek Data SKU</button><button type="button" class="tab" data-tab="Input">Input Data &amp; Model</button><a class="tab" href="/produksi/" style="text-decoration:none;display:inline-flex;align-items:center;font-weight:600">Monitoring Produksi Harian ↗</a>
@@ -1647,7 +1647,7 @@ function renderCek(m) {
     var st = STATUS[s.status], ov = s.override;
     t += '<tr class="st-' + s.status + '"><td><span class="pill p-' + st[1] + '">' + st[0] + '</span>' + (ov ? '<span class="sub"> manual</span>' : '') + (s.status === 'diganti' && s.succ ? '<span class="code" title="' + esc(s.succ.name || '') + '">→ ' + esc(s.succ.key) + '</span>' : '') + '</td>' +
       '<td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + esc(s.nomat || 'tanpa Nomat') + (s.art ? ' · ' + esc(s.art) : '') + (L && s.flag[L] ? ' · <b class="red">' + s.flag[L] + '</b>' : '') + '</span></td>' +
-      '<td>' + esc(s.family ? titleCase(s.family) : '–') + '</td><td class="num col">' + (s.row[L] || '–') + '</td><td class="num">' + n(s.soh) + '</td><td class="num">' + n(s.oi[L]) + '</td><td class="num">' + n(s.rev[L]) + '</td><td class="num">' + n(s.fhq[f1]) + '</td>' +
+      '<td>' + esc(s.grp || s.family ? famOf(s) : '–') + '</td><td class="num col">' + (s.row[L] || '–') + '</td><td class="num">' + n(s.soh) + '</td><td class="num">' + n(s.oi[L]) + '</td><td class="num">' + n(s.rev[L]) + '</td><td class="num">' + n(s.fhq[f1]) + '</td>' +
       '<td class="wr">' + (s.hits.length ? s.hits.map(function (x) { return '<span class="why"><span class="pill p-' + STATUS[x.status][1] + '">' + STATUS[x.status][0] + '</span> ' + esc(x.why) + '</span>'; }).join('') : '<span class="sub">Tidak ada aturan yang kena</span>') + '</td>' +
       '<td style="white-space:nowrap"><select data-ov="' + esc(s.key) + '" aria-label="Status untuk ' + esc(s.name || s.key) + '"><option value="">Otomatis (' + STATUS[s.autoStatus][0] + ')</option>' +
       Object.keys(STATUS).map(function (k) { return '<option value="' + k + '"' + (ov && ov.status === k ? ' selected' : '') + '>' + STATUS[k][0] + (k === 'diganti' ? ' oleh…' : '') + '</option>'; }).join('') + '</select>' +
@@ -1759,7 +1759,7 @@ function bufferModel(m) {
     f.buf = { spread: sp };
     f.skus.forEach(function (s) {
       var b = basisOf(s, mo, cfg.basis, false), F = b ? Math.max(0, b.v) : 0;
-      var auto = autoStrategy(s, m), st = state.bufStrat[s.key] || state.bufStrat['fam:' + f.key] || auto[0];
+      var auto = autoStrategy(s, m), st = state.bufStrat[s.key] || state.bufStrat['fam:' + f.key] || state.bufStrat['fam:' + f.base] || auto[0];
       var z = z0, fac = 1, note = '';
       if (st === 'defensif') { z = Math.max(z0, 2.05); fac = 1.15; }
       if (st === 'tren') { var ms = m.closingMonths.slice(-3), prev = ms.slice(0, -1).map(function (x) { return s.oi[x] || 0; }), avg = prev.length ? prev.reduce(function (a, c) { return a + c; }, 0) / prev.length : 0; fac = avg > 0 ? Math.min(1.3, Math.max(0.8, (s.oi[m.latest] || 0) / avg)) : 1; note = '×' + fmt.format(Math.round(fac * 100) / 100) + ' tren'; }
@@ -1830,7 +1830,7 @@ function renderBuffer(m) {
   var lim = state.fcAll ? Infinity : 10;
   m.fams.forEach(function (f) {
     if (!f.skus.length) return;
-    var a = bfAgg(f.skus), open = !!state.bfOpen[f.key], fst = state.bufStrat['fam:' + f.key] || '';
+    var a = bfAgg(f.skus), open = !!state.bfOpen[f.key], fst = state.bufStrat['fam:' + f.key] || state.bufStrat['fam:' + f.base] || '';
     h += '<tr class="fam"><td><div class="fl"><button type="button" class="exp" data-bfam="' + esc(f.key) + '" aria-expanded="' + open + '">' + (open ? '▼' : '▶') + '</button><div>' + esc(f.name) + '<span class="code">' + f.skus.length + ' SKU · sebaran error ' + fmt.format(Math.round(f.buf.spread.v * 100)) + '%' + (f.buf.spread.dflt ? ' (bawaan)' : ' (' + f.buf.spread.n + ' bln)') + '</span></div></div></td>' +
       '<td class="num sep">' + n(a.fs) + '</td><td class="num">' + n(Math.round(a.F)) + '</td><td class="num sep">' + n(a.old) + '</td><td class="num bsug">' + n(a.sug) + '</td><td class="num">' + n(a.fin) + '</td><td class="num">' + (a.days === null ? '–' : fmt.format(Math.round(a.days * 10) / 10)) + '</td><td>' + stratSel('fam:' + f.key, fst, null, true) + '</td>' +
       '<td class="num sep' + (a.prod === 0 ? ' zero' : '') + '">' + n(a.prod) + '</td><td class="num dummy">–</td><td></td></tr>';
@@ -2140,10 +2140,10 @@ function renderPlanGrid(pm, sm, mt, all) {
   var dw = Math.max(32, Math.min(64, Math.floor((($('ppScroll').clientWidth || document.documentElement.clientWidth - 60) - fixedW - 2) / H)));
   CH.dw = dw;
   // family filter + search
-  var fams = []; pm.rows.forEach(function (r) { var f = r.s.family ? titleCase(r.s.family) : '(tanpa famili)'; if (fams.indexOf(f) < 0) fams.push(f); }); fams.sort();
+  var fams = []; pm.rows.forEach(function (r) { var f = r.s.grp || r.s.family ? famOf(r.s) : '(tanpa famili)'; if (fams.indexOf(f) < 0) fams.push(f); }); fams.sort();
   var fsel = $('ppFam'), fv = state.ppFam || ''; fsel.innerHTML = '<option value="">Semua famili</option>' + fams.map(function (f) { return '<option' + (f === fv ? ' selected' : '') + '>' + esc(f) + '</option>'; }).join('');
   var q = normName(state.ppQ || ''), filt = !!(fv || q);
-  var hit = function (r) { if (fv && (r.s.family ? titleCase(r.s.family) : '(tanpa famili)') !== fv) return false; if (q && normName((r.s.name || '') + ' ' + (r.s.nomat || '') + ' ' + (r.s.art || '') + ' ' + r.s.key).indexOf(q) < 0) return false; return true; };
+  var hit = function (r) { if (fv && (r.s.grp || r.s.family ? famOf(r.s) : '(tanpa famili)') !== fv) return false; if (q && normName((r.s.name || '') + ' ' + (r.s.nomat || '') + ' ' + (r.s.art || '') + ' ' + r.s.key).indexOf(q) < 0) return false; return true; };
   $('ppHint').textContent = filt ? 'Filter aktif: hanya mesin dengan SKU yang cocok, SKU lain diredupkan.' : '';
   var u = function (ct, nw) { if (typeof ct !== 'number') return '–'; if (!mt) return n(ct); return nw ? fmt.format(Math.round(ct * nw / 100) / 10) : '–'; };
   var c = function (ct, nw, cls) { return '<td class="num' + (cls ? ' ' + cls : '') + '">' + u(ct, nw) + '</td>'; };
@@ -2384,11 +2384,19 @@ function forecastModel(c) {
   });
   fcRows.forEach(function (r) {
     var s = find(r.nomat, r.article_code) || make(r.nomat, r.article_code);
-    if (!s.name) s.name = r.description; if (!s.family && r.brand) s.family = r.brand;
+    if (!s.name) s.name = r.description; if (!s.family && r.brand) s.family = r.brand; if (r.brand && !s.brand) s.brand = String(r.brand).trim();
     if (!s.nw && typeof r.net_weight_kg === 'number' && r.net_weight_kg > 0) s.nw = r.net_weight_kg;
     s.fhq[r.forecast_month] = typeof r.forecast_qty_ctn === 'number' ? r.forecast_qty_ctn : null; s.fver[r.forecast_month] = r.version;
   });
   var fver = {}; fcRows.forEach(function (r) { fver[r.forecast_month] = r.version; });
+  // view group = brand + family, so Paseo, Jolly, Nice ... in the same closing family are shown apart.
+  // Brand from Forecast HQ; otherwise the first word of the name when it is a known brand.
+  var brands = { PASEO: 1, JOLLY: 1, NICE: 1 }; skus.forEach(function (s) { if (s.brand) brands[s.brand.toUpperCase()] = 1; });
+  skus.forEach(function (s) {
+    if (!s.brand && s.name) { var w = String(s.name).trim().split(/\s+/)[0].toUpperCase(); if (brands[w]) s.brand = w; }
+    var fam = String(s.family || '').trim().toUpperCase(), b = String(s.brand || '').trim().toUpperCase();
+    s.grp = b && fam && fam.split(/[^A-Z0-9]+/).indexOf(b) < 0 ? b + ' · ' + fam : fam || b || 'LAINNYA';
+  });
   applyEdits(skus, latest);
   var mm = { latest: latest, past: past, future: future, fms: fms, fver: fver, closingMonths: cms, all: skus,
     famKeys: Object.keys(skus.reduce(function (a, s) { if (s.family) a[String(s.family).trim().toUpperCase()] = 1; return a; }, {})) };
@@ -2404,11 +2412,12 @@ function forecastModel(c) {
   var fams = {}, famList = [];
   skus.forEach(function (s) {
     s.weight = (latest ? (s.oi[latest] || 0) : 0) + (future[0] ? (s.fhq[future[0]] || 0) : 0);
-    var f = String(s.family || 'Lainnya').trim().toUpperCase();
-    if (!fams[f]) { fams[f] = { key: f, name: titleCase(f), skus: [], excl: [], weight: 0 }; famList.push(fams[f]); }
+    var f = s.grp || String(s.family || 'Lainnya').trim().toUpperCase();
+    if (!fams[f]) { fams[f] = { key: f, brand: String(s.brand || '').toUpperCase(), base: String(s.family || 'Lainnya').trim().toUpperCase(), name: titleCase(f), skus: [], excl: [], weight: 0 }; famList.push(fams[f]); }
     if (incl.indexOf(s) >= 0) { fams[f].skus.push(s); fams[f].weight += s.weight; } else fams[f].excl.push(s);
   });
-  famList.sort(function (a, b) { return b.weight - a.weight; });
+  var bw = {}; famList.forEach(function (f) { bw[f.brand] = (bw[f.brand] || 0) + f.weight; });
+  famList.sort(function (a, b) { return (a.brand === b.brand ? 0 : (bw[b.brand] - bw[a.brand]) || (a.brand < b.brand ? -1 : 1)) || b.weight - a.weight; }); // same brand together
   famList.forEach(function (f) { f.skus.sort(function (a, b) { return b.weight - a.weight; }); f.excl.sort(function (a, b) { return b.weight - a.weight; }); });
   mm.skus = incl; mm.fams = famList; mm.excl = skus.filter(function (s) { return incl.indexOf(s) < 0; });
   runML(mm);
@@ -2763,7 +2772,7 @@ function contribTable(rows, cols, note) {
   });
   return h + '</tbody></table></div>';
 }
-function famOf(s) { return titleCase(String(s.family || 'Lainnya')); }
+function famOf(s) { return titleCase(String(s.grp || s.family || 'Lainnya')); }
 function openChart(kind) {
   var m = CH.model; if (!m) return;
   var cms = m.closingMonths, L = m.latest, mt = monthTotals(m, cms), lab = cms.map(monthLabel);

@@ -34,6 +34,8 @@ of totals, accuracy and the ML; a replaced SKU's order in is added to its succes
 
 Rules can be switched off and their numbers changed; any SKU can be set by hand. Settings and manual statuses are stored
 in the browser and in the history workbook (sheets `status_sku` and `aturan`), and are restored when it is uploaded again.
+**Groups = brand + family.** When a closing family holds several brands (Paseo, Jolly, Nice, …), each brand gets its own group, e.g. *Paseo · Facial Soft Pack* and *Jolly · Facial Soft Pack*, and groups of the same brand sit together. The brand comes from the Forecast HQ *Brand* column, or from the first word of the SKU name when that word is a known brand. When the family is already the brand, nothing changes. This applies to Forecast, Saran Buffer (an old per-family strategy still applies to its brand groups), Cek Data SKU and the Rencana Produksi family filter.
+
 The Forecast table can show all SKUs per family and the excluded ones (greyed). The realised side uses **Forecast HQ REV**
 (ORIG only when REV is empty); the accuracy card and chart also show ORIG.
 
