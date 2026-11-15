@@ -42,7 +42,7 @@ The Forecast table can show all SKUs per family and the excluded ones (greyed). 
 ## Editing in the Forecast table
 
 Free stock, Order in, Forecast HQ REV (closing months) and Forecast HQ M+1..M+3 cells can be edited like Excel: double-click
-or just type, Enter/Tab to move on, arrows to move, Esc to cancel, Delete to empty, Ctrl+Z to undo. Edited cells are marked
+or just type, Enter/Tab to move on, arrows to move, Esc to cancel, Delete to empty, Ctrl+Z to undo (Ctrl+Y to redo). Edited cells are marked
 yellow with the file value in the tooltip. The file's values are never overwritten: corrections are kept separately
 (browser + sheet `koreksi` in the history workbook, listed with a revert button under Cek Data SKU) and applied on top for
 totals, accuracy and the ML. The status chip under each SKU name opens a menu to set Aktif / Perlu cek / Diskontinu /
@@ -76,6 +76,31 @@ Three inputs:
 
 **Unduh Histori_Serang.xlsx** writes one workbook with sheets `bulanan` (one row per SKU per closing month), `mingguan` (W1–W5),
 `forecast_hq`, `kelas_sku` and `log`. Re-uploading a month replaces that month and is noted in `log`.
+
+## Usability (Nov 2026)
+
+- **Undo / redo everywhere**: ↶ Urungkan / ↷ Ulangi in the header, or Ctrl+Z and Ctrl+Y (Ctrl+Shift+Z). Covers every manual
+  change: corrections, SKU statuses, rules, buffer edits and strategies, machines, capacities, the production schedule,
+  material master and grouping. Uploading files is not undone. Inside a text box Ctrl+Z stays the browser's own text undo.
+- **Card lists that lead somewhere**: every Forecast card chart now lists all SKUs behind it (searchable), not only the top 8.
+  Clicking a row closes the chart and opens that SKU's cell in the Forecast table (family opened, "Semua SKU" or excluded rows
+  switched on when needed, the cell highlighted). *SKU tanpa Forecast HQ* also shows which forecast months are empty.
+- **Drop files anywhere**: drag files onto any tab; the kind is detected (history .xlsx / .ppic.gz, material master, Forecast HQ,
+  Stock Level Check, production data, otherwise closing). The slots in the Input tab still take their own kind.
+- **Search**: Forecast and Saran Buffer have a search box (Nomat, name, article code, brand, category; old Nomat too).
+- **Material master** (Input tab, optional Excel): columns found by header (Nomat / Material, Article Code, Description, Brand,
+  Category, Family, Status, Nomat pengganti, Catatan). The table joins it with the SKUs in closing and Forecast HQ: status
+  active / inactive (from the master; without one, active = Forecast HQ M+1..M+3 or order in in the last 3 closings), and flags
+  for a changed Nomat (same article code, other Nomat in the master, in another closing month or in Forecast HQ), a different
+  name, SKUs missing from the master and master rows not in the data. Status and Nomat pengganti can be changed in the table;
+  *inactive* feeds the new rule **Nonaktif di material master** (→ Diskontinu, or Diganti when a successor is given).
+  "Unduh material master" exports the table as Excel, which can be edited and uploaded again. Stored in the browser and in
+  sheet `material_master` of the history file.
+- **Brand · Category grouping**: Brand and Category from the Forecast HQ file (both optional) or the material master replace the
+  closing family as the group in Forecast, Saran Buffer and the plan filter. SKUs without a category keep Brand · Family.
+  A switch next to the search box goes back to Brand · Family for everything.
+- **Compact history (.ppic.gz)**: same content as Histori_Serang.xlsx (every sheet), stored as columns and gzip-compressed in the
+  browser; the sample is ~13 KB against ~390 KB for the Excel. Upload or drop it like the Excel to continue.
 
 ## Deploy (Cloudflare Worker)
 
