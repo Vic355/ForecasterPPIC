@@ -12,7 +12,7 @@ Plant: The Univenus Serang (plant 7079). Unit: cartons (CT), tonnes where noted.
 | Part | File | Runs | What it does |
 | --- | --- | --- | --- |
 | **Forecast Desk** (PPIC Decision Support System) | `public/index.html` | browser | The main app: reads the Excel files, checks SKUs, forecasts, suggests buffers, builds the production plan. One self-contained HTML file. |
-| **Monitoring Produksi Harian** | `public/produksi/index.html` | browser | Plan vs. actual per day, per machine and per SKU. Opened at `/produksi/`, and embedded as the *Monitoring harian* step of the Forecast Desk. |
+| **Perencanaan Produksi** | `public/produksi/index.html` | browser | Daily plan per machine and SKU (run bars), actuals pasted from the production report, what-if scenarios. Its own page at `/produksi/`, opened from step 6 or the search bar. |
 | **Worker** | `src/index.js`, `wrangler.jsonc` | Cloudflare | Serves `./public` as static files, plus `/api/ask` (Workers AI) for the Asisten's free-form questions. |
 | **Chronos script** | `ingest/forecast_chronos.py` | user's computer | Runs the Chronos foundation model on the exported history and writes `forecast_chronos.csv`, which is dropped back into the app. |
 | **Batch loader** | `ingest/ingest_closing.py` | user's computer | Optional. The same closing extraction into an append-only SQLite store. |
@@ -35,7 +35,6 @@ with **Terima dan lanjut ke …**; a red count shows open alerts. Accepting a pa
 | 4 | **Forecast** | Clean history | Forecast HQ vs order in, accuracy, Forecast AI (ensemble) M+1..M+3 |
 | 5 | **Saran buffer** | Forecast basis, service level, lead time, strategy | Buffer per SKU, PP = forecast + buffer − stok bebas |
 | 6 | **Rencana produksi** | PP, machines, SKU → machine type, calendar | Schedule per machine and day, Excel export |
-| 7 | **Monitoring harian** | Plan from step 6, actual production | Plan vs actual, Utang (plan to date − actual to date) |
 
 Files can be dropped on any page; the kind is detected (history .xlsx / .ppic.gz, material master, Forecast HQ,
 Stock Level Check, production data, Chronos CSV, otherwise closing).
@@ -51,7 +50,7 @@ Kelas SKU    ─┘                                 └─> Forecast HQ vs order
                                                          ▼
                        Rencana produksi (PP per SKU → machines → days)
                                                          ▼
-                       Monitoring harian (plan vs actual, Utang)
+                       Perencanaan Produksi /produksi/ (daily plan, actuals, scenarios)
 ```
 
 ## 3. Data keys and cleaning
@@ -98,15 +97,15 @@ The backtest is walk-forward: each closing month is predicted only from earlier 
 - **PP** (production need) = forecast + buffer final − stok bebas; stok bebas = stock on hand − outstanding DN − SC block.
 - Manual buffer edits need a reason and are kept.
 
-## 6. Production plan and monitoring
+## 6. Production plan and Perencanaan Produksi
 
 - **Rencana produksi** plans one month (closing + 1). Auto schedule: problem SKUs first, then fewest days of cover, then
   biggest PP; each SKU goes to the machine of its type with the earliest free stretch. Bars can be dragged, resized,
   split (A → B → A); daily targets can be typed. Built-in Indonesian holidays 2026–2027; Saturdays on, Sundays off.
-  Export to Excel, or **Kirim ke Monitoring Harian**.
-- **Monitoring harian** takes that plan (or a plan Excel), and actuals typed in or uploaded; it shows KPI tiles,
-  Input harian, Grid bulanan (Gantt with daily entry and an Utang column), Per SKU and Per mesin views.
-- **In progress**: a redesigned production planning view is being built in a separate thread and is not on `main` yet.
+  Export to Excel, or **Kirim ke Perencanaan Produksi**.
+- **Perencanaan Produksi** (`/produksi/`) takes that plan (or a plan Excel; date columns up to a chosen day are actuals,
+  no date columns = PP list). Steps: Data masuk, Rencana (grid with draggable bars and action cards), Aktual (paste the
+  output column, check, lock the day), Skenario (rush order / machine stop, preview, apply). Saved in `ppic_prod`.
 
 ## 7. Asisten
 
@@ -123,7 +122,7 @@ sources and comparing two forecasts. Its answer rules are written up in [panduan
 
 | Where | What |
 | --- | --- |
-| Browser `localStorage` (`ppic_*` keys) | Corrections, SKU statuses, rules, buffer edits and strategies, Chronos rows, material master, plan, UI settings, monitoring data (`ppic_prod`) |
+| Browser `localStorage` (`ppic_*` keys) | Corrections, SKU statuses, rules, buffer edits and strategies, Chronos rows, material master, plan, UI settings, Perencanaan Produksi plan and actuals (`ppic_prod`) |
 | History file `Histori_Serang_*.xlsx` or `.ppic.gz` | Everything above plus the extracted closings. Sheets: `bulanan`, `mingguan`, `forecast_hq`, `kelas_sku`, `log`, `status_sku`, `aturan`, `koreksi`, `saran_buffer`, `forecast_ml`, `forecast_chronos`, `material_master`, `rencana_produksi`, `jadwal_produksi`, `target_harian`, `kalender_produksi`, `sku_mesin`, `kapasitas_mesin` |
 | `.ppic.gz` | Same content as the Excel, columnar JSON gzipped (~13 KB vs ~390 KB on the sample) |
 

@@ -596,8 +596,6 @@ html[data-theme=dark] .v3-grn .v3-rib-k, html[data-theme=dark] .v3-red .v3-rib-k
 .fct tr.fam td.v-ai { background: var(--grp); } .fct tr.tot td.v-ai { background: var(--foot); }
 .v-note { background: var(--note); color: var(--notet); border-radius: 2px 8px 8px 8px; padding: 4px 8px; font-size: 13px; line-height: 1.3; }
 .v-note + .v-note { margin-top: 4px; } .v-note { display: block; } .v-note.bad { box-shadow: inset 3px 0 0 var(--bad); } .v-note.warn { box-shadow: inset 3px 0 0 var(--warn); }
-/* Monitoring page inside the shell */
-.monwrap iframe { display: block; width: 100%; height: calc(100vh - 250px); min-height: 520px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); }
 /* existing components, Design 10 look */
 .tabs, .tab, .aibtn { display: none !important; }
 #d10main .panel { background: var(--paper); border-color: var(--line); border-radius: 12px; }
@@ -747,7 +745,6 @@ html[data-theme=dark] .rvchip { color: #1b1206; }
   <div id="d10rib"></div>
   <div class="tabpage" id="tabBrief" hidden></div>
   <div class="tabpage" id="tabMaster" hidden></div>
-  <div class="tabpage" id="tabMonitor" hidden><div class="monwrap"><iframe id="monFrame" title="Monitoring produksi harian" loading="lazy"></iframe></div></div>
 
   <div class="tabpage" id="tabForecast">
     <div class="ctx" id="fcCtx"></div>
@@ -805,7 +802,7 @@ html[data-theme=dark] .rvchip { color: #1b1206; }
           <select id="ppFam" aria-label="Filter famili"></select>
           <input type="search" id="ppQ" placeholder="Cari SKU / Nomat" aria-label="Cari SKU">
         </div></div>
-      <div class="ppctl"><button type="button" id="ppOpenAll">Buka semua mesin</button><button type="button" id="ppCloseAll">Tutup semua</button><button type="button" id="schReset">Kembalikan jadwal otomatis</button><button type="button" id="ppReset">Hapus perubahan manual</button><button type="button" id="ppXlsx" title="Unduh rencana produksi bulan ini sebagai Excel: tabel per mesin dengan target harian, daftar bar, PP per SKU dan kalender">Ekspor Excel</button><button type="button" id="ppToMon" title="Pakai jadwal ini sebagai rencana di halaman Monitoring Produksi Harian. Data aktual yang sudah diisi tidak diubah.">Kirim ke Monitoring Harian ↗</button><span class="sub" id="ppHint"></span></div>
+      <div class="ppctl"><button type="button" id="ppOpenAll">Buka semua mesin</button><button type="button" id="ppCloseAll">Tutup semua</button><button type="button" id="schReset">Kembalikan jadwal otomatis</button><button type="button" id="ppReset">Hapus perubahan manual</button><button type="button" id="ppXlsx" title="Unduh rencana produksi bulan ini sebagai Excel: tabel per mesin dengan target harian, daftar bar, PP per SKU dan kalender">Ekspor Excel</button><button type="button" id="ppToMon" title="Pakai jadwal ini sebagai rencana di Perencanaan Produksi (rencana harian, aktual, skenario). Data aktual yang sudah diisi tidak diubah.">Kirim ke Perencanaan Produksi ↗</button><span class="sub" id="ppHint"></span></div>
       <p class="note" id="schNote"></p>
       <div class="ppscroll" id="ppScroll"><table id="ppTable" class="fct ppt ppg"></table></div><div class="ppbar" id="ppBar" aria-hidden="true"><div></div></div>
       <div class="legend"><span><i class="schk"></i> SKU (geser / tarik ujung kanan)</span><span><i class="schk bad"></i> bermasalah, didahulukan</span><span><i class="schk man"></i> diatur manual</span><span><i class="schk ovr"></i> lewat akhir bulan</span><span><i class="schk clash"></i> bentrok</span><span><i class="sw offsw"></i> libur</span><span><i class="sw mntsw"></i> maintenance</span><span><i class="sw edsw"></i> target diisi manual</span><span>⚠ rencana beda dari target</span><span>Kolom SKU, Target, Rencana dan Hari dan baris tanggal tetap di tempat saat digeser (seperti freeze panes Excel)</span></div>
@@ -4069,8 +4066,9 @@ $('ppXlsx').addEventListener('click', function () {
   XLSX.writeFile(wb, 'Rencana_Produksi_' + $('plant').value.trim() + '_' + P + '.xlsx');
 });
 
-// send this month's schedule to the daily monitoring page (/produksi/), which reads it from localStorage 'ppic_prod'.
+// send this month's schedule to Perencanaan Produksi (/produksi/), which reads it from localStorage 'ppic_prod'.
 // Only the plan is replaced; actuals already entered there stay (moved by material if a SKU changed machine).
+// Stock cover, forecast per day and ABC-XYZ class go along so its assistant can tell which SKUs are running out.
 function ppToMonDo(silent) {
   var pm = CH.pm, sm = CH.sm; if (!pm || !sm || !sm.items.length) { if (!silent) toast('Belum ada jadwal rencana produksi untuk dikirim.'); return false; }
   var P = pm.P, D = pm.D, seen = {}, last = dateOfDay(P, D);
@@ -4082,6 +4080,9 @@ function ppToMonDo(silent) {
   }).filter(function (l) { return l.ct > 0; });
   var off = []; for (var d = 1; d <= D; d++) if (sm.cal.g[d]) off.push(dateOfDay(P, d));
   var store = {}; try { store = JSON.parse(localStorage.getItem('ppic_prod') || '{}') || {}; } catch (e) { store = {}; }
+  if (!silent && store.plan && store.plan.edited && store.plan.period === P && !confirm('Rencana ' + monthLabel(P) + ' sudah diubah di Perencanaan Produksi. Ganti dengan jadwal dari halaman ini? Data aktual tetap.')) { location.href = '/produksi/'; return false; }
+  var heat = {}, ppl = [];
+  pm.rows.forEach(function (r) { var mat = String(r.s.nomat || r.s.art || r.s.key); heat[mat] = { cover: r.cover != null ? Math.round(r.cover * 10) / 10 : null, fcDay: r.F ? Math.round(r.F / D * 10) / 10 : 0, cls: r.s.cls && r.s.cls.code || null }; if (r.pp > 0) { ppl.push({ material: mat, desc: r.s.name || mat, category: (r.mach && r.mach.v) || '', net: r.nw || 0, pp: Math.round(r.pp) }); } });
   var actual = store.actual || {}, ids = {}, used = {}, moved = 0;
   lines.forEach(function (l) { ids[l.id] = l; });
   Object.keys(actual).forEach(function (id) {
@@ -4089,14 +4090,11 @@ function ppToMonDo(silent) {
     var mat = id.split('-')[1], to = lines.filter(function (l) { return l.material === mat && !used[l.id] && !actual[l.id]; })[0];
     if (to) { actual[to.id] = actual[id]; delete actual[id]; used[to.id] = 1; moved++; }
   });
-  store.plan = { period: P, label: new Date(P + '-01T00:00:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }), start: dateOfDay(P, 1), end: last, offDays: off, source: 'Rencana Produksi (tab di PPIC Forecast Desk), dikirim ' + new Date().toLocaleString('id-ID'), fromPP: true, loadedAt: new Date().toISOString(), lines: lines };
+  store.plan = { period: P, label: new Date(P + '-01T00:00:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }), start: dateOfDay(P, 1), end: last, offDays: off, source: 'Rencana Produksi (tab di PPIC Forecast Desk), dikirim ' + new Date().toLocaleString('id-ID'), fromPP: true, loadedAt: new Date().toISOString(), lines: lines, heat: heat, pp: ppl };
   store.actual = actual;
   try { localStorage.setItem('ppic_prod', JSON.stringify(store)); } catch (e) { if (!silent) toast('Gagal menyimpan: penyimpanan browser penuh.'); return false; }
   if (silent) return true;
-  if (typeof D10ON !== 'undefined' && D10ON) { D10.monOn = false; d10Go('Monitor'); toast(lines.length + ' SKU dikirim ke Monitoring harian (' + monthLabel(P) + ').' + (moved ? ' ' + moved + ' baris aktual dipindah karena SKU pindah mesin.' : '') + ' Data aktual tidak diubah.'); return; }
-  var w = window.open('/produksi/', 'ppic-produksi');
-  if (!w) location.href = '/produksi/';
-  setTimeout(function () { alert(lines.length + ' SKU dikirim ke Monitoring Produksi Harian (' + monthLabel(P) + ').' + (moved ? ' ' + moved + ' baris aktual dipindah karena SKU pindah mesin.' : '') + ' Data aktual tidak diubah.'); }, 50);
+  location.href = '/produksi/';
 }
 $('ppToMon').addEventListener('click', function () { ppToMonDo(false); });
 
@@ -4140,7 +4138,7 @@ function loadSample() {
 $('useSample').addEventListener('click', loadSample);
 function showTab(name) {
   document.querySelectorAll('.tab[data-tab]').forEach(function (b) { var on = b.getAttribute('data-tab') === name; b.classList.toggle('on', on); if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
-  $('tabForecast').hidden = name !== 'Forecast'; $('tabInput').hidden = name !== 'Input'; $('tabCek').hidden = name !== 'Cek'; $('tabBuffer').hidden = name !== 'Buffer'; $('tabPlan').hidden = name !== 'Plan'; ['Brief', 'Master', 'Monitor'].forEach(function (t) { $('tab' + t).hidden = name !== t; }); document.body.classList.toggle('wide', name === 'Plan'); if (name === 'Plan' && CH.sm && Math.abs(document.documentElement.clientWidth - (state._ppW || 0)) > 40) { state._ppW = document.documentElement.clientWidth; renderAll(); }
+  $('tabForecast').hidden = name !== 'Forecast'; $('tabInput').hidden = name !== 'Input'; $('tabCek').hidden = name !== 'Cek'; $('tabBuffer').hidden = name !== 'Buffer'; $('tabPlan').hidden = name !== 'Plan'; ['Brief', 'Master'].forEach(function (t) { $('tab' + t).hidden = name !== t; }); document.body.classList.toggle('wide', name === 'Plan'); if (name === 'Plan' && CH.sm && Math.abs(document.documentElement.clientWidth - (state._ppW || 0)) > 40) { state._ppW = document.documentElement.clientWidth; renderAll(); }
   if (name === 'Plan') ppSyncScroll();
   try { localStorage.setItem('ppic_tab', name); } catch (e) {}
   if (typeof D10 === 'object' && D10) { D10.cur = name; d10Render(); }
@@ -5310,14 +5308,14 @@ loadRuleState(); loadBuf(); loadPP(); loadMat(); loadChronos();
 /* ===================== Design 10 shell: header, step flow, Alerts panel, ribbon, Ringkasan, settings, help ===================== */
 // The pages' own content (cards, tables, controls) is unchanged; this layer arranges it the Design 10 way and reads
 // alerts from the cards each page already computes (red = bad, amber = warn).
-var D10 = { acc: {}, cur: 'Brief', lang: 'id', big: false, side: 'alerts', open: window.innerWidth > 1100, right: false, rib: {}, talkUntil: 0, lastA: '', monOn: false };
+var D10 = { acc: {}, cur: 'Brief', lang: 'id', big: false, side: 'alerts', open: window.innerWidth > 1100, right: false, rib: {}, talkUntil: 0, lastA: '' };
 try { var d10s = JSON.parse(localStorage.getItem('ppic_ui') || '{}') || {}; if (d10s.lang) D10.lang = d10s.lang; D10.big = !!d10s.big; D10.right = !!d10s.right; D10.dimOn = d10s.dim !== false; D10.talkOn = d10s.talk !== false; if (d10s.theme) document.documentElement.setAttribute('data-theme', d10s.theme); } catch (e) {}
 function d10Save() { try { localStorage.setItem('ppic_ui', JSON.stringify({ lang: D10.lang, big: D10.big, right: D10.right, dim: D10.dimOn !== false, talk: D10.talkOn !== false, theme: document.documentElement.getAttribute('data-theme') })); } catch (e) {} }
-var D10_TABS = ['Brief', 'Input', 'Master', 'Cek', 'Forecast', 'Buffer', 'Plan', 'Monitor'];
+var D10_TABS = ['Brief', 'Input', 'Master', 'Cek', 'Forecast', 'Buffer', 'Plan'];
 var D10_SN = {
-  id: ['Ringkasan', 'Input data', 'Material master', 'Cek data SKU', 'Forecast', 'Saran buffer', 'Rencana produksi', 'Monitoring harian'],
-  en: ['Summary', 'Input data', 'Material master', 'SKU check', 'Forecast', 'Buffer', 'Production plan', 'Daily monitoring'],
-  zh: ['概览', '数据输入', '物料主数据', 'SKU 检查', '预测', '安全库存', '生产计划', '每日监控'] };
+  id: ['Ringkasan', 'Input data', 'Material master', 'Cek data SKU', 'Forecast', 'Saran buffer', 'Rencana produksi'],
+  en: ['Summary', 'Input data', 'Material master', 'SKU check', 'Forecast', 'Buffer', 'Production plan'],
+  zh: ['概览', '数据输入', '物料主数据', 'SKU 检查', '预测', '安全库存', '生产计划'] };
 var D10_L = {
   settings: ['Pengaturan', 'Settings', '设置'], theme: ['Tema', 'Theme', '主题'], light: ['Terang', 'Light', '浅色'], sepia: ['Sepia', 'Sepia', '护眼'], dark: ['Gelap', 'Dark', '深色'],
   size: ['Ukuran teks', 'Text size', '字号'], normal: ['Normal', 'Normal', '标准'], big: ['Besar', 'Large', '大'], lang: ['Bahasa', 'Language', '语言'], help: ['Bantuan', 'Help', '帮助'],
@@ -5342,11 +5340,10 @@ var D10_L = {
   red: ['Perlu tindakan', 'Action needed', '需处理'], amb: ['Perlu perhatian', 'Needs attention', '需关注'], grn: ['Aman', 'OK', '正常'], blu: ['Info', 'Info', '信息'],
   hide: ['Kecilkan', 'Collapse', '收起'], side: ['Pindah sisi', 'Switch side', '换边'], undo: ['Urungkan', 'Undo', '撤销'], redo: ['Ulangi', 'Redo', '重做'],
   know: ['Yang perlu diketahui hari ini', 'What to know today', '今日要点'], flow: ['Alur bulan ini', 'This month’s flow', '本月流程'], kpi: ['Angka utama', 'Key numbers', '关键数字'],
-  pages: ['Halaman', 'Pages', '页面'], skus: ['SKU', 'SKUs', 'SKU'], askAi: ['Tanya Asisten', 'Ask the assistant', '问助手'], askSub: ['Ketik pertanyaan atau perintah', 'Type a question or command', '输入问题或指令'],
+  pages: ['Halaman', 'Pages', '页面'], prodSec: ['Produksi', 'Production', '生产'], prodApp: ['Perencanaan Produksi ↗', 'Production planning ↗', '生产排程 ↗'], prodSub: ['rencana harian per mesin, aktual, skenario', 'daily plan per machine, actuals, scenarios', '每日机台计划、实际、情景'], skus: ['SKU', 'SKUs', 'SKU'], askAi: ['Tanya Asisten', 'Ask the assistant', '问助手'], askSub: ['Ketik pertanyaan atau perintah', 'Type a question or command', '输入问题或指令'],
   excel: ['Excel', 'Excel', 'Excel'], expT: ['Ekspor ke Excel', 'Export to Excel', '导出到 Excel'], expPage: ['Halaman ini', 'This page', '本页'], expAll: ['Seluruh workbook', 'Whole workbook', '整个工作簿'],
   expNone: ['Halaman ini tidak punya ekspor sendiri; semua isinya ada di workbook.', 'This page has no export of its own; everything is in the workbook.', '此页无单独导出；内容都在工作簿中。'],
   expBlocked: ['Unduhan diblokir di pratinjau ini. Buka situs Cloudflare untuk mengunduh.', 'Downloads are blocked in this preview. Open the Cloudflare site to download.', '此预览禁止下载。请在 Cloudflare 站点下载。'],
-  monInfo: ['Monitoring harian memakai rencana dari Rencana produksi. Halaman ini sama dengan halaman Monitoring yang sekarang.', 'Daily monitoring uses the plan from Production plan. It is the same page as today’s Monitoring.', '每日监控使用生产计划中的计划，与现有监控页面相同。'],
   asst: ['Asisten', 'Assistant', '助手'], dimL: ['Sorot & redupkan sel', 'Spotlight & dim', '聚焦并变暗'], talkL: ['Asisten berbicara (teks diketik)', 'Assistant speaks (typed text)', '助手说话（逐字显示）'], on: ['Nyala', 'On', '开'], off: ['Mati', 'Off', '关'],
   show: ['👁 Tunjukkan', '👁 Show me', '👁 指给我看'], ack: ['Sudah dicek', 'Checked', '已检查'], ackB: ['✓ Sudah dicek', '✓ Checked', '✓ 已检查'], unack: ['Batalkan', 'Undo', '撤销'], markB: ['⚑ Tandai', '⚑ Mark', '⚑ 标记'],
   okHere: ['Tidak ada alert di halaman ini.', 'No alerts on this page.', '本页没有提醒。'], perluTindakan: ['perlu tindakan', 'need action', '需处理'], lihatDulu: ['perlu perhatian', 'need attention', '需关注'], aman: ['aman', 'OK', '正常'], buka: ['buka halaman', 'open page', '打开页面']
@@ -5433,7 +5430,6 @@ function d10Step(tab, A) {
   if (tab === 'Brief') return ['none', has ? A.filter(function (a) { return a.lvl === 'red' || a.lvl === 'amb'; }).length + ' ' + tl('notes') : tl('startHere')];
   if (d10Locked(tab)) return ['lock', tl('locked')];
   if (tab === 'Input') { var nf = state.items.length + (state.history ? 1 : 0); return [r ? 'bad' : !nf || w ? 'warn' : 'ok', nf ? (state.sample ? tl('demoChip') : nf + ' ' + tl('file')) : tl('startHere')]; }
-  if (tab === 'Monitor') return ['ok', tl('buka')];
   if (tab === 'Master' && !state.mat) return [has ? 'warn' : 'empty', has ? tl('notLoaded') : tl('noData')];
   if (tab === 'Plan' && !d10PPMade()) return ['empty', tl('notMade')];
   if (!has) return ['empty', tl('noData')];
@@ -5463,14 +5459,13 @@ function d10Render() {
   var gate = !!D10_PREV[nx], nw = gate ? d10Warn(cur) : 0, nxB = !nx ? '' : gate ?
     '<button type="button" class="v-btn pri" data-d10acc="1"' + (cur === 'Input' && !d10HasCF() ? ' disabled title="' + esc(tl('lockRib')) + '"' : '') + '>' + (nw ? '<span class="warnlight" title="' + nw + '">' + nw + '</span>' : '') + tl('accept') + ' ' + esc(d10sn(nx)) + ' →</button>' :
     '<button type="button" class="v-btn pri" data-d10go="' + nx + '">' + tl('next') + ': ' + esc(d10sn(nx)) + ' →</button>';
-  $('d10mh').innerHTML = '<h2>' + esc(d10sn(cur)) + '</h2><span class="m">' + (cur === 'Brief' ? tl('startMonth') : D10.lang === 'zh' ? '第 ' + i + ' 步，共 7 步' : tl('step') + ' ' + i + ' ' + tl('of') + ' 7') + '</span><span class="sp"></span>' + nxB;
+  $('d10mh').innerHTML = '<h2>' + esc(d10sn(cur)) + '</h2><span class="m">' + (cur === 'Brief' ? tl('startMonth') : D10.lang === 'zh' ? '第 ' + i + ' 步，共 ' + (D10_TABS.length - 1) + ' 步' : tl('step') + ' ' + i + ' ' + tl('of') + ' ' + (D10_TABS.length - 1)) + '</span><span class="sp"></span>' + nxB;
   $('d10next').innerHTML = nxB;
   // ribbon
   d10Ribbon(A);
   // pages that only exist in this layout
   d10Slots(); d10PlanStart(); d10SecBtns();
   if (cur === 'Brief') d10Brief(A);
-  if (cur === 'Monitor') d10Monitor();
   d10Panel(A);
   d10Help($('d10main')); d10Translate($('d10main'));
   if (Date.now() < D10.talkUntil) document.querySelectorAll('.v10-lens').forEach(function (l) { l.classList.add('talk'); });
@@ -5483,7 +5478,6 @@ function d10Ribbon(A) {
   var cur = D10.cur, has = d10HasData(), mine = A.filter(function (a) { return (cur === 'Brief' || a.tab === cur) && (a.lvl === 'red' || a.lvl === 'amb'); }), h;
   if (cur === 'Brief' && !has) h = d10RibHTML('amb', tl('amb'), tl('briefWarn'));
   else if (d10Locked(cur)) h = d10RibHTML('blu', tl('blu'), tl('lockRib'), '<button type="button" class="v-btn sm" data-d10go="Input">' + tl('toInput') + ' →</button>');
-  else if (cur === 'Monitor') h = d10RibHTML('blu', tl('blu'), tl('monInfo'));
   else if (!mine.length) h = d10RibHTML('grn', tl('grn'), tl('okHere'));
   else {
     var k = Math.min(D10.rib[cur] || 0, mine.length - 1), a = mine[k], ix = A.indexOf(a);
@@ -5558,52 +5552,8 @@ function d10PlanStart() {
     var rows = CH.bm.rows.filter(function (s) { return s.bf.prod > 0; }), tot = rows.reduce(function (a, s) { return a + s.bf.prod; }, 0);
     h = '<h2>Rencana produksi ' + monthLabel(pm.P) + '</h2><p>Belum ada rencana untuk ' + monthLabel(pm.P) + '. Rencana otomatis memakai PP dari <b>Saran buffer</b>: <b>' + n(tot) + ' karton</b> untuk ' + n(rows.length) + ' SKU (forecast + buffer final − stok bebas), lalu dijadwalkan per area mesin › mesin › SKU' +
       (nM ? ' ke ' + nM + ' mesin dari Data mesin.' : state.sample ? ' ke mesin contoh.' : '. Data mesin belum ada, jadi jadwal per mesin masih kosong.') + '</p><p class="bb"><button type="button" class="v-btn pri" id="ppMake">Buat rencana otomatis</button> <button type="button" class="v-btn" data-d10go="Buffer">Lihat Saran buffer</button></p>';
-  } else h = '<h2>Rencana produksi</h2><p>Rencana otomatis butuh file closing dan Forecast HQ' + (nM ? '. Data mesin sudah ada (' + nM + ' mesin), jadi halaman ini bisa dibuka; isinya terisi setelah forecast masuk.' : '.') + ' Untuk memantau rencana dari file Excel sendiri, buka <b>Monitoring harian</b>.</p><p class="bb"><button type="button" class="v-btn" data-d10go="Input">' + tl('toInput') + ' →</button> <button type="button" class="v-btn" data-d10go="Monitor">Monitoring harian →</button></p>';
+  } else h = '<h2>Rencana produksi</h2><p>Rencana otomatis butuh file closing dan Forecast HQ' + (nM ? '. Data mesin sudah ada (' + nM + ' mesin), jadi halaman ini bisa dibuka; isinya terisi setelah forecast masuk.' : '.') + ' Untuk menjadwal dari file Excel sendiri, buka <b>Perencanaan Produksi</b>.</p><p class="bb"><button type="button" class="v-btn" data-d10go="Input">' + tl('toInput') + ' →</button> <a class="v-btn" href="/produksi/">Perencanaan Produksi ↗</a></p>';
   el.innerHTML = h;
-}
-// ---------- Monitoring (existing page, inside the layout) ----------
-function d10Monitor() {
-  var f = $('monFrame');
-  if (d10PPMade()) { // take this month's plan from Rencana produksi unless the planner loaded a file of their own
-    var st = null; try { st = JSON.parse(localStorage.getItem('ppic_prod') || 'null'); } catch (e) {}
-    var src = st && st.plan && st.plan.source || '', mine = /^Rencana Produksi \(tab/.test(src);
-    if ((!st || !st.plan || mine) && (!D10._monSig || D10._monSig !== JSON.stringify(state.ppSched || {}) + CH.pm.P)) { if (ppToMonDo(true)) D10._monSig = JSON.stringify(state.ppSched || {}) + CH.pm.P; }
-  }
-  if (D10.monOn) { d10MonTheme(); return; }
-  D10.monOn = true;
-  if (!f._d10l) { f._d10l = 1; f.addEventListener('load', d10MonTheme); }
-  if (typeof window.D10_MON_DOC === 'string') f.srcdoc = window.D10_MON_DOC; else f.src = '/produksi/';
-}
-function d10MonTheme() {
-  try {
-    var d = $('monFrame').contentDocument; if (!d || !d.documentElement) return;
-    d.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme'));
-    if (!d._d10) { // links that leave the page go to the steps of this layout instead
-      d._d10 = 1;
-      d.addEventListener('click', function (e) {
-        var t = e.target.closest && e.target.closest('#fromPP, a.back');
-        if (t) { e.preventDefault(); e.stopImmediatePropagation(); d10Go('Plan'); return; }
-        if (typeof window.D10_MON_DOC === 'string' && e.target.closest && e.target.closest('#mockExit')) { e.preventDefault(); e.stopImmediatePropagation(); $('monFrame').srcdoc = window.D10_MON_DOC; }
-      }, true);
-    }
-    if (!d.getElementById('d10theme')) {
-      var css = [].slice.call(document.querySelectorAll('style')).map(function (x) { return x.textContent; }).join('\n');
-      var th = css.slice(css.indexOf('html[data-theme=sepia]{'), css.indexOf('body { background: var(--bg);'));
-      var st = d.createElement('style'); st.id = 'd10theme';
-      st.textContent = th.replace(/html\[data-theme(=?[a-z]*)\]/g, 'html:root[data-theme$1][data-theme]').replace(/;/g, ' !important;').replace(/!important !important/g, '!important') +
-        '\nbody{font-family:"Source Sans 3",system-ui,sans-serif!important;background:var(--bg)!important;color:var(--ink)!important}a.back{display:none!important}';
-      d.head.appendChild(st);
-    }
-    var sec = d.querySelector('section.data');
-    if (sec && !d.getElementById('d10up')) { // the upload boxes fold away: the plan comes from Rencana produksi
-      var det = d.createElement('details'), main = d.getElementById('main'), nt = sec.nextElementSibling;
-      det.id = 'd10up'; det.innerHTML = '<summary>Ganti rencana dengan file Excel sendiri, atau unggah aktual produksi</summary>';
-      sec.parentNode.insertBefore(det, sec); det.appendChild(sec); if (nt && nt.tagName === 'P') det.appendChild(nt);
-      det.open = !(main && !main.hidden) && !d10PPMade();
-      var cs = d.createElement('style'); cs.textContent = '#d10up{border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--paper);margin:6px 0}#d10up summary{cursor:pointer;font-weight:600;font-size:14px}#d10up[open] summary{margin-bottom:8px}section.data{gap:10px!important}section.data .slot{padding:8px 12px!important}section.data h2{font-size:14px!important;margin:0 0 6px!important}section.data .drop{padding:8px 10px!important;min-height:0!important}section.data .drop .sub{display:none!important}';
-      d.head.appendChild(cs);
-    }
-  } catch (e) {}
 }
 // ---------- help tooltips ----------
 var D10_HELP = {
@@ -5729,7 +5679,7 @@ $('d10setB').addEventListener('click', function (e) { e.stopPropagation(); var o
 $('d10exp').addEventListener('click', function (e) { e.stopPropagation(); var on = !$('d10expP').classList.contains('on'); if (on) d10Export(); d10Pop('d10expP', on); });
 $('d10setP').addEventListener('click', function (e) {
   e.stopPropagation(); var b = e.target.closest('button'); if (!b) return;
-  if (b.hasAttribute('data-theme-set')) { document.documentElement.setAttribute('data-theme', b.getAttribute('data-theme-set')); D10.monOn && d10MonTheme(); if (CH.spec && !$('chDlg').hidden) { try { drawChart(CH.spec); } catch (x) {} } }
+  if (b.hasAttribute('data-theme-set')) { document.documentElement.setAttribute('data-theme', b.getAttribute('data-theme-set')); if (CH.spec && !$('chDlg').hidden) { try { drawChart(CH.spec); } catch (x) {} } }
   if (b.hasAttribute('data-size')) D10.big = b.getAttribute('data-size') === 'big';
   if (b.hasAttribute('data-lang')) D10.lang = b.getAttribute('data-lang');
   if (b.hasAttribute('data-dim')) { D10.dimOn = b.getAttribute('data-dim') === 'on'; if (!D10.dimOn) aiFocusClose(); }
@@ -5764,23 +5714,32 @@ function d10AskOpen() { aiOpen(true); D10.side = 'ask'; d10Panel(D10.A || []); }
 // the lens "talks" when the assistant answers
 new MutationObserver(function (ms) { if (ms.some(function (x) { return [].some.call(x.addedNodes, function (nd) { return nd.classList && nd.classList.contains('bot'); }); })) d10Talk(); }).observe($('aiLog'), { childList: true });
 // ---------- command bar: ask, find a nomat, open a page ----------
+var D10_PROD_WORDS = ['perencanaan produksi', 'produksi', 'production', 'monitoring', 'harian', 'aktual', 'actual', 'skenario', 'scenario', 'jadwal', 'mesin', 'daily', '生产'];
+// Perencanaan Produksi (/produksi/) is a page of its own. If it has no plan for this month yet, this month's schedule goes along.
+function d10OpenProd() {
+  if (CH.pm && CH.sm && CH.sm.items.length) { var st = null; try { st = JSON.parse(localStorage.getItem('ppic_prod') || 'null'); } catch (e) {} if (!st || !st.plan || !st.plan.lines || !st.plan.lines.length || (st.plan.period !== CH.pm.P && !st.plan.edited)) ppToMonDo(true); }
+  location.href = '/produksi/';
+}
 function d10CmdItems(q) {
   var nq = normName(q), out = [];
-  if (!nq) return D10_TABS.map(function (t) { return { k: 'page', t: t, label: d10sn(t) }; });
-  D10_TABS.forEach(function (t) { var names = D10_SN.id.concat(D10_SN.en, D10_SN.zh).filter(function (x, i) { return i % 8 === D10_TABS.indexOf(t); }); if (names.some(function (x) { return normName(x).indexOf(nq) >= 0; })) out.push({ k: 'page', t: t, label: d10sn(t) }); });
+  var prod = { k: 'app', label: tl('prodApp'), sub: tl('prodSub') };
+  if (!nq) return D10_TABS.map(function (t) { return { k: 'page', t: t, label: d10sn(t) }; }).concat([prod]);
+  D10_TABS.forEach(function (t) { var names = D10_SN.id.concat(D10_SN.en, D10_SN.zh).filter(function (x, i) { return i % D10_TABS.length === D10_TABS.indexOf(t); }); if (names.some(function (x) { return normName(x).indexOf(nq) >= 0; })) out.push({ k: 'page', t: t, label: d10sn(t) }); });
+  if (D10_PROD_WORDS.some(function (w) { return w.indexOf(nq) >= 0 || nq.indexOf(w) >= 0; })) out.push(prod);
   if (CH.model && nq.length >= 2) CH.model.all.filter(function (s) { return skuMatch(s, nq); }).slice(0, 6).forEach(function (s) { out.push({ k: 'sku', s: s, label: (s.name || s.key), sub: s.nomat || s.art || '' }); });
   out.push({ k: 'ask', q: q, label: tl('askAi') + ': “' + q + '”' });
   return out;
 }
 function d10CmdRender() {
   var q = $('d10cmdIn').value, it = d10CmdItems(q); D10.cmd = it; D10.cmdI = Math.min(D10.cmdI || 0, it.length - 1);
-  var sec = { page: tl('pages'), sku: tl('skus'), ask: tl('ask') }, last = '';
+  var sec = { page: tl('pages'), app: tl('prodSec'), sku: tl('skus'), ask: tl('ask') }, last = '';
   $('d10cmdL').innerHTML = it.map(function (x, i) { var h = (x.k !== last ? '<div class="kk">' + sec[x.k] + '</div>' : '') + '<button type="button" data-ci="' + i + '" class="' + (i === D10.cmdI ? 'on' : '') + '">' + esc(x.label) + (x.sub ? '<small>' + esc(x.sub) + '</small>' : '') + '</button>'; last = x.k; return h; }).join('');
   $('d10cmdL').hidden = false;
 }
 function d10CmdRun(x) {
   $('d10cmdL').hidden = true; $('d10cmdIn').blur();
   if (x.k === 'page') d10Go(x.t);
+  else if (x.k === 'app') d10OpenProd();
   else if (x.k === 'sku') {
     var PS = { Forecast: 'fcQ', Buffer: 'bfQ', Plan: 'ppQ', Cek: 'cekSearch', Master: 'mmQ', Input: 'pvQ' }, id = PS[D10.cur];
     if (!id || (id === 'ppQ' && !d10PPMade())) { d10Go('Forecast'); id = 'fcQ'; }
@@ -5958,7 +5917,7 @@ try { state.ack = JSON.parse(localStorage.getItem('ppic_ack') || '{}') || {}; } 
 // first visit of a page (per data load): the assistant points at the top alert by itself
 function d10AutoShow() {
   if (D10.dimOn === false || !d10HasData()) return;
-  var cur = D10.cur; if (cur === 'Brief' || cur === 'Monitor' || d10Locked(cur)) return;
+  var cur = D10.cur; if (cur === 'Brief' || d10Locked(cur)) return;
   var sig = cur + '|' + (CH.model ? CH.model.latest + CH.model.skus.length : ''); if (AIX.seen[sig]) return; AIX.seen[sig] = 1;
   var a = (D10.A || []).filter(function (x) { return x.tab === cur && (x.lvl === 'red' || x.lvl === 'amb'); })[0]; if (!a) return;
   setTimeout(function () { if (D10.cur === cur && !AIX.spot && !document.querySelector('dialog[open]')) d10Show(a); }, 700);
@@ -6158,7 +6117,7 @@ $('ppReset').insertAdjacentHTML('afterend', '<button type="button" id="ppUnmake"
 $('clearAll').addEventListener('click', function () { state.ppMade = {}; D10.acc = {}; d10SavePP(); });
 $('d10main').insertAdjacentHTML('beforeend', '<button type="button" id="d10fab" hidden title="Cari atau tanya (Ctrl K)">' + d10Lens(28) + '<span>🔍</span></button>');
 $('d10main').addEventListener('scroll', function () { $('d10fab').hidden = $('d10main').scrollTop < 300; }, { passive: true });
-$('ppToMon').textContent = 'Kirim ke Monitoring harian →';
+$('ppToMon').textContent = 'Kirim ke Perencanaan Produksi ↗';
 var D10ON = true;
 window.addEventListener('resize', function () { if (window.innerWidth <= 1100 && D10.open && !D10._r) { D10._r = true; } });
 

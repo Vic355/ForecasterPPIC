@@ -3,9 +3,13 @@
 Changes to the PPIC Decision Support System (Forecast Desk), newest first. Built from the git history and pull requests
 of this repository. Dates are when the change reached `main`. How the parts fit together: [docs/sistem.md](docs/sistem.md).
 
-## In progress (not on `main` yet)
+## 2026-11-16
 
-- **Production planning view**: a redesigned Rencana produksi view is being built in a separate thread.
+- **Perencanaan Produksi (#11).** `/produksi/` is rebuilt as its own page with four steps (Data masuk, Rencana,
+  Aktual, Skenario): Excel-like grid with draggable / resizable run bars, action cards, paste-and-check actuals,
+  rush-order and machine-stop scenarios, assistant bar above the grid. Forecast Desk drops step 7 (Monitoring harian);
+  step 6 sends the schedule (with stock cover, forecast per day, ABC-XYZ class) and opens the page; the search bar
+  lists it under *Produksi*.
 
 ## 2026-11-15
 
