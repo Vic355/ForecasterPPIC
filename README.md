@@ -180,10 +180,26 @@ Tab **Saran Buffer** menghitung buffer per SKU untuk bulan forecast pertama sete
 - Dasar forecast bisa Forecast HQ (bawaan, karena ML masih mode bayangan), Forecast ML atau rata-rata keduanya. Service level dan lead time (7/14/21 hari) bisa diganti di atas tabel.
 - Strategi per famili atau SKU: Standar, Defensif, Ikuti tren, Batas atas (≤ 10 hari), Kuantil P90, Habiskan stok. Bila tidak dipilih, strategi dipilih otomatis dan alasannya tampil di tombol status.
 
+### Asisten yang lebih menonjol
+
+- **Sorot**: tombol 👁 Tunjukkan di tiap alert (panel kiri dan pita atas) menggulir ke sel penyebabnya, meredupkan sisanya, dan
+  mata asisten terbang ke sel itu dengan penjelasan. Halaman yang pertama dibuka setelah data dimuat menunjukkan alert teratasnya
+  sendiri. Mata di seluruh aplikasi melirik ke kursor. Matikan di ⚙ Pengaturan → Asisten → Sorot & redupkan.
+- **Asisten berbicara**: teks pita alert, jawaban obrolan dan gelembung di bawah halaman muncul seperti diketik; asisten
+  berkomentar saat data dimuat, saat pengaturan buffer, strategi, atau model Forecast AI diganti. Matikan di ⚙ Pengaturan.
+- **Forecast · SKU vital**: panel *Fokus AI* berisi SKU yang paling menentukan akurasi forecast, dengan saran *tandai tinjau*
+  atau *pelajari histori*. Tanda tinjau dibawa ke Saran buffer (⚑ di baris, famili terbuka sendiri, kartu *Ditandai untuk
+  ditinjau*), disimpan di browser dan di lembar `saran_buffer` (kolom `tinjau`). Filter *Hanya SKU vital ⚑* di tabel.
+- **Sinyal → Tanya**: klik sel Sinyal membuka tab Tanya dengan ringkasan histori forecast SKU itu dan alasan Forecast AI per
+  model; pertanyaan lanjutan dijawab dengan aturan di [docs/panduan-asisten.md](docs/panduan-asisten.md).
+- **Saran buffer**: panel *Arti strategi buffer* menjelaskan tiap strategi dengan kata biasa beserta angka backtestnya; skor
+  buffer kini asimetris (kurang ×2 atau ×3, pengaturan *Kurang dihitung*); kolom Strategi menampilkan "🏆 Defensif menang 5 dari
+  6 bulan"; kartu *Rekomendasi AI* dan utas rekomendasi di Tanya, dengan tombol Terapkan.
+
 ### Strategi otomatis (backtest), Kuantil P90 dan kelas ABC-XYZ
 
 - **Backtest picker.** Setiap closing, kelima strategi (tanpa Habiskan stok) diputar ulang di 6 closing terakhir. Tiap bulan hanya memakai data sebelum bulan itu, lalu dibandingkan dengan order in aktual. Skor = (2 × kurang + lebih) ÷ order in, karena kekurangan lebih mahal daripada kelebihan. Skor SKU ditarik ke skor kelas ABC-XYZ-nya bila bulannya sedikit (k = 2). SKU tanpa histori memakai pemenang kelasnya. Bila histori kurang dari 3 closing, aturan lama yang dipakai (HQ di bawah order in → Defensif, perubahan order in ≥ 15% → Ikuti tren). Nama edisi/promo tetap Habiskan stok.
-- **Akurasi buffer** (kartu di tab Saran Buffer) = 1 − (kurang + lebih) ÷ order in, dengan forecast + buffer dibandingkan order in. **Tertutup** = % SKU-bulan dengan forecast + buffer ≥ order in. Baris *Otomatis* dihitung walk-forward: pilihan tiap bulan hanya dari bulan sebelumnya, jadi tidak curang.
+- **Skor buffer** (kartu di tab Saran Buffer) = 1 − (w × kurang + lebih) ÷ order in, w = 2 atau 3, dengan forecast + buffer dibandingkan order in. **Tertutup** = % SKU-bulan dengan forecast + buffer ≥ order in. Baris *Otomatis* dihitung walk-forward: pilihan tiap bulan hanya dari bulan sebelumnya, jadi tidak curang.
 - **Kuantil P90.** Buffer = max(0, P50 − forecast dasar) + (P90 − P50) × z ÷ 1,28 × √(lead time ÷ 30). Sumber P50/P90 (yang pertama ada): Chronos (CSV) → regressor kuantil di browser (gradient boosting dengan pinball loss τ = 0,9) → rasio order in ÷ forecast SKU itu 6 bulan terakhir (minimal 4 bulan) → rasio yang sama dari seluruh kelas ABC-XYZ-nya → rumus Standar.
 - **Kelas ABC-XYZ** dihitung ulang tiap closing dari order in 6 closing terakhir. ABC: A = SKU yang membentuk 80% pertama volume, B = 15% berikutnya, C = sisanya. XYZ: CV order in bulanan < 0,5 = X, 0,5–1 = Y, > 1 = Z. Kurang dari 3 bulan order in = NPD. Kelas HQ (Stock Level Check) tetap tampil sebagai referensi dan ditandai *beda* bila HQ A tetapi volume C, atau HQ bukan A tetapi volume A. CV juga menjadi fitur Regressor.
 - Lembar `saran_buffer` di unduhan Histori menambah kolom `strategi_alasan`, `kelas_abc_xyz`, `cv_order_in`, `kelas_hq`, `p50`, `p90`, `sumber_p90`.
