@@ -232,6 +232,21 @@ Net weight per carton comes from the closing. Machine data is never stored in th
 
 Histori sheets: `rencana_produksi` (one row per SKU with machine, dates and checks), `jadwal_produksi` (manual bars), `target_harian` (typed targets), `kalender_produksi` (file calendar + manual holidays/maintenance), `sku_mesin`, `kapasitas_mesin`. Loading a Histori file restores all of them.
 
+## Perencanaan Produksi (`/produksi/`)
+
+The daily plan is its own page, not a step of Forecast Desk (the flow ends at step 6, Rencana produksi). Open it from step 6 with **Kirim ke Perencanaan Produksi ↗** (sends this month's schedule, then opens the page), or type *produksi* in the search bar (Ctrl K). The page has a **Forecast Desk | Produksi** switch to go back.
+
+Four steps:
+
+1. **Data masuk**: the plan in use and where it came from. Replace it with an Excel file: one row per SKU per machine (Mesin, Material, Deskripsi, Kategori, Target/hari) and one column per date. Date columns up to "Kolom tanggal s/d ini = aktual" are read as actuals and locked. A file without date columns (only *Rencana (CT)*) is a PP list: the rows start empty and **Isi otomatis** schedules them. A `.prod.gz` backup from Ekspor opens here too.
+2. **Rencana**: the grid (Excel-like, frozen columns Target / Aktual / Rencana ke depan / Selisih). Each production run is a **bar**: drag it to another day, or onto another machine of the same type; drag its right edge to change the number of days (total stays the same). Cells can be typed, pasted from Excel, or cleared. Cards above the grid always end in a button: target belum tertutup (Isi otomatis), SKU panas habis stok sebelum diproduksi (Majukan), mesin lewat kapasitas, rencana lebih dari target, lewat akhir bulan.
+3. **Aktual**: paste the output column of the day's production report (one column in grid order, or Material + Output), check it against the plan, correct numbers, then save; the day is locked.
+4. **Skenario**: "what if" for a rush order or a stopped machine. Options are computed on a copy, ranked by delay and stock-out risk, previewed with changed cells coloured, and applied only on request.
+
+The assistant sits in a bar above the table; **Alerts** and **Tanya** open as a pop-up over the grid, and *Tunjukkan* dims the page and points at the row.
+
+Data stays in the browser (`localStorage` key `ppic_prod`: `plan` with lines per SKU per machine, `actual` per line and date). Sending a new schedule from Forecast Desk replaces the plan but keeps actuals; if the plan was edited on this page, it asks first. Forecast Desk also sends stock cover (days), forecast per day and ABC-XYZ class per SKU, which the assistant uses to tell which SKUs are "panas", plus PP of SKUs it could not schedule. Without any plan the page shows the November 2026 sample (`contoh-rencana-2026-11.json`), clearly labelled. **Ekspor**: Excel (plan + actuals, plan only, actuals) or a `.prod.gz` backup.
+
 ## Asisten (prototipe)
 
 The **Asisten** button (bottom right, every tab) opens a chat panel.

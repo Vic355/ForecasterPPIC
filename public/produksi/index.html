@@ -1,466 +1,918 @@
-<!doctype html>
-<html lang="id">
+<!DOCTYPE html>
+<html lang="id" data-theme="sepia">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Monitoring Produksi Harian · PPIC</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono&display=swap">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perencanaan Produksi · PPIC</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,600&family=Source+Sans+3:wght@400;600;700&family=Source+Code+Pro:wght@400;500&display=swap">
 <style>
-/* Daily production monitoring: monthly plan (jadwal harian per line) vs. actual CT entered by hand. Same Worker as the main app, served at /produksi/. */
-[hidden] { display: none !important; }
-:root {
-  --s1: #2a78d6;
-  --bg: #F4F5F7; --panel: #FFFFFF; --line: #D5D9DD; --line-soft: #E7E9EC; --head: #F1F3F5;
-  --fg: #1F2428; --muted: #5F6770; --accent: #4B2F96; --accent-soft: #EEEAF8;
-  --ok: #1E6B34; --ok-soft: #E3F2E7; --warn: #8A5A00; --warn-soft: #FDF1DA; --bad: #A3170F; --bad-soft: #FBE7E5; --off: #8C939A;
-  --font: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
-}
-@media (prefers-color-scheme: dark) { :root {
-  --bg: #15171A; --panel: #1D2024; --line: #343940; --line-soft: #2A2E33; --head: #252930;
-  --s1: #3987e5; --fg: #E6E8EB; --muted: #9AA2AB; --accent: #B7A5F0; --accent-soft: #2B2442;
-  --ok: #7FD39A; --ok-soft: #1B3324; --warn: #F0C46A; --warn-soft: #3A2E14; --bad: #F29A92; --bad-soft: #3E1E1B; --off: #7D858E; color-scheme: dark } }
+:root { --font: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif; --mono: "Source Code Pro", ui-monospace, Menlo, Consolas, monospace; --serif: Literata, Georgia, serif; --W: 34px; --RH: 34px; --LW: 150px; }
+html[data-theme=sepia]{--bg:#efe9dc;--paper:#fcf8ef;--panel2:#f5efe2;--ink:#2b2a26;--mut:#6a665c;--line:#dcd3c0;--line2:#e9e2d2;--acc:#3f6b56;--acc2:#e3ece3;--bad:#b23a2a;--badbg:#f7e0d8;--warn:#865a00;--warnbg:#f8ecd0;--mid:#c48e1c;--ok:#2e7a4b;--okbg:#e0efe2;--blu:#2d5f9a;--blubg:#e4ebf3;--th:#f2ecdf;--grp:#f6f1e6;--hover:#f3eddf;--offb:#e6dfcf;--input:#fffdf7;--shadow:rgba(80,60,20,.12);--hot:#c8452f}
+html[data-theme=light]{--bg:#eef0f2;--paper:#ffffff;--panel2:#f5f6f7;--ink:#1d222a;--mut:#5c6470;--line:#d5d9de;--line2:#e7e9ec;--acc:#1f6b5c;--acc2:#e1f0ec;--bad:#b3261e;--badbg:#fbe5e2;--warn:#8a5a00;--warnbg:#fdf0d6;--mid:#c88a12;--ok:#1e7a44;--okbg:#e1f3e8;--blu:#1f5fbf;--blubg:#e6eefb;--th:#f1f3f5;--grp:#f6f7f8;--hover:#f3f5f7;--offb:#e4e7ea;--input:#fff;--shadow:rgba(20,30,40,.10);--hot:#c8452f}
+html[data-theme=dark]{--bg:#1b2026;--paper:#232a32;--panel2:#29303a;--ink:#e4dfd3;--mut:#a3aab4;--line:#38404b;--line2:#2d343e;--acc:#e3a55e;--acc2:#3d3223;--bad:#ff8272;--badbg:#3d201c;--warn:#f0b75a;--warnbg:#382c17;--mid:#e0a63a;--ok:#66d293;--okbg:#17322a;--blu:#86b4ff;--blubg:#1a2740;--th:#272e37;--grp:#262c34;--hover:#28303a;--offb:#161a1f;--input:#151a1f;--shadow:rgba(0,0,0,.35);--hot:#ff8a6a;color-scheme:dark}
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 13px; }
-.wrap { max-width: 1400px; margin: 0 auto; padding: 16px max(16px, env(safe-area-inset-left, 0px)) 40px; display: flex; flex-direction: column; gap: 14px; }
-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
-h1 { margin: 0; font-size: 20px; font-weight: 700; }
-h1 span { font-weight: 400; font-size: 15px; color: var(--muted); }
-.sub { color: var(--muted); margin-top: 4px; }
-a.back, button, select, input[type=search] { font: inherit; color: inherit; }
-a.back { color: var(--accent); font-weight: 600; text-decoration: none; padding: 6px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
-button { padding: 6px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); cursor: pointer; font-weight: 600; min-height: 32px; }
-button:hover { background: var(--accent-soft); }
-button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-select, input[type=search] { padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); min-height: 32px; }
-.bar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
-.bar label { display: flex; gap: 6px; align-items: center; color: var(--muted); }
-.spacer { flex: 1; }
-.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--head); color: var(--muted); }
-.chip.ok { background: var(--ok-soft); color: var(--ok); } .chip.warn { background: var(--warn-soft); color: var(--warn); } .chip.bad { background: var(--bad-soft); color: var(--bad); }
-.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
-.tile { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
-.tile .k { color: var(--muted); font-size: 12px; }
-.tile .v { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 2px; }
-.tile .s { color: var(--muted); font-size: 12px; margin-top: 2px; font-variant-numeric: tabular-nums; }
-.meter { height: 6px; border-radius: 3px; background: var(--line-soft); margin-top: 8px; overflow: hidden; }
-.meter i { display: block; height: 100%; background: var(--accent); }
-.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
-.tab { border-radius: 6px 6px 0 0; border-bottom: 0; color: var(--muted); }
-.tab.on { color: var(--accent); box-shadow: inset 0 2px 0 var(--accent); background: var(--panel); }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 0 8px 8px 8px; padding: 12px; }
-.note { color: var(--muted); margin: 0 0 10px; }
-.scroll { overflow: auto; max-height: calc(100vh - 150px); border: 1px solid var(--line-soft); border-radius: 6px; }
-table { border-collapse: separate; border-spacing: 0; width: 100%; font-variant-numeric: tabular-nums; }
-th, td { padding: 4px 8px; border-bottom: 1px solid var(--line-soft); text-align: left; white-space: nowrap; background: var(--panel); }
-th { background: var(--head); font-size: 12px; color: var(--muted); font-weight: 600; position: sticky; top: 0; z-index: 2; }
-td.num, th.num { text-align: right; }
-td.desc { max-width: 300px; overflow: hidden; text-overflow: ellipsis; }
-tr.total td { font-weight: 700; background: var(--head); position: sticky; bottom: 0; }
-tr.mgroup td { background: var(--head); font-weight: 700; color: var(--muted); font-size: 12px; }
-.mono { font-family: var(--mono); font-size: 12px; }
-input.act { width: 84px; text-align: right; font: inherit; font-variant-numeric: tabular-nums; padding: 3px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); color: var(--fg); }
-input.act:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
-input.act.ok { background: var(--ok-soft); } input.act.warn { background: var(--warn-soft); } input.act.bad { background: var(--bad-soft); }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.4; }
+button, select, input, textarea { font: inherit; color: inherit; }
+button { padding: 6px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); cursor: pointer; font-weight: 600; min-height: 32px; }
+button:hover { background: var(--hover); }
+button.pri { background: var(--acc); border-color: var(--acc); color: #fff; }
+html[data-theme=dark] button.pri { color: #1b1206; }
+button.pri:hover { filter: brightness(1.08); }
+button.ghost { border-color: transparent; background: transparent; }
+button.sm { min-height: 27px; padding: 2px 9px; font-size: 13px; }
+button:disabled { opacity: .5; cursor: default; }
+select, input[type=text], input[type=number], input[type=search], input[type=date], textarea { padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--input); min-height: 30px; }
+.mono { font-family: var(--mono); font-size: 12.5px; }
+.mut { color: var(--mut); }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
 .pos { color: var(--ok); } .neg { color: var(--bad); }
-.st { font-weight: 700; font-size: 12px; } .st.ok { color: var(--ok); } .st.warn { color: var(--warn); } .st.bad { color: var(--bad); } .st.off { color: var(--off); }
-/* grid view */
-.grid th, .grid td { padding: 2px 4px; }
-.grid .fz { position: sticky; z-index: 3; }
-.grid th.fz { z-index: 4; }
-.grid .fz0 { left: 0; min-width: 64px; max-width: 64px; } .grid .fz1 { left: 64px; min-width: 230px; max-width: 230px; overflow: hidden; text-overflow: ellipsis; }
-.grid .fz2 { left: 294px; min-width: 88px; max-width: 88px; text-align: right; border-right: 1px solid var(--line); font-weight: 700; }
-.grid th.fz2 { white-space: normal; line-height: 1.2; }
-.grid td.dc { padding: 3px 0; vertical-align: top; }
-.grid input.act { width: 56px; padding: 2px 4px; margin: 0 4px; display: block; }
-/* Gantt bar: one continuous band over the planned days, plan qty inside, actual entry under it */
-.grid .gb { display: block; height: 16px; line-height: 16px; margin-bottom: 3px; font-size: 10px; text-align: right; padding: 0 4px; white-space: nowrap; overflow: hidden; }
-.grid .gb.on { background: var(--s1); color: #fff; }
-.grid .gb.on.gs { margin-left: 3px; border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
-.grid .gb.on.ge { margin-right: 3px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
-.grid .gb.on.past { background: color-mix(in srgb, var(--s1) 55%, var(--panel)); }
-.grid td.off .gb.on { background-image: repeating-linear-gradient(135deg, transparent 0 4px, rgba(255,255,255,.3) 4px 8px); }
-.utang { color: var(--bad); } .utang.lebih { color: var(--ok); }
-.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; color: var(--muted); font-size: 12px; margin: -4px 0 10px; }
-.legend i { display: inline-block; width: 22px; height: 10px; border-radius: 3px; vertical-align: middle; margin-right: 4px; }
-.grid th.off, .grid td.off { background: var(--bad-soft); }
-.grid th.today { box-shadow: inset 0 -3px 0 var(--accent); color: var(--accent); }
-.data { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
-.slot { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-.slot h2 { margin: 0; font-size: 14px; }
-.slot .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.drop { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 80px; border: 1.5px dashed var(--off); border-radius: 8px; padding: 12px; text-align: center; cursor: pointer; background: var(--panel); }
-.drop.over, .drop:focus-within { border-color: var(--accent); background: var(--accent-soft); }
-.drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-.fstat { font-size: 12px; color: var(--muted); }
-.fstat.ok { color: var(--ok); } .fstat.bad { color: var(--bad); }
-.mock { padding: 10px 12px; border-radius: 6px; background: var(--warn-soft); color: var(--warn); display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
-.mock button { margin-left: auto; }
-.empty { padding: 28px; text-align: center; color: var(--muted); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
-input[type=month], input[type=date] { font: inherit; color: inherit; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); min-height: 32px; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0; }
+.top { display: flex; align-items: center; gap: 14px; padding: 10px 18px; background: var(--paper); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 40; }
+.brand { display: flex; align-items: baseline; gap: 10px; white-space: nowrap; }
+.brand h1 { font-size: 21px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 999px; font-size: 12.5px; font-weight: 700; background: var(--th); color: var(--mut); white-space: nowrap; }
+.chip.ok { background: var(--okbg); color: var(--ok); } .chip.warn { background: var(--warnbg); color: var(--warn); } .chip.bad { background: var(--badbg); color: var(--bad); } .chip.blu { background: var(--blubg); color: var(--blu); } .chip.acc { background: var(--acc2); color: var(--acc); } .chip.hot { background: var(--hot); color: #fff; }
+.ask { flex: 1; max-width: 520px; margin: 0 auto; display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); border-radius: 10px; padding: 4px 10px; background: var(--input); color: var(--mut); cursor: text; }
+.ask kbd { margin-left: auto; font-family: var(--mono); font-size: 11px; border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
+.switch { display: flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.switch a, .switch span { padding: 6px 12px; font-weight: 600; text-decoration: none; color: var(--mut); white-space: nowrap; }
+.switch span { background: var(--acc2); color: var(--acc); }
+.switch a:hover { background: var(--hover); }
+/* stepper */
+.stepper { display: flex; background: var(--paper); border-bottom: 1px solid var(--line); padding: 0 12px; overflow-x: auto; }
+.st { flex: 1; min-width: 170px; display: flex; gap: 10px; align-items: center; padding: 10px 12px; border: 0; border-radius: 10px 10px 0 0; background: none; text-align: left; font-weight: 400; min-height: 0; position: relative; }
+.st + .st::before { content: ""; position: absolute; left: -14px; top: 50%; width: 22px; border-top: 1px solid var(--line); }
+.st .n { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--line); font-weight: 700; color: var(--mut); background: var(--paper); font-family: var(--serif); }
+.st b { display: block; font-size: 15px; }
+.st small { color: var(--mut); font-size: 12px; }
+.st.on { background: var(--acc2); box-shadow: inset 0 -3px 0 var(--acc); }
+.st.on .n { background: var(--acc); border-color: var(--acc); color: #fff; }
+.st.done .n { border-color: var(--ok); color: var(--ok); }
+.st.warn .n { border-color: var(--mid); color: var(--warn); }
+/* layout */
+.layout { display: grid; grid-template-columns: 310px minmax(0, 1fr); min-height: calc(100vh - 120px); }
+aside.side > * { flex: none; }
+aside.side { border-right: 1px solid var(--line); padding: 14px; display: flex; flex-direction: column; gap: 12px; background: var(--panel2); position: sticky; top: 55px; align-self: start; max-height: calc(100vh - 55px); overflow: auto; }
+main { padding: 16px 20px 60px; min-width: 0; }
+.who { display: flex; align-items: center; gap: 10px; }
+.who h2 { font-size: 18px; }
+.speech { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-height: 64px; position: relative; font-size: 14px; }
+.speech::before { content: ""; position: absolute; left: 18px; top: -7px; width: 12px; height: 12px; background: var(--paper); border-left: 1px solid var(--line); border-top: 1px solid var(--line); transform: rotate(45deg); }
+.speech .caret { display: inline-block; width: 7px; height: 14px; background: var(--acc); vertical-align: -2px; margin-left: 2px; animation: blink .8s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.stabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.stabs button.on { background: var(--acc2); border-color: var(--acc); color: var(--acc); }
+.alert { border: 1px solid var(--line); border-left: 4px solid var(--c, var(--blu)); background: var(--paper); border-radius: 10px; padding: 9px 11px; }
+.alert.red { --c: var(--bad); background: var(--badbg); } .alert.amb { --c: var(--mid); background: var(--warnbg); } .alert.grn { --c: var(--ok); }
+.alert .k { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--c); }
+.alert .t { font-weight: 700; margin: 2px 0; }
+.alert .d { font-size: 13px; color: var(--mut); }
+.alert .acts { display: flex; gap: 6px; margin-top: 7px; flex-wrap: wrap; }
+.sk { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--mut); font-weight: 700; }
+.chat { display: flex; flex-direction: column; gap: 8px; }
+.msg { padding: 8px 10px; border-radius: 10px; background: var(--paper); border: 1px solid var(--line); font-size: 13.5px; }
+.msg.me { background: var(--acc2); border-color: transparent; align-self: flex-end; max-width: 90%; }
+.sugg { display: flex; flex-wrap: wrap; gap: 6px; }
+.sugg button { min-height: 26px; padding: 2px 9px; font-size: 12.5px; border-radius: 999px; }
+.lens { display: block; flex: none; overflow: visible; }
+.lens .ring { fill: var(--paper); stroke: var(--acc); stroke-width: 2.5; }
+.lens .blade { fill: var(--acc); stroke: var(--paper); stroke-width: 1.2; }
+.lens .pupil { fill: var(--ink); }
+.lens .blades { transform-origin: 30px 30px; }
+.lens.talk .blades { animation: talk .5s ease-in-out infinite; }
+@keyframes talk { 0%, 100% { transform: rotate(0) scale(1); } 45% { transform: rotate(28deg) scale(.8); } }
+@media (prefers-reduced-motion: reduce) { .lens.talk .blades { animation: none; } }
+.phead { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.phead h2 { font-size: 22px; }
+.phead .sp { flex: 1; }
+.card { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; }
+.card h3 { font-size: 16px; margin-bottom: 6px; }
+.card .hd { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
+.card .hd h3 { margin: 0; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.grid3 { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+.banner { display: flex; gap: 12px; align-items: center; border: 1px solid var(--blu); background: var(--blubg); border-left-width: 5px; border-radius: 12px; padding: 10px 14px; margin-bottom: 12px; flex-wrap: wrap; }
+.banner.amb { border-color: var(--mid); background: var(--warnbg); } .banner.grn { border-color: var(--ok); background: var(--okbg); }
+.banner .t { flex: 1; min-width: 240px; }
+.rib { font-size: 11.5px; font-weight: 700; letter-spacing: .07em; padding: 3px 8px; border-radius: 5px; background: var(--blu); color: #fff; white-space: nowrap; }
+.banner.amb .rib { background: var(--mid); color: #1d1606; } .banner.grn .rib { background: var(--ok); }
+.toolbar { display: flex; gap: 8px 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+.toolbar label { display: flex; gap: 6px; align-items: center; color: var(--mut); }
+.toolbar .sp { flex: 1; }
+.nav { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; border-right: 1px solid var(--line); background: var(--paper); min-height: 30px; }
+.seg button:last-child { border-right: 0; }
+.seg button.on { background: var(--acc); color: #fff; }
+html[data-theme=dark] .seg button.on { color: #1b1206; }
+.tbox { overflow: auto; border: 1px solid var(--line2); border-radius: 10px; max-height: 60vh; }
+table { border-collapse: separate; border-spacing: 0; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { padding: 5px 9px; border-bottom: 1px solid var(--line2); text-align: left; white-space: nowrap; background: var(--paper); vertical-align: middle; }
+th { background: var(--th); font-size: 12.5px; color: var(--mut); font-weight: 700; position: sticky; top: 0; z-index: 2; }
+th.num, td.num { text-align: right; }
+td.desc { max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+tr.tot td { font-weight: 700; background: var(--th); position: sticky; bottom: 0; z-index: 1; }
+tr.hit td { background: var(--badbg); } tr.flag td { background: var(--warnbg); }
+td.act { background: color-mix(in srgb, var(--mut) 10%, var(--paper)); color: var(--mut); }
+th.act { background: color-mix(in srgb, var(--mut) 18%, var(--th)); }
+input.cell { width: 80px; text-align: right; padding: 3px 6px; min-height: 28px; font-variant-numeric: tabular-nums; }
+input.cell.fix { border-color: var(--mid); background: var(--warnbg); font-weight: 700; }
+.st2 { font-weight: 700; font-size: 12.5px; } .st2.ok { color: var(--ok); } .st2.lo { color: var(--warn); } .st2.bad { color: var(--bad); } .st2.na { color: var(--mut); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-bottom: 12px; }
+.tile { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 9px 13px; }
+.tile .k { color: var(--mut); font-size: 13px; font-weight: 600; }
+.tile .v { font-size: 22px; font-weight: 700; margin-top: 1px; font-variant-numeric: tabular-nums; }
+.tile .s { color: var(--mut); font-size: 12.5px; }
+.drop { border: 2px dashed var(--line); border-radius: 10px; padding: 12px; text-align: center; color: var(--mut); cursor: pointer; display: block; }
+.drop:hover { border-color: var(--acc); }
+.drop b { color: var(--ink); display: block; }
+ul.vers { list-style: none; margin: 8px 0 0; padding: 0; }
+ul.vers li { display: grid; grid-template-columns: 74px 1fr auto; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line2); align-items: baseline; font-size: 13.5px; }
+ul.vers li.cur b { color: var(--acc); }
+.flowmini { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--mut); }
+.flowmini span { background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; color: var(--ink); font-weight: 600; }
+.flowmini span.cur { background: var(--acc); color: #fff; border-color: var(--acc); }
+html[data-theme=dark] .flowmini span.cur { color: #1b1206; }
+/* popover */
+.pop { position: fixed; z-index: 80; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 14px 30px var(--shadow); padding: 12px 14px; width: 340px; }
+.pop h3 { font-size: 15px; margin-bottom: 2px; }
+.pop dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; margin: 8px 0; font-size: 13px; }
+.pop dt { color: var(--mut); } .pop dd { margin: 0; font-variant-numeric: tabular-nums; }
+.pop .acts { display: flex; flex-wrap: wrap; gap: 6px; }
+#setPop { top: 56px; right: 16px; width: 330px; }
+#setPop label { display: flex; gap: 9px; align-items: flex-start; padding: 6px 0; }
+#setPop label small { display: block; color: var(--mut); }
+/* revisions + scenarios */
+.sug { border: 1px solid var(--line); border-left: 4px solid var(--c, var(--acc)); border-radius: 10px; padding: 9px 12px; margin-bottom: 8px; background: var(--paper); }
+.sug.red { --c: var(--bad); } .sug.amb { --c: var(--mid); }
+.sug .t { font-weight: 700; } .sug .d { font-size: 13px; color: var(--mut); margin: 2px 0 6px; }
+.sug .acts { display: flex; gap: 6px; flex-wrap: wrap; }
+.sug.applied { opacity: .6; }
+.opt { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-top: 10px; background: var(--panel2); }
+.opt.best { border-color: var(--acc); box-shadow: 0 0 0 1px var(--acc); }
+.opt .t { font-weight: 700; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.opt ul { margin: 6px 0 8px; padding-left: 18px; font-size: 13px; }
+.form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; }
+.form label { display: flex; flex-direction: column; gap: 3px; font-size: 12.5px; color: var(--mut); font-weight: 600; }
+.form .full { grid-column: 1 / -1; }
+.heat { display: inline-block; width: 46px; height: 8px; border-radius: 4px; background: var(--line2); overflow: hidden; vertical-align: middle; margin-right: 6px; }
+.heat i { display: block; height: 100%; background: var(--hot); }
+table.src td { white-space: normal; vertical-align: top; }
+pre.rep { white-space: pre-wrap; font-family: var(--mono); font-size: 12.5px; background: var(--panel2); border: 1px solid var(--line2); border-radius: 10px; padding: 12px; margin: 0; max-height: 360px; overflow: auto; }
+textarea.paste { width: 100%; min-height: 150px; font-family: var(--mono); font-size: 12.5px; resize: vertical; }
+/* spotlight */
+#spot { position: fixed; z-index: 90; border-radius: 8px; box-shadow: 0 0 0 200vmax rgba(25,20,10,.5); pointer-events: none; transition: all .45s cubic-bezier(.3,.7,.2,1); outline: 3px solid var(--mid); outline-offset: 2px; }
+#spotEye { position: fixed; z-index: 91; pointer-events: none; transition: left .6s cubic-bezier(.3,.7,.2,1), top .6s cubic-bezier(.3,.7,.2,1); }
+#spotTip { position: fixed; z-index: 92; max-width: 320px; background: var(--ink); color: var(--paper); border-radius: 10px; padding: 8px 12px; font-size: 13.5px; box-shadow: 0 10px 26px rgba(0,0,0,.25); }
+#spotTip button { margin-top: 6px; min-height: 26px; padding: 2px 10px; font-size: 12.5px; background: transparent; color: inherit; border-color: currentColor; }
+#toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 9px 16px; border-radius: 10px; z-index: 95; font-size: 13.5px; max-width: 90vw; }
+@media (max-width: 1150px) { .grid3, .grid2 { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .top { flex-wrap: wrap; } .layout { grid-template-columns: 1fr; } aside.side { position: static; max-height: none; border-right: 0; border-bottom: 1px solid var(--line); } .ask { display: none; } }
+/* plan grid (Excel-like) */
+.gwrap { overflow: auto; border: 1px solid var(--line); border-radius: 12px; max-height: 66vh; background: var(--paper); position: relative; }
+table.pg { border-collapse: separate; border-spacing: 0; width: max-content; font-size: 12.5px; }
+.pg th, .pg td { padding: 0 4px; height: 26px; border-bottom: 1px solid var(--line2); border-right: 1px solid var(--line2); white-space: nowrap; background: var(--paper); }
+.pg thead th { position: sticky; top: 0; z-index: 4; background: var(--th); color: var(--mut); font-weight: 700; font-size: 11.5px; height: 34px; line-height: 1.1; text-align: center; }
+.pg thead th b { display: block; color: var(--ink); font-size: 12.5px; }
+.pg .f0 { position: sticky; left: 0; z-index: 3; width: 250px; min-width: 250px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; }
+.pg .f1 { position: sticky; left: 250px; z-index: 3; width: 72px; min-width: 72px; text-align: right; }
+.pg .f2 { position: sticky; left: 322px; z-index: 3; width: 72px; min-width: 72px; text-align: right; }
+.pg .f3 { position: sticky; left: 394px; z-index: 3; width: 72px; min-width: 72px; text-align: right; }
+.pg .f4 { position: sticky; left: 466px; z-index: 3; width: 74px; min-width: 74px; text-align: right; border-right: 2px solid var(--line); }
+.pg thead .f0, .pg thead .f1, .pg thead .f2, .pg thead .f3, .pg thead .f4 { z-index: 6; }
+.pg td.c { width: 42px; min-width: 42px; max-width: 42px; text-align: right; font-variant-numeric: tabular-nums; cursor: cell; }
+.pg th.sun, .pg td.sun { background: var(--offb); }
+.pg th.lock { background: color-mix(in srgb, var(--mut) 16%, var(--th)); }
+.pg th.today { background: var(--acc); color: #fff; } .pg th.today b { color: #fff; }
+.pg th.nm, .pg td.nm { opacity: .6; }
+.pg td.p { background: color-mix(in srgb, var(--s1, #2d6aa8) 15%, var(--paper)); color: var(--ink); }
+.pg td.p.sun { background: color-mix(in srgb, var(--mid) 30%, var(--paper)); }
+.pg td.a { color: var(--mut); background: color-mix(in srgb, var(--mut) 7%, var(--paper)); cursor: default; }
+.pg td.a.ok { color: var(--ok); background: var(--okbg); } .pg td.a.lo { color: var(--warn); background: var(--warnbg); } .pg td.a.bad { color: var(--bad); background: var(--badbg); }
+.pg td.sel { outline: 2px solid var(--acc); outline-offset: -2px; }
+.pg tr.mh td { background: var(--grp); height: 24px; font-weight: 700; color: var(--mut); font-size: 12px; }
+.pg tr.mh td.f0 { color: var(--ink); }
+.pg tr.mh td.ov { background: var(--badbg); color: var(--bad); text-align: center; }
+.pg tr.mh td.free { background: repeating-linear-gradient(135deg, transparent 0 4px, color-mix(in srgb, var(--ok) 18%, transparent) 4px 6px), var(--grp); }
+.pg tr.skr td.f0 { cursor: pointer; padding-left: 14px; }
+.pg tr.skr td.f0:hover { color: var(--acc); text-decoration: underline; }
+.pg tr.skr td.f0 .mat { font-family: var(--mono); font-size: 11px; color: var(--mut); margin-right: 5px; }
+.pg tr.add td { height: 24px; }
+.pg tr.add td.f0 { padding-left: 14px; }
+.pg tr.add button { min-height: 20px; padding: 0 8px; font-size: 12px; border-style: dashed; color: var(--mut); }
+.pg td.tg { cursor: text; }
+.pg td.tg.ed { font-weight: 700; color: var(--warn); }
+.pg td.neg { color: var(--bad); font-weight: 700; } .pg td.pos { color: var(--warn); font-weight: 700; } .pg td.okk { color: var(--ok); }
+.pg tr.hl td { box-shadow: inset 0 2px 0 var(--mid), inset 0 -2px 0 var(--mid); }
+.pg td.chg-new { background: var(--okbg) !important; color: var(--ok); font-weight: 700; }
+.pg td.chg-del { background: var(--badbg) !important; color: var(--bad); text-decoration: line-through; }
+.pg td.chg-mod { background: var(--warnbg) !important; color: var(--warn); font-weight: 700; }
+#ced { position: fixed; z-index: 50; text-align: right; font: inherit; font-size: 12.5px; padding: 0 4px; border: 2px solid var(--acc); border-radius: 0; background: var(--input); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin-bottom: 12px; }
+.acard { background: var(--paper); border: 1px solid var(--line); border-left: 4px solid var(--c, var(--ok)); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+.acard.red { --c: var(--bad); } .acard.amb { --c: var(--mid); } .acard.blu { --c: var(--blu); }
+.acard .v { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.acard .v small { font-size: 13px; color: var(--mut); font-weight: 600; margin-left: 4px; }
+.acard .k { font-weight: 700; }
+.acard .d { font-size: 12.5px; color: var(--mut); flex: 1; }
+.acard .acts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+.acard.okc { opacity: .75; }
+.fchip { display: inline-flex; gap: 8px; align-items: center; background: var(--warnbg); color: var(--warn); border-radius: 999px; padding: 3px 4px 3px 12px; font-weight: 700; font-size: 13px; }
+.fchip button { min-height: 22px; padding: 0 8px; font-size: 12px; border-radius: 999px; }
+.menu { position: fixed; z-index: 60; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 12px 26px var(--shadow); padding: 6px; min-width: 240px; }
+.menu > button { display: block; width: 100%; text-align: left; border: 0; background: none; font-weight: 600; }
+.menu > button:hover { background: var(--hover); }
+.menu small { display: block; color: var(--mut); font-weight: 400; }
+.opt { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-top: 10px; background: var(--panel2); cursor: pointer; }
+.opt.on { border-color: var(--acc); box-shadow: 0 0 0 2px var(--acc); background: var(--paper); }
+.opt .t { font-weight: 700; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.opt ul { margin: 6px 0 4px; padding-left: 18px; font-size: 13px; }
+.form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; }
+.form label { display: flex; flex-direction: column; gap: 3px; font-size: 12.5px; color: var(--mut); font-weight: 600; }
+.form .full { grid-column: 1 / -1; }
+.heat { display: inline-block; width: 46px; height: 8px; border-radius: 4px; background: var(--line2); overflow: hidden; vertical-align: middle; margin-right: 6px; }
+.heat i { display: block; height: 100%; background: var(--hot); }
+table.src td { white-space: normal; vertical-align: top; }
+textarea.paste { width: 100%; min-height: 150px; font-family: var(--mono); font-size: 12.5px; resize: vertical; }
+details.more { margin-top: 10px; } details.more summary { cursor: pointer; font-weight: 700; color: var(--acc); }
+.legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12.5px; color: var(--mut); align-items: center; }
+.legend i { display: inline-block; width: 16px; height: 10px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; border: 1px solid var(--line); }
+
+.pg.pv .f1, .pg.pv .f2, .pg.pv .f3 { display: none; }
+.pg.pv .f4 { left: 250px; }
+
+/* v4: assistant bar + pop-up panel, full-width layout */
+.layout { display: block; min-height: 0; }
+.aibar { position: sticky; top: 55px; z-index: 35; display: flex; gap: 10px; align-items: center; padding: 8px 20px; background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); }
+.aibar .speech { flex: 1; min-height: 0; padding: 6px 12px; font-size: 13.5px; border-radius: 10px; }
+.aibar .speech::before { left: -7px; top: 50%; margin-top: -6px; border-top: 0; border-bottom: 1px solid var(--line); }
+.aibar .aib { white-space: nowrap; }
+.aipanel { position: fixed; z-index: 45; right: 16px; width: 390px; max-height: calc(100vh - 140px); overflow: auto; background: var(--panel2); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 18px 40px var(--shadow); padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.aipanel > * { flex: none; }
+/* bars on the grid */
+.pg td.rb { background: var(--bc) !important; color: #fff !important; cursor: grab; position: relative; border-right-color: var(--bc); box-shadow: inset 0 4px 0 var(--paper), inset 0 -4px 0 var(--paper); font-weight: 600; }
+.pg td.rb.sun { opacity: .7; }
+.pg td.rb.rs { border-top-left-radius: 9px; border-bottom-left-radius: 9px; }
+.pg td.rb.re { border-top-right-radius: 9px; border-bottom-right-radius: 9px; border-right-color: var(--line2); }
+.pg td.rb .rz { position: absolute; right: 0; top: 4px; bottom: 4px; width: 7px; cursor: ew-resize; background: rgba(255,255,255,.45); border-radius: 0 6px 6px 0; }
+.pg td.rb.sel { outline: 2px solid var(--ink); }
+.ghost { position: fixed; z-index: 70; pointer-events: none; background: var(--bc); color: #fff; opacity: .85; border-radius: 9px; font-size: 12px; font-weight: 700; padding: 5px 8px; white-space: nowrap; overflow: visible; box-shadow: 0 8px 18px var(--shadow); }
+.ghost::after { content: attr(data-info); position: absolute; left: 0; top: 100%; margin-top: 4px; background: var(--ink); color: var(--paper); padding: 2px 8px; border-radius: 6px; font-size: 12px; }
+.ghost.no { background: var(--bad); }
+body.dragging, body.dragging * { cursor: grabbing !important; user-select: none; }
+
+.demobar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 7px 20px; background: var(--warnbg); color: var(--warn); font-size: 13.5px; border-bottom: 1px solid var(--line); }
+.demobar .sp { flex: 1; }
+a.btnlink { display: inline-flex; align-items: center; min-height: 28px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); font-weight: 600; font-size: 13px; text-decoration: none; }
+a.btnlink:hover { background: var(--hover); }
+
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div>
-      <h1>Monitoring Produksi Harian <span>· TUB Mills · <b id="periodLabel">-</b></span></h1>
-      <div class="sub" id="periodSub">Unggah Excel rencana produksi untuk mulai.</div>
-    </div>
-    <a class="back" href="/">← Kembali ke PPIC Forecast Desk</a>
-  </header>
-
-  <section class="data" aria-label="File Excel">
-    <div class="slot">
-      <h2>1. Rencana produksi bulanan (Excel)</h2>
-      <label class="drop" data-kind="plan"><input type="file" accept=".xlsx,.xlsm,.xls,.csv" data-kind="plan"><b>Pilih atau tarik file rencana bulanan</b><span class="sub">Satu baris per SKU per mesin: Mesin, Material, Deskripsi, Net (kg), Target/hari, Rencana (CT). Jadwal harian dibuat otomatis: tiap SKU jalan sesuai target/hari di mesinnya sampai rencananya habis, lalu SKU berikutnya.</span></label>
-      <div class="row"><label class="sub">Bulan <input type="month" id="planMonth"></label><label class="sub">Mulai <input type="date" id="pStart"></label><label class="sub">Selesai <input type="date" id="pEnd"></label></div>
-      <div class="row"><label class="sub"><input type="checkbox" id="sunWork"> Minggu tetap produksi</label><button type="button" id="tplPlan">Unduh template rencana bulanan</button></div>
-      <div class="row"><span class="sub">Atau pakai jadwal dari tab <b>Rencana Produksi</b> di aplikasi utama:</span><button type="button" class="primary" id="fromPP">Ambil dari Rencana Produksi</button></div>
-      <div class="fstat" id="planStat">Belum ada file rencana.</div>
-    </div>
-    <div class="slot">
-      <h2>2. Aktual produksi (Excel, opsional)</h2>
-      <label class="drop" data-kind="actual"><input type="file" accept=".xlsx,.xlsm,.xls,.csv" data-kind="actual"><b>Pilih atau tarik file aktual</b><span class="sub">Format sama dengan rencana; angka per tanggal = CT aktual. Bisa juga diketik langsung di bawah.</span></label>
-      <div class="row"><button type="button" id="tplAct">Unduh template aktual</button><button type="button" id="clearAll">Hapus semua data</button></div>
-      <div class="fstat" id="actStat">Belum ada data aktual.</div>
-    </div>
-  </section>
-  <p class="sub" style="margin:0">File dibaca di browser ini saja, tidak diunggah ke server. Data tersimpan di browser ini sampai diganti atau dihapus.</p>
-
-  <div class="empty" id="emptyMsg">Belum ada rencana produksi. Unggah file Excel rencana di kotak <b>1</b> di atas, atau unduh template-nya dulu.<br><br><button type="button" class="primary" id="mockBtn">Lihat contoh (mockup) dengan data November 2026</button></div>
-  <div class="mock" id="mockBar" hidden><b>MOCKUP</b> · Contoh tampilan: rencana bulanan November 2026 dari PDF CVT Mills TUB Planning, dijadwalkan otomatis per mesin, aktual s/d kemarin adalah angka rekaan. Tidak disimpan. <button type="button" id="mockExit">Tutup contoh</button></div>
-  <div id="main" hidden>
-
-  <div class="bar">
-    <label>Tanggal <select id="daySel"></select></label>
-    <button type="button" id="prevDay" aria-label="Hari sebelumnya">‹</button><button type="button" id="nextDay" aria-label="Hari berikutnya">›</button>
-    <label>Mesin <select id="machSel"><option value="">Semua mesin</option></select></label>
-    <label><input type="search" id="q" placeholder="Cari SKU / material…"></label>
-    <span class="spacer"></span>
-    <span class="chip" id="saveState">-</span>
-    <button type="button" id="exportBtn">Ekspor Excel</button>
-  </div>
-
-  <div class="tiles" id="tiles"></div>
-
-  <div>
-    <nav class="tabs" aria-label="Tampilan">
-      <button type="button" class="tab on" data-view="daily">Input harian</button><button type="button" class="tab" data-view="grid">Grid bulanan</button><button type="button" class="tab" data-view="sku">Per SKU</button><button type="button" class="tab" data-view="machine">Per mesin</button>
-    </nav>
-    <div class="card">
-      <div id="view-daily">
-        <p class="note">Ketik aktual produksi (CT) untuk tanggal terpilih. Bisa juga tempel satu kolom angka dari Excel ke kotak pertama: angka mengisi ke bawah. Tersimpan otomatis.</p>
-        <div class="scroll"><table id="dailyTbl"></table></div>
-      </div>
-      <div id="view-grid" hidden>
-        <p class="note">Batang biru = jadwal rencana (angka di dalamnya = rencana CT hari itu), kotak di bawahnya = aktual. Tempel blok angka dari Excel ke satu kotak untuk mengisi ke kanan dan ke bawah. <b>Utang</b> = rencana − aktual s/d tanggal terpilih.</p>
-        <div class="legend"><span><i style="background:var(--s1)"></i>Rencana</span><span><i style="background:color-mix(in srgb, var(--s1) 55%, var(--panel))"></i>Rencana, hari sudah lewat</span><span><i style="background:var(--ok-soft);border:1px solid var(--line)"></i>Aktual ≥ rencana</span><span><i style="background:var(--warn-soft);border:1px solid var(--line)"></i>90–99%</span><span><i style="background:var(--bad-soft);border:1px solid var(--line)"></i>&lt; 90%</span><span><i style="background:var(--bad-soft)"></i>Kolom Minggu</span></div>
-        <div class="scroll"><table class="grid" id="gridTbl"></table></div>
-      </div>
-      <div id="view-sku" hidden>
-        <p class="note">Digabung per material (beberapa line bisa membuat SKU yang sama). Rencana dan aktual s/d tanggal terpilih.</p>
-        <div class="scroll"><table id="skuTbl"></table></div>
-      </div>
-      <div id="view-machine" hidden>
-        <p class="note">Ton (MT) = CT × berat bersih (kg) / 1000. Rencana dan aktual s/d tanggal terpilih.</p>
-        <div class="scroll"><table id="machTbl"></table></div>
-      </div>
-    </div>
-  </div>
-  <p class="sub" id="srcNote"></p>
+<header class="top">
+  <div class="brand"><h1>Perencanaan Produksi</h1><span class="mut" id="brandSub"></span></div>
+  <div class="ask" id="askBar" role="button" tabindex="0"><span id="askLens"></span><span>Tanya asisten atau minta skenario…</span><kbd>Ctrl K</kbd></div>
+  <div class="switch"><a href="/" id="toMonthly" title="Kembali ke Forecast Desk (Rencana produksi bulanan)">Forecast Desk</a><span>Produksi</span></div>
+  <button id="expBtn">⇩ Ekspor</button>
+  <button id="setBtn">⚙</button>
+</header>
+<nav class="stepper" id="stepper"></nav>
+<div class="demobar" id="demoBar" hidden><b>Data contoh.</b> <span>Rencana sungguhan masuk dari Forecast Desk (Rencana produksi → <i>Kirim ke Perencanaan Produksi</i>) atau dari file Excel di Data masuk.</span><span class="sp"></span><a href="/" class="btnlink" id="demoDesk">Buka Rencana produksi</a><button class="sm" data-step="1">Unggah file</button></div>
+<div class="aibar" id="aibar">
+  <span id="sideLens" title="Asisten"></span>
+  <div class="speech" id="speech"></div>
+  <button id="aiAlerts" class="aib">Alerts <span class="chip bad" id="aiN">0</span></button>
+  <button id="aiAsk" class="aib">Tanya</button>
+  <button class="ghost" id="muteBtn" title="AI berbicara">🔊</button>
+</div>
+<div class="aipanel" id="aipanel" hidden>
+  <div style="display:flex;align-items:center;gap:8px"><b style="font-family:var(--serif);font-size:16px">Asisten</b><span class="mut" id="sideSub" style="font-size:12.5px"></span><span style="flex:1"></span><button class="ghost sm" id="aiClose">✕</button></div>
+  <div class="stabs"><button class="on" data-st="alerts">Alerts <span class="chip bad" id="alertN">0</span></button><button data-st="tanya">Tanya</button></div>
+  <div id="alertsBox" style="display:flex;flex-direction:column;gap:8px"></div>
+  <div id="tanyaBox" class="chat" hidden>
+    <div class="sugg" id="sugg"></div>
+    <div id="chatLog" class="chat"></div>
+    <form id="chatForm" style="display:flex;gap:6px"><input type="text" id="chatIn" placeholder="Tulis pertanyaan…" style="flex:1"><button class="pri">Kirim</button></form>
   </div>
 </div>
+<div class="layout">
+  <main id="main"></main>
+</div>
+<div class="pop" id="setPop" hidden style="top:56px;right:16px;width:330px">
+  <div class="sk" style="margin-bottom:4px">Pengaturan tampilan</div>
+  <label style="display:flex;gap:9px;padding:6px 0"><input type="checkbox" id="optTalk" checked><span>AI berbicara<small style="display:block;color:var(--mut)">Pesan asisten muncul huruf demi huruf.</small></span></label>
+  <label style="display:flex;gap:9px;padding:6px 0"><input type="checkbox" id="optFocus" checked><span>Fokus redup saat alert dibuka<small style="display:block;color:var(--mut)">Layar menggulir ke sel, sekeliling diredupkan, mata asisten bergerak ke sana.</small></span></label>
+  <label style="display:flex;gap:9px;padding:6px 0 6px 24px">Tema <select id="optTheme"><option value="sepia">Sepia</option><option value="light">Terang</option><option value="dark">Gelap</option></select></label>
+  <div style="text-align:right"><button id="popClose">Tutup</button></div>
+</div>
+<div class="menu" id="menu" hidden></div>
+<input id="ced" hidden>
+<div id="toast" hidden></div>
 <script>
+var LS_KEY = 'ppic_prod';
 (function () {
+  var st = null; try { st = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) {}
+  var demo = /[?&]contoh\b/.test(location.search) || !(st && st.plan && st.plan.lines && st.plan.lines.length);
+  if (!demo) { main(st.plan, st); return; }
+  fetch('contoh-rencana-2026-11.json').then(function (r) { return r.json(); }).then(function (p) { main(p, null); })
+    .catch(function (e) { document.getElementById('main').innerHTML = '<div class="card">Gagal memuat data contoh: ' + e + '</div>'; });
+})();
+function main(PLAN, STORE) {
   'use strict';
-  var LS_KEY = 'ppic_prod';
-  var plan = null, lines = [], days = [], off = {};
-  var actual = {};           // actual[lineId][day] = ct
-  var actSrc = null;         // last actual file loaded
-  var byId = {};
-  var view = 'daily', curDay = null;
+  var DEMO = !STORE;
   var $ = function (id) { return document.getElementById(id); };
   var nf0 = new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 });
-  var nf1 = new Intl.NumberFormat('id-ID', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
-  function f0(v) { return v === null || v === undefined || v === '' ? '' : nf0.format(v); }
-  function f1(v) { return nf1.format(v || 0); }
-  function pct(a, p) { return p > 0 ? a / p * 100 : null; }
-  function fp(x) { return x === null ? '–' : nf0.format(x) + '%'; }
+  function f0(v) { return v == null || v === '' ? '' : nf0.format(Math.round(v)); }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-  function status(a, p) {
-    if (!(p > 0)) return a > 0 ? 'ok' : 'off';
-    var r = a / p; return r >= 1 ? 'ok' : r >= 0.9 ? 'warn' : 'bad';
-  }
-  var ST_LABEL = { ok: 'Sesuai', warn: 'Sedikit kurang', bad: 'Kurang', off: '-' };
-  function dayLabel(d) {
-    var dt = new Date(d + 'T00:00:00');
-    return dt.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
-  }
-  function enumerate(a, b) { var out = [], d = new Date(a + 'T00:00:00Z'), e = new Date(b + 'T00:00:00Z'); while (d <= e) { out.push(d.toISOString().slice(0, 10)); d.setUTCDate(d.getUTCDate() + 1); } return out; }
-  function mt(l, ct) { return (ct || 0) * (l.net || 0) / 1000; }
-  function getA(id, d) { var r = actual[id]; return r && r[d] !== undefined ? r[d] : null; }
-  function planTo(l, d) { var s = 0; for (var i = 0; i < days.length && days[i] <= d; i++) s += l.plan[days[i]] || 0; return s; }
-  function actTo(l, d) { var s = 0, r = actual[l.id] || {}; for (var i = 0; i < days.length && days[i] <= d; i++) s += r[days[i]] || 0; return s; }
-  function filtered() {
-    var m = $('machSel').value, q = $('q').value.trim().toLowerCase();
-    return lines.filter(function (l) { return (!m || l.machine === m) && (!q || (l.desc + ' ' + l.material + ' ' + l.category).toLowerCase().indexOf(q) >= 0); });
-  }
+  function pct(a, p) { return p > 0 ? Math.round(a / p * 100) : null; }
+  function cls(a, p) { if (!p) return 'na'; var r = a / p; return r >= 0.95 ? 'ok' : r >= 0.85 ? 'lo' : 'bad'; }
+  var HARI = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'], HARIL = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'], BLN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+  function dt(d) { return new Date(d + 'T00:00:00Z'); }
+  function dlab(d, long) { if (!d) return '–'; var x = dt(d); return (long ? HARIL : HARI)[x.getUTCDay()] + ', ' + x.getUTCDate() + ' ' + BLN[x.getUTCMonth()]; }
+  function dshort(d) { var x = dt(d); return x.getUTCDate() + ' ' + BLN[x.getUTCMonth()]; }
+  function enumerate(a, b) { var o = [], d = dt(a), e = dt(b); while (d <= e) { o.push(d.toISOString().slice(0, 10)); d.setUTCDate(d.getUTCDate() + 1); } return o; }
+  function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967295; }
+  function num(s) { s = String(s).trim().replace(/\./g, '').replace(',', '.'); if (s === '') return null; var v = Number(s); return isNaN(v) ? undefined : Math.round(v); }
 
-  // ---------- storage (browser only, like the main app) ----------
-  function setState(text, cls) { var e = $('saveState'); e.textContent = text; e.className = 'chip' + (cls ? ' ' + cls : ''); }
-  function saveLocal() {
-    if (plan && plan.sample) { setState('MOCKUP · tidak disimpan', 'warn'); return; }
-    try { localStorage.setItem(LS_KEY, JSON.stringify({ plan: plan, actual: actual, actSrc: actSrc })); setState('Tersimpan di browser ini', 'ok'); }
-    catch (e) { setState('Gagal simpan: penyimpanan browser penuh', 'bad'); }
-  }
-  function setCell(id, d, v) {
-    if (!actual[id]) actual[id] = {};
-    if (v === null) delete actual[id][d]; else actual[id][d] = v;
-    saveLocal();
-  }
-  function parseNum(s) {
-    s = String(s).trim().replace(/\s/g, '');
-    if (s === '' || s === '-') return null;
-    // Indonesian Excel: 1.234,5 ; also accept 1234.5 / 1,234
-    if (/,\d{1,2}$/.test(s)) s = s.replace(/\./g, '').replace(',', '.');
-    else s = s.replace(/[.,](?=\d{3}(\D|$))/g, '');
-    var v = Number(s); return isFinite(v) ? v : NaN;
-  }
+  // ---------- master data ----------
+  function addDays(d, n) { var x = dt(d); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); }
+  function todayIso() { var x = new Date(); return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0'); }
+  var MONTH_END = PLAN.end, DAYS = enumerate(PLAN.start, addDays(PLAN.end, 6)), DI = {}; DAYS.forEach(function (d, i) { DI[d] = i; });
+  var OFF = {}; if (PLAN.offDays && PLAN.offDays.length) { PLAN.offDays.forEach(function (d) { OFF[d] = 1; }); DAYS.forEach(function (d) { if (d > PLAN.end && dt(d).getUTCDay() === 0) OFF[d] = 1; }); } else DAYS.forEach(function (d) { if (dt(d).getUTCDay() === 0) OFF[d] = 1; });
+  function isSun(d) { return !!OFF[d]; }
+  var JENIS = [['Facial box', /FACIAL BOX/], ['Kiloan', /KILOAN/], ['Travel pack', /TRAVELPACK/], ['Softpack besar', /SOFTPACK BESAR|L FOLD/], ['Pop up & interfold', /POP ?UP|INTERFOLD/], ['Softpack', /SOFTPACK/]];
+  function jenisOf(cat) { var c = String(cat || '').toUpperCase(); for (var i = 0; i < JENIS.length; i++) if (JENIS[i][1].test(c)) return JENIS[i][0]; return cat ? String(cat) : 'Lainnya'; }
+  function lineTgt(l) { if (l.tgt != null) return +l.tgt; if (l.ct) return +l.ct; var t = 0; for (var k in l.plan) t += l.plan[k]; return t; }
+  function lineRate(l) { var mx = 0; for (var k in l.plan) mx = Math.max(mx, l.plan[k]); return Math.max(+l.target || 0, mx) || Math.max(1, Math.round(lineTgt(l) / 20)); }
+  var LINES = PLAN.lines.filter(function (l) { return DEMO ? Object.keys(l.plan || {}).length : true; });
+  LINES.forEach(function (l) { l.plan = l.plan || {}; l.material = String(l.material || l.desc); l.machine = l.machine || '-'; });
+  var MACH = {}, MLIST = [];
+  LINES.forEach(function (l) { if (!MACH[l.machine]) { MACH[l.machine] = { m: l.machine, jenis: jenisOf(l.category), cap: 0 }; MLIST.push(l.machine); } });
+  var JN = JENIS.map(function (j) { return j[0]; }); MLIST.forEach(function (m) { if (JN.indexOf(MACH[m].jenis) < 0) JN.push(MACH[m].jenis); });
+  MLIST.sort(function (a, b) { return JN.indexOf(MACH[a].jenis) - JN.indexOf(MACH[b].jenis) || (a < b ? -1 : 1); });
+  JN = JN.filter(function (j) { return MLIST.some(function (m) { return MACH[m].jenis === j; }); });
+  var COL = { 'Facial box': '#7a5aa6', 'Kiloan': '#a0662e', 'Travel pack': '#2d6aa8', 'Softpack besar': '#3f7a5e', 'Pop up & interfold': '#b0573a', 'Softpack': '#56709a' };
+  var PAL = ['#7a5aa6', '#a0662e', '#2d6aa8', '#3f7a5e', '#b0573a', '#56709a', '#8a6d1f', '#6b4f7a', '#2f7d7d', '#9a4a5a'];
+  JN.forEach(function (j, i) { if (!COL[j]) COL[j] = PAL[i % PAL.length]; });
+  var SKU = {}, SLIST = [];
+  LINES.forEach(function (l) {
+    var s = SKU[l.material]; if (!s) { s = SKU[l.material] = { mat: l.material, desc: l.desc || l.material, cat: l.category, jenis: MACH[l.machine].jenis, rate: 0, pp: 0, net: l.net || 0 }; SLIST.push(s); }
+    s.rate = Math.max(s.rate, lineRate(l)); s.pp += lineTgt(l);
+    MACH[l.machine].cap = Math.max(MACH[l.machine].cap, Math.round(lineRate(l) * (l.net || 0) / 1000 * 26));
+  });
+  // PP of SKUs that Forecast Desk planned but did not schedule (no machine yet) join the list as "belum ada di rencana"
+  (PLAN.pp || []).forEach(function (p) {
+    var mat = String(p.material), s = SKU[mat], j = jenisOf(p.category); if (s) { if (p.pp > s.pp) s.pp = p.pp; return; }
+    if (!MLIST.some(function (m) { return MACH[m].jenis === j; })) return;
+    var rs = SLIST.filter(function (x) { return x.jenis === j; }).map(function (x) { return x.rate; }).sort(function (a, b) { return a - b; });
+    SKU[mat] = { mat: mat, desc: p.desc || mat, cat: p.category, jenis: j, rate: rs[Math.floor(rs.length / 2)] || 1, pp: p.pp, net: p.net || 0 }; SLIST.push(SKU[mat]);
+  });
+  var HOTS = { '69920852': [2.1, 34, 5, 3, 'AX'], '69921748': [3.4, 22, 4, 2, 'AY'], '69920362': [4.2, 18, 4, 1, 'AX'], '69921603': [5.5, 41, 3, 2, 'BZ'], '69921672': [3.2, 28, 4, 2, 'BY'] };
+  SLIST.forEach(function (s) {
+    var h = hash(s.mat), fcDay, cover, trend, under, rush, cl;
+    if (DEMO) { var hot = HOTS[s.mat]; fcDay = s.pp / 25 * (0.9 + h * 0.3); cover = hot ? hot[0] : 5 + h * 22; trend = hot ? hot[1] : Math.round((hash(s.mat + 't') - 0.55) * 40); under = hot ? hot[2] : Math.round(hash(s.mat + 'u') * 3.4); rush = hot ? hot[3] : (hash(s.mat + 'r') > 0.86 ? 1 : 0); cl = hot ? hot[4] : (['A', 'B', 'C'][Math.floor(hash(s.mat + 'c') * 2.6)] + ['X', 'Y', 'Z'][Math.floor(hash(s.mat + 'x') * 2.7)]); }
+    else { var hx = (PLAN.heat || {})[s.mat] || {}; fcDay = hx.fcDay || 0; cover = hx.cover != null ? hx.cover : 99; trend = hx.trend || 0; under = hx.under || 0; rush = hx.rush || 0; cl = hx.cls || '–'; s.noHeat = hx.cover == null; }
+    s.sig = { fcDay: fcDay, cover: cover, trend: trend, under: under, rush: rush, cls: cl };
+    s.score = Math.max(0, Math.min(100, Math.round((cover < 7 ? (7 - cover) / 7 * 35 : 0) + Math.max(0, trend) / 35 * 20 + under / 6 * 20 + rush * 8 + (cl[0] === 'A' ? 10 : cl[0] === 'B' ? 5 : 0))));
+    s.heat = s.score >= 60 ? 'Panas' : s.score >= 35 ? 'Hangat' : 'Normal';
+  });
+  function capable(mat, m) { return !!MACH[m] && SKU[mat].jenis === MACH[m].jenis; }
+  var HOTTEST = SLIST.slice().sort(function (a, b) { return b.score - a.score; })[0] || SLIST[0];
+  function capMachines(mat) { return MLIST.filter(function (m) { return capable(mat, m); }); }
 
-  // ---------- rendering ----------
-  function renderTiles() {
-    var d = curDay, P = 0, A = 0, PM = 0, AM = 0, Pd = 0, Ad = 0, PT = 0, PTM = 0;
-    lines.forEach(function (l) {
-      var p = planTo(l, d), a = actTo(l, d);
-      P += p; A += a; PM += mt(l, p); AM += mt(l, a);
-      Pd += l.plan[d] || 0; Ad += getA(l.id, d) || 0;
-      PT += l.ct; PTM += mt(l, l.ct);
-    });
-    var left = days.filter(function (x) { return x > d && !off[x]; }).length;
-    var need = left > 0 ? Math.max(0, PT - A) / left : null;
-    var t = [
-      ['Tanggal ' + dayLabel(d), f0(Ad) + ' CT', 'Rencana ' + f0(Pd) + ' CT · ' + fp(pct(Ad, Pd)), pct(Ad, Pd)],
-      ['Aktual s/d hari ini', f0(A) + ' CT', f1(AM) + ' MT · rencana ' + f0(P) + ' CT', pct(A, P)],
-      ['Selisih s/d hari ini', (A - P >= 0 ? '+' : '') + f0(A - P) + ' CT', fp(pct(A, P)) + ' dari rencana s/d hari ini', null],
-      ['Pencapaian bulan', fp(pct(A, PT)), f0(A) + ' / ' + f0(PT) + ' CT · ' + f1(AM) + ' / ' + f1(PTM) + ' MT', pct(A, PT)],
-      ['Sisa hari kerja', String(left), need === null ? 'Periode selesai' : 'Perlu ±' + f0(need) + ' CT/hari untuk mengejar rencana', null]
-    ];
-    $('tiles').innerHTML = t.map(function (x) {
-      return '<div class="tile"><div class="k">' + esc(x[0]) + '</div><div class="v">' + esc(x[1]) + '</div><div class="s">' + esc(x[2]) + '</div>' +
-        (x[3] !== null ? '<div class="meter"><i style="width:' + Math.min(100, Math.max(0, x[3] || 0)).toFixed(1) + '%"></i></div>' : '') + '</div>';
-    }).join('');
-  }
-  function dailyRow(l) {
-    var d = curDay, p = l.plan[d] || 0, a = getA(l.id, d), pt = planTo(l, d), at = actTo(l, d), s = status(at, pt);
-    var cls = a === null ? '' : status(a, p);
-    return '<tr data-row="' + esc(l.id) + '"><td class="mono">' + esc(l.machine) + '</td><td class="mono">' + esc(l.material) + '</td><td class="desc" title="' + esc(l.desc + ' · ' + l.category) + '">' + esc(l.desc) + '</td>' +
-      '<td class="num">' + f0(l.target) + '</td><td class="num">' + (p ? f0(p) : '<span style="color:var(--off)">-</span>') + '</td>' +
-      '<td class="num"><input class="act ' + cls + '" inputmode="decimal" data-line="' + esc(l.id) + '" data-day="' + d + '" value="' + (a === null ? '' : a) + '"></td>' +
-      '<td class="num ' + (a === null ? '' : (a - p >= 0 ? 'pos' : 'neg')) + '">' + (a === null ? '' : (a - p >= 0 ? '+' : '') + f0(a - p)) + '</td>' +
-      '<td class="num">' + (a === null ? '' : f1(mt(l, a))) + '</td><td class="num">' + f0(pt) + '</td><td class="num">' + f0(at) + '</td>' +
-      '<td class="num">' + fp(pct(at, pt)) + '</td><td><span class="st ' + s + '">' + ST_LABEL[s] + '</span></td></tr>';
-  }
-  function dailyFoot(rows) {
-    var d = curDay, T = { p: 0, a: 0, am: 0, pt: 0, at: 0 };
-    rows.forEach(function (l) { var a = getA(l.id, d); T.p += l.plan[d] || 0; T.a += a || 0; T.am += mt(l, a); T.pt += planTo(l, d); T.at += actTo(l, d); });
-    return '<tr class="total"><td colspan="4">Total (' + rows.length + ' line)</td><td class="num">' + f0(T.p) + '</td><td class="num">' + f0(T.a) + '</td><td class="num">' + ((T.a - T.p >= 0 ? '+' : '') + f0(T.a - T.p)) + '</td><td class="num">' + f1(T.am) + '</td><td class="num">' + f0(T.pt) + '</td><td class="num">' + f0(T.at) + '</td><td class="num">' + fp(pct(T.at, T.pt)) + '</td><td></td></tr>';
-  }
-  function renderDaily() {
-    var rows = filtered(), h = '<thead><tr><th>Mesin</th><th>Material</th><th>Deskripsi</th><th class="num">Target/hari</th><th class="num">Rencana hari ini</th><th class="num">Aktual (CT)</th><th class="num">Selisih</th><th class="num">Aktual MT</th><th class="num">Rencana s/d</th><th class="num">Aktual s/d</th><th class="num">%</th><th>Status</th></tr></thead><tbody>';
-    var last = null;
-    rows.forEach(function (l) {
-      if (l.machine !== last) { h += '<tr class="mgroup"><td colspan="12">' + esc(l.machine) + '</td></tr>'; last = l.machine; }
-      h += dailyRow(l);
-    });
-    $('dailyTbl').innerHTML = h + '</tbody><tfoot>' + dailyFoot(rows) + '</tfoot>';
-  }
-  function utangHtml(u) { return u > 0 ? '<span class="utang">' + f0(u) + '</span>' : u < 0 ? '<span class="utang lebih" title="Lebih dari rencana">+' + f0(-u) + '</span>' : '<span class="utang lebih">0</span>'; }
-  function lineUtang(l) { return planTo(l, curDay) - actTo(l, curDay); }
-  function gridCell(l, i) {
-    var d = days[i], p = l.plan[d] || 0, a = getA(l.id, d), cls = a === null ? '' : status(a, p);
-    var prev = i > 0 && (l.plan[days[i - 1]] || 0) > 0, next = i < days.length - 1 && (l.plan[days[i + 1]] || 0) > 0;
-    var bar = p ? '<span class="gb on' + (prev ? '' : ' gs') + (next ? '' : ' ge') + (d < curDay ? ' past' : '') + '" title="' + esc(l.desc) + ' · ' + dayLabel(d) + ': rencana ' + f0(p) + ' CT">' + f0(p) + '</span>' : '<span class="gb"></span>';
-    return '<td class="dc' + (off[d] ? ' off' : '') + '">' + bar + '<input class="act ' + cls + '" inputmode="decimal" data-line="' + esc(l.id) + '" data-day="' + d + '" value="' + (a === null ? '' : a) + '" aria-label="Aktual ' + esc(l.desc) + ' ' + dayLabel(d) + '"></td>';
-  }
-  function renderGrid() {
-    var rows = filtered(), h = '<thead><tr><th class="fz fz0">Mesin</th><th class="fz fz1">Deskripsi</th><th class="fz fz2 num" title="Rencana − aktual s/d ' + dayLabel(curDay) + '">Utang s/d ' + Number(curDay.slice(8)) + '/' + Number(curDay.slice(5, 7)) + '</th>';
-    days.forEach(function (d) { h += '<th class="num' + (off[d] ? ' off' : '') + (d === curDay ? ' today' : '') + '" title="' + dayLabel(d) + '">' + Number(d.slice(8)) + '</th>'; });
-    h += '<th class="num">Rencana</th><th class="num">Aktual</th><th class="num">%</th></tr></thead><tbody>';
-    var colP = {}, colA = {}, TU = 0;
-    rows.forEach(function (l) {
-      var sp = 0, sa = 0, u = lineUtang(l); TU += u;
-      h += '<tr><td class="fz fz0 mono">' + esc(l.machine) + '</td><td class="fz fz1" title="' + esc(l.material + ' · ' + l.desc) + '">' + esc(l.desc) + '</td><td class="fz fz2">' + utangHtml(u) + '</td>';
-      days.forEach(function (d, i) {
-        var p = l.plan[d] || 0, a = getA(l.id, d);
-        sp += p; sa += a || 0; colP[d] = (colP[d] || 0) + p; colA[d] = (colA[d] || 0) + (a || 0);
-        h += gridCell(l, i);
-      });
-      h += '<td class="num">' + f0(sp) + '</td><td class="num">' + f0(sa) + '</td><td class="num">' + fp(pct(sa, sp)) + '</td></tr>';
-    });
-    var TP = 0, TA = 0;
-    h += '</tbody><tfoot><tr class="total"><td class="fz fz0"></td><td class="fz fz1">Total aktual</td><td class="fz fz2">' + utangHtml(TU) + '</td>';
-    days.forEach(function (d) { TP += colP[d] || 0; TA += colA[d] || 0; h += '<td class="num" title="Rencana ' + f0(colP[d]) + '">' + f0(colA[d] || 0) + '</td>'; });
-    h += '<td class="num">' + f0(TP) + '</td><td class="num">' + f0(TA) + '</td><td class="num">' + fp(pct(TA, TP)) + '</td></tr></tfoot>';
-    $('gridTbl').innerHTML = h;
-  }
-  function group(key) {
-    var g = {}, order = [];
-    filtered().forEach(function (l) {
-      var k = l[key]; if (!g[k]) { g[k] = { k: k, lines: [] }; order.push(k); }
-      g[k].lines.push(l);
-    });
-    return order.map(function (k) { return g[k]; });
-  }
-  function renderSku() {
-    var d = curDay, h = '<thead><tr><th>Material</th><th>Deskripsi</th><th>Mesin</th><th class="num">Rencana bulan (CT)</th><th class="num">Rencana s/d</th><th class="num">Aktual s/d</th><th class="num">Selisih</th><th class="num">% s/d</th><th class="num">% bulan</th><th class="num">Sisa (CT)</th><th>Status</th></tr></thead><tbody>';
-    group('material').forEach(function (g) {
-      var M = 0, P = 0, A = 0, mach = [];
-      g.lines.forEach(function (l) { M += l.ct; P += planTo(l, d); A += actTo(l, d); if (mach.indexOf(l.machine) < 0) mach.push(l.machine); });
-      var s = status(A, P);
-      h += '<tr><td class="mono">' + esc(g.k) + '</td><td class="desc" title="' + esc(g.lines[0].desc) + '">' + esc(g.lines[0].desc) + '</td><td class="mono">' + esc(mach.join(', ')) + '</td><td class="num">' + f0(M) + '</td><td class="num">' + f0(P) + '</td><td class="num">' + f0(A) + '</td>' +
-        '<td class="num ' + (A - P >= 0 ? 'pos' : 'neg') + '">' + (A - P >= 0 ? '+' : '') + f0(A - P) + '</td><td class="num">' + fp(pct(A, P)) + '</td><td class="num">' + fp(pct(A, M)) + '</td><td class="num">' + f0(Math.max(0, M - A)) + '</td><td><span class="st ' + s + '">' + ST_LABEL[s] + '</span></td></tr>';
-    });
-    $('skuTbl').innerHTML = h + '</tbody>';
-  }
-  function renderMachine() {
-    var d = curDay, h = '<thead><tr><th>Mesin</th><th class="num">Line</th><th class="num">Rencana bulan (MT)</th><th class="num">Rencana s/d (MT)</th><th class="num">Aktual s/d (MT)</th><th class="num">Selisih (MT)</th><th class="num">% s/d</th><th class="num">% bulan</th><th class="num">Hari ini rencana / aktual (CT)</th><th>Status</th></tr></thead><tbody>';
-    var T = [0, 0, 0];
-    group('machine').forEach(function (g) {
-      var M = 0, P = 0, A = 0, pd = 0, ad = 0;
-      g.lines.forEach(function (l) { M += mt(l, l.ct); P += mt(l, planTo(l, d)); A += mt(l, actTo(l, d)); pd += l.plan[d] || 0; ad += getA(l.id, d) || 0; });
-      T[0] += M; T[1] += P; T[2] += A;
-      var s = status(A, P);
-      h += '<tr><td class="mono">' + esc(g.k) + '</td><td class="num">' + g.lines.length + '</td><td class="num">' + f1(M) + '</td><td class="num">' + f1(P) + '</td><td class="num">' + f1(A) + '</td><td class="num ' + (A - P >= 0 ? 'pos' : 'neg') + '">' + (A - P >= 0 ? '+' : '') + f1(A - P) + '</td><td class="num">' + fp(pct(A, P)) + '</td><td class="num">' + fp(pct(A, M)) + '</td><td class="num">' + f0(pd) + ' / ' + f0(ad) + '</td><td><span class="st ' + s + '">' + ST_LABEL[s] + '</span></td></tr>';
-    });
-    h += '</tbody><tfoot><tr class="total"><td>Total</td><td></td><td class="num">' + f1(T[0]) + '</td><td class="num">' + f1(T[1]) + '</td><td class="num">' + f1(T[2]) + '</td><td class="num">' + (T[2] - T[1] >= 0 ? '+' : '') + f1(T[2] - T[1]) + '</td><td class="num">' + fp(pct(T[2], T[1])) + '</td><td class="num">' + fp(pct(T[2], T[0])) + '</td><td></td><td></td></tr></tfoot>';
-    $('machTbl').innerHTML = h;
-  }
-  function render() {
-    renderTiles();
-    ({ daily: renderDaily, grid: renderGrid, sku: renderSku, machine: renderMachine })[view]();
-  }
+  // ---------- state: rows = one SKU on one machine, plan = qty per date (like the Excel sheet) ----------
+  var S = { step: 2, mode: 'rencana', L: null, rows: [], act: {}, opt: { talk: true, focus: true }, filter: null, hist: [], scen: 'rush', rush: { mat: HOTTEST ? HOTTEST.mat : '', qty: 0, due: '' }, stop: { m: MLIST[0], from: '', days: 2 }, options: null, optSel: 0, pasteDay: '', pasteText: '', pasteRes: null, fixes: {}, jf: '', sel: null, hl: {} };
+  try { var sv = JSON.parse(localStorage.getItem('ph3-opt') || 'null'); if (sv) S.opt = Object.assign(S.opt, sv); } catch (e) {}
+  function saveOpt() { try { localStorage.setItem('ph3-opt', JSON.stringify(S.opt)); } catch (e) {} }
+  var uid = 0;
+  function rowById(id) { return S.rows.filter(function (r) { return r.id === id; })[0]; }
+  function tomorrow() { var i = S.L ? DI[S.L] + 1 : 0; while (i < DAYS.length - 1 && isSun(DAYS[i])) i++; return DAYS[Math.min(i, DAYS.length - 1)]; }
+  function workAfter(d, n) { var i = DI[d], k = 0; while (k < n && i < DAYS.length - 1) { i++; if (!isSun(DAYS[i])) k++; } return DAYS[i]; }
+  function after(d) { return DAYS[Math.min(DI[d] + 1, DAYS.length - 1)]; }
+  function isPast(d) { return S.L && d <= S.L; }
+  function rate(r) { return SKU[r.mat].rate; }
+  function actOf(r, d) { var a = S.act[r.id]; return a && a[d] != null ? a[d] : null; }
+  function actTo(r) { var a = S.act[r.id] || {}, s = 0; for (var k in a) if (!S.L || k <= S.L) s += a[k]; return s; }
+  function future(r) { var s = 0; for (var k in r.plan) if (!isPast(k)) s += r.plan[k]; return s; }
+  function planTo(r) { var s = 0; for (var k in r.plan) if (isPast(k)) s += r.plan[k]; return s; }
+  function selisih(r) { return actTo(r) + future(r) - r.target; }
+  function lastPlan(r) { var ks = Object.keys(r.plan).filter(function (k) { return r.plan[k] > 0; }).sort(); return ks[ks.length - 1]; }
+  function firstFuture(r) { var ks = Object.keys(r.plan).filter(function (k) { return r.plan[k] > 0 && !isPast(k); }).sort(); return ks[0]; }
+  function load(m, d, except) { var s = 0; S.rows.forEach(function (r) { if (r.m === m && r !== except && r.plan[d]) s += r.plan[d] / rate(r); }); return s; }
+  function freeDay(m, d, except) { return !isSun(d) && !isPast(d) && load(m, d, except) < 0.05; }
 
-  // ---------- input ----------
-  function commitInput(inp) {
-    var v = parseNum(inp.value);
-    if (isNaN(v)) { inp.style.outline = '2px solid var(--bad)'; return false; }
-    inp.style.outline = '';
-    var id = inp.getAttribute('data-line'), d = inp.getAttribute('data-day');
-    if (getA(id, d) === v) return false;
-    setCell(id, d, v);
-    return true;
+  function scenDefaults() { var t = tomorrow(); S.rush.due = workAfter(t, 6); S.rush.qty = HOTTEST ? Math.round(HOTTEST.rate * 3 / 100) * 100 || 100 : 0; S.stop.from = workAfter(t, 1); }
+  // real data: rows and actuals as stored by this page (or as sent by Forecast Desk)
+  function loadStore() {
+    S.mode = 'rencana'; S.rows = []; S.act = JSON.parse(JSON.stringify(STORE.actual || {})); S.fixes = {}; S.pasteRes = null; S.pasteText = ''; S.filter = null; S.hist = []; S.options = null;
+    LINES.forEach(function (l) { var p = {}; for (var k in l.plan) if (DI[k] != null && l.plan[k]) p[k] = l.plan[k]; var t = lineTgt(l); S.rows.push({ id: l.id || ('r' + (++uid)), m: l.machine, mat: l.material, plan: p, target: t, target0: l.tgt0 != null ? l.tgt0 : t }); });
+    var L = PLAN.L || null; if (!L) Object.keys(S.act).forEach(function (id) { Object.keys(S.act[id] || {}).forEach(function (d) { if (S.act[id][d] != null && (!L || d > L)) L = d; }); });
+    S.L = L && DI[L] != null ? L : null;
+    var nx = tomorrow(); S.pasteDay = nx; scenDefaults();
   }
-  function afterEdit(inp) {
-    renderTiles();
-    var id = inp.getAttribute('data-line'), d = inp.getAttribute('data-day'), l = byId[id];
-    if (view === 'daily') {
-      var tr = inp.closest('tr'); tr.outerHTML = dailyRow(l);
-      $('dailyTbl').tFoot.innerHTML = dailyFoot(filtered());
-    } else if (view === 'grid') {
-      var a = getA(id, d), p = l.plan[d] || 0;
-      inp.className = 'act ' + (a === null ? '' : status(a, p));
-      var cells = inp.closest('tr').cells, n = cells.length, sp = 0, sa = 0;
-      days.forEach(function (x) { sp += l.plan[x] || 0; sa += getA(id, x) || 0; });
-      cells[n - 2].textContent = f0(sa); cells[n - 1].textContent = fp(pct(sa, sp));
-      cells[2].innerHTML = utangHtml(lineUtang(l));
-      var col = 0, TU = 0; filtered().forEach(function (m) { col += getA(m.id, d) || 0; TU += lineUtang(m); });
-      var foot = $('gridTbl').tFoot.rows[0].cells, ci = 3 + days.indexOf(d), TA = 0, TP = 0;
-      foot[ci].textContent = f0(col); foot[2].innerHTML = utangHtml(TU);
-      filtered().forEach(function (m) { days.forEach(function (x) { TA += getA(m.id, x) || 0; TP += m.plan[x] || 0; }); });
-      foot[foot.length - 2].textContent = f0(TA); foot[foot.length - 1].textContent = fp(pct(TA, TP));
+  function loadRencana() {
+    S.mode = 'rencana'; S.L = '2026-11-13'; S.rows = []; S.act = {}; S.fixes = {}; S.pasteRes = null; S.pasteText = ''; S.filter = null; S.hist = []; S.options = null; S.pasteDay = '2026-11-14';
+    LINES.forEach(function (l) { var p = {}, t = 0; for (var k in l.plan) { p[k] = l.plan[k]; t += l.plan[k]; } S.rows.push({ id: 'r' + (++uid), m: l.machine, mat: l.material, plan: p, target: t, target0: t }); });
+    var seed = 7; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    scenDefaults();
+    S.rows.forEach(function (r) { for (var d in r.plan) { if (d > S.L) continue; var f = 0.86 + rnd() * 0.19; if (r.m === 'CVFI31' && d >= '2026-11-09') f = 0.6 + rnd() * 0.1; if (r.m === 'CVFI12' && d >= '2026-11-10') f = 0.8; (S.act[r.id] = S.act[r.id] || {})[d] = Math.round(r.plan[d] * Math.min(1.04, f)); } });
+  }
+  function loadPP() {
+    S.mode = 'pp'; S.L = null; S.rows = []; S.act = {}; S.fixes = {}; S.pasteRes = null; S.filter = null; S.hist = []; S.options = null; S.pasteDay = tomorrow(); scenDefaults();
+  }
+  function ppLeft(mat) { var s = SKU[mat].pp; S.rows.forEach(function (r) { if (r.mat === mat) s -= r.target; }); return Math.max(0, s); }
+  function unplannedSkus() { return SLIST.filter(function (s) { return ppLeft(s.mat) > s.rate * 0.5; }); }
+
+  // ---------- plan operations (work on S.rows, so scenarios can run them on a copy) ----------
+  function fillFrom(r, from, qty) { var i = DI[from], left = qty, last = null; while (left > 0.5 && i < DAYS.length) { var d = DAYS[i]; if (freeDay(r.m, d, r)) { var room = rate(r) - (r.plan[d] || 0); if (room > 0) { var q = Math.min(room, left); r.plan[d] = Math.round((r.plan[d] || 0) + q); left -= q; last = d; } } i++; } return { last: last, left: left }; }
+  function simulateEnd(m, mat, from, qty) { var i = DI[from], left = qty, last = null, rt = SKU[mat].rate; while (left > 0.5 && i < DAYS.length) { var d = DAYS[i]; if (freeDay(m, d)) { left -= rt; last = d; } i++; } return left > 0.5 ? null : last; }
+  function rowFor(m, mat) { var r = S.rows.filter(function (x) { return x.m === m && x.mat === mat; })[0]; if (!r) { r = { id: 'r' + (++uid), m: m, mat: mat, plan: {}, target: 0, target0: 0, isNew: 1 }; S.rows.push(r); } return r; }
+  function bestMachine(mat, qty, prefer) { var from = tomorrow(), best = null; capMachines(mat).forEach(function (m) { var e = simulateEnd(m, mat, from, qty); if (!e) return; var sc = DI[e] - (m === prefer ? 2 : 0); if (!best || sc < best.sc) best = { m: m, e: e, sc: sc }; }); return best; }
+  function autoFill() {
+    var n = 0, items = [];
+    S.rows.forEach(function (r) { var s = selisih(r); if (s < -rate(r) * 0.5) items.push({ r: r, mat: r.mat, q: -s }); });
+    unplannedSkus().forEach(function (s) { items.push({ r: null, mat: s.mat, q: ppLeft(s.mat) }); });
+    items.sort(function (a, b) { return SKU[b.mat].score - SKU[a.mat].score || SKU[a.mat].sig.cover - SKU[b.mat].sig.cover; });
+    items.forEach(function (it) {
+      var left = it.q, guard = 0;
+      while (left > 0.5 && guard++ < 5) {
+        var pref = it.r ? it.r.m : null, bm = bestMachine(it.mat, left, pref), m, r;
+        if (bm) { m = bm.m; } else { var cm = capMachines(it.mat); m = pref || cm.reduce(function (a, c) { return simulateEnd(c, it.mat, tomorrow(), SKU[it.mat].rate * 3) ? c : a; }, cm[0]); }
+        r = it.r && it.r.m === m ? it.r : rowFor(m, it.mat);
+        var res = fillFrom(r, tomorrow(), left), got = left - res.left;
+        if (r !== it.r) { r.target += got; if (it.r) it.r.target -= got; }
+        left = res.left; n++;
+        if (got <= 0) break;
+      }
+    });
+    return n;
+  }
+  function clearFuture(r) { var q = 0; for (var k in r.plan) if (!isPast(k)) { q += r.plan[k]; delete r.plan[k]; } return q; }
+  function shiftMachine(m, from, n) {
+    S.rows.forEach(function (r) { if (r.m !== m) return; var moved = {}; Object.keys(r.plan).sort().forEach(function (d) { if (d < from || isPast(d)) return; var i = DI[d], k = 0; while (k < n && i < DAYS.length - 1) { i++; if (!isSun(DAYS[i])) k++; } moved[DAYS[i]] = (moved[DAYS[i]] || 0) + r.plan[d]; delete r.plan[d]; }); for (var d in moved) r.plan[d] = (r.plan[d] || 0) + moved[d]; });
+  }
+  function bringForward(r) { var q = clearFuture(r), st = tomorrow(), n = Math.ceil(q / rate(r)); shiftMachine(r.m, st, n); fillFrom(r, st, q); }
+  // runs = consecutive future plan days of one row (a Sunday inside a run does not break it)
+  function runsOf(r) {
+    var out = [], cur = null, gap = [];
+    DAYS.forEach(function (d) {
+      if (isPast(d)) return; var q = r.plan[d] || 0;
+      if (q > 0) { if (cur) { cur.days = cur.days.concat(gap); cur.days.push(d); cur.end = d; } else { cur = { start: d, end: d, days: [d] }; out.push(cur); } gap = []; }
+      else if (cur && isSun(d) && gap.length < 1) gap.push(d);
+      else { cur = null; gap = []; }
+    });
+    return out;
+  }
+  function runAt(r, d) { var rs = runsOf(r); for (var i = 0; i < rs.length; i++) if (rs[i].days.indexOf(d) >= 0) return rs[i]; return null; }
+  function placeSeq(row, from, qtys) { var i = DI[from]; while (i < DAYS.length && (isSun(DAYS[i]) || isPast(DAYS[i]))) i++; qtys.forEach(function (q) { while (i < DAYS.length && isSun(DAYS[i])) i++; if (i >= DAYS.length) return; var d = DAYS[i]; row.plan[d] = (row.plan[d] || 0) + q; i++; }); }
+  function moveRun(r, run, dx, m2) {
+    var qtys = run.days.filter(function (d) { return r.plan[d] > 0; }).map(function (d) { var q = r.plan[d]; delete r.plan[d]; return q; });
+    var ns = DAYS[Math.max(0, Math.min(DAYS.length - 1, DI[run.start] + dx))]; if (isPast(ns)) ns = tomorrow();
+    var dest = m2 && m2 !== r.m ? rowFor(m2, r.mat) : r, tot = qtys.reduce(function (a, q) { return a + q; }, 0);
+    if (dest !== r) { dest.target += tot; r.target -= tot; }
+    placeSeq(dest, ns, qtys); return dest;
+  }
+  function resizeRun(r, run, n) {
+    var tot = 0; run.days.forEach(function (d) { tot += r.plan[d] || 0; delete r.plan[d]; });
+    n = Math.max(1, n); var per = Math.floor(tot / n), q = []; for (var k = 0; k < n; k++) q.push(k === n - 1 ? tot - per * (n - 1) : per);
+    placeSeq(r, run.start, q); return tot / n;
+  }
+  var lastSaved = '';
+  function persist() {
+    if (DEMO) return;
+    var lines = S.rows.map(function (r) { var sk = SKU[r.mat], ct = 0; for (var k in r.plan) ct += r.plan[k]; return { id: r.id, machine: r.m, material: r.mat, desc: sk.desc, category: sk.cat || '', net: sk.net || 0, target: sk.rate, ct: ct, tgt: r.target, tgt0: r.target0, plan: r.plan }; });
+    var sig = JSON.stringify([lines, S.act, S.L]); if (sig === lastSaved) return;
+    var first = !lastSaved; lastSaved = sig; if (first) return;
+    var st = {}; try { st = JSON.parse(localStorage.getItem(LS_KEY) || '{}') || {}; } catch (e) {}
+    st.plan = Object.assign({}, PLAN, { lines: lines, L: S.L, edited: true, editedAt: new Date().toISOString() }); st.actual = S.act;
+    try { localStorage.setItem(LS_KEY, JSON.stringify(st)); } catch (e) { toast('Gagal menyimpan: penyimpanan browser penuh.'); }
+  }
+  function pushHist() { S.hist.push(JSON.stringify(S.rows)); if (S.hist.length > 40) S.hist.shift(); }
+
+  // ---------- checks → action cards ----------
+  function checks() {
+    var C = {};
+    C.kurang = S.rows.filter(function (r) { return selisih(r) < -rate(r) * 0.5; });
+    C.unpl = unplannedSkus();
+    C.lebih = S.rows.filter(function (r) { return selisih(r) > rate(r) * 0.5; });
+    var ov = []; MLIST.forEach(function (m) { DAYS.forEach(function (d) { if (!isPast(d) && load(m, d) > 1.05) ov.push([m, d]); }); }); C.over = ov;
+    C.hot = SLIST.filter(function (s) { if (s.heat !== 'Panas') return false; var rs = S.rows.filter(function (r) { return r.mat === s.mat; }); if (!rs.length) return false; var nx = rs.map(firstFuture).filter(Boolean).sort()[0], out = DAYS[Math.min(DAYS.length - 1, DI[tomorrow()] + Math.floor(s.sig.cover))]; s._out = out; s._next = nx; return !nx || nx > out; });
+    C.late = S.rows.filter(function (r) { return Object.keys(r.plan).some(function (d) { return d > MONTH_END && r.plan[d] > 0; }); });
+    return C;
+  }
+  var CK = null;
+
+  // ---------- lens, speech, toast ----------
+  function lens(sz, id) { var bl = ''; for (var k = 0; k < 6; k++) bl += '<path d="M30 30 L30 5 A25 25 0 0 1 51.6 17.5 Z" transform="rotate(' + k * 60 + ' 30 30)" class="blade" style="opacity:' + (k % 2 ? 0.82 : 1) + '"/>'; return '<svg class="lens"' + (id ? ' id="' + id + '"' : '') + ' viewBox="0 0 60 60" width="' + sz + '" height="' + sz + '" aria-hidden="true"><circle cx="30" cy="30" r="28" class="ring"/><g class="blades">' + bl + '</g><circle cx="30" cy="30" r="9" class="pupil"/><circle cx="33" cy="27" r="2.2" fill="#fff" opacity=".85"/></svg>'; }
+  $('sideLens').innerHTML = lens(34, 'mainLens'); $('askLens').innerHTML = lens(22);
+  var talkTimer = null;
+  function say(html) { var box = $('speech'), L = $('mainLens'); clearInterval(talkTimer); if (!S.opt.talk) { box.innerHTML = html; L.classList.remove('talk'); return; } var tmp = document.createElement('div'); tmp.innerHTML = html; var full = tmp.textContent, i = 0; L.classList.add('talk'); box.innerHTML = '<span></span><span class="caret"></span>'; talkTimer = setInterval(function () { i += 2; box.firstChild.textContent = full.slice(0, i); if (i >= full.length) { clearInterval(talkTimer); box.innerHTML = html; L.classList.remove('talk'); } }, 18); }
+  function toast(t) { var e = $('toast'); e.textContent = t; e.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(function () { e.hidden = true; }, 2800); }
+
+  // ---------- spotlight ----------
+  function clearSpot() { ['spot', 'spotEye', 'spotTip'].forEach(function (id) { var e = $(id); if (e) e.remove(); }); }
+  function spotlight(el, text) {
+    clearSpot(); if (!el) return; el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+    var last = null, waited = 0;
+    (function settle() { var r0 = el.getBoundingClientRect(); if (waited < 1600 && (!last || Math.abs(r0.top - last.top) > 0.5 || Math.abs(r0.left - last.left) > 0.5)) { last = r0; waited += 80; return setTimeout(settle, 80); } go(); })();
+    function go() {
+      var rc = el.getBoundingClientRect(); if (!S.opt.focus) { el.animate([{ outline: '3px solid var(--mid)' }, { outline: '3px solid transparent' }], { duration: 1600 }); return; }
+      var L = $('mainLens').getBoundingClientRect(), sp = document.createElement('div'); sp.id = 'spot'; sp.style.cssText = 'left:' + L.left + 'px;top:' + L.top + 'px;width:' + L.width + 'px;height:' + L.height + 'px'; document.body.appendChild(sp);
+      var eye = document.createElement('div'); eye.id = 'spotEye'; eye.innerHTML = lens(34); eye.style.left = L.left + 'px'; eye.style.top = L.top + 'px'; document.body.appendChild(eye); eye.firstChild.classList.add('talk');
+      requestAnimationFrame(function () { sp.style.cssText = 'left:' + (rc.left - 5) + 'px;top:' + (rc.top - 5) + 'px;width:' + (Math.min(rc.width, window.innerWidth - rc.left - 10) + 10) + 'px;height:' + (rc.height + 10) + 'px'; eye.style.left = Math.min(window.innerWidth - 44, rc.left + Math.min(rc.width, 600) + 8) + 'px'; eye.style.top = Math.max(8, rc.top - 40) + 'px'; setTimeout(function () { var tip = document.createElement('div'); tip.id = 'spotTip'; tip.innerHTML = esc(text) + '<br><button>Oke</button>'; tip.style.left = Math.max(8, Math.min(window.innerWidth - 340, rc.left + 20)) + 'px'; tip.style.top = (rc.bottom + 12 > window.innerHeight - 90 ? rc.top - 86 : rc.bottom + 12) + 'px'; document.body.appendChild(tip); eye.firstChild.classList.remove('talk'); }, 600); });
     }
   }
-  document.addEventListener('change', function (e) {
-    if (!e.target.classList || !e.target.classList.contains('act')) return;
-    if (commitInput(e.target)) afterEdit(e.target);
-  });
-  function focusCell(line, day) { var el = line && document.querySelector('input.act[data-line="' + CSS.escape(line) + '"][data-day="' + day + '"]'); if (el) { el.focus(); el.select(); } }
-  // Enter / arrows move like Excel
-  document.addEventListener('keydown', function (e) {
-    var t = e.target; if (!t.classList || !t.classList.contains('act')) return;
-    var dir = { Enter: [0, e.shiftKey ? -1 : 1], ArrowDown: [0, 1], ArrowUp: [0, -1] }[e.key];
-    if (!dir && view === 'grid' && (e.key === 'ArrowRight' || e.key === 'ArrowLeft') && t.selectionStart === t.selectionEnd && t.selectionStart === (e.key === 'ArrowRight' ? t.value.length : 0)) dir = [e.key === 'ArrowRight' ? 1 : -1, 0];
-    if (!dir) return;
-    e.preventDefault();
-    var all = Array.prototype.slice.call(t.closest('table').querySelectorAll('input.act'));
-    var cols = view === 'grid' ? days.length : 1, j = all.indexOf(t) + dir[0] + dir[1] * cols;
-    var next = all[j], line = next && next.getAttribute('data-line'), day = next && next.getAttribute('data-day');
-    if (commitInput(t)) afterEdit(t);
-    focusCell(line, day);
-  });
-  // paste a block from Excel
-  document.addEventListener('paste', function (e) {
-    var t = e.target; if (!t.classList || !t.classList.contains('act')) return;
-    var text = (e.clipboardData || window.clipboardData).getData('text');
-    if (!/[\t\n]/.test(text.trim())) return;
-    e.preventDefault();
-    var grid = text.replace(/\r/g, '').replace(/\n$/, '').split('\n').map(function (r) { return r.split('\t'); });
-    var rowIds = filtered().map(function (l) { return l.id; });
-    var r0 = rowIds.indexOf(t.getAttribute('data-line')), c0 = days.indexOf(t.getAttribute('data-day')), n = 0, bad = 0;
-    grid.forEach(function (row, ri) {
-      row.forEach(function (cell, ci) {
-        var id = rowIds[r0 + ri], d = view === 'grid' ? days[c0 + ci] : (ci === 0 ? days[c0] : null);
-        if (!id || !d) return;
-        var v = parseNum(cell); if (isNaN(v)) { bad++; return; }
-        if (!actual[id]) actual[id] = {};
-        if (v === null) delete actual[id][d]; else actual[id][d] = v;
-        n++;
-      });
-    });
-    saveLocal();
-    render();
-    if (bad) alert(n + ' sel terisi, ' + bad + ' sel dilewati karena bukan angka.');
-  });
+  document.addEventListener('mousedown', function (e) { if ($('spot') && !e.target.closest('[data-al]') && !e.target.closest('[data-tip]')) setTimeout(clearSpot, 0); }, true);
+  window.addEventListener('scroll', clearSpot, { passive: true });
 
-  // ---------- controls ----------
-  document.querySelectorAll('.tab[data-view]').forEach(function (b) {
-    b.addEventListener('click', function () {
-      view = b.getAttribute('data-view');
-      document.querySelectorAll('.tab[data-view]').forEach(function (x) { x.classList.toggle('on', x === b); });
-      ['daily', 'grid', 'sku', 'machine'].forEach(function (v) { $('view-' + v).hidden = v !== view; });
-      render();
-      if (view === 'grid') { var th = document.querySelector('#gridTbl th.today'), s = document.querySelector('#view-grid .scroll'); if (th && s) s.scrollLeft = Math.max(0, th.offsetLeft - 520); }
-    });
-  });
-  $('daySel').addEventListener('change', function () { curDay = this.value; render(); });
-  $('prevDay').addEventListener('click', function () { var i = days.indexOf(curDay); if (i > 0) { curDay = days[i - 1]; $('daySel').value = curDay; render(); } });
-  $('nextDay').addEventListener('click', function () { var i = days.indexOf(curDay); if (i < days.length - 1) { curDay = days[i + 1]; $('daySel').value = curDay; render(); } });
-  $('machSel').addEventListener('change', render);
-  $('q').addEventListener('input', render);
-  $('exportBtn').addEventListener('click', exportXlsx);
-
-  function loadScript(src) { return new Promise(function (res, rej) { var s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
-  function exportXlsx() {
-    (window.XLSX ? Promise.resolve() : loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js')).then(function () {
-      var head = ['Mesin', 'Material', 'Deskripsi', 'Kategori', 'Net (kg)', 'Target/hari', 'Rencana CT'];
-      var hA = head.concat(days.map(function (d) { return d; }), ['Total aktual CT', 'Total aktual MT', '% rencana']);
-      var hP = head.concat(days);
-      var rowsA = [hA], rowsP = [hP];
-      lines.forEach(function (l) {
-        var base = [l.machine, l.material, l.desc, l.category, l.net, l.target, l.ct], tot = 0;
-        var ra = base.concat(days.map(function (d) { var a = getA(l.id, d); tot += a || 0; return a === null ? '' : a; }));
-        rowsA.push(ra.concat([tot, Math.round(mt(l, tot) * 10) / 10, l.ct ? Math.round(tot / l.ct * 1000) / 10 : '']));
-        rowsP.push(base.concat(days.map(function (d) { return l.plan[d] || ''; })));
-      });
-      var wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rowsA), 'Aktual');
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rowsP), 'Rencana');
-      XLSX.writeFile(wb, 'Monitoring produksi ' + plan.period + ' s.d ' + curDay + '.xlsx');
-    }).catch(function () { alert('Gagal memuat pustaka Excel. Periksa koneksi internet.'); });
+  // ---------- stepper ----------
+  var STEPS = [{ t: 'Data masuk', s: 'rencana, PP, mesin, kelompok SKU' }, { t: 'Rencana', s: 'target & jadwal harian per SKU' }, { t: 'Aktual', s: 'tempel output & cek' }, { t: 'Skenario', s: 'bagaimana kalau…' }];
+  function renderStepper() {
+    var C = CK, issues = C.kurang.length + C.unpl.length + C.over.length + C.hot.length;
+    $('stepper').innerHTML = STEPS.map(function (s, i) { var n = i + 1, st = n === S.step ? 'on' : n === 1 ? 'done' : n === 2 ? (issues ? 'warn' : 'done') : n === 3 ? (S.mode === 'pp' ? '' : S.L >= S.pasteDay ? 'done' : 'warn') : ''; var sub = n === 2 && issues ? issues + ' hal perlu dikerjakan' : n === 3 && st === 'warn' ? dlab(S.pasteDay) + ' belum ditempel' : s.s; return '<button class="st ' + st + '" data-step="' + n + '"><span class="n">' + n + '</span><span><b>' + s.t + '</b><small>' + sub + '</small></span></button>'; }).join('');
+  }
+  function sayStep() {
+    var n = S.step, C = CK;
+    if (n === 1) say(S.mode === 'rencana' ? (DEMO ? 'Ini data contoh. ' : 'Sumber: ' + esc(PLAN.source || '-') + '. ') + (S.L ? 'Aktual s/d ' + dshort(S.L) + ' terkunci. ' : 'Belum ada aktual. ') + 'Target tiap SKU diambil dari PP/rencana.' : 'Hanya daftar PP yang masuk: ' + SLIST.length + ' material. Di Rencana, tekan <b>Isi otomatis</b> untuk membuat jadwal hariannya.');
+    if (n === 2) { var t = []; if (C.unpl.length) t.push(C.unpl.length + ' SKU belum ada di rencana'); if (C.kurang.length) t.push(C.kurang.length + ' baris rencananya kurang dari target'); if (C.hot.length) t.push(C.hot.length + ' SKU panas habis stok sebelum diproduksi'); if (C.over.length) t.push(C.over.length + ' hari mesin lewat kapasitas'); say(t.length ? 'Yang perlu dikerjakan: ' + t.join(', ') + '. Mulai dari kartu kiri; tiap kartu punya tombolnya.' : 'Semua target tertutup rencana dan tidak ada mesin lewat kapasitas. Ketik angka di sel untuk mengubah, atau klik nama SKU untuk pindah mesin.'); }
+    if (n === 3) say(S.mode === 'pp' ? 'Belum ada aktual: rencana belum berjalan.' : 'Salin kolom output dari laporan produksi ' + dlab(S.pasteDay, 1) + ' lalu tempel. Dua kolom (material, output) dicocokkan per material.');
+    if (n === 4) say('Coba “bagaimana kalau” tanpa mengubah rencana. Isi order mendadak atau mesin berhenti; saya bandingkan pilihannya dan tunjukkan sel mana yang berubah. Terapkan bila cocok.');
   }
 
-  // ---------- Excel files ----------
+  // ---------- alerts ----------
+  var ALERTS = [];
+  function alerts() {
+    var A = [], C = CK;
+    if (S.step === 2) {
+      C.hot.slice(0, 3).forEach(function (s) { var r = S.rows.filter(function (x) { return x.mat === s.mat; })[0]; A.push({ c: 'red', k: 'Stok habis', t: s.desc.slice(0, 36), d: 'Stok ±' + Math.round(s.sig.cover) + ' hari (habis ' + dshort(s._out) + '), produksi berikutnya ' + (s._next ? dshort(s._next) : 'belum ada') + '.', sel: '[data-row="' + r.id + '"]', go: 'Tunjukkan' }); });
+      C.over.slice(0, 2).forEach(function (o) { A.push({ c: 'red', k: 'Lewat kapasitas', t: o[0] + ' · ' + dlab(o[1]), d: 'Rencana hari itu di atas kecepatan mesin.', sel: '[data-mh="' + o[0] + '"] [data-d="' + o[1] + '"]', go: 'Tunjukkan' }); });
+      C.kurang.slice(0, 3).forEach(function (r) { A.push({ c: 'amb', k: 'Kurang dari target', t: r.m + ' · ' + SKU[r.mat].desc.slice(0, 28), d: 'Aktual + rencana ' + f0(actTo(r) + future(r)) + ' dari target ' + f0(r.target) + '.', sel: '[data-row="' + r.id + '"]', go: 'Tunjukkan' }); });
+    }
+    if (S.step === 3 && S.mode === 'rencana') {
+      if (S.L < S.pasteDay) A.push({ c: 'blu', k: 'Aktual', t: dlab(S.pasteDay, 1) + ' belum ditempel', d: 'Kolom output dari laporan produksi.', sel: '#pasteBox', go: 'Tunjukkan' });
+      if (S.pasteRes) { S.pasteRes.rows.filter(function (x) { return x.a != null && x.a / x.t < 0.85; }).slice(0, 4).forEach(function (x) { A.push({ c: 'amb', k: 'Di bawah target', t: x.r.m + ' · ' + pct(x.a, x.t) + '%', d: SKU[x.r.mat].desc.slice(0, 40) + '. Cek angkanya.', sel: '[data-arow="' + x.r.id + '"] input', go: 'Tunjukkan' }); }); S.pasteRes.unknown.forEach(function (u) { A.push({ c: 'red', k: 'Tidak cocok', t: 'Material ' + u + ' tidak ada di rencana hari itu', d: 'Baris dilewati. Tambahkan SKU-nya di Rencana bila memang diproduksi.' }); }); }
+    }
+    if (!A.length) A.push({ c: 'grn', k: 'Aman', t: 'Tidak ada alert', d: 'Langkah ini tidak punya hal yang perlu dicek.' });
+    return A;
+  }
+  function renderAlerts() { ALERTS = alerts(); var na = ALERTS.filter(function (a) { return a.c !== 'grn'; }).length; $('alertN').textContent = na; $('aiN').textContent = na; $('aiN').className = 'chip ' + (na ? 'bad' : 'ok'); $('alertsBox').innerHTML = '<div class="sk">' + STEPS[S.step - 1].t + '</div>' + ALERTS.map(function (a, i) { return '<div class="alert ' + a.c + '"><div class="k">' + esc(a.k) + '</div><div class="t">' + esc(a.t) + '</div><div class="d">' + esc(a.d) + '</div>' + (a.go ? '<div class="acts"><button class="sm" data-al="' + i + '">' + esc(a.go) + ' →</button></div>' : '') + '</div>'; }).join(''); }
+
+  // ---------- render ----------
+  function render(keepScroll) {
+    clearSpot(); $('menu').hidden = true; $('ced').hidden = true;
+    var gw = $('gwrap'), sl = gw ? [gw.scrollLeft, gw.scrollTop] : null;
+    CK = checks(); renderStepper();
+    $('brandSub').textContent = (PLAN.label || PLAN.period || '') + ' · ' + (S.L ? 'aktual s/d ' + dshort(S.L) : 'belum ada aktual') + (DEMO ? ' · contoh' : '');
+    $('demoBar').hidden = !DEMO;
+    $('sideSub').textContent = STEPS[S.step - 1].t;
+    $('main').innerHTML = [v1, v2, v3, v4][S.step - 1]();
+    renderAlerts(); persist();
+    var g2 = $('gwrap'); if (g2) { if (keepScroll && sl) { g2.scrollLeft = sl[0]; g2.scrollTop = sl[1]; } else if (S.L) g2.scrollLeft = Math.max(0, (DI[S.L] - 4) * 42); } document.querySelectorAll('.pg.pv').forEach(function (t) { t.parentNode.scrollLeft = Math.max(0, (DI[tomorrow()] - 1) * 42); });
+  }
+  function nav(back, fwd) { return '<div class="nav">' + (back ? '<button data-go="' + (S.step - 1) + '">← ' + back + '</button>' : '<span></span>') + (fwd ? '<button class="pri" data-go="' + (S.step + 1) + '">' + fwd + ' →</button>' : '') + '</div>'; }
+
+  // ---------- 1. data ----------
+  function v1() {
+    var h = '<div class="phead"><h2>Data masuk</h2><span class="mut">Unggah ulang kapan saja; rencana boleh berubah setiap hari.</span><span class="sp"></span>' + (DEMO ? '<span class="chip warn">data contoh</span>' : '<a class="btnlink" href="?contoh">Lihat data contoh</a>') + '</div><div class="grid2">';
+    var nA = 0; Object.keys(S.act).forEach(function (k) { nA += Object.keys(S.act[k] || {}).length; });
+    h += '<div class="card"><div class="hd"><h3>Rencana yang dipakai</h3><span class="chip ok">' + S.rows.length + ' baris</span></div><p style="margin:0 0 6px"><b>' + esc(PLAN.label || PLAN.period || '') + '</b> · ' + dshort(PLAN.start) + ' – ' + dshort(PLAN.end) + '</p><p class="mut" style="margin:0 0 8px">Sumber: ' + esc(PLAN.source || '-') + (PLAN.edited ? ' · sudah diubah di halaman ini' : '') + '<br>' + (S.L ? nA + ' angka aktual, tanggal s/d ' + dshort(S.L) + ' terkunci.' : 'Belum ada aktual.') + '</p><div class="toolbar"><a class="btnlink" href="/" id="ppFromDesk">Ambil dari Forecast Desk (Rencana produksi)</a></div></div>';
+    h += '<div class="card"><div class="hd"><h3>Atau: file Excel</h3></div><p class="mut" style="margin:0 0 8px">Satu baris per SKU per mesin: Mesin, Material, Deskripsi, Kategori, Target/hari, lalu satu kolom per tanggal (rencana harian, boleh berisi aktual). Tanpa kolom tanggal: kolom Rencana (CT) dibaca sebagai daftar PP, jadwalnya diisi di langkah Rencana. File .gz dari Ekspor juga bisa dibuka lagi.</p>' +
+      '<div class="form"><label>Bulan rencana<input type="month" id="upMonth" value="' + (PLAN.period || todayIso().slice(0, 7)) + '"></label><label>Kolom tanggal s/d ini = aktual<input type="date" id="upAct" value="' + addDays(todayIso(), -1) + '"></label></div>' +
+      '<label class="drop" style="margin-top:8px"><input type="file" hidden id="upFile" accept=".xlsx,.xlsm,.xls,.csv,.gz"><b>Pilih atau tarik file rencana produksi</b>Excel · format TUB Planning, template, atau .gz</label><p class="mut" id="upStat" style="font-size:12.5px;margin:6px 0 0"></p><div class="toolbar" style="margin-top:6px"><button class="sm" id="tplBtn">Unduh template</button>' + (DEMO ? '' : '<span class="sp"></span><button class="sm" id="clearStore">Hapus rencana &amp; aktual dari browser</button>') + '</div></div>';
+    h += '<div class="card"><div class="hd"><h3>Daftar mesin</h3><span class="chip ok">' + MLIST.length + ' mesin</span></div><div class="tbox" style="max-height:220px"><table><thead><tr><th>Mesin</th><th>Jenis</th><th class="num">Kapasitas t/bulan</th></tr></thead><tbody>' + MLIST.map(function (m) { return '<tr><td class="mono">' + esc(m) + '</td><td>' + esc(MACH[m].jenis) + '</td><td class="num">' + (MACH[m].cap ? f0(MACH[m].cap) : '–') + '</td></tr>'; }).join('') + '</tbody></table></div><p class="mut" style="font-size:12.5px;margin:6px 0 0">Mesin dan jenisnya mengikuti Data mesin di Forecast Desk, atau kolom Mesin + Kategori di file.</p></div>';
+    var cats = {}; SLIST.forEach(function (s) { var c = s.cat || s.jenis; cats[c] = cats[c] || { n: 0, j: s.jenis }; cats[c].n++; });
+    h += '<div class="card"><div class="hd"><h3>Kelompok SKU → jenis mesin</h3><span class="chip ok">' + SLIST.length + ' SKU</span></div><p class="mut" style="margin:0 0 8px">SKU boleh jalan di semua mesin sejenis.</p><div class="tbox" style="max-height:190px"><table><thead><tr><th>Kelompok</th><th>Jenis mesin</th><th class="num">SKU</th></tr></thead><tbody>' + Object.keys(cats).sort().map(function (c) { return '<tr><td>' + esc(c) + '</td><td>' + esc(cats[c].j) + '</td><td class="num">' + cats[c].n + '</td></tr>'; }).join('') + '</tbody></table></div></div></div>';
+    return h + nav(null, 'Lanjut: rencana');
+  }
+
+  // ---------- 2. rencana (grid) ----------
+  var OKS = []; function card(c, v, unit, k, d, acts) { if (!v) { OKS.push(k); return ''; } return '<div class="acard ' + c + (v ? '' : ' okc') + '"><div class="v">' + (v ? f0(v) : '✓') + (v && unit ? '<small>' + unit + '</small>' : '') + '</div><div class="k">' + k + '</div><div class="d">' + d + '</div>' + (v ? '<div class="acts">' + acts + '</div>' : '') + '</div>'; }
+  function v2() {
+    var C = CK, h = '<div class="phead"><h2>Rencana</h2><span class="mut">' + (S.mode === 'rencana' ? (S.L ? 'Tanggal s/d ' + dshort(S.L) + ' berisi aktual dan terkunci. ' : '') + 'Geser bar atau ketik di sel untuk mengubah rencana.' : 'Mulai kosong dari daftar PP.') + '</span></div>';
+    var kq = C.kurang.reduce(function (s, r) { return s - selisih(r); }, 0) + C.unpl.reduce(function (s, x) { return s + ppLeft(x.mat); }, 0);
+    OKS = []; h += '<div class="cards">' +
+      card('red', C.kurang.length + C.unpl.length, 'SKU', 'Target belum tertutup', C.unpl.length ? C.unpl.length + ' SKU belum ada di rencana, ' + C.kurang.length + ' rencananya kurang. Total ' + f0(kq) + ' CT.' : 'Aktual + rencana ke depan kurang ' + f0(kq) + ' CT dari target.', '<button class="sm pri" data-act="fill">Isi otomatis</button><button class="sm" data-act="f-kurang">Tunjukkan</button>') +
+      card('red', C.hot.length, 'SKU', 'Stok habis sebelum diproduksi', C.hot.map(function (s) { return s.desc.slice(0, 22) + ' (habis ' + dshort(s._out) + ')'; }).slice(0, 2).join(', '), '<button class="sm pri" data-act="fwd">Majukan ke ' + dshort(tomorrow()) + '</button><button class="sm" data-act="f-hot">Tunjukkan</button>') +
+      card('amb', C.over.length, 'hari', 'Mesin lewat kapasitas', 'Rencana harian di atas kecepatan mesin (dua SKU penuh, atau angka terlalu tinggi) di ' + Array.from(new Set(C.over.map(function (o) { return o[0]; }))).slice(0, 3).join(', ') + '.', '<button class="sm" data-act="f-over">Tunjukkan</button>') +
+      card('amb', C.lebih.length, 'baris', 'Rencana lebih dari target', 'Kelebihan ' + f0(C.lebih.reduce(function (s, r) { return s + selisih(r); }, 0)) + ' CT. Kurangi atau naikkan targetnya.', '<button class="sm" data-act="f-lebih">Tunjukkan</button>') +
+      card('blu', C.late.length, 'baris', 'Lewat akhir bulan', 'Masih ada rencana setelah ' + dshort(MONTH_END) + '.', '<button class="sm" data-act="f-late">Tunjukkan</button>') + '</div>' + (OKS.length ? '<p class="mut" style="margin:-4px 0 10px">✓ Aman: ' + OKS.join(' · ').toLowerCase() + '</p>' : '');
+    h += '<div class="toolbar">' + (S.filter ? '<span class="fchip">Menampilkan: ' + esc(S.filter.label) + ' (' + S.filter.ids.length + ')<button data-act="f-off">✕ semua</button></span>' : '') + '<label>Jenis <select id="jf"><option value="">Semua</option>' + JN.map(function (j) { return '<option' + (S.jf === j ? ' selected' : '') + '>' + j + '</option>'; }).join('') + '</select></label><button id="undoBtn"' + (S.hist.length ? '' : ' disabled') + '>↶ Urungkan</button><span class="sp"></span><span class="legend"><span><i style="background:color-mix(in srgb,#2d6aa8 15%,var(--paper))"></i>rencana</span><span><i style="background:var(--okbg)"></i>aktual ≥95%</span><span><i style="background:var(--warnbg)"></i>85–95%</span><span><i style="background:var(--badbg)"></i>&lt;85%</span><span><i style="background:var(--offb)"></i>Minggu</span><span>🔥 panas</span></span></div>';
+    h += grid(S.rows, null);
+    h += '<p class="mut" style="font-size:12.5px"><b>Bar</b> = satu run produksi: geser untuk pindah tanggal, atau ke baris mesin sejenis untuk pindah mesin; tarik ujung kanan untuk mengubah lama (jumlah tetap). Klik sel lalu ketik angka (Enter/↓ ke bawah, Tab/→ ke kanan, Delete kosongkan). Tempel blok dari Excel ke satu sel. Klik nama SKU untuk pindah mesin, isi otomatis, atau hapus. <b>+ SKU</b> menambah SKU ke mesin itu. Baris kepala mesin: merah = lewat kapasitas, arsir hijau = hari kosong (bisa diisi).</p>';
+    return h + nav('Data masuk', 'Lanjut: aktual');
+  }
+  function grid(rows, diff) {
+    var vis = S.filter ? S.filter.ids : null, tdy = tomorrow();
+    var h = '<div class="gwrap" id="gwrap"><table class="pg' + (diff ? ' pv' : '') + '"><thead><tr><th class="f0" style="text-align:left">Mesin / SKU</th><th class="f1">Target</th><th class="f2">Aktual<br>s/d ' + (S.L ? dshort(S.L) : '–') + '</th><th class="f3">Rencana<br>ke depan</th><th class="f4">Selisih</th>' + DAYS.map(function (d) { return '<th class="' + (isSun(d) ? 'sun ' : '') + (isPast(d) ? 'lock ' : '') + (d === tdy ? 'today ' : '') + (d > MONTH_END ? 'nm' : '') + '" title="' + dlab(d, 1) + '">' + HARI[dt(d).getUTCDay()].slice(0, 2) + '<b>' + dt(d).getUTCDate() + '</b></th>'; }).join('') + '</tr></thead><tbody>';
+    MLIST.forEach(function (m) {
+      if (S.jf && MACH[m].jenis !== S.jf) return;
+      var rs = rows.filter(function (r) { return r.m === m && (!vis || vis.indexOf(r.id) >= 0 || (S.filter.m && S.filter.m.indexOf(m) >= 0)); });
+      if (vis && !rs.length) return; if (diff && !diff.m[m]) return;
+      h += '<tr class="mh" data-mh="' + m + '"><td class="f0">' + m + ' <span class="mut" style="font-weight:600">· ' + MACH[m].jenis + ' · ' + f0(MACH[m].cap) + ' t/bln</span></td><td class="f1"></td><td class="f2"></td><td class="f3"></td><td class="f4"></td>' + DAYS.map(function (d) { var ld = 0; rows.forEach(function (r) { if (r.m === m && r.plan[d]) ld += r.plan[d] / rate(r); }); return '<td data-d="' + d + '" class="' + (isSun(d) ? 'sun ' : '') + (!isPast(d) && ld > 1.05 ? 'ov' : !isPast(d) && !isSun(d) && ld < 0.05 && d <= MONTH_END ? 'free' : '') + '">' + (!isPast(d) && ld > 1.05 ? '!' : '') + '</td>'; }).join('') + '</tr>';
+      rs.forEach(function (r) {
+        var s = SKU[r.mat], se = selisih(r), dr = diff && diff.r[r.id];
+        h += '<tr class="skr' + (S.hl[r.id] ? ' hl' : '') + '" data-row="' + r.id + '"><td class="f0" data-rm="' + r.id + '" title="' + esc(s.desc) + '">' + (s.heat === 'Panas' ? '🔥 ' : '') + '<span class="mat">' + r.mat + '</span>' + esc(s.desc) + '</td><td class="f1 tg' + (r.target0 && r.target !== r.target0 ? ' ed' : '') + '" data-tg="' + r.id + '" title="' + (r.target !== r.target0 ? 'Diubah dari ' + f0(r.target0) : 'Target dari rencana/PP') + '">' + f0(r.target) + '</td><td class="f2">' + (S.L ? f0(actTo(r)) : '–') + '</td><td class="f3">' + f0(future(r)) + '</td><td class="f4 ' + (se < -rate(r) * 0.5 ? 'neg' : se > rate(r) * 0.5 ? 'pos' : 'okk') + '">' + (Math.abs(se) < 0.5 ? '✓' : (se > 0 ? '+' : '') + f0(se)) + '</td>';
+        var RM = {}; if (!diff) runsOf(r).forEach(function (run) { run.days.forEach(function (d, i) { RM[d] = (i === 0 ? ' rs' : '') + (i === run.days.length - 1 ? ' re' : ''); }); });
+        DAYS.forEach(function (d) {
+          var p = r.plan[d] || 0, c = 'c' + (isSun(d) ? ' sun' : '') + (d > MONTH_END ? ' nm' : '') + (RM[d] != null ? ' rb' + RM[d] : ''), v = '';
+          if (isPast(d)) { var a = actOf(r, d); if (p || a != null) { c += ' a' + (a != null ? ' ' + cls(a, p) : ''); v = a != null ? f0(a) : '–'; } else c += ' a'; }
+          else { if (p) { c += ' p'; v = f0(p); } }
+          if (dr && dr[d]) { c += ' chg-' + dr[d][0]; if (dr[d][0] === 'del') v = f0(dr[d][1]); }
+          h += '<td class="' + c + '" data-c="' + r.id + '|' + d + '"' + (RM[d] != null ? ' style="--bc:' + COL[SKU[r.mat].jenis] + '"' : '') + (isPast(d) ? ' title="Rencana ' + f0(p) + '"' : '') + '>' + v + (RM[d] != null && RM[d].indexOf('re') >= 0 ? '<span class="rz" title="Tarik untuk mengubah lama produksi"></span>' : '') + '</td>';
+        });
+        h += '</tr>';
+      });
+      if (!diff) h += '<tr class="add"><td class="f0"><button data-add="' + m + '">+ SKU</button></td><td class="f1"></td><td class="f2"></td><td class="f3"></td><td class="f4"></td><td colspan="' + DAYS.length + '"></td></tr>';
+    });
+    return h + '</tbody></table></div>';
+  }
+
+  // cell editing
+  function selCell(td) { document.querySelectorAll('.pg td.sel').forEach(function (x) { x.classList.remove('sel'); }); if (!td) { S.sel = null; return; } td.classList.add('sel'); S.sel = td.dataset.c; }
+  function cellAt(id, d) { return document.querySelector('[data-c="' + id + '|' + d + '"]'); }
+  function editCell(td, init) {
+    var p = td.dataset.c.split('|'), r = rowById(p[0]), d = p[1]; if (isPast(d)) { toast('Tanggal ini sudah berisi aktual dan terkunci.'); return; }
+    var ed = $('ced'), rc = td.getBoundingClientRect(); ed.hidden = false; ed.style.left = rc.left + 'px'; ed.style.top = rc.top + 'px'; ed.style.width = Math.max(60, rc.width) + 'px'; ed.style.height = rc.height + 'px'; ed.value = init != null ? init : (r.plan[d] || ''); ed.dataset.c = td.dataset.c; ed.focus(); if (init == null) ed.select();
+  }
+  function commitEdit(move) {
+    var ed = $('ced'); if (ed.hidden) return; var p = ed.dataset.c.split('|'), r = rowById(p[0]), d = p[1], v = num(ed.value); ed.hidden = true; if (v === undefined) { toast('Bukan angka'); return; }
+    var old = r.plan[d] || 0; if ((v || 0) !== old) { pushHist(); if (v) r.plan[d] = v; else delete r.plan[d]; render(true); var t = rate(r); if (v > t * 1.15) say(SKU[r.mat].desc.slice(0, 36) + ' ' + dshort(d) + ': ' + f0(v) + ' CT di atas kecepatan mesin (±' + f0(t) + '/hari).'); }
+    var nd = move === 'down' ? null : move === 'right' ? DAYS[DI[d] + 1] : d, nid = r.id;
+    if (move === 'down') { var trs = [].slice.call(document.querySelectorAll('tr.skr')), i = trs.findIndex(function (tr) { return tr.dataset.row === r.id; }); if (trs[i + 1]) nid = trs[i + 1].dataset.row; nd = d; }
+    selCell(cellAt(nid, nd || d));
+  }
+  function moveSel(dx, dy) { if (!S.sel) return; var p = S.sel.split('|'), d = DAYS[Math.max(0, Math.min(DAYS.length - 1, DI[p[1]] + dx))], id = p[0]; if (dy) { var trs = [].slice.call(document.querySelectorAll('tr.skr')), i = trs.findIndex(function (tr) { return tr.dataset.row === id; }); var t = trs[i + dy]; if (t) id = t.dataset.row; } var td = cellAt(id, d); if (td) { selCell(td); td.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } }
+  function editTarget(td) { var r = rowById(td.dataset.tg), ed = $('ced'), rc = td.getBoundingClientRect(); ed.hidden = false; ed.style.left = rc.left + 'px'; ed.style.top = rc.top + 'px'; ed.style.width = rc.width + 'px'; ed.style.height = rc.height + 'px'; ed.value = r.target; ed.dataset.c = 'T|' + r.id; ed.focus(); ed.select(); }
+
+  // row menu / add SKU
+  function openMenu(html, x, y) { var mn = $('menu'); mn.innerHTML = html; mn.hidden = false; mn.style.left = Math.min(window.innerWidth - 300, x) + 'px'; mn.style.top = Math.min(window.innerHeight - mn.offsetHeight - 10, y) + 'px'; }
+  function rowMenu(r, el) {
+    var s = SKU[r.mat], rc = el.getBoundingClientRect(), cm = capMachines(r.mat).filter(function (m) { return m !== r.m; }), se = selisih(r);
+    openMenu('<div style="padding:6px 10px 8px"><b>' + esc(s.desc) + '</b><div class="mut" style="font-size:12.5px">' + r.mat + ' · ' + s.jenis + ' · ±' + f0(s.rate) + ' CT/hari · stok ±' + Math.round(s.sig.cover) + ' hari · ' + s.heat + '</div></div>' +
+      (se < -s.rate * 0.5 ? '<button data-rm-a="fill" data-r="' + r.id + '">Isi otomatis sisa target<small>+' + f0(-se) + ' CT di hari kosong ' + r.m + ' mulai ' + dshort(tomorrow()) + '</small></button>' : '') +
+      (firstFuture(r) ? '<button data-rm-a="fwd" data-r="' + r.id + '">Majukan ke ' + dshort(tomorrow()) + '<small>SKU lain di ' + r.m + ' digeser mundur</small></button>' : '') +
+      '<div style="padding:6px 10px"><span class="mut" style="font-size:12.5px">Pindah rencana ke depan ke</span><div style="display:flex;gap:6px;margin-top:4px">' + (cm.length ? '<select id="mvM">' + cm.map(function (m) { return '<option>' + m + '</option>'; }).join('') + '</select>' : '<span class="mut">tidak ada mesin sejenis lain</span>') + '<button class="sm" data-rm-a="move" data-r="' + r.id + '"' + (cm.length ? '' : ' disabled') + ' style="width:auto">Pindah</button></div></div>' +
+      '<button data-rm-a="clear" data-r="' + r.id + '">Kosongkan rencana ke depan</button>' + (actTo(r) ? '' : '<button data-rm-a="del" data-r="' + r.id + '">Hapus baris</button>'), rc.left + 40, rc.bottom + 2);
+  }
+  function addMenu(m, el) {
+    var rc = el.getBoundingClientRect(), opts = SLIST.filter(function (s) { return capable(s.mat, m); }).sort(function (a, b) { return ppLeft(b.mat) - ppLeft(a.mat) || b.score - a.score; });
+    openMenu('<div style="padding:6px 10px"><b>Tambah SKU ke ' + m + '</b><div class="mut" style="font-size:12.5px;margin-bottom:6px">' + MACH[m].jenis + ' · hanya SKU sejenis</div><div class="form"><label class="full">SKU<select id="adS">' + opts.map(function (s) { return '<option value="' + s.mat + '">' + (ppLeft(s.mat) ? '● ' : '') + esc(s.desc.slice(0, 42)) + (ppLeft(s.mat) ? ' · sisa PP ' + f0(ppLeft(s.mat)) : '') + '</option>'; }).join('') + '</select></label><label>Target (CT)<input type="number" id="adQ" value="' + (opts[0] ? ppLeft(opts[0].mat) || Math.round(opts[0].rate * 3) : 0) + '"></label><label>Mulai<input type="date" id="adD" value="' + tomorrow() + '" min="' + tomorrow() + '"></label></div><div class="mut" style="font-size:12px;margin:6px 0">● = PP belum direncanakan. Hari diisi otomatis di tanggal kosong mesin ini; ubah selnya sesudahnya.</div><button class="pri sm" data-addgo="' + m + '" style="width:auto">Tambah &amp; isi</button></div>', rc.left, rc.bottom + 2);
+  }
+
+  // ---------- 3. aktual ----------
+  function dayRows(d) { return S.rows.filter(function (r) { return r.plan[d]; }).sort(function (a, b) { return MLIST.indexOf(a.m) - MLIST.indexOf(b.m); }).map(function (r) { return { r: r, t: r.plan[d], a: actOf(r, d) }; }); }
+  function v3() {
+    if (!S.rows.length || !S.rows.some(function (r) { return Object.keys(r.plan).length; })) return '<div class="phead"><h2>Aktual</h2></div><div class="card">Rencana ini belum punya jadwal harian. Isi jadwalnya di langkah Rencana dulu; sesudah produksi jalan, tempel kolom output harian di sini.</div>' + nav('Rencana', 'Lanjut: skenario');
+    var d = S.pasteDay, rows = dayRows(d), T = { t: 0, a: 0, n: 0 }; rows.forEach(function (x) { T.t += x.t; if (x.a != null) { T.a += x.a; T.n++; } });
+    var lim = DEMO ? '2026-11-14' : (todayIso() > S.pasteDay ? todayIso() : S.pasteDay), opts = DAYS.filter(function (x) { return x <= lim && !isSun(x); }).slice(-10); if (opts.indexOf(d) < 0) opts.push(d);
+    var h = '<div class="phead"><h2>Aktual ' + dlab(d, 1) + '</h2>' + (isPast(d) ? '<span class="chip ok">tersimpan</span>' : '<span class="chip warn">belum ditempel</span>') + '<span class="sp"></span><label class="mut">Tanggal <select id="pDay">' + opts.map(function (x) { return '<option value="' + x + '"' + (x === d ? ' selected' : '') + '>' + dlab(x) + '</option>'; }).join('') + '</select></label></div>';
+    h += '<div class="grid3" style="grid-template-columns:minmax(260px,.8fr) minmax(0,1.6fr)"><div class="card"><h3>Tempel dari laporan produksi</h3><p class="mut" style="margin:0 0 8px">Satu kolom: mengikuti urutan baris di kanan. Dua kolom (Material, Output): dicocokkan per material.</p><textarea class="paste" id="pasteBox" placeholder="69917102\t78">' + esc(S.pasteText) + '</textarea><div class="toolbar" style="margin-top:8px">' + (DEMO ? '<button id="pasteDemo" class="sm">Isi contoh dari laporan</button>' : '') + '<span class="sp"></span><button class="pri" id="pasteGo">Cocokkan</button></div>' + (S.pasteRes ? '<p class="mut" style="margin:0;font-size:13px">' + S.pasteRes.matched + ' baris cocok' + (S.pasteRes.unknown.length ? ', ' + S.pasteRes.unknown.length + ' material tidak ada di rencana' : '') + (S.pasteRes.missing ? ', ' + S.pasteRes.missing + ' baris tanpa angka' : '') + '.</p>' : '') + '</div>';
+    h += '<div class="card" style="padding:0;overflow:hidden"><div style="padding:12px 14px 8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><h3 style="margin:0">Cek terhadap rencana</h3><span class="chip ' + (T.n === rows.length ? 'ok' : 'warn') + '">' + T.n + ' / ' + rows.length + ' terisi</span><span class="mut">Total ' + f0(T.a) + ' / ' + f0(T.t) + ' CT (' + (pct(T.a, T.t) || 0) + '%)</span></div><div class="tbox" style="border:0;border-top:1px solid var(--line2);border-radius:0;max-height:56vh"><table><thead><tr><th>Mesin</th><th>Material</th><th>Deskripsi</th><th class="num">Rencana</th><th class="num">Aktual</th><th class="num">%</th><th></th></tr></thead><tbody>';
+    rows.forEach(function (x) { var c = x.a == null ? 'na' : cls(x.a, x.t), fx = S.fixes[x.r.id + d]; h += '<tr data-arow="' + x.r.id + '"' + (c === 'bad' ? ' class="hit"' : '') + '><td class="mono">' + x.r.m + '</td><td class="mono">' + x.r.mat + '</td><td class="desc">' + esc(SKU[x.r.mat].desc) + '</td><td class="num">' + f0(x.t) + '</td><td class="num"><input class="cell' + (fx != null ? ' fix' : '') + '" data-fix="' + x.r.id + '" value="' + f0(x.a) + '"></td><td class="num"><span class="st2 ' + c + '">' + (x.a == null ? '–' : pct(x.a, x.t) + '%') + '</span></td><td>' + (fx != null ? '<span class="chip warn">dikoreksi dari ' + f0(fx) + '</span>' : '') + '</td></tr>'; });
+    h += '<tr class="tot"><td colspan="3">Total</td><td class="num">' + f0(T.t) + '</td><td class="num">' + f0(T.a) + '</td><td class="num">' + (pct(T.a, T.t) || 0) + '%</td><td></td></tr></tbody></table></div><div class="toolbar" style="padding:10px 14px;margin:0"><span class="mut">Kekurangan muncul di Rencana sebagai “Target belum tertutup”.</span><span class="sp"></span><button class="pri" id="saveAct"' + (T.n ? '' : ' disabled') + '>Simpan aktual ' + dshort(d) + '</button></div></div></div>';
+    return h + nav('Rencana', 'Lanjut: skenario');
+  }
+  function demoPaste() { var seed = 3; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; } var l = dayRows(S.pasteDay).map(function (x) { var f = 0.84 + rnd() * 0.2; if (x.r.m === 'CVFI31') f = 0.64; if (x.r.m === 'CVFI29') f = 0.72; return x.r.mat + '\t' + f0(Math.round(x.t * Math.min(1.03, f))); }); l.splice(5, 1); l.push('69990011\t240'); return l.join('\n'); }
+  function doPaste() {
+    var d = S.pasteDay, rows = dayRows(d), txt = S.pasteText.replace(/\r/g, '').trim(); if (!txt) { toast('Kotak masih kosong'); return; }
+    var g = txt.split('\n').map(function (l) { return l.split(/\t|;/); }), two = g[0].length >= 2 && /^\d{6,}$/.test(g[0][0].trim()), res = { matched: 0, unknown: [], missing: 0 };
+    rows.forEach(function (x) { if (S.act[x.r.id]) delete S.act[x.r.id][d]; });
+    if (two) g.forEach(function (c) { var mat = c[0].trim(), v = num(c[1]), hit = rows.filter(function (x) { return x.r.mat === mat && actOf(x.r, d) == null; })[0]; if (!hit) { res.unknown.push(mat); return; } (S.act[hit.r.id] = S.act[hit.r.id] || {})[d] = v; res.matched++; });
+    else g.forEach(function (c, i) { var x = rows[i], v = num(c[0]); if (!x || v == null || v === undefined) return; (S.act[x.r.id] = S.act[x.r.id] || {})[d] = v; res.matched++; });
+    res.rows = dayRows(d); res.missing = res.rows.filter(function (x) { return x.a == null; }).length; S.pasteRes = res; render();
+    var lo = res.rows.filter(function (x) { return x.a != null && x.a / x.t < 0.85; }).length; say(res.matched + ' baris cocok. ' + (lo ? lo + ' di bawah 85%, sudah saya tandai. ' : '') + (res.unknown.length ? 'Material ' + res.unknown.join(', ') + ' tidak ada di rencana hari itu. ' : '') + (res.missing ? res.missing + ' baris tanpa angka, mungkin mesin tidak jalan.' : ''));
+  }
+
+  // ---------- 4. skenario ----------
+  function cloneRows() { return JSON.parse(JSON.stringify(S.rows)); }
+  function runOn(rows, fn) { var keep = S.rows; S.rows = rows; try { fn(); } finally { S.rows = keep; } return rows; }
+  function diffRows(a, b) { var D = { m: {}, r: {}, n: 0 }, A = {}; a.forEach(function (r) { A[r.id] = r; }); b.forEach(function (r) { var o = A[r.id] || { plan: {} }; DAYS.forEach(function (d) { var x = o.plan[d] || 0, y = r.plan[d] || 0; if (x === y) return; (D.r[r.id] = D.r[r.id] || {})[d] = [x && !y ? 'del' : !x ? 'new' : 'mod', x]; D.m[r.m] = 1; D.n++; }); }); return D; }
+  function scenarioOptions() {
+    var O = [];
+    if (S.scen === 'rush') {
+      var s = SKU[S.rush.mat], Q = +S.rush.qty || 0, due = S.rush.due, st = tomorrow(), n = Math.ceil(Q / s.rate);
+      capMachines(s.mat).forEach(function (m) { var e = simulateEnd(m, s.mat, st, Q); if (e && e <= due) O.push({ t: 'Isi hari kosong di ' + m, fn: function () { var r = rowFor(m, s.mat); r.target += Q; fillFrom(r, st, Q); } }); });
+      O = O.slice(0, 1);
+      capMachines(s.mat).forEach(function (m) { O.push({ t: 'Sisipkan di ' + m + ' mulai ' + dshort(st) + ', SKU lain digeser', fn: function () { shiftMachine(m, st, n); var r = rowFor(m, s.mat); r.target += Q; fillFrom(r, st, Q); } }); });
+      var usual = (S.rows.filter(function (r) { return r.mat === s.mat; })[0] || {}).m || capMachines(s.mat)[0], suns = DAYS.filter(function (d) { return isSun(d) && d > st && d <= due; });
+      if (suns.length) O.push({ t: 'Lembur Minggu di ' + usual + ' + sisipkan sisanya', fn: function () { var r = rowFor(usual, s.mat), left = Q; r.target += Q; suns.forEach(function (d) { var q = Math.min(left, s.rate); if (q > 0) { r.plan[d] = (r.plan[d] || 0) + q; left -= q; } }); if (left > 0) { shiftMachine(usual, st, Math.ceil(left / s.rate)); fillFrom(r, st, left); } } });
+    } else {
+      var m = S.stop.m, from = S.stop.from, k = +S.stop.days || 1;
+      O.push({ t: 'Geser semua SKU di ' + m + ' ' + k + ' hari', fn: function () { shiftMachine(m, from, k); } });
+      MLIST.filter(function (x) { return x !== m && MACH[x].jenis === MACH[m].jenis; }).forEach(function (alt) { O.push({ t: 'Pindahkan yang terkena ke ' + alt, fn: function () { S.rows.filter(function (r) { return r.m === m; }).forEach(function (r) { var q = 0; Object.keys(r.plan).forEach(function (d) { if (d >= from && !isPast(d) && DI[d] < DI[from] + k + 1) { q += r.plan[d]; delete r.plan[d]; } }); if (q) { var nr = rowFor(alt, r.mat); nr.target += q; r.target -= q; fillFrom(nr, from, q); } }); } }); });
+    }
+    // evaluate each option on a copy
+    var base = S.rows;
+    O.forEach(function (o) {
+      var c = runOn(cloneRows(), o.fn); o.rows = c; o.diff = diffRows(base, c);
+      var late = [], risk = [], endRush = null;
+      runOn(c, function () {
+        if (S.scen === 'rush') { var e = null; c.forEach(function (r) { if (r.mat === S.rush.mat) { var lp = lastPlan(r); var bd = diffRowsRush(o.diff, r.id); if (bd && (!e || bd > e)) e = bd; } }); endRush = e; }
+        c.forEach(function (r) { var bo = base.filter(function (x) { return x.id === r.id; })[0]; if (!bo || r.mat === (S.scen === 'rush' ? S.rush.mat : '')) return; var f0d = firstFuture(bo), f1d = firstFuture(r), l0 = lastPlan(bo), l1 = lastPlan(r); if (f1d && f0d && (DI[f1d] > DI[f0d] || DI[l1] > DI[l0])) { var sk = SKU[r.mat], delay = Math.max(DI[f1d] - DI[f0d], DI[l1] - DI[l0]), out = DAYS[Math.min(DAYS.length - 1, DI[tomorrow()] + Math.floor(sk.sig.cover))]; late.push({ s: sk, delay: delay, risk: f1d > out }); } });
+      });
+      o.late = late; o.endRush = endRush; o.ok = S.scen === 'rush' ? !!endRush && endRush <= S.rush.due : true;
+      o.pain = late.reduce(function (x, l) { return x + l.delay * (1 + SKU[l.s.mat].score / 30) + (l.risk ? 40 : 0); }, 0) + (/Lembur/.test(o.t) ? 12 : 0) + (o.ok ? 0 : 200);
+    });
+    O.sort(function (a, b) { return a.pain - b.pain; });
+    return O.slice(0, 4);
+  }
+  function diffRowsRush(D, id) { var r = D.r[id]; if (!r) return null; var ks = Object.keys(r).filter(function (d) { return r[d][0] !== 'del'; }).sort(); return ks[ks.length - 1]; }
+  function v4() {
+    var h = '<div class="phead"><h2>Skenario</h2><span class="mut">Coba “bagaimana kalau” tanpa mengubah rencana. Pilih yang paling cocok, lihat sel yang berubah, lalu terapkan.</span></div><div class="grid3" style="grid-template-columns:minmax(300px,.85fr) minmax(0,1.6fr)"><div><div class="card"><div class="hd"><h3>Bagaimana kalau…</h3></div><div class="seg" style="margin-bottom:10px"><button data-scen="rush" class="' + (S.scen === 'rush' ? 'on' : '') + '">Ada order mendadak</button><button data-scen="stop" class="' + (S.scen === 'stop' ? 'on' : '') + '">Mesin berhenti</button></div>';
+    if (S.scen === 'rush') h += '<div class="form"><label class="full">SKU<select id="rMat">' + SLIST.slice().sort(function (a, b) { return a.desc < b.desc ? -1 : 1; }).map(function (s) { return '<option value="' + s.mat + '"' + (s.mat === S.rush.mat ? ' selected' : '') + '>' + esc(s.desc) + '</option>'; }).join('') + '</select></label><label>Tambahan (CT)<input type="number" id="rQty" value="' + S.rush.qty + '"></label><label>Harus selesai<input type="date" id="rDue" value="' + S.rush.due + '"></label></div>';
+    else h += '<div class="form"><label>Mesin<select id="sM">' + MLIST.map(function (m) { return '<option' + (m === S.stop.m ? ' selected' : '') + '>' + m + '</option>'; }).join('') + '</select></label><label>Mulai<input type="date" id="sFrom" value="' + S.stop.from + '"></label><label>Lama (hari)<input type="number" id="sDays" value="' + S.stop.days + '" min="1" max="10"></label></div>';
+    h += '<div class="toolbar" style="margin:10px 0 0"><span class="sp"></span><button class="pri" id="scenGo">✦ Bandingkan pilihan</button></div>';
+    if (S.options) S.options.forEach(function (o, i) { h += '<div class="opt' + (i === S.optSel ? ' on' : '') + '" data-osel="' + i + '"><div class="t">' + (i === 0 ? '<span class="chip acc">★ saran</span>' : '') + esc(o.t) + (S.scen === 'rush' ? (o.ok ? '<span class="chip ok">selesai ' + dshort(o.endRush) + '</span>' : '<span class="chip bad">' + (o.endRush ? 'selesai ' + dshort(o.endRush) : 'tidak muat') + '</span>') : '') + '</div><ul>' + (o.late.length ? o.late.slice(0, 4).map(function (l) { return '<li' + (l.risk ? ' class="neg"' : '') + '>' + esc(l.s.desc.slice(0, 34)) + ' mundur ' + l.delay + ' hari' + (l.risk ? ' · stok habis duluan' : '') + (l.s.heat === 'Panas' ? ' 🔥' : '') + '</li>'; }).join('') + (o.late.length > 4 ? '<li>+' + (o.late.length - 4) + ' SKU lain mundur</li>' : '') : '<li>Tidak ada SKU lain yang mundur</li>') + '<li class="mut">' + o.diff.n + ' sel berubah di ' + Object.keys(o.diff.m).join(', ') + '</li></ul></div>'; });
+    h += '</div><details class="more card"><summary>Dari mana asisten tahu SKU mana yang “panas”?</summary>' + srcTable() + '</details></div><div>';
+    if (S.options && S.options[S.optSel]) { var o = S.options[S.optSel]; h += '<div class="card" style="padding:10px 12px"><div class="toolbar" style="margin:0 0 8px"><b>Pratinjau: ' + esc(o.t) + '</b><span class="sp"></span><span class="legend"><span><i style="background:var(--okbg)"></i>baru</span><span><i style="background:var(--warnbg)"></i>berubah</span><span><i style="background:var(--badbg)"></i>dipindah</span></span><button class="pri" id="applyOpt">Terapkan ke rencana</button></div>' + grid(o.rows, o.diff) + '</div>'; }
+    else h += '<div class="card mut">Isi skenario lalu tekan <b>Bandingkan pilihan</b>. Pratinjau mesin yang terkena muncul di sini, dengan sel yang berubah diwarnai.</div>';
+    return h + '</div></div>' + nav('Aktual', null);
+  }
+  function srcTable() { return '<table class="src" style="margin-top:8px"><thead><tr><th>Sinyal</th><th>Sumber</th></tr></thead><tbody><tr><td><b>Stok (hari)</b></td><td>Forecast Desk: stok bebas ÷ forecast M+1 per hari. Bobot terbesar.</td></tr><tr><td><b>Tren order in</b></td><td>Closing: 3 bulan terakhir vs 3 sebelumnya.</td></tr><tr><td><b>Order &gt; forecast</b></td><td>Saran Buffer, backtest 6 closing: berapa bulan order in melebihi forecast + buffer.</td></tr><tr><td><b>Order mendadak</b></td><td>Baru: perubahan antar unggahan rencana produksi (PP naik atau dimajukan).</td></tr><tr><td><b>Kelas ABC-XYZ</b></td><td>Saran Buffer.</td></tr></tbody></table><p class="mut" style="font-size:12.5px;margin:6px 0 0">' + (DEMO ? 'Angka di data contoh ini dibuat-buat.' : PLAN.heat ? 'Dipakai sekarang: stok (hari) dan kelas ABC-XYZ dari Forecast Desk saat rencana dikirim. Sinyal lain menyusul.' : 'Belum ada data panas: kirim rencana dari Forecast Desk supaya stok (hari) ikut terbawa.') + '</p>'; }
+
+  // ---------- events ----------
+  function setFilter(k) {
+    var C = CK, f = null;
+    if (k === 'kurang') f = { label: 'target belum tertutup', ids: C.kurang.map(function (r) { return r.id; }) };
+    if (k === 'lebih') f = { label: 'rencana lebih dari target', ids: C.lebih.map(function (r) { return r.id; }) };
+    if (k === 'hot') f = { label: 'SKU panas berisiko', ids: S.rows.filter(function (r) { return C.hot.some(function (s) { return s.mat === r.mat; }); }).map(function (r) { return r.id; }) };
+    if (k === 'over') { var ms = Array.from(new Set(C.over.map(function (o) { return o[0]; }))); f = { label: 'mesin lewat kapasitas', ids: [], m: ms }; }
+    if (k === 'late') f = { label: 'lewat akhir bulan', ids: C.late.map(function (r) { return r.id; }) };
+    S.filter = f; render();
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target, b;
+    if (!t.closest('#menu') && !t.closest('[data-rm]') && !t.closest('[data-add]')) $('menu').hidden = true;
+    if (t.id === 'aiAlerts' || t.closest('#aiAlerts')) { if (!$('aipanel').hidden && !$('alertsBox').hidden) openPanel(false); else setSide('alerts'); return; }
+    if (t.id === 'aiAsk') { setSide('tanya'); $('chatIn').focus(); return; }
+    if (t.id === 'aiClose') { openPanel(false); return; }
+    if (!t.closest('#aipanel') && !t.closest('#aibar') && !t.closest('#askBar') && !t.closest('#spotTip')) openPanel(false);
+    if (t.id !== 'ced' && !$('ced').hidden && !t.closest('[data-c]')) commitEdit();
+    if ((b = t.closest('[data-al]'))) { var a = ALERTS[+b.dataset.al]; openPanel(false); if (S.filter) { S.filter = null; render(); } setTimeout(function () { spotlight(document.querySelector(a.sel), a.t + '. ' + a.d); }, 60); return; }
+    if ((b = t.closest('[data-step]')) || (b = t.closest('[data-go]'))) { S.step = +(b.dataset.step || b.dataset.go); render(); window.scrollTo({ top: 0 }); sayStep(); return; }
+    if ((b = t.closest('[data-act]'))) {
+      var k = b.dataset.act;
+      if (k === 'fill') { pushHist(); var before = JSON.stringify(S.rows), n = autoFill(); S.hl = {}; S.rows.forEach(function (r) { S.hl[r.id] = 0; }); var D = diffRows(JSON.parse(before), S.rows); Object.keys(D.r).forEach(function (id) { S.hl[id] = 1; }); S.filter = { label: 'baris yang baru diisi', ids: Object.keys(D.r) }; render(); var C2 = CK; say('Saya isi ' + Object.keys(D.r).length + ' baris di hari kosong mesin sejenis, SKU panas dan stok tipis lebih dulu. ' + (C2.kurang.length + C2.unpl.length ? (C2.kurang.length + C2.unpl.length) + ' SKU masih belum tertutup: kapasitas bulan ini tidak cukup, coba lembur di Skenario.' : 'Semua target tertutup.') + ' Baris yang berubah saya tandai; tekan ✕ untuk melihat semua.'); return; }
+      if (k === 'fwd') { pushHist(); CK.hot.forEach(function (s) { S.rows.filter(function (r) { return r.mat === s.mat && firstFuture(r); }).slice(0, 1).forEach(bringForward); }); render(); say('SKU panas dimajukan ke ' + dlab(tomorrow(), 1) + '; SKU lain di mesin yang sama digeser mundur. Cek kartu “Lewat akhir bulan”.'); return; }
+      if (k === 'f-off') { S.filter = null; S.hl = {}; render(); return; }
+      setFilter(k.slice(2)); return;
+    }
+    if ((b = t.closest('[data-rm]'))) { rowMenu(rowById(b.dataset.rm), b); return; }
+    if ((b = t.closest('[data-add]'))) { addMenu(b.dataset.add, b); return; }
+    if ((b = t.closest('[data-rm-a]'))) { var r = rowById(b.dataset.r), act = b.dataset.rmA; pushHist(); if (act === 'fill') fillFrom(r, tomorrow(), -selisih(r)); if (act === 'fwd') bringForward(r); if (act === 'clear') clearFuture(r); if (act === 'del') S.rows = S.rows.filter(function (x) { return x !== r; }); if (act === 'move') { var m2 = $('mvM').value, q = clearFuture(r), nr = rowFor(m2, r.mat); nr.target += q; r.target -= q; fillFrom(nr, tomorrow(), q); S.hl = {}; S.hl[nr.id] = 1; } render(true); return; }
+    if ((b = t.closest('[data-addgo]'))) { var m = b.dataset.addgo, mat = $('adS').value, qq = num($('adQ').value) || 0, d0 = $('adD').value || tomorrow(); pushHist(); var nr2 = rowFor(m, mat); nr2.target += qq; var res = fillFrom(nr2, d0, qq); S.hl = {}; S.hl[nr2.id] = 1; render(true); var el = document.querySelector('[data-row="' + nr2.id + '"]'); if (el) spotlight(el, SKU[mat].desc.slice(0, 40) + ' ditambahkan ke ' + m + (res.left > 0.5 ? '; ' + f0(res.left) + ' CT tidak muat sampai ' + dshort(DAYS[DAYS.length - 1]) : ', selesai ' + dshort(res.last)) + '.'); return; }
+    if (Date.now() - JUST < 300) return;
+    if ((b = t.closest('[data-c]'))) { if (b.dataset.c === S.sel && !isPast(b.dataset.c.split('|')[1])) editCell(b); else selCell(b); return; }
+    if ((b = t.closest('[data-tg]'))) { editTarget(b); return; }
+    if (t.id === 'undoBtn') { var hs = S.hist.pop(); if (hs) { S.rows = JSON.parse(hs); render(true); toast('Diurungkan'); } return; }
+    if (t.id === 'pasteDemo') { S.pasteText = demoPaste(); $('pasteBox').value = S.pasteText; return; }
+    if (t.id === 'pasteGo') { S.pasteText = $('pasteBox').value; doPaste(); return; }
+    if (t.id === 'saveAct') { if (!S.L || S.pasteDay > S.L) S.L = S.pasteDay; S.pasteRes = null; S.pasteText = ''; S.pasteDay = DAYS.filter(function (x) { return x > S.L && !isSun(x); })[0]; render(); say('Aktual tersimpan dan tanggalnya terkunci. Kekurangannya sekarang ada di Rencana, kartu <b>Target belum tertutup</b>.'); return; }
+    if ((b = t.closest('[data-scen]'))) { S.scen = b.dataset.scen; S.options = null; render(); return; }
+    if (t.id === 'scenGo') { readScen(); S.options = scenarioOptions(); S.optSel = 0; render(); var o0 = S.options[0]; say(o0 ? 'Saya bandingkan ' + S.options.length + ' pilihan. Saran: <b>' + esc(o0.t) + '</b>' + (o0.late.length ? ', ' + o0.late.length + ' SKU mundur' + (o0.late.some(function (l) { return l.risk; }) ? ' dan ada yang stoknya habis duluan' : ' tanpa risiko stok habis') : ', tanpa SKU lain yang mundur') + '. Klik pilihan lain untuk membandingkan pratinjaunya.' : 'Tidak ada pilihan yang muat.'); return; }
+    if ((b = t.closest('[data-osel]'))) { S.optSel = +b.dataset.osel; render(); return; }
+    if (t.id === 'applyOpt') { pushHist(); var o = S.options[S.optSel], D2 = o.diff; S.rows = o.rows; S.options = null; S.step = 2; S.hl = {}; Object.keys(D2.r).forEach(function (id) { S.hl[id] = 1; }); S.filter = { label: 'baris dari skenario', ids: Object.keys(D2.r) }; render(); say('Skenario diterapkan. Baris yang berubah ditandai; urungkan bila tidak cocok.'); return; }
+    if (t.id === 'expBtn') { var rc = t.getBoundingClientRect(); openMenu('<button data-exp="xlsx">Excel rencana (.xlsx)<small>Lembar rencana per mesin + aktual, format seperti file masuk</small></button><button data-exp="gz">Cadangan (.gz)<small>Rencana + aktual halaman ini; buka lagi di Data masuk</small></button>', rc.left - 160, rc.bottom + 4); return; }
+    if ((b = t.closest('[data-exp]'))) { $('menu').hidden = true; if (b.dataset.exp === 'xlsx') exportXlsx(); else exportGz(); return; }
+    if (t.id === 'tplBtn') { exportXlsx(true); return; }
+    if (t.id === 'clearStore') { if (confirm('Hapus rencana dan semua aktual dari browser ini?')) { localStorage.removeItem(LS_KEY); location.href = location.pathname; } return; }
+    if (t.id === 'setBtn') { $('setPop').hidden = !$('setPop').hidden; return; }
+    if (t.id === 'popClose') { $('setPop').hidden = true; return; }
+    if (t.id === 'muteBtn') { S.opt.talk = !S.opt.talk; $('optTalk').checked = S.opt.talk; saveOpt(); syncMute(); return; }
+    if (t.id === 'toMonthly' || t.id === 'ppFromDesk' || t.id === 'demoDesk') { try { localStorage.setItem('ppic_tab', 'Plan'); } catch (x) {} return; }
+    if (t.closest('#askBar')) { setSide('tanya'); $('chatIn').focus(); return; }
+    if ((b = t.closest('.stabs button'))) { setSide(b.dataset.st); return; }
+    if ((b = t.closest('.sugg button'))) { ask(b.textContent); return; }
+    if (!t.closest('#setPop') && !$('setPop').hidden) $('setPop').hidden = true;
+  });
+  function readScen() { if (S.scen === 'rush') S.rush = { mat: $('rMat').value, qty: +$('rQty').value, due: $('rDue').value || S.rush.due }; else S.stop = { m: $('sM').value, from: $('sFrom').value, days: +$('sDays').value }; }
+  function syncMute() { $('muteBtn').textContent = S.opt.talk ? '🔊' : '🔇'; }
+  function openPanel(on) { var p = $('aipanel'); if (on === undefined) on = p.hidden; p.hidden = !on; if (on) { var r = $('aibar').getBoundingClientRect(); p.style.top = (r.bottom + 6) + 'px'; } }
+  function setSide(k) { openPanel(true); document.querySelectorAll('.stabs button').forEach(function (b) { b.classList.toggle('on', b.dataset.st === k); }); $('alertsBox').hidden = k !== 'alerts'; $('tanyaBox').hidden = k !== 'tanya'; }
+  var JUST = 0;
+  document.addEventListener('pointerdown', function (e) {
+    var td = e.target.closest('td.rb'); if (!td || e.button !== 0 || S.step !== 2) return;
+    var p = td.dataset.c.split('|'), r = rowById(p[0]), run = runAt(r, p[1]); if (!run) return;
+    var rz = e.target.classList.contains('rz'), x0 = e.clientX, y0 = e.clientY, drag = false, ghost = null;
+    var c1 = cellAt(r.id, run.start).getBoundingClientRect(), c2 = cellAt(r.id, run.end).getBoundingClientRect();
+    function rowUnder(y) { var trs = document.querySelectorAll('.pg tr.skr, .pg tr.mh'); for (var i = 0; i < trs.length; i++) { var b = trs[i].getBoundingClientRect(); if (y >= b.top && y < b.bottom) return trs[i]; } return null; }
+    function mv(ev) {
+      var dx = ev.clientX - x0, dy = ev.clientY - y0;
+      if (!drag && Math.abs(dx) + Math.abs(dy) < 6) return;
+      if (!drag) { drag = true; ghost = document.createElement('div'); ghost.className = 'ghost'; ghost.style.cssText = 'left:' + c1.left + 'px;top:' + c1.top + 'px;width:' + (c2.right - c1.left) + 'px;height:' + c1.height + 'px;--bc:' + COL[SKU[r.mat].jenis]; ghost.textContent = SKU[r.mat].desc.slice(0, 40); document.body.appendChild(ghost); document.body.classList.add('dragging'); }
+      if (rz) { ghost.style.width = Math.max(40, c2.right - c1.left + dx) + 'px'; return; }
+      var tr = rowUnder(ev.clientY), m2 = tr ? (tr.dataset.mh || (rowById(tr.dataset.row) || {}).m) : r.m, ok = m2 && capable(r.mat, m2);
+      ghost.style.transform = 'translate(' + (Math.round(dx / 42) * 42) + 'px,' + (tr ? tr.getBoundingClientRect().top - c1.top : dy) + 'px)'; ghost.classList.toggle('no', !ok);
+      ghost.dataset.info = (m2 || '') + ' · ' + dshort(DAYS[Math.max(0, Math.min(DAYS.length - 1, DI[run.start] + Math.round(dx / 42)))]) + (ok ? '' : ' · mesin tidak sejenis');
+    }
+    function up(ev) {
+      document.removeEventListener('pointermove', mv); document.removeEventListener('pointerup', up); document.body.classList.remove('dragging');
+      if (!drag) return; JUST = Date.now(); if (ghost) ghost.remove();
+      var dx = ev.clientX - x0;
+      if (rz) { var w = c2.right - c1.left + dx, endIdx = DI[run.start] + Math.max(0, Math.round(w / 42) - 1), n = 0; for (var i = DI[run.start]; i <= Math.min(endIdx, DAYS.length - 1); i++) if (!isSun(DAYS[i])) n++; pushHist(); var per = resizeRun(r, run, n); S.hl = {}; S.hl[r.id] = 1; render(true); say(SKU[r.mat].desc.slice(0, 40) + ': ' + n + ' hari, ±' + f0(per) + ' CT/hari' + (per > rate(r) * 1.15 ? ' — <b>di atas kecepatan mesin (±' + f0(rate(r)) + ')</b>, perpanjang barnya.' : '.')); return; }
+      var tr = rowUnder(ev.clientY), m2 = tr ? (tr.dataset.mh || (rowById(tr.dataset.row) || {}).m) : r.m;
+      if (!m2 || !capable(r.mat, m2)) { toast((m2 || 'Baris itu') + ' bukan mesin ' + SKU[r.mat].jenis.toLowerCase() + '. Bar dikembalikan.'); return; }
+      var cells = Math.round(dx / 42); if (!cells && m2 === r.m) return;
+      pushHist(); var dest = moveRun(r, run, cells, m2); S.hl = {}; S.hl[dest.id] = 1; render(true);
+      var over = []; DAYS.forEach(function (d) { if (!isPast(d) && dest.plan[d] && load(dest.m, d) > 1.05) over.push(d); });
+      var nsi = Math.max(0, Math.min(DAYS.length - 1, DI[run.start] + cells)); while (nsi < DAYS.length - 1 && isSun(DAYS[nsi])) nsi++;
+      say(SKU[r.mat].desc.slice(0, 40) + (dest.m === r.m ? ' digeser' : ' dipindah ke ' + dest.m) + ', mulai ' + dlab(DAYS[nsi]) + '.' + (over.length ? ' Bertumpuk dengan SKU lain ' + over.length + ' hari; geser yang lain atau pakai <b>Majukan/Isi otomatis</b>.' : ''));
+    }
+    document.addEventListener('pointermove', mv); document.addEventListener('pointerup', up);
+  });
+  $('ced').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); var c = this.dataset.c; if (c.indexOf('T|') === 0) { var r = rowById(c.slice(2)), v = num(this.value); this.hidden = true; if (v != null && v !== undefined && v !== r.target) { pushHist(); r.target = v; render(true); } return; } commitEdit(e.key === 'Tab' ? 'right' : 'down'); }
+    if (e.key === 'Escape') { this.hidden = true; }
+  });
+  $('ced').addEventListener('blur', function () { var me = this; setTimeout(function () { if (!me.hidden && document.activeElement !== me) { if (me.dataset.c.indexOf('T|') === 0) me.hidden = true; else commitEdit(); } }, 80); });
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setSide('tanya'); $('chatIn').focus(); return; }
+    if (e.key === 'Escape') { clearSpot(); $('menu').hidden = true; }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && S.step === 2 && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); $('undoBtn') && $('undoBtn').click(); return; }
+    if (!S.sel || S.step !== 2 || !$('ced').hidden || /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return;
+    var mv = { ArrowRight: [1, 0], ArrowLeft: [-1, 0], ArrowDown: [0, 1], ArrowUp: [0, -1], Tab: [1, 0] }[e.key];
+    if (mv) { e.preventDefault(); moveSel(mv[0], mv[1]); return; }
+    var td = document.querySelector('[data-c="' + S.sel + '"]'); if (!td) return;
+    if (e.key === 'Enter' || e.key === 'F2') { e.preventDefault(); editCell(td); return; }
+    if (e.key === 'Delete' || e.key === 'Backspace') { var p = S.sel.split('|'), r = rowById(p[0]); if (!isPast(p[1]) && r.plan[p[1]]) { pushHist(); delete r.plan[p[1]]; var keep = S.sel; render(true); selCell(document.querySelector('[data-c="' + keep + '"]')); } e.preventDefault(); return; }
+    if (/^[0-9]$/.test(e.key)) { e.preventDefault(); editCell(td, e.key); }
+  });
+  document.addEventListener('paste', function (e) {
+    if (S.step !== 2 || !S.sel || !$('ced').hidden) return; var txt = (e.clipboardData || window.clipboardData).getData('text'); if (!txt) return; e.preventDefault();
+    var g = txt.replace(/\r/g, '').replace(/\n$/, '').split('\n').map(function (l) { return l.split('\t'); }), p = S.sel.split('|'), trs = [].slice.call(document.querySelectorAll('tr.skr')).map(function (tr) { return tr.dataset.row; }), r0 = trs.indexOf(p[0]), n = 0; pushHist();
+    g.forEach(function (row, i) { var r = rowById(trs[r0 + i]); if (!r) return; row.forEach(function (c, j) { var d = DAYS[DI[p[1]] + j], v = num(c); if (!d || isPast(d) || v === undefined) return; if (v) r.plan[d] = v; else delete r.plan[d]; n++; }); });
+    render(true); toast(n + ' sel ditempel');
+  });
+  document.addEventListener('dragover', function (e) { if (e.target.closest && e.target.closest('.drop')) e.preventDefault(); });
+  document.addEventListener('drop', function (e) { var d = e.target.closest && e.target.closest('.drop'); if (!d) return; e.preventDefault(); if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); });
+  document.addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.id === 'jf') { S.jf = t.value; render(); return; }
+    if (t.id === 'pDay') { S.pasteDay = t.value; S.pasteRes = null; S.pasteText = ''; render(); sayStep(); return; }
+    if (t.id === 'adS') { var q = ppLeft(t.value); $('adQ').value = q || Math.round(SKU[t.value].rate * 3); return; }
+    if (t.dataset.fix) { var d = S.pasteDay, v = num(t.value), old = actOf(rowById(t.dataset.fix), d); if (v === undefined) return toast('Bukan angka'); if (old != null && old !== v && S.fixes[t.dataset.fix + d] == null) S.fixes[t.dataset.fix + d] = old; (S.act[t.dataset.fix] = S.act[t.dataset.fix] || {})[d] = v; if (S.pasteRes) S.pasteRes.rows = dayRows(d); render(); return; }
+    if (t.id === 'upFile' && t.files[0]) { loadFile(t.files[0]); t.value = ''; return; }
+    if (t.id === 'optTalk') { S.opt.talk = t.checked; saveOpt(); syncMute(); return; }
+    if (t.id === 'optFocus') { S.opt.focus = t.checked; saveOpt(); return; }
+    if (t.id === 'optTheme') { document.documentElement.dataset.theme = t.value; try { var u = JSON.parse(localStorage.getItem('ppic_ui') || '{}') || {}; u.theme = t.value; localStorage.setItem('ppic_ui', JSON.stringify(u)); } catch (x) {} return; }
+  });
+  $('chatForm').addEventListener('submit', function (e) { e.preventDefault(); var v = $('chatIn').value.trim(); if (v) ask(v); $('chatIn').value = ''; });
+  function ask(q) {
+    var ql = q.toLowerCase(), a = '', m = null;
+    if (ql.indexOf('rush') >= 0 || ql.indexOf('mendadak') >= 0) { var mt = SLIST.filter(function (s) { return ql.indexOf(s.desc.toLowerCase().split(' ').slice(0, 2).join(' ')) >= 0; })[0] || HOTTEST, qn = (q.match(/[\d.]{3,}/) || [String(S.rush.qty)])[0]; S.scen = 'rush'; S.rush = { mat: mt.mat, qty: num(qn) || S.rush.qty, due: S.rush.due }; S.options = scenarioOptions(); S.optSel = 0; S.step = 4; render(); a = 'Skenario order mendadak ' + f0(S.rush.qty) + ' CT ' + mt.desc + ' ada di langkah Skenario. Saran: ' + (S.options[0] ? S.options[0].t : 'tidak ada ruang') + '.'; }
+    else if (ql.indexOf('panas') >= 0) a = 'Paling panas: ' + SLIST.slice().sort(function (x, y) { return y.score - x.score; }).slice(0, 4).map(function (s) { return s.desc.slice(0, 28) + ' (stok ' + Math.round(s.sig.cover) + ' hari)'; }).join('; ') + '.';
+    else if (ql.indexOf('kosong') >= 0) { var st = tomorrow(); a = 'Mesin dengan ≥2 hari kosong minggu ini: ' + (MLIST.filter(function (x) { var c = 0; for (var i = DI[st]; i < DI[st] + 6; i++) if (freeDay(x, DAYS[i])) c++; return c >= 2; }).join(', ') || 'tidak ada') + '. Hari kosong diarsir hijau di baris kepala mesin.'; }
+    else if ((m = MLIST.filter(function (x) { return ql.indexOf(x.toLowerCase()) >= 0; })[0])) { var mrs = S.rows.filter(function (r) { return r.m === m; }), k = mrs.reduce(function (s, r) { return s + Math.max(0, planTo(r) - actTo(r)); }, 0), pa = 0, aa = 0; DAYS.filter(function (d) { return isPast(d); }).slice(-5).forEach(function (d) { mrs.forEach(function (r) { pa += r.plan[d] || 0; aa += actOf(r, d) || 0; }); }); a = S.L ? m + ': kurang ' + f0(k) + ' CT dari rencana s/d ' + dshort(S.L) + '. Lima hari terakhir ' + (pct(aa, pa) || 0) + '% dari rencana.' : m + ': belum ada aktual.'; }
+    else a = 'Saat ini saya menjawab: SKU panas, order mendadak (sebut SKU dan jumlah), mesin kosong, dan kenapa mesin X kurang.';
+    $('chatLog').insertAdjacentHTML('beforeend', '<div class="msg me">' + esc(q) + '</div><div class="msg">' + esc(a) + '</div>'); say(esc(a));
+  }
+  try { var th = (JSON.parse(localStorage.getItem('ppic_ui') || '{}') || {}).theme; if (th) { document.documentElement.dataset.theme = th; $('optTheme').value = th; } } catch (x) {}
+  function boot() {
+    if (DEMO) loadRencana(); else loadStore();
+    var low = MLIST.map(function (mm) { var pa = 0, aa = 0; S.rows.forEach(function (r) { if (r.m !== mm) return; for (var d in r.plan) if (isPast(d)) { pa += r.plan[d]; aa += actOf(r, d) || 0; } }); return [mm, pa ? aa / pa : 2]; }).sort(function (x, y) { return x[1] - y[1]; })[0];
+    $('sugg').innerHTML = ['SKU mana yang panas?', HOTTEST ? 'rush order ' + f0(S.rush.qty) + ' ' + HOTTEST.desc.split(' ').slice(0, 3).join(' ') : '', 'mesin kosong minggu ini', low && low[1] < 2 ? 'kenapa ' + low[0] + ' kurang?' : ''].filter(Boolean).map(function (x) { return '<button>' + esc(x) + '</button>'; }).join('');
+    if (!DEMO && !S.rows.some(function (r) { return Object.keys(r.plan).length; })) S.step = 2;
+    render(); sayStep();
+  }
+  function loadScript(src) { return new Promise(function (res, rej) { var x = document.createElement('script'); x.src = src; x.onload = res; x.onerror = rej; document.head.appendChild(x); }); }
+  function withXlsx() { return window.XLSX ? Promise.resolve() : loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'); }
+  function download(blob, name) { var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
+  function exportXlsx(tpl) {
+    withXlsx().then(function () {
+      var ds = DAYS.filter(function (d) { return d <= MONTH_END || S.rows.some(function (r) { return r.plan[d]; }); });
+      var head = ['Mesin', 'Material', 'Deskripsi', 'Kategori', 'Net (kg)', 'Target/hari', 'Rencana (CT)'].concat(ds), wb = XLSX.utils.book_new();
+      var rows = S.rows.slice().sort(function (a, b) { return MLIST.indexOf(a.m) - MLIST.indexOf(b.m); });
+      var plan = [head].concat(rows.map(function (r) { var sk = SKU[r.mat]; return [r.m, r.mat, sk.desc, sk.cat || sk.jenis, sk.net || '', sk.rate, r.target].concat(ds.map(function (d) { var a = isPast(d) ? actOf(r, d) : null; return a != null ? a : tpl && isPast(d) ? '' : r.plan[d] || ''; })); }));
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(plan), tpl ? 'Rencana' : 'Rencana + aktual');
+      if (!tpl) {
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([head.slice(0, 7).concat(ds)].concat(rows.map(function (r) { var sk = SKU[r.mat]; return [r.m, r.mat, sk.desc, sk.cat || sk.jenis, sk.net || '', sk.rate, r.target].concat(ds.map(function (d) { return r.plan[d] || ''; })); }))), 'Rencana saja');
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Mesin', 'Material', 'Deskripsi'].concat(ds)].concat(rows.map(function (r) { return [r.m, r.mat, SKU[r.mat].desc].concat(ds.map(function (d) { var a = actOf(r, d); return a == null ? '' : a; })); }))), 'Aktual');
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Rencana produksi ' + (PLAN.label || '')], ['Sumber', PLAN.source || ''], ['Aktual s/d', S.L || '-'], ['Dibuat', new Date().toLocaleString('id-ID')], [''], ['Lembar "Rencana + aktual": tanggal s/d aktual berisi aktual, sesudahnya rencana. Bisa diunggah lagi di Data masuk.']]), 'Info');
+      }
+      XLSX.writeFile(wb, (tpl ? 'Template_Rencana_Produksi_' : 'Rencana_Produksi_') + (PLAN.period || '') + '.xlsx');
+    }).catch(function () { toast('Gagal memuat pustaka Excel. Periksa koneksi internet.'); });
+  }
+  function exportGz() {
+    if (DEMO) { toast('Ini data contoh; tidak ada yang perlu dicadangkan.'); return; }
+    var st = {}; try { st = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch (e) {}
+    var blob = new Blob([JSON.stringify({ kind: 'ppic_prod', v: 1, store: st })], { type: 'application/json' });
+    if (!window.CompressionStream) { download(blob, 'Rencana_Produksi_' + PLAN.period + '.json'); return; }
+    new Response(blob.stream().pipeThrough(new CompressionStream('gzip'))).blob().then(function (b) { download(b, 'Rencana_Produksi_' + PLAN.period + '.prod.gz'); });
+  }
+  // ---------- reading an Excel plan (same columns as the old Monitoring page) ----------
   var COLS = {
     machine: /^(mesin|machine|mc|line|machine category)$/,
     material: /^(material|nomat|no\.? ?mat|kode material|material code|sku)$/,
     desc: /^(deskripsi|description|desc|nama( produk)?|produk)$/,
-    category: /^(kategori|category)$/,
+    category: /^(kategori|category|jenis|jenis mesin)$/,
     net: /^(net|net weight|net \(kg\)|berat( bersih)?|net kg)$/,
     target: /^(target|target\/hari|target\/day|target\/day \(ct\)|target per hari|target ct\/hari)$/,
-    qty: /^(rencana|rencana ct|rencana \(ct\)|rencana bulan|rencana bulanan|rencana bulan \(ct\)|pp|pp ct|plan|plan ct|qty|quantity|ct|total ct|jumlah ct)$/
+    qty: /^(rencana|rencana ct|rencana \(ct\)|rencana bulan|rencana bulanan|rencana bulan \(ct\)|pp|pp ct|pp \(ct\)|plan|plan ct|qty|quantity|ct|total ct|jumlah ct)$/
   };
-  function norm(v) { return String(v === null || v === undefined ? '' : v).replace(/\s+/g, ' ').trim().toLowerCase(); }
-  function iso(dt) { return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0'); }
+  function norm(v) { return String(v == null ? '' : v).replace(/\s+/g, ' ').trim().toLowerCase(); }
+  function iso(x) { return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0'); }
+  function pnum(v) { if (typeof v === 'number') return v; var t = String(v == null ? '' : v).trim(); if (!t) return null; t = /,\d{1,2}$/.test(t) ? t.replace(/\./g, '').replace(',', '.') : t.replace(/[.,](?=\d{3}(\D|$))/g, ''); var n = Number(t); return isNaN(n) ? null : n; }
   function cellDate(v) {
     if (v instanceof Date && !isNaN(v)) return iso(new Date(v.getTime() + 12 * 3600e3));
     if (typeof v === 'number' && v > 40000 && v < 60000) return iso(new Date(Math.round((v - 25569) * 864e5) + 12 * 3600e3 + new Date().getTimezoneOffset() * 6e4));
@@ -469,286 +921,67 @@ input[type=month], input[type=date] { font: inherit; color: inherit; padding: 4p
     if ((m = t.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/))) return m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0');
     return null;
   }
-  // Find the header row and the column of each field; date columns are real dates or day numbers 1-31.
   function readTable(aoa, month) {
     for (var r = 0; r < Math.min(aoa.length, 40); r++) {
       var row = aoa[r] || [], col = {}, dcols = [];
       row.forEach(function (c, i) { var n = norm(c); Object.keys(COLS).forEach(function (k) { if (col[k] === undefined && COLS[k].test(n)) col[k] = i; }); });
       if (col.desc === undefined && col.material === undefined) continue;
       row.forEach(function (c, i) {
-        var d = cellDate(c);
-        if (d) { dcols.push({ i: i, day: d }); return; }
+        var d = cellDate(c); if (d) { dcols.push({ i: i, day: d }); return; }
         var n = typeof c === 'number' ? c : /^\d{1,2}$/.test(String(c).trim()) ? Number(c) : null;
         if (n >= 1 && n <= 31 && Object.keys(col).every(function (k) { return col[k] !== i; })) dcols.push({ i: i, n: n });
       });
       if (!dcols.length && col.qty === undefined) continue;
-      // day numbers: they run in order through the month; a number bigger than the one after a wrap belongs to the month before
       if (dcols.some(function (d) { return d.n; })) {
-        if (!month) return { error: 'Kolom tanggal berupa angka hari. Pilih "Bulan rencana" dulu.' };
-        var y = Number(month.slice(0, 4)), mo = Number(month.slice(5, 7)) - 1, nums = dcols.map(function (d) { return d.n || 0; });
-        var wrap = -1; for (var k = 1; k < nums.length; k++) if (nums[k] && nums[k - 1] && nums[k] < nums[k - 1]) { wrap = k; break; }
+        var y = Number(month.slice(0, 4)), mo = Number(month.slice(5, 7)) - 1, nums = dcols.map(function (d) { return d.n || 0; }), wrap = -1;
+        for (var k = 1; k < nums.length; k++) if (nums[k] && nums[k - 1] && nums[k] < nums[k - 1]) { wrap = k; break; }
         dcols.forEach(function (d, k) { if (d.n) d.day = iso(new Date(y, wrap >= 0 && k < wrap ? mo - 1 : mo, d.n)); });
       }
       var out = [];
       for (var j = r + 1; j < aoa.length; j++) {
-        var x = aoa[j] || [];
-        var get = function (k) { return col[k] === undefined ? '' : x[col[k]]; };
+        var x = aoa[j] || [], get = function (k) { return col[k] === undefined ? '' : x[col[k]]; };
         var desc = String(get('desc') || '').trim(), mat = String(get('material') || '').trim().replace(/\.0$/, '');
-        if (!desc && !mat) continue;
-        if (/^(total|grand total|jumlah)/i.test(desc || mat)) continue;
+        if (!desc && !mat) continue; if (/^(total|grand total|jumlah)/i.test(desc || mat)) continue;
         var vals = {}, any = false;
-        dcols.forEach(function (d) { var v = x[d.i]; if (v === '' || v === null || v === undefined) return; v = typeof v === 'number' ? v : parseNum(v); if (v === null || isNaN(v)) return; vals[d.day] = (vals[d.day] || 0) + v; any = true; });
-        var net = get('net'); net = typeof net === 'number' ? net : parseNum(net || '');
-        var tg = get('target'); tg = typeof tg === 'number' ? tg : parseNum(tg || '');
-        var q = get('qty'); q = typeof q === 'number' ? q : parseNum(q || '');
-        out.push({ machine: String(get('machine') || '').trim(), material: mat, desc: desc || mat, category: String(get('category') || '').trim(), net: isNaN(net) || net === null ? 0 : net, target: isNaN(tg) || tg === null ? 0 : tg, qty: isNaN(q) || q === null ? 0 : q, vals: vals, any: any });
+        dcols.forEach(function (d) { var v = pnum(x[d.i]); if (v == null) return; vals[d.day] = (vals[d.day] || 0) + Math.round(v); any = true; });
+        out.push({ machine: String(get('machine') || '').trim(), material: mat || desc, desc: desc || mat, category: String(get('category') || '').trim(), net: pnum(get('net')) || 0, target: pnum(get('target')) || 0, qty: pnum(get('qty')) || 0, vals: vals, any: any });
       }
-      if (!dcols.length) return { monthly: true, rows: out.filter(function (r) { return r.qty > 0; }), days: [] };
-      return { rows: out, days: dcols.map(function (d) { return d.day; }).sort(), hasNet: col.net !== undefined };
+      return { rows: out, days: dcols.map(function (d) { return d.day; }).sort() };
     }
     return { error: 'Baris judul tidak ditemukan. Perlu kolom Deskripsi atau Material, dan kolom Rencana (CT) atau kolom tanggal.' };
   }
-  // Monthly plan -> daily schedule. Per machine, SKUs run in file order at their target/day;
-  // a SKU that finishes mid-day hands the rest of that day to the next SKU (as in the PPIC jadwal).
-  function schedule(rows, start, end, sunWork) {
-    var all = enumerate(start, end), work = all.filter(function (d) { return sunWork || new Date(d + 'T00:00:00').getDay() !== 0; });
-    var cur = {}, seen = {}, over = [], lines = [];
-    rows.forEach(function (r, i) {
-      var k = lineKey(r); seen[k] = (seen[k] || 0) + 1;
-      var l = { id: k + (seen[k] > 1 ? '-' + seen[k] : ''), machine: r.machine || '-', material: r.material, desc: r.desc, category: r.category, net: r.net, target: r.target, ct: r.qty, plan: {} };
-      var rem = Math.round(r.qty);
-      if (!(r.target > 0)) {                       // no target: spread evenly over the working days
-        var per = rem / work.length, acc = 0;
-        work.forEach(function (d, j) { var v = Math.round(per * (j + 1)) - acc; if (v > 0) { l.plan[d] = v; acc += v; } });
-        rem = 0;
-      } else {
-        var track = r.machine ? r.machine : '#' + i;  // without a machine column every SKU gets its own track
-        var c = cur[track] || (cur[track] = { i: 0, f: 1 });
-        while (rem > 0 && c.i < work.length) {
-          var q = Math.min(rem, Math.round(c.f * r.target));
-          if (q > 0) { l.plan[work[c.i]] = (l.plan[work[c.i]] || 0) + q; rem -= q; c.f -= q / r.target; }
-          if (q <= 0 || c.f <= 0.02) { c.i++; c.f = 1; }
-        }
-      }
-      if (rem > 0) over.push({ desc: r.desc, machine: r.machine, rem: rem });
-      lines.push(l);
-    });
-    return { lines: lines, over: over };
-  }
-  function periodOf(start, end) {
-    var cnt = {}; enumerate(start, end).forEach(function (d) { var m = d.slice(0, 7); cnt[m] = (cnt[m] || 0) + 1; });
-    var per = Object.keys(cnt).sort(function (x, y) { return cnt[y] - cnt[x]; })[0];
-    return { period: per, label: new Date(per + '-01T00:00:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) };
-  }
-  function buildMonthly(input, start, end, sunWork, source) {
-    var sc = schedule(input, start, end, sunWork), pl = periodOf(start, end);
-    return { period: pl.period, label: pl.label, start: start, end: end, source: source, loadedAt: new Date().toISOString(), monthly: true, input: input, sunWork: sunWork, over: sc.over, lines: sc.lines };
-  }
-  function overText(p) {
-    if (!p.over || !p.over.length) return '';
-    var t = 0; p.over.forEach(function (o) { t += o.rem; });
-    return ' ' + p.over.length + ' SKU tidak muat dalam periode (sisa ' + f0(t) + ' CT): ' + p.over.slice(0, 4).map(function (o) { return (o.machine ? o.machine + ' ' : '') + o.desc + ' ' + f0(o.rem); }).join('; ') + (p.over.length > 4 ? '; …' : '') + '.';
-  }
-  function lineKey(r) { return (r.machine || '-') + '-' + (r.material || r.desc); }
-  function sheetsOf(file) {
-    return new Promise(function (res, rej) {
-      var fr = new FileReader();
-      fr.onload = function () { try { res(XLSX.read(new Uint8Array(fr.result), { type: 'array', cellDates: true })); } catch (e) { rej(e); } };
-      fr.onerror = rej; fr.readAsArrayBuffer(file);
-    });
-  }
-  function bestSheet(wb, month) {
-    var best = null;
-    wb.SheetNames.forEach(function (n) {
-      var t = readTable(XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, raw: true, defval: '' }), month);
-      if (t.error) { if (!best) best = { t: t, n: n }; return; }
-      var score = t.rows.length * Math.max(1, t.days.length);
-      if (!best || best.t.error || score > best.score) best = { t: t, n: n, score: score };
-    });
-    return best;
-  }
-  function stat(id, text, cls) { var e = $(id); e.textContent = text; e.className = 'fstat' + (cls ? ' ' + cls : ''); }
-  function withXlsx() { return window.XLSX ? Promise.resolve() : loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'); }
-  function loadPlanFile(file) {
-    var month = $('planMonth').value;
-    stat('planStat', 'Membaca ' + file.name + '…');
-    withXlsx().then(function () { return sheetsOf(file); }).then(function (wb) {
-      var b = bestSheet(wb, month);
-      if (!b || b.t.error) { stat('planStat', file.name + ': ' + (b ? b.t.error : 'file kosong'), 'bad'); return; }
-      if (b.t.monthly) {
-        if (!b.t.rows.length) { stat('planStat', file.name + ': tidak ada baris dengan angka Rencana (CT).', 'bad'); return; }
-        var st = $('pStart').value, en = $('pEnd').value;
-        if (!st || !en || en < st) { stat('planStat', 'Isi tanggal Mulai dan Selesai periode dulu.', 'bad'); return; }
-        var mp = buildMonthly(b.t.rows.map(function (r) { return { machine: r.machine, material: r.material, desc: r.desc, category: r.category, net: r.net, target: r.target, qty: r.qty }; }), st, en, $('sunWork').checked, file.name + ' · lembar "' + b.n + '" (rencana bulanan)');
-        acceptPlan(mp);
-        var noT = b.t.rows.filter(function (r) { return !(r.target > 0); }).length;
-        stat('planStat', file.name + ': ' + mp.lines.length + ' SKU, jadwal ' + dayLabel(st) + ' – ' + dayLabel(en) + ' dibuat otomatis.' + (noT ? ' ' + noT + ' SKU tanpa Target/hari dibagi rata.' : '') + overText(mp), mp.over.length ? 'bad' : 'ok');
-        return;
-      }
-      var seen = {}, ls = b.t.rows.filter(function (r) { return r.any; }).map(function (r) {
-        var k = lineKey(r); seen[k] = (seen[k] || 0) + 1;
-        var ct = 0; Object.keys(r.vals).forEach(function (d) { ct += r.vals[d]; });
-        return { id: k + (seen[k] > 1 ? '-' + seen[k] : ''), machine: r.machine || '-', material: r.material, desc: r.desc, category: r.category, net: r.net, target: r.target, ct: ct, plan: r.vals };
+  function upStat(t, bad) { var e = $('upStat'); if (e) { e.textContent = t; e.style.color = bad ? 'var(--bad)' : ''; } }
+  function saveStoreAndReload(st) { try { localStorage.setItem(LS_KEY, JSON.stringify(st)); } catch (e) { upStat('Gagal menyimpan: penyimpanan browser penuh.', 1); return; } location.href = location.pathname; }
+  function loadFile(file) {
+    if (/\.gz$/i.test(file.name)) {
+      if (!window.DecompressionStream) { upStat('Browser ini tidak bisa membuka .gz.', 1); return; }
+      new Response(file.stream().pipeThrough(new DecompressionStream('gzip'))).text().then(function (t) { var o = JSON.parse(t); if (!o || o.kind !== 'ppic_prod' || !o.store || !o.store.plan) throw new Error('bukan cadangan Perencanaan Produksi'); saveStoreAndReload(o.store); }).catch(function (e) { upStat(file.name + ': ' + (e.message || e), 1); });
+      return;
+    }
+    upStat('Membaca ' + file.name + '…');
+    withXlsx().then(function () { return file.arrayBuffer(); }).then(function (buf) {
+      var wb = XLSX.read(new Uint8Array(buf), { type: 'array', cellDates: true }), month = $('upMonth').value || todayIso().slice(0, 7), best = null;
+      wb.SheetNames.forEach(function (n) { var t = readTable(XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, raw: true, defval: '' }), month); if (t.error) { if (!best) best = { t: t, n: n }; return; } var sc = t.rows.length * Math.max(1, t.days.length); if (!best || best.t.error || sc > best.sc) best = { t: t, n: n, sc: sc }; });
+      if (!best || best.t.error) { upStat(file.name + ': ' + (best ? best.t.error : 'file kosong'), 1); return; }
+      var T = best.t, ds = T.days, seen = {}, actTo = $('upAct').value || '', act = {}, L = null;
+      var mStart = month + '-01', mEnd = iso(new Date(+month.slice(0, 4), +month.slice(5, 7), 0));
+      var start = ds.length ? (ds[0] < mStart ? ds[0] : mStart) : mStart, end = ds.length ? (ds[ds.length - 1] > mEnd ? ds[ds.length - 1] : mEnd) : mEnd;
+      var lines = T.rows.filter(function (r) { return r.any || r.qty > 0; }).map(function (r) {
+        var k = (r.machine || '-') + '-' + r.material; seen[k] = (seen[k] || 0) + 1; var id = k + (seen[k] > 1 ? '-' + seen[k] : ''), plan = {}, ct = 0, mx = 0;
+        Object.keys(r.vals).forEach(function (d) { var v = r.vals[d]; if (!v) return; plan[d] = v; ct += v; mx = Math.max(mx, v); if (actTo && d <= actTo) { (act[id] = act[id] || {})[d] = v; if (!L || d > L) L = d; } });
+        return { id: id, machine: r.machine || '-', material: r.material, desc: r.desc, category: r.category || r.machine || '', net: r.net, target: r.target || mx, ct: ct, tgt: r.qty > 0 ? r.qty : ct, plan: plan };
       });
-      if (!ls.length) { stat('planStat', file.name + ': tidak ada baris dengan angka rencana per tanggal.', 'bad'); return; }
-      var ds = b.t.days, start = ds[0], end = ds[ds.length - 1];
-      var cnt = {}; enumerate(start, end).forEach(function (d) { var m = d.slice(0, 7); cnt[m] = (cnt[m] || 0) + 1; });
-      var per = Object.keys(cnt).sort(function (x, y) { return cnt[y] - cnt[x]; })[0];
-      var label = new Date(per + '-01T00:00:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
-      var p = { period: per, label: label, start: start, end: end, source: file.name + ' · lembar "' + b.n + '"', loadedAt: new Date().toISOString(), lines: ls };
-      if (!acceptPlan(p)) return;
-      var noNet = ls.every(function (l) { return !l.net; });
-      stat('planStat', file.name + ': ' + ls.length + ' line, ' + dayLabel(start) + ' – ' + dayLabel(end) + '.' + (noNet ? ' Kolom Net (kg) tidak ada, jadi ton (MT) tidak dihitung.' : ''), noNet ? '' : 'ok');
-    }).catch(function (e) { stat('planStat', 'Gagal membaca ' + file.name + ': ' + (e.message || e), 'bad'); });
+      if (!lines.length) { upStat(file.name + ': tidak ada baris dengan angka rencana.', 1); return; }
+      var offs = enumerate(start, end).filter(function (d) { return dt(d).getUTCDay() === 0; });
+      var p = { period: month, label: new Date(month + '-01T00:00:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }), start: start, end: end, offDays: offs, source: file.name + ' · lembar "' + best.n + '"' + (ds.length ? '' : ' (daftar PP)'), loadedAt: new Date().toISOString(), lines: lines, L: L };
+      if (!DEMO && S.L && !confirm('Ganti rencana dan aktual di browser ini dengan isi ' + file.name + '?')) { upStat('Dibatalkan.'); return; }
+      saveStoreAndReload({ plan: p, actual: act });
+    }).catch(function (e) { upStat('Gagal membaca ' + file.name + ': ' + (e.message || e), 1); });
   }
-  function acceptPlan(p) {
-    if (plan && plan.sample && !p.sample) { plan = null; actual = {}; actSrc = null; $('mockBar').hidden = true; }
-    if (plan && plan.period !== p.period && Object.keys(actual).length && !confirm('Rencana baru untuk ' + p.label + '. Data aktual periode sebelumnya dihapus. Lanjut?')) return false;
-    if (plan && plan.period !== p.period) { actual = {}; actSrc = null; }
-    start_(p); saveLocal(); return true;
-  }
-  function loadActualFile(file) {
-    if (!plan) { stat('actStat', 'Unggah rencana dulu, supaya aktual bisa dicocokkan ke line-nya.', 'bad'); return; }
-    stat('actStat', 'Membaca ' + file.name + '…');
-    withXlsx().then(function () { return sheetsOf(file); }).then(function (wb) {
-      var b = bestSheet(wb, plan.period);
-      if (!b || b.t.error) { stat('actStat', file.name + ': ' + (b ? b.t.error : 'file kosong'), 'bad'); return; }
-      // match rows to plan lines: machine+material in order, then material, then description
-      var used = {}, n = 0, cells = 0, miss = [], outside = 0;
-      function pick(test) { for (var i = 0; i < lines.length; i++) if (!used[lines[i].id] && test(lines[i])) return lines[i]; return null; }
-      b.t.rows.forEach(function (r) {
-        if (!r.any) return;
-        var l = (r.material && pick(function (x) { return x.material === r.material && (!r.machine || x.machine === r.machine); })) ||
-                (r.material && pick(function (x) { return x.material === r.material; })) ||
-                pick(function (x) { return norm(x.desc) === norm(r.desc) && (!r.machine || x.machine === r.machine); });
-        if (!l) { miss.push(r.material || r.desc); return; }
-        used[l.id] = true; n++;
-        Object.keys(r.vals).forEach(function (d) { if (days.indexOf(d) < 0) { outside++; return; } (actual[l.id] = actual[l.id] || {})[d] = r.vals[d]; cells++; });
-      });
-      actSrc = file.name; saveLocal(); render();
-      stat('actStat', file.name + ': ' + cells + ' angka untuk ' + n + ' line.' + (miss.length ? ' Tidak cocok dengan rencana: ' + miss.slice(0, 5).join(', ') + (miss.length > 5 ? ' (+' + (miss.length - 5) + ')' : '') + '.' : '') + (outside ? ' ' + outside + ' angka di luar periode dilewati.' : ''), miss.length ? '' : 'ok');
-    }).catch(function (e) { stat('actStat', 'Gagal membaca ' + file.name + ': ' + (e.message || e), 'bad'); });
-  }
-  Array.prototype.forEach.call(document.querySelectorAll('.drop'), function (drop) {
-    var kind = drop.getAttribute('data-kind'), input = drop.querySelector('input');
-    var go = function (f) { if (f) (kind === 'plan' ? loadPlanFile : loadActualFile)(f); };
-    input.addEventListener('change', function () { go(input.files[0]); input.value = ''; });
-    ['dragenter', 'dragover'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add('over'); }); });
-    ['dragleave', 'drop'].forEach(function (t) { drop.addEventListener(t, function () { drop.classList.remove('over'); }); });
-    drop.addEventListener('drop', function (e) { e.preventDefault(); go(e.dataTransfer.files[0]); });
-  });
-  function monthDays(m) { var y = Number(m.slice(0, 4)), mo = Number(m.slice(5, 7)); return enumerate(m + '-01', iso(new Date(y, mo, 0))); }
-  $('tplPlan').addEventListener('click', function () {
-    withXlsx().then(function () {
-      var rows = [['Mesin', 'Material', 'Deskripsi', 'Kategori', 'Net (kg)', 'Target/hari', 'Rencana (CT)'],
-        ['CVFI04', '69917102', 'Contoh: Livi Evo Premium Facial Plain Flat Box 50\'s', 'FACIAL BOX', 5.1, 80, 1485],
-        ['CVFI04', '69917103', 'Contoh: Livi Evo Premium Facial Plain Cube Box 50', 'FACIAL BOX', 4.1, 80, 752]];
-      if (plan && plan.monthly) rows = rows.slice(0, 1).concat(plan.input.map(function (r) { return [r.machine, r.material, r.desc, r.category, r.net, r.target, r.qty]; }));
-      var wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), 'Rencana bulanan');
-      XLSX.writeFile(wb, 'Template rencana produksi bulanan.xlsx');
-    });
-  });
-  $('tplAct').addEventListener('click', function () {
-    withXlsx().then(function () {
-      var ds = plan ? days : monthDays($('planMonth').value || iso(new Date()).slice(0, 7));
-      var rows = [['Mesin', 'Material', 'Deskripsi'].concat(ds)];
-      (plan ? lines : []).forEach(function (l) { rows.push([l.machine, l.material, l.desc].concat(ds.map(function (d) { var a = getA(l.id, d); return a === null ? '' : a; }))); });
-      var wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), 'Aktual');
-      XLSX.writeFile(wb, 'Template aktual produksi' + (plan ? ' ' + plan.period : '') + '.xlsx');
-    });
-  });
-  $('clearAll').addEventListener('click', function () {
-    if (!confirm('Hapus rencana dan semua data aktual dari browser ini?')) return;
-    localStorage.removeItem(LS_KEY); location.reload();
-  });
-
-  function setPeriodFromMonth() {
-    var m = $('planMonth').value; if (!m) return;
-    var ds = monthDays(m); $('pStart').value = ds[0]; $('pEnd').value = ds[ds.length - 1];
-  }
-  $('planMonth').addEventListener('change', setPeriodFromMonth);
-  function rescheduleIfMonthly() {
-    if (!plan || !plan.monthly) return;
-    var st = $('pStart').value, en = $('pEnd').value; if (!st || !en || en < st) return;
-    var p = buildMonthly(plan.input, st, en, $('sunWork').checked, plan.source);
-    p.sample = plan.sample;
-    if (!acceptPlan(p)) return;
-    stat('planStat', 'Jadwal dibuat ulang: ' + dayLabel(st) + ' – ' + dayLabel(en) + (p.sunWork ? ', Minggu produksi.' : ', Minggu libur.') + overText(p), p.over.length ? 'bad' : 'ok');
-  }
-  ['pStart', 'pEnd', 'sunWork'].forEach(function (id) { $(id).addEventListener('change', rescheduleIfMonthly); });
-
-  // ---------- start ----------
-  function start_(p) {
-    plan = p; lines = p.lines; byId = {}; off = {}; lines.forEach(function (l) { byId[l.id] = l; });
-    days = enumerate(p.start, p.end);
-    if (p.offDays) p.offDays.forEach(function (d) { off[d] = true; });   // calendar sent from Rencana Produksi
-    else days.forEach(function (d) { if (new Date(d + 'T00:00:00').getDay() === 0) off[d] = true; });
-    $('planMonth').value = p.period; $('pStart').value = p.start; $('pEnd').value = p.end; $('sunWork').checked = !!p.sunWork;
-    $('periodLabel').textContent = p.label;
-    var work = days.filter(function (d) { return !off[d]; }).length;
-    $('periodSub').textContent = 'Periode ' + dayLabel(p.start) + ' – ' + dayLabel(p.end) + ' · ' + work + ' hari kerja' + (p.offDays ? '' : ' (Minggu libur)') + ' · ' + lines.length + (p.fromPP ? ' bar dari Rencana Produksi' : p.monthly ? ' SKU dari rencana bulanan' : ' line produksi');
-    $('srcNote').textContent = 'Sumber rencana: ' + (p.source || '-') + '.';
-    var today = iso(new Date());
-    curDay = today < days[0] ? days[0] : today > days[days.length - 1] ? days[days.length - 1] : today;
-    $('daySel').innerHTML = days.map(function (d) { return '<option value="' + d + '"' + (d === curDay ? ' selected' : '') + '>' + dayLabel(d) + (off[d] ? ' (Minggu)' : '') + '</option>'; }).join('');
-    var ms = []; lines.forEach(function (l) { if (ms.indexOf(l.machine) < 0) ms.push(l.machine); });
-    $('machSel').innerHTML = '<option value="">Semua mesin</option>' + ms.map(function (m) { return '<option>' + esc(m) + '</option>'; }).join('');
-    $('emptyMsg').hidden = true; $('main').hidden = false;
-    render();
-  }
-  // ---------- mockup: sample plan + made-up actuals up to yesterday ----------
-  function showMock() {
-    $('mockBtn').disabled = true;
-    fetch('contoh-rencana-2026-11.json').then(function (r) { return r.json(); }).then(function (src) {
-      // the sample is the monthly plan (CT per SKU per machine) from the Nov 2026 PDF; the daily schedule is built from it
-      var input = src.lines.map(function (l) { return { machine: l.machine, material: l.material, desc: l.desc, category: l.category, net: l.net, target: l.target, qty: l.ct }; });
-      var p = buildMonthly(input, src.start, src.end, false, 'CONTOH: rencana bulanan Nov 2026 dari PDF CVT Mills TUB Planning');
-      p.sample = true; plan = null; actual = {}; actSrc = null;
-      var today = iso(new Date()), seed = 7;
-      function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
-      var ds = enumerate(p.start, p.end), last = ds.filter(function (d) { return d < today; }).pop() || '2026-11-11';
-      p.lines.forEach(function (l, i) {
-        var bias = 0.82 + rnd() * 0.25;              // each line runs a bit above or below plan
-        ds.forEach(function (d) {
-          if (d > last) return;
-          var pl = l.plan[d] || 0; if (!pl) return;
-          var f = rnd() < 0.06 ? 0 : bias * (0.9 + rnd() * 0.2); // occasional breakdown day
-          (actual[l.id] = actual[l.id] || {})[d] = Math.round(pl * f);
-        });
-      });
-      start_(p);
-      curDay = last; $('daySel').value = last; render();
-      $('mockBar').hidden = false; setState('MOCKUP · tidak disimpan', 'warn');
-      stat('planStat', 'Sedang menampilkan MOCKUP: ' + p.lines.length + ' SKU dari rencana bulanan, jadwal harian dibuat otomatis.' + overText(p) + ' Unggah file Anda untuk memakai data sendiri.', '');
-    }).catch(function (e) { $('mockBtn').disabled = false; alert('Gagal memuat contoh: ' + e); });
-  }
-  $('mockBtn').addEventListener('click', showMock);
-  // The main app's Rencana Produksi tab writes its schedule into the same storage ('Kirim ke Monitoring Harian').
-  $('fromPP').addEventListener('click', function () {
-    try { localStorage.setItem('ppic_tab', 'Plan'); } catch (e) {}
-    location.href = '/';
-  });
-  window.addEventListener('storage', function (e) {
-    if (e.key !== LS_KEY || (plan && plan.sample)) return;
-    var o = null; try { o = JSON.parse(e.newValue || 'null'); } catch (x) {}
-    if (!o || !o.plan || !o.plan.lines) return;
-    if (plan && o.plan.loadedAt === plan.loadedAt) return;
-    actual = o.actual || {}; actSrc = o.actSrc || null; start_(o.plan);
-    stat('planStat', 'Rencana diperbarui: ' + o.plan.source + '.', 'ok');
-  });
-  $('mockExit').addEventListener('click', function () { location.href = location.pathname; });
-  $('planMonth').value = iso(new Date()).slice(0, 7); setPeriodFromMonth();
-  var saved = null; try { saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) {}
-  if (!/[?&]contoh\b/.test(location.search) && saved && saved.plan && saved.plan.lines && saved.plan.lines.length) {
-    actual = saved.actual || {}; actSrc = saved.actSrc || null;
-    start_(saved.plan);
-    stat('planStat', (saved.plan.fromPP ? 'Dari ' : 'Dimuat dari browser: ') + saved.plan.source + '.', 'ok');
-    var nA = 0; Object.keys(actual).forEach(function (k) { nA += Object.keys(actual[k]).length; });
-    if (nA) stat('actStat', nA + ' angka aktual tersimpan' + (actSrc ? ' (terakhir dari ' + actSrc + ')' : '') + '.', 'ok');
-    setState('Tersimpan di browser ini', 'ok');
-  } else setState('Belum ada data');
-  if (/[?&]contoh\b/.test(location.search)) showMock();
-})();
+  window.addEventListener('storage', function (e) { if (e.key === LS_KEY && !DEMO && e.newValue) { try { var o = JSON.parse(e.newValue); if (o && o.plan && o.plan.loadedAt !== PLAN.loadedAt) { toast('Rencana baru dari Forecast Desk. Memuat ulang…'); setTimeout(function () { location.reload(); }, 900); } } catch (x) {} } });
+  $('optTalk').checked = S.opt.talk; $('optFocus').checked = S.opt.focus; syncMute();
+  boot();
+}
 </script>
 </body>
 </html>
