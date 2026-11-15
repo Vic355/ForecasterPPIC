@@ -2,17 +2,23 @@
 
 PPIC Decision Support System for The Univenus Serang (plan 7079). PPIC Forecast Desk is its monthly view: extract the monthly closing report into tables that feed the ML forecast.
 
+**Documentation:** [docs/sistem.md](docs/sistem.md) explains how the parts fit together (flow, models, buffer, storage);
+[CHANGELOG.md](CHANGELOG.md) lists the changes over time. The sections below describe each screen in detail.
+
 ## Web app
 
-`public/index.html` has two working tabs (Saran Buffer is not built yet):
+`public/index.html` is a guided monthly flow of 8 steps (Desain 10, PR #8). Each step opens after **Terima dan lanjut** on
+the previous one:
 
-- **Forecast** (opens first): families with the top-10 SKUs inside, free stock at the latest closing, the last three closings
-  (Order in, Forecast HQ = REV or else ORIG, Selisih = HQ − Order in), then M+1..M+3 (Forecast HQ from the Summary Forecast files,
-  adj preferred over original; **Forecast ML stays empty** until a model is trained). Cards: Order in vs HQ, HQ accuracy
-  (1 − WAPE per SKU vs the 70% target), 3-month bias trend, Forecast M+1, SKUs without HQ, ML status.
-  Clicking a card (all but ML) opens a chart of that measure over all closing months, with the SKUs behind it listed and the
-  biggest contributors highlighted.
-- **Input Data & Model**: the upload and extraction check below.
+1. **Ringkasan**: all open alerts, where to start.
+2. **Input data**: closings, Forecast HQ, Kelas SKU, data mesin, material master, Chronos CSV (see *Input tab* below).
+3. **Material master**: active / inactive SKUs and Nomat changes.
+4. **Cek data SKU**: status rules and manual statuses.
+5. **Forecast**: Forecast HQ vs order in, HQ accuracy, bias, and **Forecast AI** (ensemble of four models) for M+1..M+3.
+   Clicking a card opens a chart of that measure with the SKUs behind it.
+6. **Saran buffer**: buffer per SKU and PP.
+7. **Rencana produksi**: schedule per machine and day.
+8. **Monitoring harian**: the `/produksi/` page embedded, fed from the plan.
 
 SKUs are keyed by **Nomat** (nomor material). Article Code is kept alongside, used to look up the HQ class, and used as the
 key only when a row has no Nomat (flagged "Tanpa Nomat"). Closing and forecast are joined by Nomat, then by Article Code.

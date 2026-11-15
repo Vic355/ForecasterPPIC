@@ -1,0 +1,137 @@
+# PPIC Decision Support System: system overview
+
+This page explains how the whole system fits together: what each part does, how data moves from the monthly closing
+report to a production plan, which models produce the forecast and the buffer, and where data is stored. Details of
+each screen are in the [README](../README.md); the history of changes is in [CHANGELOG.md](../CHANGELOG.md). The UI is
+in Indonesian, so screen names and terms are kept in Indonesian here.
+
+Plant: The Univenus Serang (plant 7079). Unit: cartons (CT), tonnes where noted.
+
+## 1. Parts of the system
+
+| Part | File | Runs | What it does |
+| --- | --- | --- | --- |
+| **Forecast Desk** (PPIC Decision Support System) | `public/index.html` | browser | The main app: reads the Excel files, checks SKUs, forecasts, suggests buffers, builds the production plan. One self-contained HTML file. |
+| **Monitoring Produksi Harian** | `public/produksi/index.html` | browser | Plan vs. actual per day, per machine and per SKU. Opened at `/produksi/`, and embedded as the *Monitoring harian* step of the Forecast Desk. |
+| **Worker** | `src/index.js`, `wrangler.jsonc` | Cloudflare | Serves `./public` as static files, plus `/api/ask` (Workers AI) for the Asisten's free-form questions. |
+| **Chronos script** | `ingest/forecast_chronos.py` | user's computer | Runs the Chronos foundation model on the exported history and writes `forecast_chronos.csv`, which is dropped back into the app. |
+| **Batch loader** | `ingest/ingest_closing.py` | user's computer | Optional. The same closing extraction into an append-only SQLite store. |
+| **Reference data** | `data/sku_class_hq.csv`, `data/stock_level_2026-10-21.csv` | built in | HQ SKU class (A/B/C/NPD), DOI target and stock levels from the 21 Oct 2026 Stock Level Check. |
+
+Nothing is uploaded to a server. Files are read in the browser, and the app's state lives in the browser
+(`localStorage`) and in the history file the user downloads. Machine data is never stored in this repository.
+
+## 2. Monthly flow (the 8 steps)
+
+Since Desain 10 (PR #8) the Forecast Desk is a guided flow. Each step opens only after the previous one is accepted
+with **Terima dan lanjut ke …**; a red count shows open alerts. Accepting a page marks its red/amber alerts as checked.
+
+| # | Step (UI name) | Input | Output |
+| --- | --- | --- | --- |
+| 0 | **Ringkasan** | | All open alerts across pages, where to start this month |
+| 1 | **Input data** | Closing reports (one per month), Forecast HQ M+1..M+3, optional Kelas SKU, data mesin, material master, Chronos CSV, earlier history file | One combined Serang history (`bulanan`, `mingguan`, `forecast_hq`, …) |
+| 2 | **Material master** | Material master Excel (optional) | Active / inactive per Nomat, Nomat changes, successor SKUs |
+| 3 | **Cek data SKU** | Status rules + manual overrides | Status per SKU: Aktif, Perlu cek, Diskontinu, Diganti |
+| 4 | **Forecast** | Clean history | Forecast HQ vs order in, accuracy, Forecast AI (ensemble) M+1..M+3 |
+| 5 | **Saran buffer** | Forecast basis, service level, lead time, strategy | Buffer per SKU, PP = forecast + buffer − stok bebas |
+| 6 | **Rencana produksi** | PP, machines, SKU → machine type, calendar | Schedule per machine and day, Excel export |
+| 7 | **Monitoring harian** | Plan from step 6, actual production | Plan vs actual, Utang (plan to date − actual to date) |
+
+Files can be dropped on any page; the kind is detected (history .xlsx / .ppic.gz, material master, Forecast HQ,
+Stock Level Check, production data, Chronos CSV, otherwise closing).
+
+```
+Closing xlsx ─┐                                 ┌─> Forecast AI (Holt, HQ terkoreksi, Regressor, Chronos → Ensemble)
+Forecast HQ  ─┼─> Input ─> Material master ─> Cek data SKU ─┤
+Kelas SKU    ─┘                                 └─> Forecast HQ vs order in (accuracy, bias)
+                                                         │
+                     Chronos CSV (from forecast_chronos.py) ┘
+                                                         ▼
+                       Saran buffer (strategy picked by backtest, P50/P90, ABC-XYZ)
+                                                         ▼
+                       Rencana produksi (PP per SKU → machines → days)
+                                                         ▼
+                       Monitoring harian (plan vs actual, Utang)
+```
+
+## 3. Data keys and cleaning
+
+- **SKU key = Nomat** (nomor material). Article Code is kept alongside, used for the HQ class lookup, and used as the
+  key only when Nomat is missing ("Tanpa Nomat").
+- **Groups** = Brand · Category (from Forecast HQ or the material master), falling back to Brand · Family; a switch
+  goes back to Brand · Family.
+- **Cek data SKU** rules (stock without HQ, red/struck-through codes, keywords, nearby similar SKU, brand mismatch,
+  HQ vs order in far apart) give a status. Diskontinu and Diganti SKUs are left out of totals, accuracy and the ML;
+  a replaced SKU's order in is added to its successor's history.
+- **Corrections** typed in the Forecast table never overwrite the file values; they are kept in a correction log
+  (`koreksi`) and applied on top.
+
+## 4. Forecast models
+
+All models forecast monthly **order in** per SKU for M+1..M+3. Forecast HQ is the comparison baseline (REV, or ORIG
+when REV is empty, on the realised side; the Desain 10 Forecast page shows HQ original for future months).
+
+| Model | Runs | Summary |
+| --- | --- | --- |
+| Holt | browser | Damped trend on order in (α 0.5, β 0.3, φ 0.8), floored at 0 |
+| HQ terkoreksi | browser | Forecast HQ × the SKU's order-in ÷ HQ ratio over 3 closings, shrunk to the all-SKU ratio, clamped 0.3–3 |
+| Regressor | browser | Gradient-boosted trees in plain JS (80 trees, depth 3, log1p target), one per horizon; features: lags, 3-month mean, Forecast HQ, HQ bias, category mean, month, history length, CV |
+| Regressor kuantil | browser | Same trees with pinball loss τ = 0.9, for P90 |
+| Chronos | user's computer | Chronos-2 with Forecast HQ as covariate (or Chronos-Bolt); P10/P50/P90 plus backtest months |
+| **Ensemble** (Forecast AI) | browser | Weighted average, weight ∝ 1 / (WAPE + 0.05)², WAPE from each model's walk-forward one-month-ahead backtest, shrunk toward category and global WAPE |
+
+The backtest is walk-forward: each closing month is predicted only from earlier months, weights included.
+
+## 5. Buffer (Saran buffer)
+
+- **Standar formula**: buffer = z × error spread × forecast × √(lead time ÷ 30) × strategy factor
+  (z: 90% = 1.28, 95% = 1.64, 98% = 2.05).
+- **Strategies**: Standar, Defensif, Ikuti tren, Batas atas (≤ 10 hari), Kuantil P90, Habiskan stok.
+- **Kuantil P90**: buffer = max(0, P50 − basis) + (P90 − P50) × z ÷ 1.28 × √(lead time ÷ 30). P50/P90 source, first
+  available: Chronos → Regressor kuantil → the SKU's order-in ÷ forecast ratios → its ABC-XYZ class's ratios → Standar.
+  Default for non-NPD SKUs when quantiles exist.
+- **Otomatis = backtest picker**: every strategy is replayed on the last 6 closings (walk-forward) and scored by
+  (w × kurang + lebih) ÷ order in, w = 2 (shortfall costs double). Few months → pulled toward the ABC-XYZ class;
+  new SKU → the class winner; < 3 closings → old rules.
+- **ABC-XYZ** recomputed each closing from 6 closings of order in: ABC 80/15/5 by volume, XYZ by CV
+  (< 0.5 / 0.5–1 / > 1), < 3 months = NPD. Disagreement with the HQ class is flagged.
+- **PP** (production need) = forecast + buffer final − stok bebas; stok bebas = stock on hand − outstanding DN − SC block.
+- Manual buffer edits need a reason and are kept.
+
+## 6. Production plan and monitoring
+
+- **Rencana produksi** plans one month (closing + 1). Auto schedule: problem SKUs first, then fewest days of cover, then
+  biggest PP; each SKU goes to the machine of its type with the earliest free stretch. Bars can be dragged, resized,
+  split (A → B → A); daily targets can be typed. Built-in Indonesian holidays 2026–2027; Saturdays on, Sundays off.
+  Export to Excel, or **Kirim ke Monitoring Harian**.
+- **Monitoring harian** takes that plan (or a plan Excel), and actuals typed in or uploaded; it shows KPI tiles,
+  Input harian, Grid bulanan (Gantt with daily entry and an Utang column), Per SKU and Per mesin views.
+- **In progress**: a redesigned production planning view is being built in a separate thread and is not on `main` yet.
+
+## 7. Asisten
+
+A chat panel on every page. A rules engine answers commands (`pp target <SKU> = n`, `buffer <SKU> = n alasan …`,
+`strategi <SKU> kuantil`, …) and questions (`ringkasan`, `kenapa <SKU>`, …). Every change is a proposal applied only
+after **Terapkan**, and can be undone. Free-form questions go to Claude (when opened as a claude.ai artifact) or to
+Workers AI through `/api/ask`, given only the facts the app computed.
+
+Since PR #9 the Asisten is more prominent: 👁 Tunjukkan spotlight on alerts, a Fokus AI list of
+vital SKUs, an asymmetric buffer score setting (*Kurang dihitung* 2× / 3×), per-month backtest winners, P50/P90
+sources and comparing two forecasts. Its answer rules are written up in [panduan-asisten.md](panduan-asisten.md).
+
+## 8. Storage
+
+| Where | What |
+| --- | --- |
+| Browser `localStorage` (`ppic_*` keys) | Corrections, SKU statuses, rules, buffer edits and strategies, Chronos rows, material master, plan, UI settings, monitoring data (`ppic_prod`) |
+| History file `Histori_Serang_*.xlsx` or `.ppic.gz` | Everything above plus the extracted closings. Sheets: `bulanan`, `mingguan`, `forecast_hq`, `kelas_sku`, `log`, `status_sku`, `aturan`, `koreksi`, `saran_buffer`, `forecast_ml`, `forecast_chronos`, `material_master`, `rencana_produksi`, `jadwal_produksi`, `target_harian`, `kalender_produksi`, `sku_mesin`, `kapasitas_mesin` |
+| `.ppic.gz` | Same content as the Excel, columnar JSON gzipped (~13 KB vs ~390 KB on the sample) |
+
+Uploading the history file restores the whole state. The monthly routine is: open the app, drop the last history file
+plus the new closing and Forecast HQ, (optionally) run Chronos and drop its CSV, walk the 8 steps, download the history.
+
+## 9. Deploy
+
+`npx wrangler deploy` (or connect the repo in the Cloudflare dashboard to deploy on every push). Workers AI is bound as
+`AI` in `wrangler.jsonc`; the model can be changed with the `AI_MODEL` variable. The page version in the header confirms
+which build is live.
