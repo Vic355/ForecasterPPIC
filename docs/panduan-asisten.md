@@ -46,3 +46,17 @@ jadi pertanyaan lanjutan tidak perlu menyebut Nomat lagi.
 Tombol **👁 Tunjukkan** di alert menggulir ke sel yang dimaksud, meredupkan sisanya, dan mata asisten terbang ke sel itu.
 Saat sebuah halaman dibuka pertama kali setelah data dimuat, asisten menunjukkan alert teratas sendiri. Teks asisten muncul
 seperti diketik. Keduanya bisa dimatikan di ⚙ Pengaturan → Asisten.
+
+## Menyelesaikan peringatan
+
+- Asisten hanya mengatakan langkah berikutnya dengan alasan singkat: "Tolong tandai X untuk ditinjau di buffer, karena …",
+  "Cek historinya dulu, karena …", atau "Tolong cek angkanya; bila benar, klik Sudah dicek".
+- ✓ Sudah dicek menandai alert (kunci: halaman + judul + bulan terakhir) dan menyimpannya di browser. Batalkan mengembalikannya.
+- Terima dan lanjut = semua peringatan merah/kuning di halaman itu dianggap sudah dicek.
+
+## Pertanyaan P50/P90
+
+- Ensemble memberi satu angka, jadi P50/P90 diambil dari sumber lain: Chronos (P10/P50/P90 dari CSV), Regressor kuantil
+  (pohon yang sama dengan Regressor, P90 dilatih dengan pinball loss τ = 0,9), atau error historis forecast dasar
+  (sebaran order in ÷ forecast 6 bulan, dikali forecast; bila kurang, dari kelasnya).
+- Bandingkan dengan: buffer dan rencana produksi dihitung ulang memakai forecast kedua dan ditampilkan berdampingan.

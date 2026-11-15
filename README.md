@@ -184,7 +184,7 @@ Tab **Saran Buffer** menghitung buffer per SKU untuk bulan forecast pertama sete
 
 - **Sorot**: tombol 👁 Tunjukkan di tiap alert (panel kiri dan pita atas) menggulir ke sel penyebabnya, meredupkan sisanya, dan
   mata asisten terbang ke sel itu dengan penjelasan. Halaman yang pertama dibuka setelah data dimuat menunjukkan alert teratasnya
-  sendiri. Mata di seluruh aplikasi melirik ke kursor. Matikan di ⚙ Pengaturan → Asisten → Sorot & redupkan.
+  sendiri. Pupil mata tetap diam. Matikan di ⚙ Pengaturan → Asisten → Sorot & redupkan.
 - **Asisten berbicara**: teks pita alert, jawaban obrolan dan gelembung di bawah halaman muncul seperti diketik; asisten
   berkomentar saat data dimuat, saat pengaturan buffer, strategi, atau model Forecast AI diganti. Matikan di ⚙ Pengaturan.
 - **Forecast · SKU vital**: panel *Fokus AI* berisi SKU yang paling menentukan akurasi forecast, dengan saran *tandai tinjau*
@@ -195,6 +195,12 @@ Tab **Saran Buffer** menghitung buffer per SKU untuk bulan forecast pertama sete
 - **Saran buffer**: panel *Arti strategi buffer* menjelaskan tiap strategi dengan kata biasa beserta angka backtestnya; skor
   buffer kini asimetris (kurang ×2 atau ×3, pengaturan *Kurang dihitung*); kolom Strategi menampilkan "🏆 Defensif menang 5 dari
   6 bulan"; kartu *Rekomendasi AI* dan utas rekomendasi di Tanya, dengan tombol Terapkan.
+- **Menyelesaikan peringatan**: tiap alert punya ✓ *Sudah dicek* (juga di pita atas dan gelembung sorot); alert yang sudah dicek
+  turun ke bawah dan abu-abu, bisa *Batalkan*. Alert SKU vital punya ⚑ *Tandai*. *Terima dan lanjut* = semua peringatan halaman
+  itu diterima apa adanya. Asisten hanya menyebut langkah berikutnya: "Tolong tandai X untuk ditinjau di buffer, karena …".
+- **Sumber P50/P90 dan Bandingkan**: P50/P90 tidak berasal dari Ensemble (Ensemble hanya satu angka). Pilihan *P50/P90 dari*:
+  Otomatis, Chronos, Regressor kuantil, atau Error historis forecast dasar. *Bandingkan dengan* menghitung buffer dan rencana
+  produksi kedua dari forecast lain (HQ, Ensemble AI, Chronos, Rata-rata) dalam kolom biru di tabel, plus kartu skor A vs B.
 
 ### Strategi otomatis (backtest), Kuantil P90 dan kelas ABC-XYZ
 
