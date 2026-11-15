@@ -1,0 +1,5 @@
+# For ingest/forecast_chronos.py (Python 3.10+). On a machine without an NVIDIA GPU, install the CPU build of
+# PyTorch first to save ~2 GB:  pip install torch --index-url https://download.pytorch.org/whl/cpu
+chronos-forecasting>=2.3
+pandas>=2.0
+openpyxl>=3.1

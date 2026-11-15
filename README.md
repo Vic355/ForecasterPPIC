@@ -42,27 +42,37 @@ The Forecast table can show all SKUs per family and the excluded ones (greyed). 
 ## Editing in the Forecast table
 
 Free stock, Order in, Forecast HQ REV (closing months) and Forecast HQ M+1..M+3 cells can be edited like Excel: double-click
-or just type, Enter/Tab to move on, arrows to move, Esc to cancel, Delete to empty, Ctrl+Z to undo. Edited cells are marked
+or just type, Enter/Tab to move on, arrows to move, Esc to cancel, Delete to empty, Ctrl+Z to undo (Ctrl+Y to redo). Edited cells are marked
 yellow with the file value in the tooltip. The file's values are never overwritten: corrections are kept separately
 (browser + sheet `koreksi` in the history workbook, listed with a revert button under Cek Data SKU) and applied on top for
 totals, accuracy and the ML. The status chip under each SKU name opens a menu to set Aktif / Perlu cek / Diskontinu /
 Diganti oleh … without leaving the table.
 
-## Forecast ML (prototype v1)
+## Forecast ML (v2: four models + ensemble)
 
-Per SKU (Nomat), in the browser, recomputed from whatever history is loaded:
+Full write-up with a diagram: the "Forecast Desk: model architecture" doc in the project. In short, per SKU (Nomat):
 
-    Forecast ML = w × Holt(order in) + (1 − w) × Forecast HQ × r
+| Model | Runs | What it is |
+| --- | --- | --- |
+| Holt | browser | level + damped trend on monthly order in (alpha 0.5, beta 0.3, damping 0.8), floored at 0 |
+| HQ terkoreksi | browser | Forecast HQ × the SKU's order-in ÷ HQ ratio over its last 3 closings, shrunk to the all-SKU ratio, clamped 0.3–3 |
+| Regressor | browser | gradient-boosted trees (80 trees, depth 3, histogram splits, log1p target), one model for all SKUs, one per horizon. Features: order in t-1..t-3, 3-month mean, Forecast HQ for the target month, HQ bias ratio, corrected HQ, category mean, calendar month, months of history. Needs ≥12 SKU-month rows. |
+| Chronos | your computer | `ingest/forecast_chronos.py` (Chronos-2 with Forecast HQ as covariate by default, or Chronos-Bolt). Its CSV is dropped onto the page and saved in the history file (sheet `forecast_chronos`). |
 
-- **Holt**: level + damped trend on monthly order in (alpha 0.5, beta 0.3, damping 0.8), floored at 0.
-- **r** (HQ bias correction): Σ order in ÷ Σ Forecast HQ over the SKU's last 3 closings, shrunk toward the all-SKU ratio
-  (2 pseudo-months) and clamped to 0.3–3.
-- **w** (Holt weight): from each part's past one-month-ahead errors (inverse-error weighting, lightly shrunk to 0.5); 0.5 with no history.
-  No HQ → Holt only; no order-in history (new SKU) → corrected HQ only.
-- **Backtest** (Kinerja ML card): every closing month after the first is re-predicted with only the months before it and the
-  HQ forecast that the closing reports for that month; accuracy = 1 − WAPE, same as the HQ card.
-- **Signal** compares Forecast HQ with Forecast ML: ▼ HQ above ML (≥20% strong, 5–20%), ≈ under 5%, ▲ HQ below ML.
-- The downloaded history workbook gets a `forecast_ml` sheet (holt, corrected HQ, ratio, weight per SKU-month).
+**Ensemble** = weighted average; weight ∝ 1 / (WAPE + 0.05)², WAPE from that model's one-month-ahead backtest for the
+SKU, pulled toward the category's and all SKUs' WAPE when the SKU has few months, then toward equal weights. Models with no
+output for a SKU are left out. The backtest is walk-forward: every closing month is predicted only from earlier months,
+weights included. The Kinerja ML card and its chart compare HQ, each model and the ensemble; hovering a Forecast ML cell
+shows each model's number and weight. Saran Buffer can use the ensemble, the regressor or Chronos as its basis.
+The downloaded history gets a `forecast_ml` sheet with every model, its weight and the Chronos P10/P90.
+
+### Running Chronos (once a month, after closing)
+
+    pip install -r ingest/requirements-chronos.txt     # once; CPU-only PyTorch: see the file
+    python ingest/forecast_chronos.py Histori_Serang_7079_....ppic.gz      # writes forecast_chronos.csv
+
+Then drop `forecast_chronos.csv` onto the page. `--model amazon/chronos-bolt-base` is lighter; `--model naive` tests the flow
+without downloading a model.
 
 ## Input tab (web)
 
@@ -76,6 +86,31 @@ Three inputs:
 
 **Unduh Histori_Serang.xlsx** writes one workbook with sheets `bulanan` (one row per SKU per closing month), `mingguan` (W1–W5),
 `forecast_hq`, `kelas_sku` and `log`. Re-uploading a month replaces that month and is noted in `log`.
+
+## Usability (Nov 2026)
+
+- **Undo / redo everywhere**: ↶ Urungkan / ↷ Ulangi in the header, or Ctrl+Z and Ctrl+Y (Ctrl+Shift+Z). Covers every manual
+  change: corrections, SKU statuses, rules, buffer edits and strategies, machines, capacities, the production schedule,
+  material master and grouping. Uploading files is not undone. Inside a text box Ctrl+Z stays the browser's own text undo.
+- **Card lists that lead somewhere**: every Forecast card chart now lists all SKUs behind it (searchable), not only the top 8.
+  Clicking a row closes the chart and opens that SKU's cell in the Forecast table (family opened, "Semua SKU" or excluded rows
+  switched on when needed, the cell highlighted). *SKU tanpa Forecast HQ* also shows which forecast months are empty.
+- **Drop files anywhere**: drag files onto any tab; the kind is detected (history .xlsx / .ppic.gz, material master, Forecast HQ,
+  Stock Level Check, production data, otherwise closing). The slots in the Input tab still take their own kind.
+- **Search**: Forecast and Saran Buffer have a search box (Nomat, name, article code, brand, category; old Nomat too).
+- **Material master** (Input tab, optional Excel): columns found by header (Nomat / Material, Article Code, Description, Brand,
+  Category, Family, Status, Nomat pengganti, Catatan). The table joins it with the SKUs in closing and Forecast HQ: status
+  active / inactive (from the master; without one, active = Forecast HQ M+1..M+3 or order in in the last 3 closings), and flags
+  for a changed Nomat (same article code, other Nomat in the master, in another closing month or in Forecast HQ), a different
+  name, SKUs missing from the master and master rows not in the data. Status and Nomat pengganti can be changed in the table;
+  *inactive* feeds the new rule **Nonaktif di material master** (→ Diskontinu, or Diganti when a successor is given).
+  "Unduh material master" exports the table as Excel, which can be edited and uploaded again. Stored in the browser and in
+  sheet `material_master` of the history file.
+- **Brand · Category grouping**: Brand and Category from the Forecast HQ file (both optional) or the material master replace the
+  closing family as the group in Forecast, Saran Buffer and the plan filter. SKUs without a category keep Brand · Family.
+  A switch next to the search box goes back to Brand · Family for everything.
+- **Compact history (.ppic.gz)**: same content as Histori_Serang.xlsx (every sheet), stored as columns and gzip-compressed in the
+  browser; the sample is ~13 KB against ~390 KB for the Excel. Upload or drop it like the Excel to continue.
 
 ## Deploy (Cloudflare Worker)
 
