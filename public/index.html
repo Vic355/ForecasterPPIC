@@ -465,7 +465,7 @@ input[type=search] { font: inherit; font-weight: 400; color: var(--fg); backgrou
   <header>
     <div>
       <h1>PPIC Decision Support System <span class="h1sub">· The Univenus Serang · <b>PPIC Forecast Desk (bulanan)</b></span></h1>
-      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-15b</span></div>
+      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-15c</span></div>
     </div>
     <nav class="tabs" aria-label="Lembar">
       <button type="button" class="tab on" data-tab="Forecast" aria-current="page">Forecast</button><button type="button" class="tab" data-tab="Buffer">Saran Buffer</button><button type="button" class="tab" data-tab="Plan">Rencana Produksi</button><button type="button" class="tab" data-tab="Cek">Cek Data SKU</button><button type="button" class="tab" data-tab="Input">Input Data &amp; Model</button><a class="tab" href="/produksi/" style="text-decoration:none;display:inline-flex;align-items:center;font-weight:600">Monitoring Produksi Harian ↗</a>
@@ -502,7 +502,7 @@ input[type=search] { font: inherit; font-weight: 400; color: var(--fg); backgrou
     <section class="panel" aria-label="Buffer per famili">
       <div class="ph"><h2>Saran buffer per famili dan SKU</h2>
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input type="search" id="bfQ" placeholder="Cari Nomat / nama / kode" aria-label="Cari SKU di Saran Buffer" style="width:210px"><button type="button" id="bfOpenAll">Buka semua famili</button><button type="button" id="bfCloseAll">Tutup semua</button><button type="button" id="bfReset">Hapus perubahan manual</button></div></div>
-      <p class="note">Buffer = z × sebaran error × forecast × √(lead time ÷ 30) × faktor strategi. z: 90% = 1,28 · 95% = 1,64 · 98% = 2,05. Sebaran error dihitung per famili dari error forecast 6 closing terakhir (×1,4 di level SKU); bila histori kurang dari 2 bulan dipakai 25%. Klik angka <b>Buffer final</b> untuk mengubah (alasan wajib), pilih <b>Strategi</b> per famili atau SKU, klik <b>Status</b> untuk rincian hitungan. SKU diskontinu/diganti tidak dihitung.</p>
+      <p class="note">Buffer = z × sebaran error × forecast × √(lead time ÷ 30) × faktor strategi. z: 90% = 1,28 · 95% = 1,64 · 98% = 2,05. Sebaran error dihitung per famili dari error forecast 6 closing terakhir (×1,4 di level SKU); bila histori kurang dari 2 bulan dipakai 25%. <b>Otomatis</b> memilih strategi per SKU lewat backtest 6 closing terakhir (skor: kurang 2× lebih berat dari lebih); SKU dengan histori sedikit ikut kelas ABC-XYZ-nya. <b>Kuantil (P90)</b> memakai rentang forecast SKU itu (Chronos, regressor kuantil, atau error historis). Klik angka <b>Buffer final</b> untuk mengubah (alasan wajib), pilih <b>Strategi</b> per famili atau SKU, klik <b>Status</b> untuk rincian hitungan. SKU diskontinu/diganti tidak dihitung.</p>
       <div class="scroll" style="max-height: 680px"><table id="bfTable" class="fct bft"></table></div>
       <div class="legend"><span class="bst b-low">Stok &lt; buffer</span><span class="bst b-noprod">Stok cukup, tanpa produksi</span><span class="bst b-up">Buffer naik</span><span class="bst b-down">Buffer turun</span><span class="bst b-new">Buffer baru</span><span class="bst b-same">Sesuai</span><span class="bst b-hab">Habiskan stok</span><span>Hari = buffer ÷ (forecast ÷ 30)</span></div>
     </section>
@@ -1387,7 +1387,8 @@ function bufRows(fm) {
     return { bulan: bm.month, sku_key: s.key, nomat: s.nomat, article_code: s.art, description: s.name, family: s.family, dasar: b.src, forecast_ctn: Math.round(b.F),
       service_level: bm.cfg.sl, lead_time_hari: bm.cfg.lt, z: b.z, sebaran_error: Math.round(b.spread * 1000) / 1000, strategi: b.st, strategi_manual: state.bufStrat[s.key] ? 'sku' : '', faktor: Math.round(b.fac * 100) / 100,
       stok_bebas: b.fs, buffer_lama: b.old, buffer_saran: b.sug, buffer_final: b.fin, manual: b.ed ? 'ya' : 'tidak', alasan: b.ed ? b.ed.reason : null, tanggal_manual: b.ed ? b.ed.at : null,
-      rencana_produksi: b.prod, status: b.status[0] };
+      rencana_produksi: b.prod, status: b.status[0], strategi_alasan: b.auto[1], kelas_abc_xyz: s.cls ? s.cls.code : null, cv_order_in: s.cls && s.cls.cv !== null ? Math.round(s.cls.cv * 100) / 100 : null, kelas_hq: s.hqCls || null,
+      p50: b.q ? Math.round(b.q.p50) : null, p90: b.q ? Math.round(b.q.p90) : null, sumber_p90: b.q ? b.q.src : null };
   }).concat(Object.keys(state.bufStrat).filter(function (k) { return k.indexOf('fam:') === 0; }).map(function (k) { return { bulan: bm.month, sku_key: k, strategi: state.bufStrat[k], strategi_manual: 'famili' }; }));
 }
 function loadHistory(name, wb, rowsBy) {
@@ -1804,6 +1805,7 @@ var STRATS = {
   defensif: ['Defensif', 'z minimal 2,05 dan ×1,15: untuk SKU yang sering di-forecast terlalu rendah.'],
   tren: ['Ikuti tren', 'Buffer ikut arah order in bulan terakhir vs 2 bulan sebelumnya (×0,8–1,3).'],
   batas: ['Batas atas', 'Buffer paling banyak 10 hari forecast.'],
+  kuantil: ['Kuantil P90', 'Buffer dari rentang forecast SKU itu sendiri: (P90 − P50) disesuaikan ke service level dan lead time, ditambah selisih bila P50 di atas forecast dasar. P90 dari Chronos, regressor kuantil, atau error historis SKU.'],
   habiskan: ['Habiskan stok', 'Buffer 0 dan tidak produksi: untuk SKU edisi atau yang akan berhenti.']
 };
 var DEFAULT_SPREAD = 0.25;
@@ -1823,8 +1825,108 @@ function basisOf(s, mo, basis, past) {
   if (hq !== null && ml !== null) return { v: (hq + ml) / 2, src: 'Rata-rata' };
   return hq !== null ? { v: hq, src: 'HQ' } : ml !== null ? { v: ml, src: 'ML' } : null;
 }
+// Strategy picker: every strategy is replayed on the last closings (walk-forward: each month only uses
+// earlier months) and scored against actual order in. Score = (2 × shortfall + excess) ÷ order in, since
+// running short costs more than overstock. The SKU's own score is pulled toward its ABC-XYZ class
+// (and all SKUs) when it has few months; a new SKU takes its class's winner.
+// "Akurasi buffer" shown to the user = 1 − (shortfall + excess) ÷ order in.
+var BUFBT = { months: 6, shortW: 2, k: 2, minErr: 4 };
+var PICK = ['standar', 'defensif', 'tren', 'batas', 'kuantil'];
+function trendFac(s, m, k) {
+  var cms = m.closingMonths, ms = cms.slice(Math.max(0, k - 3), k), prev = ms.slice(0, -1).map(function (x) { return s.oi[x] || 0; });
+  var avg = prev.length ? prev.reduce(function (a, c) { return a + c; }, 0) / prev.length : 0;
+  return avg > 0 && k > 0 ? Math.min(1.3, Math.max(0.8, (s.oi[cms[k - 1]] || 0) / avg)) : 1;
+}
+// order in ÷ basis forecast over the 6 months before index k
+function errRatios(s, m, k, basis) {
+  var cms = m.closingMonths, out = [];
+  for (var j = Math.max(0, k - BUFBT.months); j < k; j++) {
+    var mo = cms[j], y = s.oi[mo]; if (y === undefined) continue;
+    var b = basisOf(s, mo, basis, true); if (!b || !(b.v > 0)) continue;
+    out.push(Math.min(5, Math.max(0, (y || 0) / b.v)));
+  }
+  return out;
+}
+// P50 / P90 for SKU s at month index k (k = number of closings means the buffer month). First source that exists:
+// Chronos (CSV) → quantile regressor (browser) → the SKU's own past errors → its ABC-XYZ class's past errors.
+function quantAt(s, m, k, F, basis) {
+  var cms = m.closingMonths, fut = k >= cms.length, mo = fut ? m.future[0] : cms[k], C = m.chr || {}, G = m.gbr || {};
+  var c = fut ? C.fut && C.fut[s.key] && C.fut[s.key][mo] : C.btq && C.btq[s.key] && C.btq[s.key][mo];
+  if (c && typeof c.p50 === 'number' && typeof c.p90 === 'number') return { p50: c.p50, p90: Math.max(c.p50, c.p90), src: 'Chronos' };
+  var g50 = (fut ? G.fut : G.bt) || {}, g90 = (fut ? G.qfut : G.qbt) || {}, a = g50[s.key] && g50[s.key][mo], b = g90[s.key] && g90[s.key][mo];
+  if (typeof a === 'number' && typeof b === 'number') return { p50: a, p90: Math.max(a, b), src: 'Regressor kuantil' };
+  if (!(F > 0)) return null;
+  var e = errRatios(s, m, k, basis), src = 'error historis SKU (' + e.length + ' bln)';
+  if (e.length < BUFBT.minErr) {
+    var pk = basis + '|' + k, P = (m._qPool = m._qPool || {})[pk];
+    if (!P) { P = m._qPool[pk] = {}; m.skus.forEach(function (x) { var c2 = x.cls ? x.cls.code : '?'; P[c2] = (P[c2] || []).concat(errRatios(x, m, k, basis)); }); }
+    var code = s.cls ? s.cls.code : '?';
+    if ((P[code] || []).length < BUFBT.minErr) return null;
+    e = P[code]; src = 'error historis kelas ' + code;
+  }
+  return { p50: F * qtl(e, 0.5), p90: F * Math.max(qtl(e, 0.5), qtl(e, 0.9)), src: src };
+}
+// buffer for strategy st; sp = SKU error spread, tf = trend factor, q = quantiles
+function stratBuf(st, F, z0, sp, ltF, tf, q) {
+  var std = z0 * sp * F * ltF;
+  if (st === 'defensif') return Math.max(z0, 2.05) * sp * F * ltF * 1.15;
+  if (st === 'tren') return std * tf;
+  if (st === 'batas') return Math.min(std, F * 10 / 30);
+  if (st === 'kuantil') return q ? Math.max(0, q.p50 - F) + Math.max(0, q.p90 - q.p50) * z0 / 1.2816 * ltF : std;
+  if (st === 'habiskan') return 0;
+  return std;
+}
+function bbAdd(o, st, F, buf, y) { var x = o[st] = o[st] || { short: 0, exc: 0, oi: 0, n: 0, cov: 0 }, p = F + buf; x.short += Math.max(0, y - p); x.exc += Math.max(0, p - y); x.oi += y; x.n++; if (p >= y) x.cov++; }
+function bbRate(x) { return x && x.oi > 0 ? (BUFBT.shortW * x.short + x.exc) / x.oi : null; }
+function bbAcc(x) { return x && x.oi > 0 ? Math.max(0, 1 - (x.short + x.exc) / x.oi) * 100 : null; }
+function bbPick(R, s) {
+  var own = R.sku[s.key] || {}, cl = R.cls[s.cls ? s.cls.code : '?'] || {}, best = null;
+  PICK.forEach(function (st) {
+    var pr = bbRate(cl[st]); if (pr === null) pr = bbRate(R.glob[st]);
+    var o = own[st], orr = bbRate(o), r = orr !== null ? (o.n * orr + BUFBT.k * (pr === null ? orr : pr)) / (o.n + BUFBT.k) : pr;
+    if (r !== null && (!best || r < best.r - 1e-9)) best = { st: st, r: r };
+  });
+  if (!best) return null;
+  var o2 = own[best.st], os = own.standar;
+  best.own = !!(o2 && o2.n);
+  best.why = best.own ? 'backtest ' + o2.n + ' bln: akurasi buffer ' + fmt.format(Math.round(bbAcc(o2))) + '%, tertutup ' + o2.cov + '/' + o2.n + ' bln' + (best.st !== 'standar' && os ? ' (Standar ' + fmt.format(Math.round(bbAcc(os))) + '%, ' + os.cov + '/' + os.n + ')' : '')
+    : 'belum ada histori: ikut pemenang kelas ' + (s.cls ? s.cls.code : '–');
+  return best;
+}
+function bufBacktest(m, cfg) {
+  var key = cfg.basis + '|' + cfg.sl + '|' + cfg.lt;
+  if (m._bfbt && m._bfbt.key === key) return m._bfbt;
+  var cms = m.closingMonths, K = cms.length, z0 = BUF_Z[cfg.sl] || 1.64, ltF = Math.sqrt(cfg.lt / 30);
+  var R = { key: key, sku: {}, cls: {}, glob: {}, auto: {}, months: [], pick: {} };
+  for (var k = Math.max(2, K - BUFBT.months); k < K; k++) {
+    var mo = cms[k], pend = [];
+    m.fams.forEach(function (f) {
+      var sp = familySpread(f, m, cfg.basis, k).v * 1.4;
+      f.skus.forEach(function (s) {
+        var y = s.oi[mo]; if (y === undefined) return; y = y || 0;
+        var b = basisOf(s, mo, cfg.basis, true); if (!b) return;
+        var F = Math.max(0, b.v), q = quantAt(s, m, k, F, cfg.basis), tf = trendFac(s, m, k), bufs = {};
+        PICK.forEach(function (st) { bufs[st] = stratBuf(st, F, z0, sp, ltF, tf, q); });
+        var pk = bbPick(R, s), ast = pk ? pk.st : 'standar'; // what Otomatis would have chosen with earlier months only
+        bbAdd(R.auto, 'auto', F, bufs[ast], y);
+        pend.push([s, F, bufs, y]);
+      });
+    });
+    pend.forEach(function (a) { // added after the month so picks above only saw earlier months
+      var s = a[0], c = s.cls ? s.cls.code : '?';
+      PICK.forEach(function (st) { [R.sku[s.key] = R.sku[s.key] || {}, R.cls[c] = R.cls[c] || {}, R.glob].forEach(function (o) { bbAdd(o, st, a[1], a[2][st], a[3]); }); });
+    });
+    if (pend.length) R.months.push(mo);
+  }
+  m.skus.forEach(function (s) { var p = bbPick(R, s); if (p) R.pick[s.key] = p; });
+  m._bfbt = R;
+  return R;
+}
 function autoStrategy(s, m) {
   if (/\b(edition|edisi|limited|beli \d+ gratis|ramadh?an|lebaran|timnas|pokemon)\b/i.test(s.name || '') || s.status === 'cek' && s.hits.some(function (h) { return h.id === 'kata'; })) return ['habiskan', 'nama menunjukkan edisi/akan berhenti'];
+  var pk = m._bfbt && m._bfbt.pick[s.key];
+  if (pk) return [pk.st, pk.why];
+  // too little history for a backtest: fixed rules
   var ms = m.closingMonths.slice(-3), u = 0, o = 0;
   ms.forEach(function (mo) { if (typeof s.hq[mo] === 'number' && s.oi[mo] !== undefined) { u += s.hq[mo]; o += s.oi[mo] || 0; } });
   if (o > 0 && u < o * 0.9) return ['defensif', 'HQ ' + fmt.format(Math.round((1 - u / o) * 100)) + '% di bawah order in 3 bulan terakhir'];
@@ -1832,29 +1934,31 @@ function autoStrategy(s, m) {
   if (L && prev.length) { var avg = prev.reduce(function (a, b) { return a + b; }, 0) / prev.length; if (avg > 0 && Math.abs((s.oi[L] || 0) / avg - 1) >= 0.15) return ['tren', 'order in ' + monthLabel(L) + ' ' + pctS(((s.oi[L] || 0) / avg - 1) * 100) + ' vs rata-rata sebelumnya']; }
   return ['standar', 'tidak ada pola khusus'];
 }
-function familySpread(f, m, basis) {
-  var ms = m.closingMonths.slice(-6), se = 0, so = 0, k = 0;
+// error spread of family f from the 6 closings before month index k (default: all closings)
+function familySpread(f, m, basis, k) {
+  var cms = m.closingMonths, K = k === undefined ? cms.length : k, ms = cms.slice(Math.max(0, K - 6), K), se = 0, so = 0, n2 = 0;
   ms.forEach(function (mo) {
     var F = 0, O = 0, any = false;
     f.skus.forEach(function (s) { if (s.oi[mo] === undefined) return; var b = basisOf(s, mo, basis, true); if (!b) return; F += b.v; O += s.oi[mo] || 0; any = true; });
-    if (any && O > 0) { se += (F - O) * (F - O); so += O; k++; }
+    if (any && O > 0) { se += (F - O) * (F - O); so += O; n2++; }
   });
-  return k >= 2 ? { v: Math.sqrt(se / k) / (so / k), n: k } : { v: DEFAULT_SPREAD, n: k, dflt: true };
+  return n2 >= 2 ? { v: Math.sqrt(se / n2) / (so / n2), n: n2 } : { v: DEFAULT_SPREAD, n: n2, dflt: true };
 }
 function bufferModel(m) {
-  var cfg = bufCfg(), z0 = BUF_Z[cfg.sl] || 1.64, ltF = Math.sqrt(cfg.lt / 30), mo = m.future[0], rows = [];
+  var cfg = bufCfg(), z0 = BUF_Z[cfg.sl] || 1.64, ltF = Math.sqrt(cfg.lt / 30), mo = m.future[0], rows = [], K = m.closingMonths.length;
+  var bt = bufBacktest(m, cfg);
   m.fams.forEach(function (f) {
     var sp = familySpread(f, m, cfg.basis), spS = sp.v * 1.4;
     f.buf = { spread: sp };
     f.skus.forEach(function (s) {
       var b = basisOf(s, mo, cfg.basis, false), F = b ? Math.max(0, b.v) : 0;
       var auto = autoStrategy(s, m), st = state.bufStrat[s.key] || state.bufStrat['fam:' + f.key] || state.bufStrat['fam:' + f.base] || auto[0];
-      var z = z0, fac = 1, note = '';
+      var z = z0, fac = 1, note = '', q = quantAt(s, m, K, F, cfg.basis), tf = trendFac(s, m, K);
       if (st === 'defensif') { z = Math.max(z0, 2.05); fac = 1.15; }
-      if (st === 'tren') { var ms = m.closingMonths.slice(-3), prev = ms.slice(0, -1).map(function (x) { return s.oi[x] || 0; }), avg = prev.length ? prev.reduce(function (a, c) { return a + c; }, 0) / prev.length : 0; fac = avg > 0 ? Math.min(1.3, Math.max(0.8, (s.oi[m.latest] || 0) / avg)) : 1; note = '×' + fmt.format(Math.round(fac * 100) / 100) + ' tren'; }
-      var sug = z * spS * F * ltF * fac;
-      if (st === 'batas') { var cap = F * 10 / 30; if (sug > cap) { sug = cap; note = 'dibatasi 10 hari'; } }
-      if (st === 'habiskan') sug = 0;
+      if (st === 'tren') { fac = tf; note = '×' + fmt.format(Math.round(fac * 100) / 100) + ' tren'; }
+      var sug = stratBuf(st, F, z0, spS, ltF, tf, q);
+      if (st === 'batas' && z0 * spS * F * ltF > F * 10 / 30) note = 'dibatasi 10 hari';
+      if (st === 'kuantil') note = q ? 'P50 ' + n(Math.round(q.p50)) + ', P90 ' + n(Math.round(q.p90)) + ' dari ' + q.src : 'belum ada P90 (Chronos, regressor atau error historis), memakai rumus Standar';
       sug = Math.round(sug);
       var ed = state.bufEdits[s.key], fin = ed && typeof ed.v === 'number' ? ed.v : sug;
       var fs = s.fs || 0, prod = st === 'habiskan' ? 0 : Math.max(0, Math.round(F + fin - fs));
@@ -1867,11 +1971,11 @@ function bufferModel(m) {
       else if (old && fin > old * 1.1) status = ['Buffer naik', 'up'];
       else if (old && fin < old * 0.9) status = ['Buffer turun', 'down'];
       else status = ['Sesuai', 'same'];
-      s.bf = { F: F, src: b ? b.src : 'tidak ada forecast', z: z, spread: spS, spreadInfo: sp, ltF: ltF, fac: fac, st: st, auto: auto, sug: sug, fin: fin, ed: ed || null, days: F > 0 ? fin / (F / 30) : null, prod: prod, rm: s.nw ? prod * s.nw / 1000 : null, old: old, fs: fs, status: status, note: note };
+      s.bf = { q: q, bt: bt.sku[s.key] || null, F: F, src: b ? b.src : 'tidak ada forecast', z: z, spread: spS, spreadInfo: sp, ltF: ltF, fac: fac, st: st, auto: auto, sug: sug, fin: fin, ed: ed || null, days: F > 0 ? fin / (F / 30) : null, prod: prod, rm: s.nw ? prod * s.nw / 1000 : null, old: old, fs: fs, status: status, note: note };
       rows.push(s);
     });
   });
-  return { cfg: cfg, month: mo, rows: rows };
+  return { cfg: cfg, month: mo, rows: rows, bt: bt };
 }
 function bfAgg(list) {
   var a = { fs: 0, F: 0, old: 0, sug: 0, fin: 0, prod: 0, rm: 0, rmN: 0 };
@@ -1900,6 +2004,18 @@ function renderBuffer(m) {
   CH.lists.bfRm = { title: 'Kebutuhan bahan baku · ' + monthLabel(mo), note: '<b>Dummy.</b> Data BOM (bahan per karton) belum ada, jadi kebutuhan bahan baku belum dihitung. Setelah BOM tersedia, daftar ini berisi bahan baku × rencana produksi per SKU.', head: [], rows: [] };
   CH.lists.bfLow = { title: 'SKU stok di bawah buffer', tab: 'Buffer', note: 'Stok bebas lebih kecil dari buffer final: perlu produksi di awal ' + monthLabel(mo) + '.', head: [['SKU'], ['Stok bebas', 1], ['Buffer final', 1], ['Kurang', 1], ['Rencana produksi', 1]],
     rows: low.map(function (s) { var b = s.bf; return [sk(s), n(b.fs), n(b.fin), '<b class="red">' + n(b.fs - b.fin) + '</b>', n(b.prod)]; }), keys: keys(low) };
+  // strategy backtest + ABC-XYZ
+  var BT = bm.bt, pct0 = function (v) { return v === null ? '–' : fmt.format(Math.round(v)) + '%'; }, cnt = {};
+  bm.rows.forEach(function (s) { if (s.bf.st !== 'habiskan') cnt[s.bf.st] = (cnt[s.bf.st] || 0) + 1; });
+  var auto = BT.auto.auto, stdG = BT.glob.standar, btRow = function (lbl, x, c) { return [lbl, pct0(bbAcc(x)), x ? fmt.format(Math.round(x.cov / x.n * 100)) + '%' : '–', x ? n(Math.round(x.short)) : '–', x ? n(Math.round(x.exc)) : '–', c === undefined ? '' : n(c)]; };
+  var btPill = !auto || !stdG || BT.months.length < 3 ? ['', ''] : Math.round(bbAcc(auto)) > Math.round(bbAcc(stdG)) ? ['Lebih akurat', 'ok'] : Math.round(bbAcc(auto)) === Math.round(bbAcc(stdG)) ? ['Sama', ''] : ['Cek', 'warn'];
+  CH.lists.bfAcc = { title: 'Akurasi buffer per strategi · backtest ' + BT.months.length + ' bulan', note: 'Setiap strategi diputar ulang di ' + (BT.months.length ? monthLabel(BT.months[0]) + '–' + monthLabel(BT.months[BT.months.length - 1]) : '–') + ' dengan data sebelum bulan itu saja, lalu dibandingkan dengan order in aktual. <b>Akurasi buffer</b> = 1 − (kurang + lebih) ÷ order in. <b>Tertutup</b> = bulan SKU dengan forecast + buffer ≥ order in. <b>Otomatis</b> memilih per SKU strategi dengan skor terbaik (kurang dihitung 2× lebih berat dari lebih), dari bulan-bulan sebelumnya saja; SKU dengan histori sedikit ikut kelas ABC-XYZ-nya. Habiskan stok tidak ikut dibandingkan.', head: [['Strategi'], ['Akurasi buffer', 1], ['Tertutup', 1], ['Kurang (ctn)', 1], ['Lebih (ctn)', 1], ['SKU memakai sekarang', 1]],
+    rows: [btRow('<b>Otomatis (pilihan per SKU)</b>', auto)].concat(PICK.map(function (st) { return btRow(STRATS[st][0] + ' untuk semua', BT.glob[st], cnt[st] || 0); })), keys: [] };
+  var clsRows = bm.rows.filter(function (s) { return s.cls; }).sort(function (a, b) { return (b.cls.mis ? 1 : 0) - (a.cls.mis ? 1 : 0) || b.cls.vol - a.cls.vol; });
+  var cc = {}; clsRows.forEach(function (s) { var c = s.cls.code === 'NPD' ? 'NPD' : s.cls.abc; cc[c] = (cc[c] || 0) + 1; });
+  var mis = clsRows.filter(function (s) { return s.cls.mis; });
+  CH.lists.bfCls = { title: 'Kelas ABC-XYZ dari order in · ' + (m.clsWin.length ? monthLabel(m.clsWin[0]) + '–' + monthLabel(m.clsWin[m.clsWin.length - 1]) : '–'), tab: 'Buffer', note: '<b>ABC</b> menurut volume order in ' + m.clsWin.length + ' closing terakhir: A = SKU yang membentuk 80% pertama, B = 15% berikutnya, C = sisanya. <b>XYZ</b> menurut kestabilan (CV order in bulanan): X &lt; 0,5 stabil, Y 0,5–1 berubah-ubah, Z &gt; 1 tidak menentu. <b>NPD</b> = order in kurang dari 3 bulan. Dihitung ulang tiap closing. Kelas HQ tetap ditampilkan sebagai referensi; <span class="mtag">beda</span> = HQ A tetapi volume C, atau HQ bukan A tetapi volume A. Kelas dipakai untuk SKU dengan histori sedikit (strategi, P90) dan sebagai fitur Regressor.', head: [['SKU'], ['ABC-XYZ'], ['Kelas HQ'], ['Order in ' + m.clsWin.length + ' bln', 1], ['CV', 1], ['Strategi']],
+    rows: clsRows.map(function (s) { var c = s.cls; return [sk(s), '<b>' + c.code + '</b>', esc(s.hqCls || '–') + (c.mis ? ' <span class="mtag">beda</span>' : ''), n(Math.round(c.vol)), c.cv === null ? '–' : fmt.format(Math.round(c.cv * 100) / 100), STRATS[s.bf.st][0]]; }), keys: keys(clsRows) };
   CH.lists.bfNoP = { title: 'SKU tanpa produksi · ' + monthLabel(mo), tab: 'Buffer', note: 'Stok bebas sudah menutup forecast + buffer. Kelebihan = stok bebas − forecast − buffer.', head: [['SKU'], ['Stok bebas', 1], ['Forecast', 1], ['Buffer', 1], ['Kelebihan', 1]],
     rows: noP.map(function (s) { var b = s.bf; return [sk(s), n(b.fs), n(Math.round(b.F)), n(b.fin), n(Math.round(b.fs - b.F - b.fin))]; }), keys: keys(noP) };
   $('bfCards').innerHTML =
@@ -1907,6 +2023,8 @@ function renderBuffer(m) {
     listCard('bfProd', 'Rencana produksi ' + monthLabel(mo), n(tot.prod), prodL.length + ' SKU. Dengan aturan lama + Forecast HQ: ' + n(Math.round(oldProd)) + ' (' + signed(tot.prod - oldProd) + ').', 'Hasil', '') +
     listCard('bfRm', 'Kebutuhan bahan baku ' + monthLabel(mo), '–', 'Dummy: data BOM belum ada, jadi kebutuhan bahan baku belum dihitung.', 'Dummy', '') +
     listCard('bfLow', 'SKU stok di bawah buffer', n(low.length) + ' SKU', low.length ? 'Stok bebas ' + n(low.reduce(function (a, s) { return a + s.bf.fs; }, 0)) + ' vs buffer ' + n(low.reduce(function (a, s) { return a + s.bf.fin; }, 0)) + '. Perlu produksi di awal ' + monthLabel(mo) + '.' : 'Semua SKU punya stok di atas buffer.', low.length ? 'Risiko kurang' : 'Aman', low.length ? 'bad' : 'ok') +
+    listCard('bfAcc', 'Akurasi buffer · backtest ' + BT.months.length + ' bln', pct0(bbAcc(auto)), (auto ? 'Otomatis per SKU: forecast + buffer menutup order in ' + fmt.format(Math.round(auto.cov / auto.n * 100)) + '% SKU-bulan. Standar untuk semua: ' + pct0(bbAcc(stdG)) + ', tertutup ' + fmt.format(Math.round(stdG.cov / stdG.n * 100)) + '%.' : 'Perlu minimal 3 closing untuk backtest strategi.') + (auto && BT.months.length < 3 ? ' Backtest baru ' + BT.months.length + ' bulan: belum bisa diandalkan.' : ''), btPill[0], btPill[1]) +
+    listCard('bfCls', 'Kelas ABC-XYZ', ['A', 'B', 'C', 'NPD'].filter(function (c) { return cc[c]; }).map(function (c) { return c + ' ' + cc[c]; }).join(' · ') || '–', 'Dari volume dan kestabilan order in, dihitung ulang tiap closing.' + (mis.length ? ' ' + mis.length + ' SKU beda jauh dengan kelas HQ.' : ''), mis.length ? mis.length + ' beda HQ' : '', mis.length ? 'warn' : '') +
     listCard('bfNoP', 'SKU tanpa produksi ' + monthLabel(mo), n(noP.length) + ' SKU', noP.length ? 'Stok bebas ' + n(noP.reduce(function (a, s) { return a + s.bf.fs; }, 0)) + ' karton sudah menutup forecast + buffer.' : 'Semua SKU perlu produksi.', noP.length ? 'Stok berlebih' : '', noP.length ? 'warn' : '');
   var h = '<thead><tr><th rowspan="2" class="l">Famili + SKU</th><th colspan="2" class="grp sep">DASAR · ' + monthLabel(mo) + '</th><th colspan="5" class="grp sep">BUFFER</th><th colspan="3" class="grp sep">HASIL · ' + monthLabel(mo) + '</th></tr><tr>' +
     '<th class="num sep wrap2">Stok bebas akhir ' + monthLabel(L) + '</th><th class="num wrap2">' + esc(basisName) + '</th>' +
@@ -1929,7 +2047,7 @@ function renderBuffer(m) {
     if (open) {
       fsk.slice(0, bq ? Infinity : lim).forEach(function (s) {
         var b = s.bf;
-        h += '<tr class="sku"><td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + esc(s.nomat || s.art || '') + (b.src !== 'HQ' && b.src !== 'ML' && b.src !== 'Rata-rata' ? ' · ' + esc(b.src) : '') + '</span></td>' +
+        h += '<tr class="sku"><td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + esc(s.nomat || s.art || '') + (s.cls ? ' · <span title="Kelas ABC-XYZ dari order in">' + s.cls.code + '</span>' : '') + (b.src !== 'HQ' && b.src !== 'ML' && b.src !== 'Rata-rata' ? ' · ' + esc(b.src) : '') + '</span></td>' +
           '<td class="num sep">' + n(b.fs) + '</td><td class="num">' + n(Math.round(b.F)) + '</td><td class="num sep">' + n(b.old) + '</td><td class="num bsug">' + n(b.sug) + '</td>' +
           '<td class="num bfin' + (b.ed ? ' edited' : '') + '" tabindex="0" data-bfin="' + esc(s.key) + '" title="' + (b.ed ? 'Manual: ' + esc(b.ed.reason || '') + ' (saran ' + n(b.sug) + ')' : 'Klik untuk mengubah; alasan wajib') + '">' + n(b.fin) + (b.ed ? ' <span class="mtag">manual</span>' : '') + '</td>' +
           '<td class="num">' + (b.days === null ? '–' : fmt.format(Math.round(b.days * 10) / 10)) + '</td><td>' + stratSel(s.key, state.bufStrat[s.key] || '', b.auto[0], false) + '</td>' +
@@ -2475,6 +2593,7 @@ function forecastModel(c) {
     s.row[m] = r.source_row ? +r.source_row : null; s.flag[m] = r.font_flag || null;
     if (m === latest) { s.fs = typeof r.free_stock === 'number' ? r.free_stock : null; s.soh = typeof r.stock_on_hand === 'number' ? r.stock_on_hand : s.fs; s.buf0 = typeof r.buffer_suggestion === 'number' ? r.buffer_suggestion : null; s.dn = typeof r.outstanding_delivery === 'number' ? r.outstanding_delivery : null; s.blk = typeof r.sc_block === 'number' ? r.sc_block : null; }
     if (typeof r.net_weight_kg === 'number' && r.net_weight_kg > 0) s.nw = r.net_weight_kg;
+    if (r.hq_class && (!s.hqClsM || m >= s.hqClsM)) { s.hqCls = r.hq_class; s.hqClsM = m; }
   });
   fcRows.forEach(function (r) {
     var s = find(r.nomat, r.article_code) || make(r.nomat, r.article_code);
@@ -2522,6 +2641,7 @@ function forecastModel(c) {
   famList.sort(function (a, b) { return (a.brand === b.brand ? 0 : (bw[b.brand] - bw[a.brand]) || (a.brand < b.brand ? -1 : 1)) || b.weight - a.weight; }); // same brand together
   famList.forEach(function (f) { f.skus.sort(function (a, b) { return b.weight - a.weight; }); f.excl.sort(function (a, b) { return b.weight - a.weight; }); });
   mm.skus = incl; mm.fams = famList; mm.excl = skus.filter(function (s) { return incl.indexOf(s) < 0; });
+  abcXyz(mm);
   runML(mm);
   return mm;
 }
@@ -2581,6 +2701,39 @@ function mlPredict(s, cms, k, h, q, Rs) {
   var ml = holt !== null && hqc !== null ? w * holt + (1 - w) * hqc : holt !== null ? holt : hqc !== null ? hqc : null;
   return { ml: ml, holt: holt, hqc: hqc, r: r, w: holt !== null && hqc !== null ? w : holt !== null ? 1 : 0 };
 }
+/* ---------- ABC-XYZ class from order in (rule, not a model) ---------- */
+// ABC by volume over the last 6 closings: A = SKUs making the first 80% of order in, B = the next 15%, C = the rest.
+// XYZ by stability: coefficient of variation of monthly order in since the SKU first appeared:
+// X < 0.5 (steady), Y 0.5–1.0 (variable), Z > 1.0 (erratic). Fewer than 3 months of order in = NPD (new).
+// Recomputed every closing; the HQ class (Stock Level Check) stays as a reference.
+var ABC = { months: 6, a: 0.8, b: 0.95, x: 0.5, y: 1.0, minMonths: 3 };
+function cvOf(vals) {
+  if (vals.length < 2) return null;
+  var mu = vals.reduce(function (a, b) { return a + b; }, 0) / vals.length; if (mu <= 0) return null;
+  var v = vals.reduce(function (a, b) { return a + (b - mu) * (b - mu); }, 0) / (vals.length - 1);
+  return Math.sqrt(v) / mu;
+}
+function abcXyz(m) {
+  var cms = m.closingMonths, win = cms.slice(-ABC.months), tot = 0, list = [];
+  m.skus.forEach(function (s) {
+    var ser = oiSeries(s, cms, cms.length).slice(-ABC.months).filter(function (v) { return v !== null; });
+    var vol = ser.reduce(function (a, b) { return a + b; }, 0);
+    s.cls = { vol: vol, n: ser.length, cv: cvOf(ser), abc: null, xyz: null, code: 'NPD' };
+    tot += vol; list.push(s);
+  });
+  list.sort(function (a, b) { return b.cls.vol - a.cls.vol; });
+  var cum = 0;
+  list.forEach(function (s) {
+    var c = s.cls, share = tot > 0 ? (cum + c.vol / 2) / tot : 1; cum += c.vol; // midpoint share: one big SKU is still A
+    c.abc = c.vol <= 0 ? 'C' : share <= ABC.a ? 'A' : share <= ABC.b ? 'B' : 'C';
+    c.xyz = c.cv === null ? 'Z' : c.cv < ABC.x ? 'X' : c.cv <= ABC.y ? 'Y' : 'Z';
+    c.code = c.n < ABC.minMonths ? 'NPD' : c.abc + c.xyz;
+    // HQ class A = Pareto; flag when our volume class disagrees clearly
+    var h = String(s.hqCls || '').toUpperCase();
+    c.mis = c.n >= ABC.minMonths && h && h !== 'NPD' && ((h === 'A' && c.abc === 'C') || (h !== 'A' && c.abc === 'A')) ? h : null;
+  });
+  m.clsWin = win;
+}
 /* ---------- Forecast ML v2: four models + ensemble ---------- */
 // Models per SKU (all forecast order in, cartons):
 //   holt    damped Holt on order in (browser)
@@ -2593,10 +2746,12 @@ function mlPredict(s, cms, k, h, q, Rs) {
 var MODELS = { holt: 'Holt', hqc: 'HQ terkoreksi', gbr: 'Regressor', chronos: 'Chronos' };
 var MODEL_KEYS = ['holt', 'hqc', 'gbr', 'chronos'];
 var ENS = { prior: 0.6, catK: 3, skuK: 2, eqK: 2, floor: 0.05 };
-var GBR = { trees: 80, depth: 3, lr: 0.1, bins: 32, minRows: 12, btMonths: 6 };
+var GBR = { trees: 80, depth: 3, lr: 0.1, bins: 32, minRows: 12, btMonths: 6, tau: 0.9 };
 function lg(v) { return v === null || v === undefined || !isFinite(v) ? -1 : Math.log1p(Math.max(0, v)); }
 // ---- tiny gradient boosting (squared loss, histogram splits, deterministic) ----
-function gbmFit(X, y) {
+// tau given: quantile regression (pinball loss): splits on the sign gradient, leaf = tau-quantile of the residuals.
+function qtl(arr, tau) { if (!arr.length) return 0; var a = arr.slice().sort(function (x, y) { return x - y; }), p = tau * (a.length - 1), i = Math.floor(p); return i + 1 < a.length ? a[i] + (p - i) * (a[i + 1] - a[i]) : a[i]; }
+function gbmFit(X, y, tau) {
   var n = X.length, d = X[0].length, edges = [], B = [];
   for (var f = 0; f < d; f++) {
     var vals = X.map(function (r) { return r[f]; }).sort(function (a, b) { return a - b; }), e = [];
@@ -2604,11 +2759,12 @@ function gbmFit(X, y) {
     edges.push(e);
   }
   for (var i = 0; i < n; i++) { var row = []; for (var f2 = 0; f2 < d; f2++) { var e2 = edges[f2], b = 0; while (b < e2.length && X[i][f2] > e2[b]) b++; row.push(b); } B.push(row); }
-  var base = y.reduce(function (a, b) { return a + b; }, 0) / n, pred = y.map(function () { return base; }), trees = [];
+  var base = tau ? qtl(y, tau) : y.reduce(function (a, b) { return a + b; }, 0) / n, pred = y.map(function () { return base; }), trees = [], raw = null;
   var minLeaf = Math.max(3, Math.floor(n / 40));
   var build = function (idx, r, depth) {
     var S = 0; idx.forEach(function (i) { S += r[i]; });
-    if (depth >= GBR.depth || idx.length < 2 * minLeaf) return { v: S / idx.length };
+    var leaf = function () { return { v: tau ? qtl(idx.map(function (i) { return raw[i]; }), tau) : S / idx.length }; };
+    if (depth >= GBR.depth || idx.length < 2 * minLeaf) return leaf();
     var best = null;
     for (var f = 0; f < d; f++) {
       var nb = edges[f].length + 1, hs = new Float64Array(nb), hc = new Int32Array(nb);
@@ -2620,13 +2776,15 @@ function gbmFit(X, y) {
         if (g > 1e-9 && (!best || g > best.g)) best = { g: g, f: f, b: b };
       }
     }
-    if (!best) return { v: S / idx.length };
+    if (!best) return leaf();
     var L = [], R = []; idx.forEach(function (i) { (B[i][best.f] <= best.b ? L : R).push(i); });
     return { f: best.f, t: edges[best.f][best.b], l: build(L, r, depth + 1), r: build(R, r, depth + 1) };
   };
   var all = []; for (var k = 0; k < n; k++) all.push(k);
   for (var t = 0; t < GBR.trees; t++) {
-    var res = y.map(function (v, i) { return v - pred[i]; }), tr = build(all, res, 0);
+    var res = y.map(function (v, i) { return v - pred[i]; });
+    if (tau) { raw = res; res = res.map(function (v) { return v > 0 ? tau : tau - 1; }); }
+    var tr = build(all, res, 0);
     trees.push(tr); for (var j = 0; j < n; j++) pred[j] += GBR.lr * gbmLeaf(tr, X[j]);
   }
   return { base: base, trees: trees, n: n };
@@ -2634,12 +2792,13 @@ function gbmFit(X, y) {
 function gbmLeaf(tr, x) { while (tr.v === undefined) tr = x[tr.f] <= tr.t ? tr.l : tr.r; return tr.v; }
 function gbmPredict(mdl, x) { var p = mdl.base; mdl.trees.forEach(function (tr) { p += GBR.lr * gbmLeaf(tr, x); }); return p; }
 // features for SKU s, history = closing months before index k, target month tm with HQ value q
-var GBR_FEATS = ['order in t-1', 'order in t-2', 'order in t-3', 'rata-rata 3 bln', 'Forecast HQ bulan target', 'rasio bias HQ', 'HQ terkoreksi', 'rata-rata kategori t-1', 'bulan kalender', 'jumlah bulan histori'];
+var GBR_FEATS = ['order in t-1', 'order in t-2', 'order in t-3', 'rata-rata 3 bln', 'Forecast HQ bulan target', 'rasio bias HQ', 'HQ terkoreksi', 'rata-rata kategori t-1', 'bulan kalender', 'jumlah bulan histori', 'stabilitas order in (CV)'];
 function gbrFeat(s, cms, k, tm, q, Rs, catMean) {
   var ser = oiSeries(s, cms, k), l1 = ser[k - 1], l2 = k >= 2 ? ser[k - 2] : null, l3 = k >= 3 ? ser[k - 3] : null;
   var nn = [l1, l2, l3].filter(function (v) { return v !== null && v !== undefined; }), mean = nn.length ? nn.reduce(function (a, b) { return a + b; }, 0) / nn.length : null;
   var r = skuRatio(s, cms, k, Rs[k]), qq = typeof q === 'number' && q > 0 ? q : null;
-  return [lg(l1), lg(l2), lg(l3), lg(mean), lg(qq), r, lg(qq === null ? null : qq * r), lg(catMean(k, s)), +tm.slice(5, 7), ser.filter(function (v) { return v !== null; }).length];
+  var nz = ser.filter(function (v) { return v !== null; }), cv = cvOf(nz.slice(-ABC.months));
+  return [lg(l1), lg(l2), lg(l3), lg(mean), lg(qq), r, lg(qq === null ? null : qq * r), lg(catMean(k, s)), +tm.slice(5, 7), nz.length, cv === null ? -1 : Math.min(3, cv)];
 }
 var _gbrCache = { key: null, res: null };
 function gbrRun(m, Rs) {
@@ -2664,12 +2823,16 @@ function gbrRun(m, Rs) {
     });
     return { X: X, y: y };
   };
-  var res = { bt: {}, fut: {}, n: {}, imp: null };
+  var res = { bt: {}, fut: {}, n: {}, imp: null, qbt: {}, qfut: {} }; // q*: P90 from a quantile model (buffer)
   // walk-forward backtest, one month ahead
   for (var b = Math.max(1, K - GBR.btMonths); b < K; b++) {
     var d = rows(1, b); if (d.X.length < GBR.minRows) continue;
-    var mdl = gbmFit(d.X, d.y), mo = cms[b];
-    skus.forEach(function (s) { if (!hasHist(s, b)) return; (res.bt[s.key] = res.bt[s.key] || {})[mo] = Math.max(0, Math.expm1(gbmPredict(mdl, gbrFeat(s, cms, b, mo, s.hq[mo], Rs, catMean)))); });
+    var mdl = gbmFit(d.X, d.y), mq = gbmFit(d.X, d.y, GBR.tau), mo = cms[b];
+    skus.forEach(function (s) {
+      if (!hasHist(s, b)) return; var x = gbrFeat(s, cms, b, mo, s.hq[mo], Rs, catMean);
+      (res.bt[s.key] = res.bt[s.key] || {})[mo] = Math.max(0, Math.expm1(gbmPredict(mdl, x)));
+      (res.qbt[s.key] = res.qbt[s.key] || {})[mo] = Math.max(0, Math.expm1(gbmPredict(mq, x)));
+    });
   }
   // future: one model per horizon; a horizon with too few rows uses the nearest shorter one
   var last = null;
@@ -2677,7 +2840,12 @@ function gbrRun(m, Rs) {
     var h = i + 1, d = rows(h, K), mdl = d.X.length >= GBR.minRows ? gbmFit(d.X, d.y) : null;
     if (mdl) { last = mdl; res.n[fm] = d.X.length; if (h === 1) res.imp = gbrImportance(mdl); } else { mdl = last; res.n[fm] = last ? 'dari horizon lebih pendek' : 0; }
     if (!mdl) return;
-    skus.forEach(function (s) { if (!hasHist(s, K)) return; (res.fut[s.key] = res.fut[s.key] || {})[fm] = Math.max(0, Math.expm1(gbmPredict(mdl, gbrFeat(s, cms, K, fm, s.fhq[fm], Rs, catMean)))); });
+    var mq = h === 1 && d.X.length >= GBR.minRows ? gbmFit(d.X, d.y, GBR.tau) : null; // buffer month only
+    skus.forEach(function (s) {
+      if (!hasHist(s, K)) return; var x = gbrFeat(s, cms, K, fm, s.fhq[fm], Rs, catMean);
+      (res.fut[s.key] = res.fut[s.key] || {})[fm] = Math.max(0, Math.expm1(gbmPredict(mdl, x)));
+      if (mq) (res.qfut[s.key] = res.qfut[s.key] || {})[fm] = Math.max(0, Math.expm1(gbmPredict(mq, x)));
+    });
   });
   _gbrCache = { key: key, res: res };
   return res;
@@ -2691,14 +2859,14 @@ function gbrImportance(mdl) {
 }
 // ---- Chronos output imported from ingest/forecast_chronos.py ----
 function chronosFor(m) {
-  var C = state.chronos, out = { bt: {}, fut: {}, stale: false, origin: null, model: null };
+  var C = state.chronos, out = { bt: {}, btq: {}, fut: {}, stale: false, origin: null, model: null };
   if (!C || !C.rows || !C.rows.length) return out;
   var by = {}; m.all.forEach(function (s) { by[s.key] = s; if (s.nomat) by[s.nomat] = s; if (s.art) by[s.art] = s; });
   out.model = C.model; out.origin = C.origin;
   C.rows.forEach(function (r) {
     var s = by[String(r.sku_key || '').toUpperCase()] || by[String(r.nomat || '').toUpperCase()] || by[String(r.article_code || '').toUpperCase()];
     if (!s || typeof r.p50 !== 'number') return;
-    if (r.kind === 'backtest') (out.bt[s.key] = out.bt[s.key] || {})[r.forecast_month] = Math.max(0, r.p50);
+    if (r.kind === 'backtest') { (out.bt[s.key] = out.bt[s.key] || {})[r.forecast_month] = Math.max(0, r.p50); (out.btq[s.key] = out.btq[s.key] || {})[r.forecast_month] = { p10: r.p10, p50: Math.max(0, r.p50), p90: r.p90 }; }
     else if (r.origin_month === m.latest) (out.fut[s.key] = out.fut[s.key] || {})[r.forecast_month] = { p10: r.p10, p50: Math.max(0, r.p50), p90: r.p90 };
     else out.stale = true;
   });
@@ -3957,13 +4125,16 @@ function bufWhy(k, anchor) {
     r('Sebaran error SKU (famili ' + fmt.format(Math.round(b.spreadInfo.v * 100)) + '% × 1,4)', fmt.format(Math.round(b.spread * 100)) + '%') +
     r('√(' + cfg.lt + ' ÷ 30)', d2(b.ltF)) +
     r('Faktor strategi', '×' + d2(b.fac)) +
+    (b.q ? r('P50 · P90 (' + esc(b.q.src) + ')', n(Math.round(b.q.p50)) + ' · ' + n(Math.round(b.q.p90))) : '') +
+    (s.cls ? r('Kelas ABC-XYZ' + (s.hqCls ? ' (HQ ' + esc(s.hqCls) + ')' : ''), s.cls.code) : '') +
     '<span class="tt">Buffer saran</span><span class="num tt">' + n(b.sug) + '</span>' +
     (b.ed ? r('Buffer final (manual)', n(b.fin)) : '') +
     r('Stok bebas', n(b.fs)) +
     '<span class="tt">Rencana produksi</span><span class="num tt">' + n(b.prod) + '</span>' +
     r('Buffer aturan lama', n(b.old)) + '</div>' +
     '<div class="mw"><b>Strategi: ' + STRATS[b.st][0] + '</b>' + (b.st === b.auto[0] && !state.bufStrat[s.key] ? ' (otomatis: ' + esc(b.auto[1]) + ')' : ' (dipilih manual)') + '. ' + STRATS[b.st][1] + (b.note ? ' ' + esc(b.note) + '.' : '') +
-    (b.ed ? '<br><b>Diubah manual</b> ' + esc(b.ed.at || '') + ': ' + esc(b.ed.reason || '') : '') + '</div>';
+    (b.ed ? '<br><b>Diubah manual</b> ' + esc(b.ed.at || '') + ': ' + esc(b.ed.reason || '') : '') + '</div>' +
+    (b.bt ? '<div class="mw"><b>Backtest SKU ini</b> (akurasi buffer · bulan tertutup):<br>' + PICK.filter(function (st) { return b.bt[st]; }).map(function (st) { var x = b.bt[st]; return (st === b.st ? '<b>' : '') + STRATS[st][0] + ' ' + fmt.format(Math.round(bbAcc(x) || 0)) + '% · ' + x.cov + '/' + x.n + (st === b.st ? '</b>' : ''); }).join('<br>') + '</div>' : '');
   bufPopover(anchor, h);
 }
 $('bfTable').addEventListener('click', function (e) {
@@ -4028,7 +4199,7 @@ var AI_HELP = '<b>Perintah (data diubah setelah Anda klik Terapkan):</b><ul>' +
   '<li><code>libur tgl 17</code> · <code>maintenance &lt;mesin&gt; tgl 9</code></li>' +
   '<li><code>pp target &lt;SKU&gt; = 5000</code> (atau <code>= otomatis</code> kembali ke Saran Buffer)</li>' +
   '<li><code>buffer &lt;SKU&gt; = 1200 alasan promo</code>: buffer final (alasan wajib)</li>' +
-  '<li><code>strategi &lt;SKU&gt; defensif</code> · <code>strategi famili paseo batas atas</code> · <code>… otomatis</code></li>' +
+  '<li><code>strategi &lt;SKU&gt; kuantil</code> · <code>strategi &lt;SKU&gt; defensif</code> · <code>strategi famili paseo batas atas</code> · <code>… otomatis</code></li>' +
   '<li><code>mesin &lt;SKU&gt; = softpack besar</code></li>' +
   '<li><code>status &lt;SKU&gt; diskontinu</code> (aktif / cek / otomatis)</li>' +
   '<li><code>order in &lt;SKU&gt; agu 26 = 5000</code> · <code>forecast hq &lt;SKU&gt; okt 26 = 4000</code> · <code>stok &lt;SKU&gt; = 300</code></li>' +
@@ -4094,8 +4265,8 @@ function aiRules(text) {
     var b2 = X.bf(p2.s.key); if (!b2) return aiSkuLabel(p2.s) + ' tidak dihitung di Saran Buffer.';
     return aiPropose('Buffer final ' + aiSkuLabel(p2.s) + ': ' + n(b2.bf.fin) + ' → <b>' + n(Math.round(v2)) + '</b> (saran ' + n(b2.bf.sug) + '). Alasan: ' + esc(reason), function () { state.bufEdits[p2.s.key] = { v: Math.round(v2), reason: reason, at: new Date().toISOString().slice(0, 10), sug: b2.bf.sug, name: p2.s.name }; saveBuf(); });
   }
-  if ((mm = lo.match(/^strategi\s+(.+?)\s*(?:=|:|\bjadi\b|\bke\b)?\s*(standar|defensif|ikuti tren|tren|batas atas|batas|habiskan stok|habiskan|otomatis)$/))) {
-    var sk = { 'standar': 'standar', 'defensif': 'defensif', 'ikuti tren': 'tren', 'tren': 'tren', 'batas atas': 'batas', 'batas': 'batas', 'habiskan stok': 'habiskan', 'habiskan': 'habiskan', 'otomatis': '' }[mm[2]];
+  if ((mm = lo.match(/^strategi\s+(.+?)\s*(?:=|:|\bjadi\b|\bke\b)?\s*(standar|defensif|ikuti tren|tren|batas atas|batas|kuantil|p90|habiskan stok|habiskan|otomatis)$/))) {
+    var sk = { 'standar': 'standar', 'defensif': 'defensif', 'ikuti tren': 'tren', 'tren': 'tren', 'batas atas': 'batas', 'batas': 'batas', 'kuantil': 'kuantil', 'p90': 'kuantil', 'habiskan stok': 'habiskan', 'habiskan': 'habiskan', 'otomatis': '' }[mm[2]];
     var fm2 = mm[1].match(/^famili\s+(.+)$/);
     if (fm2) {
       var fam = m.fams.filter(function (f) { return normName(f.name).indexOf(normName(fm2[1])) >= 0 || normName(f.key) === normName(fm2[1]); })[0]; if (!fam) return 'Famili "' + esc(fm2[1]) + '" tidak ditemukan.';
@@ -4182,7 +4353,7 @@ function aiFacts(text) {
   return f.join('\n');
 }
 var AI_SYS = 'Kamu asisten PPIC di pabrik tisu. Jawab singkat (maks 5 kalimat) dalam bahasa Indonesia. Gunakan HANYA fakta yang diberikan; jangan menghitung dan jangan mengarang angka. Jika fakta tidak cukup, katakan tidak tahu dan sarankan perintah "bantuan". ' +
-  'Jika pengguna ingin MENGUBAH data, balas HANYA satu baris perintah tanpa penjelasan, salah satu dari: "target <nomat> tgl <hari> = <angka>", "pp target <nomat> = <angka>", "pindah <nomat> ke <mesin> tgl <hari>", "libur tgl <hari>", "maintenance <mesin> tgl <hari>", "buffer <nomat> = <angka> alasan <teks>", "strategi <nomat> <standar|defensif|ikuti tren|batas atas|habiskan stok|otomatis>", "mesin <nomat> = <jenis mesin>", "status <nomat> <aktif|cek|diskontinu|otomatis>", "order in <nomat> <bulan> = <angka>", "kapasitas <mesin> = <angka>".';
+  'Jika pengguna ingin MENGUBAH data, balas HANYA satu baris perintah tanpa penjelasan, salah satu dari: "target <nomat> tgl <hari> = <angka>", "pp target <nomat> = <angka>", "pindah <nomat> ke <mesin> tgl <hari>", "libur tgl <hari>", "maintenance <mesin> tgl <hari>", "buffer <nomat> = <angka> alasan <teks>", "strategi <nomat> <standar|defensif|ikuti tren|batas atas|kuantil|habiskan stok|otomatis>", "mesin <nomat> = <jenis mesin>", "status <nomat> <aktif|cek|diskontinu|otomatis>", "order in <nomat> <bulan> = <angka>", "kapasitas <mesin> = <angka>".';
 var AI_CMD = /^(target|pp|pindah|libur|maintenance|buffer|strategi|mesin|status|order in|oi|forecast hq|hq|stok|kapasitas)\b/i;
 // AI engines, no download: 1) Claude through claude.ai (viewer's own plan limits) when the page is opened
 // as a claude.ai artifact, 2) Workers AI behind /api/ask on the Cloudflare site (free daily allowance), 3) rules only.
