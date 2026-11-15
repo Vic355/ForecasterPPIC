@@ -5,16 +5,16 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
 
 ## In progress (not on `main` yet)
 
-- **PR #9, Asisten lebih menonjol** (open): 👁 Tunjukkan spotlight on alerts with the assistant's eye and typed
+- **Production planning view**: a redesigned Rencana produksi view is being built in a separate thread.
+
+## 2026-11-15
+
+- **Asisten lebih menonjol (#9).** 👁 Tunjukkan spotlight on alerts with the assistant's eye and typed
   explanations; Fokus AI list of vital SKUs with *tandai tinjau* / *pelajari histori*; ⚑ review marks carried to
   Saran buffer and the export; Sinyal opens the Tanya tab with a history summary and why the ensemble chose its number;
   asymmetric **Skor buffer** 1 − (w × kurang + lebih) ÷ order in with a *Kurang dihitung* 2× / 3× setting; per-month
   backtest winners ("Defensif menang 5 dari 6 bulan"); *Arti strategi buffer* panel; recommendation thread in Saran
   buffer; P50/P90 sources and comparing two forecasts; `docs/panduan-asisten.md` with the answer rules.
-- **Production planning view**: a redesigned Rencana produksi view is being built in a separate thread.
-
-## 2026-11-15
-
 - **Desain 10 layout (#8).** New shell with a command bar (Ctrl K), an 8-step flow (Ringkasan, Input data, Material
   master, Cek data SKU, Forecast, Saran buffer, Rencana produksi, Monitoring harian) with step locks: each step opens
   after **Terima dan lanjut** on the previous one. Per-page alerts panel, settings, help through the chatbot. Input: one

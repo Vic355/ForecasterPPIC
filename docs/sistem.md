@@ -115,9 +115,9 @@ A chat panel on every page. A rules engine answers commands (`pp target <SKU> = 
 after **Terapkan**, and can be undone. Free-form questions go to Claude (when opened as a claude.ai artifact) or to
 Workers AI through `/api/ask`, given only the facts the app computed.
 
-PR #9 (open, not merged yet) makes the Asisten more prominent: 👁 Tunjukkan spotlight on alerts, a Fokus AI list of
+Since PR #9 the Asisten is more prominent: 👁 Tunjukkan spotlight on alerts, a Fokus AI list of
 vital SKUs, an asymmetric buffer score setting (*Kurang dihitung* 2× / 3×), per-month backtest winners, P50/P90
-sources and comparing two forecasts. Its rules are written up in `docs/panduan-asisten.md`, which arrives with that PR.
+sources and comparing two forecasts. Its answer rules are written up in [panduan-asisten.md](panduan-asisten.md).
 
 ## 8. Storage
 
