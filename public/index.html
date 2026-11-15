@@ -465,7 +465,7 @@ input[type=search] { font: inherit; font-weight: 400; color: var(--fg); backgrou
   <header>
     <div>
       <h1>PPIC Decision Support System <span class="h1sub">· The Univenus Serang · <b>PPIC Forecast Desk (bulanan)</b></span></h1>
-      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-15a</span></div>
+      <div class="sub">Histori closing, Forecast HQ dan kelas SKU untuk plant 7079, digabung jadi satu file per bulan. File dibaca di browser ini saja, tidak diunggah ke server. <span style="opacity:.7">Versi 2026-11-15b</span></div>
     </div>
     <nav class="tabs" aria-label="Lembar">
       <button type="button" class="tab on" data-tab="Forecast" aria-current="page">Forecast</button><button type="button" class="tab" data-tab="Buffer">Saran Buffer</button><button type="button" class="tab" data-tab="Plan">Rencana Produksi</button><button type="button" class="tab" data-tab="Cek">Cek Data SKU</button><button type="button" class="tab" data-tab="Input">Input Data &amp; Model</button><a class="tab" href="/produksi/" style="text-decoration:none;display:inline-flex;align-items:center;font-weight:600">Monitoring Produksi Harian ↗</a>
@@ -494,7 +494,7 @@ input[type=search] { font: inherit; font-weight: 400; color: var(--fg); backgrou
     <div class="ctx" id="bfCtx"></div>
     <section class="cards fcards" id="bfCards" aria-label="Ringkasan buffer"></section>
     <section class="panel bfctl" id="bfCtl" aria-label="Pengaturan buffer">
-      <div class="seg"><span>Dasar forecast</span><button type="button" data-bk="basis" data-bv="hq">Forecast HQ</button><button type="button" data-bk="basis" data-bv="ml">Forecast ML</button><button type="button" data-bk="basis" data-bv="avg">Rata-rata</button></div>
+      <div class="seg"><span>Dasar forecast</span><button type="button" data-bk="basis" data-bv="hq">Forecast HQ</button><button type="button" data-bk="basis" data-bv="ml" title="Ensemble dari Holt, HQ terkoreksi, Regressor dan Chronos">Ensemble ML</button><button type="button" data-bk="basis" data-bv="avg">Rata-rata</button><button type="button" data-bk="basis" data-bv="gbr" title="Hanya model Regressor">Regressor</button><button type="button" data-bk="basis" data-bv="chronos" title="Hanya Chronos (hasil yang diimpor)">Chronos</button></div>
       <div class="seg"><span>Service level</span><button type="button" data-bk="sl" data-bv="90">90%</button><button type="button" data-bk="sl" data-bv="95">95%</button><button type="button" data-bk="sl" data-bv="98">98%</button></div>
       <div class="seg"><span>Lead time bahan baku</span><button type="button" data-bk="lt" data-bv="7">7 hari</button><button type="button" data-bk="lt" data-bv="14">14 hari</button><button type="button" data-bk="lt" data-bv="21">21 hari</button></div>
       <span class="sub">Rencana produksi = Forecast + Buffer final − Stok bebas</span>
@@ -592,6 +592,11 @@ input[type=search] { font: inherit; font-weight: 400; color: var(--fg); backgrou
         <label class="drop" data-kind="pp"><input type="file" multiple accept=".xlsx,.xlsm,.xls" data-kind="pp"><b>Pilih atau tarik file data produksi</b><span class="sub">Template atau Excel PP</span></label>
         <div id="ppData"></div>
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><button type="button" id="ppTpl">Unduh template</button><span class="sub" id="ppTplMsg"></span></div>
+      </div>
+      <div class="slot">
+        <div class="slot-h"><b>Forecast Chronos</b><span class="pill p-off">opsional</span></div>
+        <p class="note">CSV hasil <i>ingest/forecast_chronos.py</i> yang dijalankan di komputer sendiri dari file histori ringkas (.ppic.gz). Masuk ke ensemble Forecast ML.</p>
+        <label class="drop" data-kind="chronos"><input type="file" accept=".csv,.xlsx" data-kind="chronos"><b>Pilih atau tarik CSV Chronos</b><span class="sub" id="chSlotNote">Belum ada</span></label>
       </div>
       <div class="slot">
         <div class="slot-h"><b>Material master</b><span class="pill p-off">opsional</span></div>
@@ -1330,6 +1335,12 @@ function machMapFromWorkbook(wb) {
 function dropSample() { if (state.sample) { state.items = []; state.history = null; state.sample = false; } } // real closing / forecast / history data replaces the simulated example
 function addWorkbook(file, wb, kind) {
   if (wb.SheetNames.indexOf('bulanan') >= 0) { dropSample(); loadHistory(file.name, wb); return 'histori'; }
+  var ch0 = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: null, header: 1 })[0] || [];
+  if (ch0.indexOf('p50') >= 0 && ch0.indexOf('forecast_month') >= 0) { // output of ingest/forecast_chronos.py
+    var cr = chronosFromRows(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: null, raw: true }), file.name);
+    if (!cr) return 'gagal: CSV Chronos kosong';
+    state.chronos = cr; saveChronos(); return 'hasil Chronos (' + cr.model + ', ' + cr.rows.length + ' baris' + (cr.origin ? ', dari closing ' + monthLabel(cr.origin) : '') + ')';
+  }
   if (kind === 'master' || (kind === 'auto' && /master|material\s*list|daftar\s*material/i.test(file.name))) {
     var mm = matMasterFromWorkbook(wb, file.name);
     if (mm) { state.mat = mm; saveMat(); return 'material master (' + mm.rows.length + ' material)'; }
@@ -1383,6 +1394,7 @@ function loadHistory(name, wb, rowsBy) {
   // rowsBy: { sheet: [row objects] } from a compact .ppic.gz history instead of a workbook
   var read = rowsBy ? function (sh) { return rowsBy[sh] || []; } : function (sh) { return wb.Sheets[sh] ? XLSX.utils.sheet_to_json(wb.Sheets[sh], { defval: null }) : []; };
   matFromRows(read('material_master'), name);
+  var chr = read('forecast_chronos'); if (chr.length) { var cr = chronosFromRows(chr, name); if (cr) { state.chronos = cr; saveChronos(); } }
   // manual statuses and rule settings saved with the history win over this browser's
   read('status_sku').forEach(function (r) { if (r.manual === 'ya' && r.sku_key && STATUS[r.status]) state.overrides[String(r.sku_key)] = { status: r.status, succ: r.replaced_by ? String(r.replaced_by) : '', at: r.manual_date || '' }; });
   read('aturan').forEach(function (r) {
@@ -1800,6 +1812,10 @@ function saveBuf() { try { localStorage.setItem('ppic_buf', JSON.stringify({ cfg
 function loadBuf() { try { var o = JSON.parse(localStorage.getItem('ppic_buf') || '{}') || {}; state.bufCfg = o.cfg || {}; state.bufStrat = o.strat || {}; state.bufEdits = o.edits || {}; } catch (e) { state.bufCfg = {}; state.bufStrat = {}; state.bufEdits = {}; } }
 // basis forecast for a month: HQ, ML or the average of the two that exist
 function basisOf(s, mo, basis, past) {
+  if (MODELS[basis]) { // one model of the ensemble
+    var v0 = past ? (s.btm && s.btm[mo] ? s.btm[mo][basis] : undefined) : (s.mlInfo && s.mlInfo[mo] ? s.mlInfo[mo][basis] : undefined), h0 = past ? s.hq[mo] : s.fhq[mo];
+    return typeof v0 === 'number' ? { v: v0, src: MODELS[basis] } : typeof h0 === 'number' ? { v: h0, src: 'HQ (' + MODELS[basis] + ' kosong)' } : null;
+  }
   var hq = past ? s.hq[mo] : s.fhq[mo], ml = past ? (s.bt ? s.bt[mo] : undefined) : (s.ml ? s.ml[mo] : undefined);
   hq = typeof hq === 'number' ? hq : null; ml = typeof ml === 'number' ? ml : null;
   if (basis === 'hq') return hq !== null ? { v: hq, src: 'HQ' } : ml !== null ? { v: ml, src: 'ML (HQ kosong)' } : null;
@@ -1870,7 +1886,7 @@ function renderBuffer(m) {
   var oldProd = 0, oldRm = 0;
   bm.rows.forEach(function (s) { var q = typeof s.fhq[mo] === 'number' ? s.fhq[mo] : 0, p = Math.max(0, q + (s.bf.old || 0) - s.bf.fs); oldProd += p; if (s.nw) oldRm += p * s.nw / 1000; });
   var low = bm.rows.filter(function (s) { return s.bf.status[1] === 'low'; }), noP = bm.rows.filter(function (s) { return s.bf.status[1] === 'noprod'; }), man = bm.rows.filter(function (s) { return s.bf.ed; });
-  var basisName = { hq: 'Forecast HQ', ml: 'Forecast ML', avg: 'Rata-rata HQ & ML' }[cfg.basis];
+  var basisName = { hq: 'Forecast HQ', ml: 'Ensemble ML', avg: 'Rata-rata HQ & ML', gbr: 'Regressor', chronos: 'Chronos', holt: 'Holt', hqc: 'HQ terkoreksi' }[cfg.basis];
   var dflt = m.fams.filter(function (f) { return f.buf && f.buf.spread.dflt && f.skus.length; }).length;
   var sk = function (s) { return skuLbl(s); }, keys = function (l) { return l.map(function (s) { return s.key; }); };
   CH.bfFam = {}; m.fams.forEach(function (f) { f.skus.forEach(function (s) { CH.bfFam[s.key] = f.key; }); });
@@ -2177,7 +2193,7 @@ function renderPlan(m) {
   var demo = !master().length && !!state.sample, MST = master().length ? master() : demo ? demoMaster(pm) : []; CH.MST = MST;
   var sm = schedModel(pm, MST); CH.sm = sm;
   renderPPData(pm);
-  $('ppCtx').innerHTML = (state.sample ? '<span><span class="pill p-warn">MOCKUP</span></span>' : '') + '<span>Closing terakhir: <b>' + monthLabel(m.latest) + '</b></span><span>Bulan rencana: <b>' + monthLabel(P) + '</b> (' + pm.D + ' hari)</span><span>Dasar forecast: <b>' + { hq: 'Forecast HQ', ml: 'Forecast ML', avg: 'Rata-rata HQ & ML' }[pm.cfg.basis] + '</b> · buffer dari <a href="#" data-goto="Buffer">Saran Buffer</a></span>' + (state.sample ? '<span><span class="pill p-warn">CONTOH SIMULASI</span></span>' : '');
+  $('ppCtx').innerHTML = (state.sample ? '<span><span class="pill p-warn">MOCKUP</span></span>' : '') + '<span>Closing terakhir: <b>' + monthLabel(m.latest) + '</b></span><span>Bulan rencana: <b>' + monthLabel(P) + '</b> (' + pm.D + ' hari)</span><span>Dasar forecast: <b>' + { hq: 'Forecast HQ', ml: 'Ensemble ML', avg: 'Rata-rata HQ & ML', gbr: 'Regressor', chronos: 'Chronos', holt: 'Holt', hqc: 'HQ terkoreksi' }[pm.cfg.basis] + '</b> · buffer dari <a href="#" data-goto="Buffer">Saran Buffer</a></span>' + (state.sample ? '<span><span class="pill p-warn">CONTOH SIMULASI</span></span>' : '');
   document.querySelectorAll('#ppUnitSeg button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-pu') === state.ppUnit); });
   $('schSun').checked = !!state.ppSunOff; $('schCb').checked = !!state.ppCbOff;
   $('schH').textContent = 'Rencana produksi per mesin · ' + monthLabel(P);
@@ -2565,30 +2581,211 @@ function mlPredict(s, cms, k, h, q, Rs) {
   var ml = holt !== null && hqc !== null ? w * holt + (1 - w) * hqc : holt !== null ? holt : hqc !== null ? hqc : null;
   return { ml: ml, holt: holt, hqc: hqc, r: r, w: holt !== null && hqc !== null ? w : holt !== null ? 1 : 0 };
 }
+/* ---------- Forecast ML v2: four models + ensemble ---------- */
+// Models per SKU (all forecast order in, cartons):
+//   holt    damped Holt on order in (browser)
+//   hqc     Forecast HQ × the SKU's own HQ bias ratio (browser)
+//   gbr     gradient-boosted regression trees, ONE model for all SKUs, one per horizon (browser, trained on load)
+//   chronos foundation model run on the user's computer (ingest/forecast_chronos.py), imported as CSV
+// Ensemble: weight per SKU ∝ 1 / (error + 0.05)², error = WAPE of that model's one-month-ahead backtest,
+// pulled toward its category's and the global error when the SKU has few months, then toward equal weights.
+// The backtest is walk-forward: each closing month is predicted only from months before it (weights too).
+var MODELS = { holt: 'Holt', hqc: 'HQ terkoreksi', gbr: 'Regressor', chronos: 'Chronos' };
+var MODEL_KEYS = ['holt', 'hqc', 'gbr', 'chronos'];
+var ENS = { prior: 0.6, catK: 3, skuK: 2, eqK: 2, floor: 0.05 };
+var GBR = { trees: 80, depth: 3, lr: 0.1, bins: 32, minRows: 12, btMonths: 6 };
+function lg(v) { return v === null || v === undefined || !isFinite(v) ? -1 : Math.log1p(Math.max(0, v)); }
+// ---- tiny gradient boosting (squared loss, histogram splits, deterministic) ----
+function gbmFit(X, y) {
+  var n = X.length, d = X[0].length, edges = [], B = [];
+  for (var f = 0; f < d; f++) {
+    var vals = X.map(function (r) { return r[f]; }).sort(function (a, b) { return a - b; }), e = [];
+    for (var q = 1; q < GBR.bins; q++) { var v = vals[Math.floor(q * n / GBR.bins)]; if (v !== undefined && (!e.length || v > e[e.length - 1])) e.push(v); }
+    edges.push(e);
+  }
+  for (var i = 0; i < n; i++) { var row = []; for (var f2 = 0; f2 < d; f2++) { var e2 = edges[f2], b = 0; while (b < e2.length && X[i][f2] > e2[b]) b++; row.push(b); } B.push(row); }
+  var base = y.reduce(function (a, b) { return a + b; }, 0) / n, pred = y.map(function () { return base; }), trees = [];
+  var minLeaf = Math.max(3, Math.floor(n / 40));
+  var build = function (idx, r, depth) {
+    var S = 0; idx.forEach(function (i) { S += r[i]; });
+    if (depth >= GBR.depth || idx.length < 2 * minLeaf) return { v: S / idx.length };
+    var best = null;
+    for (var f = 0; f < d; f++) {
+      var nb = edges[f].length + 1, hs = new Float64Array(nb), hc = new Int32Array(nb);
+      idx.forEach(function (i) { hs[B[i][f]] += r[i]; hc[B[i][f]]++; });
+      var sl = 0, cl = 0;
+      for (var b = 0; b < nb - 1; b++) {
+        sl += hs[b]; cl += hc[b]; var cr = idx.length - cl; if (cl < minLeaf || cr < minLeaf) continue;
+        var g = sl * sl / cl + (S - sl) * (S - sl) / cr - S * S / idx.length;
+        if (g > 1e-9 && (!best || g > best.g)) best = { g: g, f: f, b: b };
+      }
+    }
+    if (!best) return { v: S / idx.length };
+    var L = [], R = []; idx.forEach(function (i) { (B[i][best.f] <= best.b ? L : R).push(i); });
+    return { f: best.f, t: edges[best.f][best.b], l: build(L, r, depth + 1), r: build(R, r, depth + 1) };
+  };
+  var all = []; for (var k = 0; k < n; k++) all.push(k);
+  for (var t = 0; t < GBR.trees; t++) {
+    var res = y.map(function (v, i) { return v - pred[i]; }), tr = build(all, res, 0);
+    trees.push(tr); for (var j = 0; j < n; j++) pred[j] += GBR.lr * gbmLeaf(tr, X[j]);
+  }
+  return { base: base, trees: trees, n: n };
+}
+function gbmLeaf(tr, x) { while (tr.v === undefined) tr = x[tr.f] <= tr.t ? tr.l : tr.r; return tr.v; }
+function gbmPredict(mdl, x) { var p = mdl.base; mdl.trees.forEach(function (tr) { p += GBR.lr * gbmLeaf(tr, x); }); return p; }
+// features for SKU s, history = closing months before index k, target month tm with HQ value q
+var GBR_FEATS = ['order in t-1', 'order in t-2', 'order in t-3', 'rata-rata 3 bln', 'Forecast HQ bulan target', 'rasio bias HQ', 'HQ terkoreksi', 'rata-rata kategori t-1', 'bulan kalender', 'jumlah bulan histori'];
+function gbrFeat(s, cms, k, tm, q, Rs, catMean) {
+  var ser = oiSeries(s, cms, k), l1 = ser[k - 1], l2 = k >= 2 ? ser[k - 2] : null, l3 = k >= 3 ? ser[k - 3] : null;
+  var nn = [l1, l2, l3].filter(function (v) { return v !== null && v !== undefined; }), mean = nn.length ? nn.reduce(function (a, b) { return a + b; }, 0) / nn.length : null;
+  var r = skuRatio(s, cms, k, Rs[k]), qq = typeof q === 'number' && q > 0 ? q : null;
+  return [lg(l1), lg(l2), lg(l3), lg(mean), lg(qq), r, lg(qq === null ? null : qq * r), lg(catMean(k, s)), +tm.slice(5, 7), ser.filter(function (v) { return v !== null; }).length];
+}
+var _gbrCache = { key: null, res: null };
+function gbrRun(m, Rs) {
+  var cms = m.closingMonths, K = cms.length, skus = m.skus;
+  var key = cms.join(',') + '|' + m.future.join(',') + '|' + skus.map(function (s) { return s.key + ':' + JSON.stringify(s.oiM || s.oi) + JSON.stringify(s.hq) + JSON.stringify(s.fhq) + (s.grp || ''); }).join(';');
+  if (_gbrCache.key === key) return _gbrCache.res;
+  var cm = {};
+  var catMean = function (k, s) {
+    var c = cm[k] || (cm[k] = (function () { var a = {}; skus.forEach(function (x) { var v = oiSeries(x, cms, k)[k - 1]; if (v === null || v === undefined) return; var g = x.grp || ''; a[g] = a[g] || [0, 0]; a[g][0] += v; a[g][1]++; }); return a; })());
+    var e = c[s.grp || '']; return e ? e[0] / e[1] : null;
+  };
+  var hasHist = function (s, k) { return oiSeries(s, cms, k).some(function (v) { return v !== null; }); };
+  // rows for horizon h with target month index < tMax
+  var rows = function (h, tMax) {
+    var X = [], y = [];
+    skus.forEach(function (s) {
+      for (var k = 1; k + h - 1 < tMax; k++) {
+        var t = k + h - 1, tm = cms[t], yy = s.oi[tm];
+        if (yy === undefined || yy === null || !hasHist(s, k)) continue;
+        X.push(gbrFeat(s, cms, k, tm, s.hq[tm], Rs, catMean)); y.push(lg(yy));
+      }
+    });
+    return { X: X, y: y };
+  };
+  var res = { bt: {}, fut: {}, n: {}, imp: null };
+  // walk-forward backtest, one month ahead
+  for (var b = Math.max(1, K - GBR.btMonths); b < K; b++) {
+    var d = rows(1, b); if (d.X.length < GBR.minRows) continue;
+    var mdl = gbmFit(d.X, d.y), mo = cms[b];
+    skus.forEach(function (s) { if (!hasHist(s, b)) return; (res.bt[s.key] = res.bt[s.key] || {})[mo] = Math.max(0, Math.expm1(gbmPredict(mdl, gbrFeat(s, cms, b, mo, s.hq[mo], Rs, catMean)))); });
+  }
+  // future: one model per horizon; a horizon with too few rows uses the nearest shorter one
+  var last = null;
+  m.future.forEach(function (fm, i) {
+    var h = i + 1, d = rows(h, K), mdl = d.X.length >= GBR.minRows ? gbmFit(d.X, d.y) : null;
+    if (mdl) { last = mdl; res.n[fm] = d.X.length; if (h === 1) res.imp = gbrImportance(mdl); } else { mdl = last; res.n[fm] = last ? 'dari horizon lebih pendek' : 0; }
+    if (!mdl) return;
+    skus.forEach(function (s) { if (!hasHist(s, K)) return; (res.fut[s.key] = res.fut[s.key] || {})[fm] = Math.max(0, Math.expm1(gbmPredict(mdl, gbrFeat(s, cms, K, fm, s.fhq[fm], Rs, catMean)))); });
+  });
+  _gbrCache = { key: key, res: res };
+  return res;
+}
+function gbrImportance(mdl) {
+  var c = GBR_FEATS.map(function () { return 0; });
+  var walk = function (t) { if (t.v !== undefined) return; c[t.f]++; walk(t.l); walk(t.r); };
+  mdl.trees.forEach(walk);
+  var tot = c.reduce(function (a, b) { return a + b; }, 0) || 1;
+  return GBR_FEATS.map(function (f, i) { return [f, c[i] / tot]; }).sort(function (a, b) { return b[1] - a[1]; });
+}
+// ---- Chronos output imported from ingest/forecast_chronos.py ----
+function chronosFor(m) {
+  var C = state.chronos, out = { bt: {}, fut: {}, stale: false, origin: null, model: null };
+  if (!C || !C.rows || !C.rows.length) return out;
+  var by = {}; m.all.forEach(function (s) { by[s.key] = s; if (s.nomat) by[s.nomat] = s; if (s.art) by[s.art] = s; });
+  out.model = C.model; out.origin = C.origin;
+  C.rows.forEach(function (r) {
+    var s = by[String(r.sku_key || '').toUpperCase()] || by[String(r.nomat || '').toUpperCase()] || by[String(r.article_code || '').toUpperCase()];
+    if (!s || typeof r.p50 !== 'number') return;
+    if (r.kind === 'backtest') (out.bt[s.key] = out.bt[s.key] || {})[r.forecast_month] = Math.max(0, r.p50);
+    else if (r.origin_month === m.latest) (out.fut[s.key] = out.fut[s.key] || {})[r.forecast_month] = { p10: r.p10, p50: Math.max(0, r.p50), p90: r.p90 };
+    else out.stale = true;
+  });
+  return out;
+}
+function chronosFromRows(rows, name) {
+  var ok = rows.filter(function (r) { return r.forecast_month && (r.p50 !== null && r.p50 !== undefined); }).map(function (r) {
+    var num = function (v) { var x = typeof v === 'number' ? v : parseFloat(v); return isFinite(x) ? x : null; };
+    var mon = function (v) { if (v === null || v === undefined || v === '') return null; if (v instanceof Date) return v.toISOString().slice(0, 7); if (typeof v === 'number') return new Date(Math.round((v - 25569) * 864e5)).toISOString().slice(0, 7); return String(v).trim().slice(0, 7); }; // CSV months may come back as Excel dates
+    return { sku_key: r.sku_key != null ? String(r.sku_key) : null, nomat: r.nomat != null ? String(r.nomat) : null, article_code: r.article_code != null ? String(r.article_code) : null, forecast_month: mon(r.forecast_month), kind: String(r.kind || 'forecast'), origin_month: mon(r.origin_month), p10: num(r.p10), p50: num(r.p50), p90: num(r.p90), model: r.model || null };
+  });
+  if (!ok.length) return null;
+  var fo = ok.filter(function (r) { return r.kind !== 'backtest'; }).map(function (r) { return r.origin_month; }).sort();
+  return { src: name, at: new Date().toISOString().slice(0, 10), model: ok[0].model || 'chronos', origin: fo.length ? fo[fo.length - 1] : null, rows: ok };
+}
+function saveChronos() { try { localStorage.setItem('ppic_chronos', JSON.stringify(state.chronos || null)); } catch (e) { toast('Penyimpanan browser penuh: hasil Chronos hanya tersimpan sampai halaman ditutup. Unduh histori untuk menyimpannya.'); } }
+function loadChronos() { try { state.chronos = JSON.parse(localStorage.getItem('ppic_chronos') || 'null'); } catch (e) { state.chronos = null; } }
+// ---- ensemble weights ----
+function ensWeights(s, avail, E) {
+  var se = E.sku[s.key] || {}, ce = E.cat[s.grp || ''] || {}, w = {}, tot = 0, nObs = 0;
+  avail.forEach(function (k) {
+    var g = E.glob[k], gw = g && g.y > 0 ? g.abs / g.y : ENS.prior;
+    var c = ce[k], cw = c && c.y > 0 ? (c.n * Math.min(3, c.abs / c.y) + ENS.catK * gw) / (c.n + ENS.catK) : gw;
+    var e = se[k], ew = e ? (e.y > 0 ? Math.min(3, e.abs / e.y) : (e.abs > 0 ? 3 : 0)) : null;
+    var sw = e ? (e.n * ew + ENS.skuK * cw) / (e.n + ENS.skuK) : cw;
+    w[k] = 1 / Math.pow(sw + ENS.floor, 2); tot += w[k]; if (e) nObs = Math.max(nObs, e.n);
+  });
+  avail.forEach(function (k) { w[k] = (nObs * w[k] / tot + ENS.eqK / avail.length) / (nObs + ENS.eqK); });
+  return w;
+}
+function ensAdd(E, s, preds, y) {
+  Object.keys(preds).forEach(function (k) {
+    var a = Math.abs(preds[k] - y);
+    [E.sku[s.key] = E.sku[s.key] || {}, E.cat[s.grp || ''] = E.cat[s.grp || ''] || {}, E.glob].forEach(function (o) { var x = o[k] = o[k] || { abs: 0, y: 0, n: 0 }; x.abs += a; x.y += y; x.n++; });
+  });
+}
 function runML(m) {
   var cms = m.closingMonths, K = cms.length, Rs = [];
   for (var k = 0; k <= K; k++) Rs.push(ratioOf(m.skus, cms, k).r);
   m.R = Rs[K];
-  m.bt = [];
+  var G = gbrRun(m, Rs), C = chronosFor(m), E = { sku: {}, cat: {}, glob: {} };
+  m.gbr = G; m.chr = C; m.bt = [];
+  m.skus.forEach(function (s) { s.bt = {}; s.btm = {}; });
   for (var k2 = 1; k2 < K; k2++) {
-    var mo = cms[k2], t = { m: mo, oi: 0, mlAbs: 0, hqAbs: 0, ml: 0, hq: 0, n: 0 };
+    var mo = cms[k2], t = { m: mo, oi: 0, mlAbs: 0, hqAbs: 0, ml: 0, hq: 0, n: 0, mods: {} }, pend = [];
+    MODEL_KEYS.forEach(function (x) { t.mods[x] = { abs: 0, oi: 0, n: 0 }; });
     m.skus.forEach(function (s) {
       var y = s.oi[mo], q = s.hq[mo]; if (y === undefined && q === undefined) return;
-      var p = mlPredict(s, cms, k2, 1, q, Rs), pv = p.ml === null ? 0 : p.ml;
-      s.bt = s.bt || {}; s.bt[mo] = pv;
-      t.oi += y || 0; t.ml += pv; t.hq += q || 0; t.mlAbs += Math.abs(pv - (y || 0)); t.hqAbs += Math.abs((q || 0) - (y || 0)); t.n++;
+      var p = mlPredict(s, cms, k2, 1, q, Rs), pr = {};
+      if (p.holt !== null) pr.holt = p.holt; if (p.hqc !== null) pr.hqc = p.hqc;
+      if (G.bt[s.key] && typeof G.bt[s.key][mo] === 'number') pr.gbr = G.bt[s.key][mo];
+      if (C.bt[s.key] && typeof C.bt[s.key][mo] === 'number') pr.chronos = C.bt[s.key][mo];
+      var av = Object.keys(pr), w = av.length ? ensWeights(s, av, E) : {}, pv = 0;
+      av.forEach(function (x) { pv += w[x] * pr[x]; });
+      s.bt[mo] = pv; s.btm[mo] = pr;
+      var yy = y || 0;
+      t.oi += yy; t.ml += pv; t.hq += q || 0; t.mlAbs += Math.abs(pv - yy); t.hqAbs += Math.abs((q || 0) - yy); t.n++;
+      av.forEach(function (x) { t.mods[x].abs += Math.abs(pr[x] - yy); t.mods[x].oi += yy; t.mods[x].n++; });
+      if (y !== undefined) pend.push([s, pr, yy]);
     });
+    pend.forEach(function (a) { ensAdd(E, a[0], a[1], a[2]); }); // weights for later months only see earlier months
     t.mlAcc = t.oi ? Math.max(0, 1 - t.mlAbs / t.oi) * 100 : null; t.hqAcc = t.oi ? Math.max(0, 1 - t.hqAbs / t.oi) * 100 : null;
+    MODEL_KEYS.forEach(function (x) { var z = t.mods[x]; z.acc = z.n && z.oi ? Math.max(0, 1 - z.abs / z.oi) * 100 : null; });
     m.bt.push(t);
   }
+  m.ensE = E;
   if (!K) return;
   m.skus.forEach(function (s) {
     s.ml = {}; s.mlInfo = {};
-    m.future.forEach(function (mo, i) {
-      var p = mlPredict(s, cms, K, i + 1, s.fhq[mo], Rs);
-      if (p.ml !== null) { s.ml[mo] = Math.round(p.ml); s.mlInfo[mo] = p; }
+    m.future.forEach(function (fm, i) {
+      var p = mlPredict(s, cms, K, i + 1, s.fhq[fm], Rs), pr = {};
+      if (p.holt !== null) pr.holt = p.holt; if (p.hqc !== null) pr.hqc = p.hqc;
+      if (G.fut[s.key] && typeof G.fut[s.key][fm] === 'number') pr.gbr = G.fut[s.key][fm];
+      var ch = C.fut[s.key] && C.fut[s.key][fm]; if (ch) pr.chronos = ch.p50;
+      var av = Object.keys(pr); if (!av.length) return;
+      var w = ensWeights(s, av, E), v = 0; av.forEach(function (x) { v += w[x] * pr[x]; });
+      s.ml[fm] = Math.round(v);
+      s.mlInfo[fm] = { ml: v, holt: p.holt, hqc: p.hqc, gbr: pr.gbr === undefined ? null : pr.gbr, chronos: ch ? ch.p50 : null, chLo: ch ? ch.p10 : null, chHi: ch ? ch.p90 : null, r: p.r, w: w.holt || 0, wts: w };
     });
   });
+}
+function mlTip(i) {
+  if (!i) return '';
+  var parts = MODEL_KEYS.filter(function (k) { return i.wts && i.wts[k] !== undefined; }).map(function (k) {
+    return MODELS[k] + ' ' + n(Math.round(i[k])) + ' (' + Math.round(i.wts[k] * 100) + '%)' + (k === 'chronos' && i.chLo !== null ? ' [P10–P90 ' + n(Math.round(i.chLo)) + '–' + n(Math.round(i.chHi)) + ']' : '') + (k === 'hqc' ? ' ×' + fmt.format(Math.round(i.r * 100) / 100) : '');
+  });
+  return 'Ensemble = ' + parts.join(' · ');
 }
 // Signal: Forecast HQ compared with Forecast ML (mockup bands).
 function mlSignal(hq, ml) {
@@ -2676,8 +2873,9 @@ function renderForecastScreen(c) {
     var so = 0, sm = 0, sq = 0, win = 0;
     m.bt.forEach(function (t) { so += t.oi; sm += t.mlAbs; sq += t.hqAbs; if (t.mlAbs < t.hqAbs) win++; });
     var aM = so ? Math.max(0, 1 - sm / so) * 100 : 0, aQ = so ? Math.max(0, 1 - sq / so) * 100 : 0, few = m.bt.length < 3;
+    var ma = MODEL_KEYS.map(function (k) { var a = 0, o = 0; m.bt.forEach(function (t) { if (t.mods[k].n) { a += t.mods[k].abs; o += t.mods[k].oi; } }); return [k, o ? Math.max(0, 1 - a / o) * 100 : null]; }).filter(function (x) { return x[1] !== null; }).sort(function (a, b) { return b[1] - a[1]; });
     cards += fcCard('Kinerja Forecast ML · ' + m.bt.length + ' bln', fmt.format(Math.round(aM)) + '% vs ' + fmt.format(Math.round(aQ)) + '%',
-      'Akurasi uji mundur ML vs HQ. ML lebih baik ' + win + ' dari ' + m.bt.length + ' bulan.' + (few ? ' Data masih sedikit (prototipe), angka bisa berubah banyak.' : ''),
+      'Akurasi uji mundur ensemble vs HQ. Ensemble lebih baik ' + win + ' dari ' + m.bt.length + ' bulan.' + (ma.length ? ' Per model: ' + ma.map(function (x) { return MODELS[x[0]] + ' ' + fmt.format(Math.round(x[1])) + '%'; }).join(' · ') + '.' : '') + (few ? ' Data masih sedikit, angka bisa berubah banyak.' : ''),
       aM > aQ ? 'Lebih akurat' : 'Belum lebih baik', aM > aQ ? 'ok' : 'warn', 'ml');
   } else cards += fcCard('Kinerja Forecast ML', '–', 'Uji mundur butuh minimal 2 bulan closing (ada ' + m.closingMonths.length + ').', 'Data kurang', '');
   $('fcCards').innerHTML = cards; CH.model = m;
@@ -2702,7 +2900,7 @@ function renderForecastScreen(c) {
       var sig;
       if (isSku) sig = loaded || typeof mlv === 'number' ? mlSignal(loaded ? q : undefined, mlv) : '<span class="sub">–</span>';
       else { sig = typeof a.ml[mo] === 'number' && loaded ? mlSignal(a.fhq[mo] || 0, a.ml[mo]) : '<span class="sub">–</span>'; if (a.noHq[mo]) sig += ' <span class="pill p-warn">' + a.noHq[mo] + ' tanpa HQ</span>'; }
-      var tip = isSku && s.mlInfo && s.mlInfo[mo] ? ' title="Holt ' + n(s.mlInfo[mo].holt === null ? null : Math.round(s.mlInfo[mo].holt)) + ' · HQ terkoreksi ' + n(s.mlInfo[mo].hqc === null ? null : Math.round(s.mlInfo[mo].hqc)) + ' (×' + fmt.format(Math.round(s.mlInfo[mo].r * 100) / 100) + ') · bobot Holt ' + Math.round(s.mlInfo[mo].w * 100) + '%"' : '';
+      var tip = isSku && s.mlInfo && s.mlInfo[mo] ? ' title="' + esc(mlTip(s.mlInfo[mo])) + '"' : '';
       t += (isSku ? edCell(s, 'fhq', mo, q, ' sep') : '<td class="num sep">' + (loaded ? n(q) : '<span class="sub">belum ada</span>') + '</td>') + '<td class="num ml"' + tip + '>' + n(mlv) + '</td><td>' + sig + '</td>';
     });
     return t;
@@ -2949,18 +3147,22 @@ function openChart(kind) {
   } else if (kind === 'ml') {
     title = 'Uji mundur: akurasi Forecast ML vs Forecast HQ';
     var bl = m.bt.map(function (t) { return monthLabel(t.m); });
-    spec = { kind: 'line', labels: bl, yfmt: function (v) { return fmt.format(v) + '%'; }, tick: function (v) { return fmt.format(v) + '%'; }, zero: true, ref: { value: 70, label: 'Target 70%' },
-      series: [{ name: 'Forecast ML', color: cssVar('--s3'), dash: true, values: m.bt.map(function (t) { return t.mlAcc; }) }, { name: 'Forecast HQ', color: s2, values: m.bt.map(function (t) { return t.hqAcc; }) }],
+    spec = { kind: 'line', labels: bl, yfmt: function (v) { return fmt.format(v) + '%'; }, tick: function (v) { return fmt.format(v) + '%'; }, zero: true, noDirect: true, ref: { value: 70, label: 'Target 70%' },
+      series: [{ name: 'Ensemble ML', color: cssVar('--s3'), values: m.bt.map(function (t) { return t.mlAcc; }) }, { name: 'Forecast HQ', color: s2, values: m.bt.map(function (t) { return t.hqAcc; }) }]
+        .concat(MODEL_KEYS.filter(function (k) { return m.bt.some(function (t) { return t.mods[k].n; }); }).map(function (k, i) { return { name: MODELS[k], color: [s1, cssVar('--ok'), warn, cssVar('--muted')].at(i % 4), dash: true, values: m.bt.map(function (t) { return t.mods[k].acc; }) }; })),
       extra: m.bt.map(function (t) { return 'Order in ' + n(t.oi) + ' · ML ' + n(Math.round(t.ml)) + ' · HQ ' + n(t.hq); }) };
     var f1c = m.future[0];
     var rows6 = m.skus.filter(function (s) { return s.ml && typeof s.ml[f1c] === 'number' && typeof s.fhq[f1c] === 'number'; }).map(function (s) { return { s: s, fam: famOf(s), v: s.fhq[f1c] - s.ml[f1c] }; })
       .sort(function (a, b) { return Math.abs(b.v) - Math.abs(a.v); });
     rows6.slice(0, 3).forEach(function (r) { r.hot = true; });
-    sub = 'Setiap bulan closing diprediksi ulang hanya dengan data sebelum bulan itu, lalu dibandingkan dengan order in sebenarnya. Cara hitung ML per SKU: ' +
-      'bobot × Holt (level + tren teredam dari order in) + (1 − bobot) × Forecast HQ × rasio koreksi (order in ÷ HQ, 3 bulan terakhir). Bobot lebih besar untuk bagian yang kesalahannya lebih kecil. ' +
+    var imp = m.gbr && m.gbr.imp ? m.gbr.imp.slice(0, 3).map(function (x) { return x[0] + ' ' + Math.round(x[1] * 100) + '%'; }).join(', ') : null;
+    sub = 'Setiap bulan closing diprediksi ulang hanya dengan data sebelum bulan itu (bobot ensemble juga), lalu dibandingkan dengan order in sebenarnya. Ensemble = rata-rata berbobot dari ' + MODEL_KEYS.map(function (k) { return MODELS[k]; }).join(', ') +
+      '. Bobot per SKU = 1 ÷ (error uji mundur model itu + 0,05)², ditarik ke error kategori dan ke bobot sama rata bila bulan masih sedikit. Regressor: gradient-boosted trees, satu model untuk semua SKU' + (imp ? ' (fitur terpenting: ' + imp + ')' : ' (belum cukup data untuk dilatih: minimal ' + GBR.minRows + ' baris SKU-bulan)') + '. ' +
+      (m.chr && m.chr.model ? 'Chronos: ' + m.chr.model + (m.chr.origin ? ' dari closing ' + monthLabel(m.chr.origin) : '') + (m.chr.stale ? ' (ada hasil dari closing lama, tidak dipakai)' : '') + '. ' : 'Chronos: belum ada hasil (jalankan ingest/forecast_chronos.py, lalu tarik CSV-nya ke halaman). ') +
       (m.bt.length < 3 ? 'Baru ' + m.bt.length + ' bulan uji, jadi anggap ini indikasi awal.' : '');
-    below = contribTable(rows6, [['Forecast HQ ' + monthLabel(f1c), function (r) { return r.s.fhq[f1c]; }], ['Forecast ML', function (r) { return r.s.ml[f1c]; }],
-      ['Rasio koreksi', function (r) { return Math.round(r.s.mlInfo[f1c].r * 100) / 100; }], ['Bobot Holt %', function (r) { return Math.round(r.s.mlInfo[f1c].w * 100); }], ['HQ − ML', function (r) { return r.v; }, 1]], 'Beda HQ vs ML, terbesar dulu · ' + monthLabel(f1c), { f: 'fhq', m: f1c });
+    var wcol = function (k) { return function (r) { var i = r.s.mlInfo[f1c]; return i[k] === null || i[k] === undefined ? '<span class="sub">–</span>' : n(Math.round(i[k])) + ' <span class="sub">' + Math.round((i.wts[k] || 0) * 100) + '%</span>'; }; };
+    below = contribTable(rows6, [['Forecast HQ ' + monthLabel(f1c), function (r) { return r.s.fhq[f1c]; }], ['Ensemble ML', function (r) { return r.s.ml[f1c]; }]].concat(MODEL_KEYS.map(function (k) { return [MODELS[k] + ' (bobot)', wcol(k), 'html']; }))
+      .concat([['HQ − ML', function (r) { return r.v; }, 1]]), 'Beda HQ vs ML, terbesar dulu · ' + monthLabel(f1c), { f: 'fhq', m: f1c });
   } else return;
   spec.title = title;
   CH.spec = spec;
@@ -3143,8 +3345,8 @@ $('dlXlsx').addEventListener('click', function () {
 function histFileName(c) { var ms = c.monthly.map(function (r) { return r.closing_month; }).sort(); return 'Histori_Serang_' + $('plant').value.trim() + (ms.length ? '_' + ms[0] + '_' + ms[ms.length - 1] : ''); }
 function histSheets(c) {
   var fm = forecastModel(c), mlRows = [];
-  fm.skus.forEach(function (sk) { Object.keys(sk.ml || {}).forEach(function (mo) { var i = sk.mlInfo[mo]; mlRows.push({ forecast_month: mo, after_closing: fm.latest, nomat: sk.nomat, article_code: sk.art, description: sk.name, forecast_ml_ctn: sk.ml[mo], holt_ctn: i.holt === null ? null : Math.round(i.holt), hq_corrected_ctn: i.hqc === null ? null : Math.round(i.hqc), hq_ratio: Math.round(i.r * 1000) / 1000, holt_weight: Math.round(i.w * 100) / 100, forecast_hq_ctn: typeof sk.fhq[mo] === 'number' ? sk.fhq[mo] : null, model: 'holt+hq_corrected v1 (prototipe)' }); }); });
-  return [['bulanan', c.monthly], ['mingguan', c.weekly], ['forecast_hq', c.forecast], ['forecast_ml', mlRows], ['kelas_sku', c.kelas], ['status_sku', statusRows(fm)], ['koreksi', Object.keys(state.edits).map(function (id) { var e = state.edits[id], p = id.split('|'); return { sku_key: p[0], description: e.name || null, data: p[1], data_label: EDIT_FIELDS[p[1]], bulan: p[2] || null, nilai_file: e.src, koreksi: e.v, waktu: e.at }; })], ['saran_buffer', bufRows(fm)], ['rencana_produksi', ppRows(fm)], ['jadwal_produksi', schedRows().jadwal], ['target_harian', schedRows().target], ['kalender_produksi', schedRows().kal], ['sku_mesin', skuMachRows()], ['kelompok_sku', (state.skuGroups || []).map(function (g) { return { kelompok: g.g, jenis_mesin: g.t || null }; })], ['kapasitas_mesin', capRows()], ['aturan', RULES.map(function (r) { var cf = ruleCfg(r.id), o = { aturan: r.id, nama: r.label, aktif: cf.on ? 'ya' : 'tidak' }; Object.keys(r.params).forEach(function (k) { o[k] = cf[k]; }); return o; })], ['material_master', matRows()], ['log', c.log]];
+  fm.skus.forEach(function (sk) { Object.keys(sk.ml || {}).forEach(function (mo) { var i = sk.mlInfo[mo], rd = function (v) { return v === null || v === undefined ? null : Math.round(v); }, wt = function (k) { return i.wts && i.wts[k] !== undefined ? Math.round(i.wts[k] * 100) / 100 : null; }; mlRows.push({ forecast_month: mo, after_closing: fm.latest, nomat: sk.nomat, article_code: sk.art, description: sk.name, forecast_ml_ctn: sk.ml[mo], holt_ctn: rd(i.holt), hq_corrected_ctn: rd(i.hqc), regressor_ctn: rd(i.gbr), chronos_p50_ctn: rd(i.chronos), chronos_p10_ctn: rd(i.chLo), chronos_p90_ctn: rd(i.chHi), w_holt: wt('holt'), w_hq_corrected: wt('hqc'), w_regressor: wt('gbr'), w_chronos: wt('chronos'), hq_ratio: Math.round(i.r * 1000) / 1000, forecast_hq_ctn: typeof sk.fhq[mo] === 'number' ? sk.fhq[mo] : null, model: 'ensemble v2 (holt, hq_corrected, gbr, chronos)' }); }); });
+  return [['bulanan', c.monthly], ['mingguan', c.weekly], ['forecast_hq', c.forecast], ['forecast_ml', mlRows], ['kelas_sku', c.kelas], ['status_sku', statusRows(fm)], ['koreksi', Object.keys(state.edits).map(function (id) { var e = state.edits[id], p = id.split('|'); return { sku_key: p[0], description: e.name || null, data: p[1], data_label: EDIT_FIELDS[p[1]], bulan: p[2] || null, nilai_file: e.src, koreksi: e.v, waktu: e.at }; })], ['saran_buffer', bufRows(fm)], ['rencana_produksi', ppRows(fm)], ['jadwal_produksi', schedRows().jadwal], ['target_harian', schedRows().target], ['kalender_produksi', schedRows().kal], ['sku_mesin', skuMachRows()], ['kelompok_sku', (state.skuGroups || []).map(function (g) { return { kelompok: g.g, jenis_mesin: g.t || null }; })], ['kapasitas_mesin', capRows()], ['aturan', RULES.map(function (r) { var cf = ruleCfg(r.id), o = { aturan: r.id, nama: r.label, aktif: cf.on ? 'ya' : 'tidak' }; Object.keys(r.params).forEach(function (k) { o[k] = cf[k]; }); return o; })], ['material_master', matRows()], ['forecast_chronos', (state.chronos && state.chronos.rows) || []], ['log', c.log]];
 }
 $('dlCsv').hidden = true;
 // export the production plan as shown: machine rows with what runs each day, SKU rows with daily targets
@@ -3959,7 +4161,7 @@ function aiRules(text) {
       [/\bpp\b|rencana produksi|produksi/, '<b>PP</b> = forecast + buffer final − stok bebas (minimal 0), untuk bulan rencana (closing + 1). Stok bebas = stock on hand − DN − SC block. Lama bar = ton ÷ kecepatan mesin (kapasitas ÷ hari kerja, atau kecepatan SKU dari template).'],
       [/bermasalah/, '<b>Bermasalah</b>: stok bebas lebih kecil dari forecast bulan rencana; dijadwalkan paling awal.'],
       [/sebaran|error|spread/, '<b>Sebaran error</b>: RMSE (forecast − order in) ÷ rata-rata order in per famili, 6 closing terakhir.'],
-      [/\bml\b|holt|model/, '<b>Forecast ML</b> (prototipe): Holt teredam pada order in, dicampur dengan Forecast HQ yang dikoreksi biasnya per SKU. Masih mode bayangan; HQ tetap dasar bawaan.'],
+      [/\bml\b|holt|model/, '<b>Forecast ML</b> (prototipe): ensemble dari Holt teredam, Forecast HQ yang dikoreksi biasnya, Regressor (gradient-boosted trees untuk semua SKU) dan Chronos (bila CSV-nya diunggah). Bobot per SKU dari error uji mundur tiap model. Masih mode bayangan; HQ tetap dasar bawaan.'],
       [/status|diskontinu|diganti|cek/, '<b>Status SKU</b>: aktif, perlu cek, diskontinu, diganti. Diskontinu/diganti tidak dihitung di total, akurasi, ML, buffer dan PP. Status diberi aturan di Cek Data SKU dan bisa diubah manual.'],
       [/strategi/, '<b>Strategi</b>: ' + Object.keys(STRATS).map(function (k) { return STRATS[k][0] + ' – ' + STRATS[k][1]; }).join(' ')],
       [/kapasitas|kecepatan/, '<b>Kecepatan mesin</b> = kapasitas per bulan ÷ hari kerja bulan itu. Kapasitas dari Excel PP adalah rata-rata produksi bulan lalu, jadi hanya acuan.']];
@@ -4183,6 +4385,7 @@ function renderMat(m) {
   var cnt = { aktif: 0, nonaktif: 0, beda: 0, baru: 0, hilang: 0, manual: 0 };
   rows.forEach(function (r) { cnt[r.st]++; if (r.flags.some(function (f) { return f[0] === 'bad' || f[0] === 'warn'; })) cnt.beda++; if (state.mat && r.inData && !r.inMaster) cnt.baru++; if (!r.inData) cnt.hilang++; if (r.e) cnt.manual++; });
   $('mmSrc').textContent = state.mat ? '· ' + state.mat.src + ' · ' + state.mat.rows.length + ' material' : '· belum ada file master, status dibaca dari data';
+  $('chSlotNote').textContent = state.chronos ? state.chronos.model + ' · ' + state.chronos.rows.length + ' baris' + (state.chronos.origin ? ' · closing ' + monthLabel(state.chronos.origin) + (m.latest && state.chronos.origin !== m.latest ? ' (lama: closing terakhir ' + monthLabel(m.latest) + ', jalankan ulang)' : '') : '') : 'Belum ada. Tarik CSV ke sini.';
   $('mmSlotNote').textContent = state.mat ? state.mat.src + ' · ' + state.mat.rows.length + ' material' : 'Belum ada. Tarik Excel ke sini.';
   $('mmStats').innerHTML = [['aktif', 'Aktif', 'ok'], ['nonaktif', 'Nonaktif', 'off'], ['beda', 'Berubah / perlu dicek', 'warn'], ['baru', 'Belum di master', 'warn'], ['hilang', 'Tidak di data', 'off'], ['manual', 'Diubah manual', 'acc']]
     .filter(function (x) { return x[0] !== 'baru' && x[0] !== 'hilang' || state.mat; }).map(function (x) { return '<button type="button" class="stat" data-mmf="' + x[0] + '"><span class="pill p-' + x[2] + '">' + x[1] + '</span><b>' + cnt[x[0]] + '</b></button>'; }).join('');
@@ -4366,7 +4569,7 @@ $('fcQ').addEventListener('input', function () { var v = this.value; clearTimeou
 $('bfQ').addEventListener('input', function () { var v = this.value; clearTimeout(qT); qT = setTimeout(function () { state.bfQ = v; renderForecastScreen(combined()); }, 150); });
 $('fcGrp').addEventListener('change', function () { state.grpMode = this.value; saveMat(); renderAll(); });
 
-loadRuleState(); loadBuf(); loadPP(); loadMat();
+loadRuleState(); loadBuf(); loadPP(); loadMat(); loadChronos();
 loadSample();
 })();
 </script>
