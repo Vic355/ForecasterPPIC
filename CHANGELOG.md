@@ -5,6 +5,13 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
 
 ## 2026-11-16
 
+- **MRP Bahan Baku (`/mrp/`).** New page for raw material orders (karton, plastik, jumbo roll). Requirement = PP M+1–M+3 from
+  the Saran buffer projection × BOM per carton; for raw materials the **buffer is the reorder point**: when stock + PO reaches
+  it, an order is released (buffer + N days, MOQ / multiple) and arrives after the lead time. Steps Kebutuhan, Stok & PO, MRP
+  (projected stock vs buffer per material, weekly table), Rencana pesan (*Sudah dipesan* → open PO); summary cards with
+  preview graphics, assistant bar, Excel export / import. Opened from **Buka MRP bahan baku ↗** in Saran buffer or the search
+  bar; sample BOM for SKUs without one.
+
 - **Planner requests, round 3.** Side panel (Alerts / Tanya) on the left by default and resizable by dragging its edge (width
   remembered); the Perencanaan Produksi assistant panel also opens on the left and can be resized. **Saran buffer**: projection
   per month M+1–M+3 (stok akhir M+1 = stok awal + PP − forecast → stok awal M+2 with its own buffer and PP) with PP and raw

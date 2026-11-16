@@ -2573,7 +2573,7 @@ function renderBfHz(m, bm) {
       return '<td class="num sep" title="Stok awal ' + monthLabel(mo) + (i ? ' = stok akhir ' + monthLabel(mos[i - 1]) : ' = stok bebas akhir ' + monthLabel(m.latest)) + '">' + n(Math.round(x.beg)) + '</td>' + num(x.F) + num(x.buf, 'bsug') + num(x.pp, 'hzpp' + (x.pp === 0 ? ' zero' : '')); }).join('') +
       (function () { var x = xs[mos.length - 1] || xs[xs.length - 1]; if (!x || (isAgg && !x.n)) return '<td class="num sep">–</td>'; var neg = isAgg ? x.neg : x.end < 0; return '<td class="num sep' + (neg ? ' hzneg lamp-' + cls0 : '') + '"' + (neg ? ' title="Stok akhir di bawah nol: forecast tidak tertutup"' : '') + '>' + n(Math.round(x.end)) + '</td>'; })();
   };
-  var h = '<div class="ph"><h2>Proyeksi buffer per bulan · ' + mos.map(monthLabel).join(', ') + '</h2><div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" data-hzall="1">Buka semua famili</button><button type="button" data-hzall="0">Tutup semua</button></div></div>' +
+  var h = '<div class="ph"><h2>Proyeksi buffer per bulan · ' + mos.map(monthLabel).join(', ') + '</h2><div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" data-hzall="1">Buka semua famili</button><button type="button" data-hzall="0">Tutup semua</button><button type="button" class="pri" data-mrp="1" title="Kirim PP M+1–M+3 dan BOM per SKU ke halaman MRP bahan baku (/mrp/): kebutuhan, stok vs buffer, rencana pesan">Buka MRP bahan baku ↗</button></div></div>' +
     '<p class="hzx"><b>Cara hitung:</b> stok akhir ' + monthLabel(mos[0]) + ' = stok awal + rencana produksi (PP) − forecast, lalu menjadi <b>stok awal ' + (mos[1] ? monthLabel(mos[1]) : 'bulan berikutnya') + '</b>. Bulan itu dihitung buffer-nya sendiri (strategi yang sama, forecast bulan itu) dan PP = forecast + buffer − stok awal. ' +
     'Buffer manual hanya berlaku untuk ' + monthLabel(mos[0]) + '. Dipakai untuk memperkirakan pesanan bahan baku.</p>';
   // bahan baku per bulan (summary first: this is what the order is based on)
@@ -4286,6 +4286,22 @@ function ppToMonDo(silent) {
   location.href = '/produksi/';
 }
 $('ppToMon').addEventListener('click', function () { ppToMonDo(false); });
+// send PP M+1..M+3 (Proyeksi buffer per bulan) and BOM per SKU to MRP Bahan Baku (/mrp/), which reads localStorage 'ppic_mrp'.
+// For raw materials the buffer is the reorder point there: an order is due when stok + PO falls to the buffer.
+function mrpSendDo(go) {
+  var m = CH.model, bm = CH.bm, mos = m ? m.future.slice(0, 3) : [];
+  if (!m || !bm || !bm.rows.length || !mos.length) { if (go) toast('Belum ada proyeksi buffer: muat closing dan Forecast HQ dulu.'); if (go) location.href = '/mrp/'; return false; }
+  var fam = {}; m.fams.forEach(function (f) { f.skus.forEach(function (s) { fam[s.key] = f.name; }); });
+  var skus = bm.rows.filter(function (s) { return s.bf && s.bf.hz && s.bf.hz.some(function (x) { return x.pp > 0; }); }).map(function (s) {
+    var b = bomOf(s);
+    return { key: s.key, mat: String(s.nomat || s.art || s.key), nomat: s.nomat || '', name: s.name || '', fam: fam[s.key] || '', nw: s.nw || 0,
+      pp: mos.map(function (mo, i) { var x = s.bf.hz[i]; return x ? Math.round(x.pp) : 0; }), bom: b ? { ct: b.ct, pl: b.pl, jr: b.jr, desc: b.desc || '' } : null };
+  });
+  var out = { v: 1, sentAt: new Date().toISOString(), sample: !!state.sample, latest: m.latest, months: mos, source: 'Saran buffer · proyeksi ' + mos.map(monthLabel).join(', '), skus: skus };
+  try { localStorage.setItem('ppic_mrp', JSON.stringify(out)); } catch (e) { toast('Gagal menyimpan: penyimpanan browser penuh.'); return false; }
+  if (go) location.href = '/mrp/';
+  return true;
+}
 
 /* ---------- inputs ---------- */
 Array.prototype.forEach.call(document.querySelectorAll('.drop'), function (drop) {
@@ -5643,7 +5659,7 @@ var D10_L = {
   red: ['Perlu tindakan', 'Action needed', '需处理'], amb: ['Perlu perhatian', 'Needs attention', '需关注'], grn: ['Aman', 'OK', '正常'], blu: ['Info', 'Info', '信息'],
   hide: ['Kecilkan', 'Collapse', '收起'], side: ['Pindah sisi', 'Switch side', '换边'], undo: ['Urungkan', 'Undo', '撤销'], redo: ['Ulangi', 'Redo', '重做'],
   know: ['Yang perlu diketahui hari ini', 'What to know today', '今日要点'], flow: ['Alur bulan ini', 'This month’s flow', '本月流程'], kpi: ['Angka utama', 'Key numbers', '关键数字'],
-  pages: ['Halaman', 'Pages', '页面'], prodSec: ['Produksi', 'Production', '生产'], prodApp: ['Perencanaan Produksi ↗', 'Production planning ↗', '生产排程 ↗'], prodSub: ['rencana harian per mesin, aktual, skenario', 'daily plan per machine, actuals, scenarios', '每日机台计划、实际、情景'], skus: ['SKU', 'SKUs', 'SKU'], askAi: ['Tanya Asisten', 'Ask the assistant', '问助手'], askSub: ['Ketik pertanyaan atau perintah', 'Type a question or command', '输入问题或指令'],
+  pages: ['Halaman', 'Pages', '页面'], prodSec: ['Produksi', 'Production', '生产'], prodApp: ['Perencanaan Produksi ↗', 'Production planning ↗', '生产排程 ↗'], prodSub: ['rencana harian per mesin, aktual, skenario', 'daily plan per machine, actuals, scenarios', '每日机台计划、实际、情景'], mrpApp: ['MRP bahan baku ↗', 'Raw material MRP ↗', '原材料 MRP ↗'], mrpSub: ['karton, plastik, jumbo roll: kapan dan berapa pesan', 'carton, plastic, jumbo roll: when and how much to order', '纸箱、塑料、大卷纸：何时订购多少'], skus: ['SKU', 'SKUs', 'SKU'], askAi: ['Tanya Asisten', 'Ask the assistant', '问助手'], askSub: ['Ketik pertanyaan atau perintah', 'Type a question or command', '输入问题或指令'],
   excel: ['Excel', 'Excel', 'Excel'], expT: ['Ekspor ke Excel', 'Export to Excel', '导出到 Excel'], expPage: ['Halaman ini', 'This page', '本页'], expAll: ['Seluruh workbook', 'Whole workbook', '整个工作簿'],
   expNone: ['Halaman ini tidak punya ekspor sendiri; semua isinya ada di workbook.', 'This page has no export of its own; everything is in the workbook.', '此页无单独导出；内容都在工作簿中。'],
   expBlocked: ['Unduhan diblokir di pratinjau ini. Buka situs Cloudflare untuk mengunduh.', 'Downloads are blocked in this preview. Open the Cloudflare site to download.', '此预览禁止下载。请在 Cloudflare 站点下载。'],
@@ -6037,6 +6053,7 @@ function d10AskOpen() { aiOpen(true); D10.side = 'ask'; d10Panel(D10.A || []); }
 // the lens "talks" when the assistant answers
 new MutationObserver(function (ms) { if (ms.some(function (x) { return [].some.call(x.addedNodes, function (nd) { return nd.classList && nd.classList.contains('bot'); }); })) d10Talk(); }).observe($('aiLog'), { childList: true });
 // ---------- command bar: ask, find a nomat, open a page ----------
+var D10_MRP_WORDS = ['mrp', 'bahan baku', 'raw material', 'material requirement', 'karton', 'plastik', 'jumbo roll', 'pesan', 'reorder', 'purchase', '原材料'];
 var D10_PROD_WORDS = ['perencanaan produksi', 'produksi', 'production', 'monitoring', 'harian', 'aktual', 'actual', 'skenario', 'scenario', 'jadwal', 'mesin', 'daily', '生产'];
 // Perencanaan Produksi (/produksi/) is a page of its own. If it has no plan for this month yet, this month's schedule goes along.
 function d10OpenProd() {
@@ -6045,10 +6062,11 @@ function d10OpenProd() {
 }
 function d10CmdItems(q) {
   var nq = normName(q), out = [];
-  var prod = { k: 'app', label: tl('prodApp'), sub: tl('prodSub') };
-  if (!nq) return D10_TABS.map(function (t) { return { k: 'page', t: t, label: d10sn(t) }; }).concat([prod]);
+  var prod = { k: 'app', label: tl('prodApp'), sub: tl('prodSub') }, mrp = { k: 'app', mrp: true, label: tl('mrpApp'), sub: tl('mrpSub') };
+  if (!nq) return D10_TABS.map(function (t) { return { k: 'page', t: t, label: d10sn(t) }; }).concat([prod, mrp]);
   D10_TABS.forEach(function (t) { var names = D10_SN.id.concat(D10_SN.en, D10_SN.zh).filter(function (x, i) { return i % D10_TABS.length === D10_TABS.indexOf(t); }); if (names.some(function (x) { return normName(x).indexOf(nq) >= 0; })) out.push({ k: 'page', t: t, label: d10sn(t) }); });
   if (D10_PROD_WORDS.some(function (w) { return w.indexOf(nq) >= 0 || nq.indexOf(w) >= 0; })) out.push(prod);
+  if (D10_MRP_WORDS.some(function (w) { return w.indexOf(nq) >= 0 || nq.indexOf(w) >= 0; })) out.push(mrp);
   if (CH.model && nq.length >= 2) CH.model.all.filter(function (s) { return skuMatch(s, nq); }).slice(0, 6).forEach(function (s) { out.push({ k: 'sku', s: s, label: (s.name || s.key), sub: s.nomat || s.art || '' }); });
   out.push({ k: 'ask', q: q, label: tl('askAi') + ': “' + q + '”' });
   return out;
@@ -6062,6 +6080,7 @@ function d10CmdRender() {
 function d10CmdRun(x) {
   $('d10cmdL').hidden = true; $('d10cmdIn').blur();
   if (x.k === 'page') d10Go(x.t);
+  else if (x.k === 'app' && x.mrp) mrpSendDo(true);
   else if (x.k === 'app') d10OpenProd();
   else if (x.k === 'sku') {
     var PS = { Forecast: 'fcQ', Buffer: 'bfQ', Plan: 'ppQ', Cek: 'cekSearch', Master: 'mmQ', Input: 'pvQ' }, id = PS[D10.cur];
@@ -6438,6 +6457,7 @@ $('bfRmTg').addEventListener('click', function () { state.rmHide = !state.rmHide
 $('tabBuffer').addEventListener('click', function (e) {
   var g = e.target.closest('#bfHz [data-goto]'); if (g) { e.preventDefault(); d10Go(g.getAttribute('data-goto')); return; }
   var b = e.target.closest('[data-hzf]'); if (b) { state.hzOpen = state.hzOpen || {}; var k = b.getAttribute('data-hzf'); state.hzOpen[k] = !state.hzOpen[k]; if (CH.model && CH.bm) renderBfHz(CH.model, CH.bm); return; }
+  if (e.target.closest('#bfHz [data-mrp]')) { mrpSendDo(true); return; }
   if (e.target.closest('[data-hzall]')) { state.hzOpen = state.hzOpen || {}; var on = e.target.closest('[data-hzall]').getAttribute('data-hzall') === '1'; (CH.model ? CH.model.fams : []).forEach(function (f) { state.hzOpen[f.key] = on; }); if (CH.model && CH.bm) renderBfHz(CH.model, CH.bm); }
 });
 $('useSample').hidden = true; // the only demo button is on Ringkasan
