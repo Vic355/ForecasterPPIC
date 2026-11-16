@@ -5,6 +5,17 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
 
 ## 2026-11-16
 
+- **Planner requests, round 3.** Side panel (Alerts / Tanya) on the left by default and resizable by dragging its edge (width
+  remembered); the Perencanaan Produksi assistant panel also opens on the left and can be resized. **Saran buffer**: projection
+  per month M+1–M+3 (stok akhir M+1 = stok awal + PP − forecast → stok awal M+2 with its own buffer and PP) with PP and raw
+  material per month; bahan baku split into Karton (pcs), Plastik (ton), Jumbo roll (ton) and Deskripsi BOM, BOM per SKU in
+  Material master, all hideable. **Cek data SKU**: *Diganti* explained ("digantikan oleh SKU baru", status legend, clearer
+  rule text). **Alerts**: value in a large coloured badge with verdict and thresholds. **Forecast**: *Fokus AI* renamed
+  *Sugesti Utama AI*, hidden at start. **Material master**: *+ Tambah SKU* for an SKU missing from the files or a new SKU (NPD),
+  which flows into Forecast, buffer and plan. **Rencana produksi**: *▶ Jalankan jadwal otomatis* replaces *Kembalikan jadwal
+  otomatis*; *Cara menjadwal* Otomatis / Manual; *✎ Susun manual* start; SKUs not scheduled or not mapped shown red with
+  *Tempatkan di mesin…*. All warning-light thresholds and colours in one `LAMPU` block in `public/index.html`.
+
 - **Perencanaan Produksi (#11).** `/produksi/` is rebuilt as its own page with four steps (Data masuk, Rencana,
   Aktual, Skenario): Excel-like grid with draggable / resizable run bars, action cards, paste-and-check actuals,
   rush-order and machine-stop scenarios, assistant bar above the grid. Forecast Desk drops step 7 (Monitoring harian);

@@ -96,10 +96,17 @@ The backtest is walk-forward: each closing month is predicted only from earlier 
   (< 0.5 / 0.5–1 / > 1), < 3 months = NPD. Disagreement with the HQ class is flagged.
 - **PP** (production need) = forecast + buffer final − stok bebas; stok bebas = stock on hand − outstanding DN − SC block.
 - Manual buffer edits need a reason and are kept.
+- **Multi-month projection (M+1..M+3)**: stok akhir M+1 = stok awal + PP − forecast becomes stok awal M+2; M+2 gets its own
+  buffer (same strategy, that month's forecast; P50/P90 from Chronos / Regressor kuantil for that month, else the M+1 range
+  scaled) and PP = max(0, forecast + buffer − stok awal); the same for M+3. Manual buffer edits apply to M+1 only.
+- **Raw materials**: need = PP × BOM per carton (karton pcs, plastik kg, jumbo roll kg), BOM typed per SKU in Material master
+  (`state.bom`, sheet `material_master` columns `bom_*`). Empty until filled; the columns can be hidden.
 
 ## 6. Production plan and Perencanaan Produksi
 
-- **Rencana produksi** plans one month (closing + 1). Auto schedule: problem SKUs first, then fewest days of cover, then
+- **Rencana produksi** plans one month (closing + 1). Two ways: *Otomatis* (the model places every SKU without manual bars,
+  live) or *Manual* (only bars placed by hand; SKUs with PP but no bar are red under their area, SKUs without an area are red
+  at the bottom). **▶ Jalankan jadwal otomatis** fills the unscheduled SKUs or rebuilds from scratch. Auto schedule: problem SKUs first, then fewest days of cover, then
   biggest PP; each SKU goes to the machine of its type with the earliest free stretch. Bars can be dragged, resized,
   split (A → B → A); daily targets can be typed. Built-in Indonesian holidays 2026–2027; Saturdays on, Sundays off.
   Export to Excel, or **Kirim ke Perencanaan Produksi**.
@@ -114,15 +121,22 @@ A chat panel on every page. A rules engine answers commands (`pp target <SKU> = 
 after **Terapkan**, and can be undone. Free-form questions go to Claude (when opened as a claude.ai artifact) or to
 Workers AI through `/api/ask`, given only the facts the app computed.
 
-Since PR #9 the Asisten is more prominent: 👁 Tunjukkan spotlight on alerts, a Fokus AI list of
+Since PR #9 the Asisten is more prominent: 👁 Tunjukkan spotlight on alerts, a Sugesti Utama AI list (was Fokus AI; hidden at start) of
 vital SKUs, an asymmetric buffer score setting (*Kurang dihitung* 2× / 3×), per-month backtest winners, P50/P90
 sources and comparing two forecasts. Its answer rules are written up in [panduan-asisten.md](panduan-asisten.md).
+
+## 7b. Warning lights (LAMPU)
+
+Every red / amber / green threshold and colour is in one block, `var LAMPU = { … }`, at the top of the script in
+`public/index.html` (lines 1037–1058). Forecast (selisih HQ, akurasi HQ, tren, HQ vs AI, SKU tanpa HQ), buffer (stok di
+bawah buffer, skor buffer, tanpa produksi, stok akhir negatif in the projection) and plan (belum terjadwal, belum dipetakan,
+target above machine speed). Alert cards show the value in a large coloured badge with the verdict and the thresholds.
 
 ## 8. Storage
 
 | Where | What |
 | --- | --- |
-| Browser `localStorage` (`ppic_*` keys) | Corrections, SKU statuses, rules, buffer edits and strategies, Chronos rows, material master, plan, UI settings, Perencanaan Produksi plan and actuals (`ppic_prod`) |
+| Browser `localStorage` (`ppic_*` keys) | Corrections, SKU statuses, rules, buffer edits and strategies, Chronos rows, material master (with SKUs added by hand and BOM), plan (with *Otomatis/Manual* per month), UI settings (side panel width), Perencanaan Produksi plan and actuals (`ppic_prod`) |
 | History file `Histori_Serang_*.xlsx` or `.ppic.gz` | Everything above plus the extracted closings. Sheets: `bulanan`, `mingguan`, `forecast_hq`, `kelas_sku`, `log`, `status_sku`, `aturan`, `koreksi`, `saran_buffer`, `forecast_ml`, `forecast_chronos`, `material_master`, `rencana_produksi`, `jadwal_produksi`, `target_harian`, `kalender_produksi`, `sku_mesin`, `kapasitas_mesin` |
 | `.ppic.gz` | Same content as the Excel, columnar JSON gzipped (~13 KB vs ~390 KB on the sample) |
 
