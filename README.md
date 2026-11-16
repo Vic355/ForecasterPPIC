@@ -193,7 +193,7 @@ Tab **Saran Buffer** menghitung buffer per SKU untuk bulan forecast pertama sete
   sendiri. Pupil mata tetap diam. Matikan di ⚙ Pengaturan → Asisten → Sorot & redupkan.
 - **Asisten berbicara**: teks pita alert, jawaban obrolan dan gelembung di bawah halaman muncul seperti diketik; asisten
   berkomentar saat data dimuat, saat pengaturan buffer, strategi, atau model Forecast AI diganti. Matikan di ⚙ Pengaturan.
-- **Forecast · SKU vital**: panel *Fokus AI* berisi SKU yang paling menentukan akurasi forecast, dengan saran *tandai tinjau*
+- **Forecast · SKU vital**: panel *Sugesti Utama AI* (dulu *Fokus AI*; tersembunyi di awal, buka dengan *Tampilkan ▾*) berisi SKU yang paling menentukan akurasi forecast, dengan saran *tandai tinjau*
   atau *pelajari histori*. Tanda tinjau dibawa ke Saran buffer (⚑ di baris, famili terbuka sendiri, kartu *Ditandai untuk
   ditinjau*), disimpan di browser dan di lembar `saran_buffer` (kolom `tinjau`). Filter *Hanya SKU vital ⚑* di tabel.
 - **Sinyal → Tanya**: klik sel Sinyal membuka tab Tanya dengan ringkasan histori forecast SKU itu dan alasan Forecast AI per
@@ -215,12 +215,25 @@ Tab **Saran Buffer** menghitung buffer per SKU untuk bulan forecast pertama sete
 - **Kuantil P90.** Buffer = max(0, P50 − forecast dasar) + (P90 − P50) × z ÷ 1,28 × √(lead time ÷ 30). Sumber P50/P90 (yang pertama ada): Chronos (CSV) → regressor kuantil di browser (gradient boosting dengan pinball loss τ = 0,9) → rasio order in ÷ forecast SKU itu 6 bulan terakhir (minimal 4 bulan) → rasio yang sama dari seluruh kelas ABC-XYZ-nya → rumus Standar.
 - **Kelas ABC-XYZ** dihitung ulang tiap closing dari order in 6 closing terakhir. ABC: A = SKU yang membentuk 80% pertama volume, B = 15% berikutnya, C = sisanya. XYZ: CV order in bulanan < 0,5 = X, 0,5–1 = Y, > 1 = Z. Kurang dari 3 bulan order in = NPD. Kelas HQ (Stock Level Check) tetap tampil sebagai referensi dan ditandai *beda* bila HQ A tetapi volume C, atau HQ bukan A tetapi volume A. CV juga menjadi fitur Regressor.
 - Lembar `saran_buffer` di unduhan Histori menambah kolom `strategi_alasan`, `kelas_abc_xyz`, `cv_order_in`, `kelas_hq`, `p50`, `p90`, `sumber_p90`.
-- Kebutuhan bahan baku masih dummy: data BOM belum ada.
+- **Bahan baku**: kolom Karton (pcs), Plastik (ton), Jumbo roll (ton) dan Deskripsi BOM = rencana produksi × BOM per karton. BOM diisi
+  per SKU di Material master (masih kosong, jadi tampil –); tombol *Sembunyikan bahan baku* menyembunyikan semua kolom ini.
+- **Proyeksi buffer per bulan (M+1–M+3)**: stok akhir M+1 = stok awal + PP − forecast, lalu menjadi stok awal M+2 yang dihitung
+  buffer-nya sendiri (strategi yang sama, forecast bulan itu) dan PP = forecast + buffer − stok awal; begitu juga M+3. Tabel
+  ringkas di atasnya memberi PP (karton, ton) dan kebutuhan bahan baku per bulan untuk pesanan bahan baku.
 - Buffer final bisa diubah manual dengan alasan wajib. Perubahan dan strategi manual disimpan di browser dan di lembar `saran_buffer` file Histori_Serang, lalu dibaca kembali saat file itu diunggah.
 
 Tab order: Forecast, Saran Buffer, Rencana Produksi, Cek Data SKU, Input Data & Model. The Saran Buffer cards (buffer final, rencana produksi, bahan baku dummy, stok di bawah buffer, akurasi buffer, kelas ABC-XYZ, tanpa produksi) each open a list.
 
 ## Rencana Produksi (mockup)
+
+**Otomatis atau manual.** Halaman kosong menawarkan **▶ Jalankan jadwal otomatis** atau **✎ Susun manual**. *Cara menjadwal*
+Otomatis = model menjadwalkan semua SKU yang belum diatur sendiri (ikut berubah bila PP berubah); Manual = hanya bar yang ditaruh
+sendiri. SKU dengan PP tanpa bar tampil **merah** di bawah area mesinnya (*Belum terjadwal di …*, tombol *Tempatkan di mesin…*),
+SKU tanpa area mesin merah di grup *Belum dipetakan ke area mesin*. **▶ Jalankan jadwal otomatis** (menggantikan *Kembalikan
+jadwal otomatis*) mengisi yang belum terjadwal, atau menyusun ulang dari nol.
+
+**Lampu peringatan.** Semua ambang dan warna lampu merah / kuning / hijau ada di satu blok `LAMPU` di `public/index.html`
+(baris 1037–1058). Ubah angka di sana, simpan, muat ulang.
 
 The plan is made at the start of the month, so there is **one plan month: closing + 1** (the same month as Saran Buffer). PP = forecast + buffer final − stok bebas (from Saran Buffer). Stok bebas = stock on hand − outstanding DN − SC block.
 

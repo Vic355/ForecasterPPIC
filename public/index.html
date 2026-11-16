@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<style>body{margin:0}[hidden]{display:none!important}</style>
+<style>body{margin:0}[hidden]{display:none!important}:root{--lamp-merah:var(--bad);--lamp-kuning:var(--mid);--lamp-hijau:var(--ok);--lamp-biru:var(--blu)}</style>
 <title>PPIC Decision Support System</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,600&family=Source+Sans+3:wght@400;600;700&family=Source+Code+Pro:wght@400;500&family=Noto+Sans+SC:wght@400;700&display=swap">
@@ -505,8 +505,12 @@ html[data-theme=dark] .v3-step.on .v3-sn { color: #1b1206; }
 /* body: Alerts panel + main */
 .d10body { flex: 1; display: flex; min-height: 0; }
 .d10body.right { flex-direction: row-reverse; }
-.alerts { flex: none; width: 340px; background: var(--panel2); border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+.alerts { position: relative; flex: none; width: var(--apw, 340px); background: var(--panel2); border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
 .d10body.right .alerts { border-right: 0; border-left: 1px solid var(--line); }
+.aresz { position: absolute; top: 0; bottom: 0; right: -5px; width: 10px; cursor: col-resize; z-index: 6; touch-action: none; }
+.aresz:hover, .aresz.on { background: linear-gradient(90deg, transparent 3px, var(--acc) 3px, var(--acc) 6px, transparent 6px); }
+.d10body.right .aresz { right: auto; left: -5px; } .alerts.min .aresz { display: none; }
+body.apdrag { cursor: col-resize; user-select: none; }
 .alerts.min { width: 60px; align-items: center; padding-top: 12px; gap: 12px; }
 .railb { position: relative; border: 0; background: none; cursor: pointer; padding: 0; min-height: 0; }
 .railb .cnt { position: absolute; right: -7px; top: -5px; background: var(--bad); color: #fff; border-radius: 99px; font-size: 11.5px; font-weight: 700; padding: 0 6px; line-height: 18px; }
@@ -692,7 +696,7 @@ td.aispotc, tr.aispotc > td { background: var(--paper) !important; }
 .aiinl { padding: 0 7px; font-size: 12px; }
 /* vital SKUs on Forecast */
 #fcVital { border: 1.5px solid var(--notel); background: linear-gradient(0deg, var(--paper), var(--note) 260%); }
-#fcVital h2 { display: flex; align-items: center; gap: 8px; } #fcVital .vlens { cursor: pointer; }
+#fcVital h2 { display: flex; align-items: center; gap: 8px; } #fcVital.shut { padding-bottom: 10px; } #fcVital.shut .ph { margin-bottom: 0; } #fcVital .vlens { cursor: pointer; }
 .vlist { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .vlist li { display: grid; grid-template-columns: 30px 1fr auto; gap: 10px; align-items: center; padding: 5px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
 .vlist li.mk { border-color: var(--acc); background: var(--acc2); }
@@ -723,6 +727,44 @@ html[data-theme=dark] .rvchip { color: #1b1206; }
 .bgrid .bg .v-btn { align-self: flex-start; margin-top: auto; }
 @media (prefers-reduced-motion: reduce) { #aiSpot .eye, #aiSpot .hole, #aiSpot .bub { transition: none; } #aiSpot.on .hole::after { animation: none; } }
 @media print { #aiSpot, #aiSay { display: none !important; } }
+
+.cekt .succ { display: block; font-size: 12px; color: var(--mut); margin-top: 3px; line-height: 1.25; } .cekt .succ b { display: block; color: var(--ink); font-size: 13px; font-weight: 600; } .cekt .succ .code { display: block; }
+.succin { display: flex; flex-direction: column; font-size: 12px; color: var(--mut); margin-top: 4px; gap: 2px; } .succin input { width: 150px; }
+.stexp { flex-basis: 100%; margin: 6px 0 0; font-size: 13.5px; color: var(--ink); background: var(--blubg); border-radius: 8px; padding: 7px 10px; line-height: 1.4; }
+/* Proyeksi buffer per bulan */
+#bfHz .hzx { font-size: 13.5px; background: var(--blubg); border-radius: 8px; padding: 7px 10px; margin: 0 0 10px; line-height: 1.4; }
+#bfHz .hzs { width: auto; min-width: 520px; margin-bottom: 12px; } #bfHz .hzs td:first-child { white-space: nowrap; padding-right: 18px; }
+#bfHz td.hzpp { font-weight: 700; } #bfHz td.hzneg.lamp-bad { color: #fff; background: var(--lamp-merah); font-weight: 700; } #bfHz td.hzneg.lamp-warn { background: var(--lamp-kuning); font-weight: 700; }
+.bft td.rmc { color: var(--ink); } .bft td.rmd { max-width: 180px; white-space: normal; font-size: 12.5px; }
+/* Material master: + Tambah SKU, BOM columns */
+.mmadd { border: 1.5px solid var(--acc); background: var(--acc2); border-radius: 10px; padding: 10px 14px; margin: 8px 0 10px; }
+.mmadd .ph { margin-bottom: 6px; } .mmadd h3 { margin: 0; font-size: 16px; }
+.mmadd .mmf { display: flex; flex-wrap: wrap; gap: 8px 12px; margin: 8px 0; } .mmadd .field { flex: 1 1 170px; } .mmadd .field input { width: 100%; }
+.mmt input.bomin { width: 70px; text-align: right; } .mmt input.bomin.w { width: 190px; text-align: left; }
+.mmt th.bomh { background: var(--note, #fff6d6); } .mmt th.bomh small { font-weight: 400; color: var(--mut); }
+/* Rencana produksi: manual / automatic, red rows for SKUs not on the schedule (colours: LAMPU.rencana) */
+.ppways { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin: 10px 0; }
+.ppways > div { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; background: var(--paper); }
+.ppways > div b { font-size: 16px; } .ppways > div span { color: var(--mut); font-size: 14px; flex: 1; }
+.schhint { margin: 6px 0 8px; font-size: 14px; line-height: 1.6; } .schhint .unt, .schhint .okt { display: inline-block; margin-left: 10px; white-space: nowrap; }
+.schhint .unt { color: var(--lamp-merah); font-weight: 700; } .schhint .okt { color: var(--lamp-hijau); font-weight: 600; }
+.warnlight { background: var(--lamp-merah) !important; } .warnlight.lamp-warn { background: var(--lamp-kuning) !important; color: #1d1606; }
+.ppg tr.fam.unh > td { background: color-mix(in srgb, var(--lamp-merah) 16%, var(--paper)) !important; color: var(--ink); }
+.ppg tr.fam.unh.lamp-warn > td { background: color-mix(in srgb, var(--lamp-kuning) 22%, var(--paper)) !important; }
+.ppg tr.sku.unsch > td { background: color-mix(in srgb, var(--lamp-merah) 8%, var(--paper)) !important; }
+.ppg tr.sku.unsch > td:first-child { box-shadow: inset 5px 0 0 var(--lamp-merah); }
+.ppg tr.sku.unsch.lamp-warn > td { background: color-mix(in srgb, var(--lamp-kuning) 12%, var(--paper)) !important; } .ppg tr.sku.unsch.lamp-warn > td:first-child { box-shadow: inset 5px 0 0 var(--lamp-kuning); }
+.ppg tr.fam b.unt { color: var(--lamp-merah); }
+.ppg button.sm { min-height: 24px; padding: 2px 8px; font-size: 12.5px; }
+/* alert value: big coloured number + verdict (colours from LAMPU) */
+.acard .aval { display: flex; align-items: center; gap: 10px; margin: 6px 0 8px; }
+.acard .avn { font-size: 21px; font-weight: 800; line-height: 1.15; padding: 3px 10px; border-radius: 8px; color: #fff; background: var(--lamp-biru); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.acard.red .avn { background: var(--lamp-merah); } .acard.amb .avn { background: var(--lamp-kuning); color: #1d1606; } .acard.grn .avn { background: var(--lamp-hijau); }
+.acard.ack .avn { background: var(--line); color: var(--ink); }
+html[data-theme=dark] .acard.red .avn, html[data-theme=dark] .acard.grn .avn, html[data-theme=dark] .acard.blu .avn { color: #111; }
+.acard .avt { display: flex; flex-direction: column; font-size: 13px; line-height: 1.25; min-width: 0; }
+.acard .avt b { font-size: 14.5px; } .acard.red .avt b { color: var(--lamp-merah); } .acard.amb .avt b { color: var(--warn); } .acard.grn .avt b { color: var(--lamp-hijau); }
+.acard .avt small { color: var(--mut); font-size: 12px; }
 </style>
 </head>
 <body>
@@ -749,7 +791,7 @@ html[data-theme=dark] .rvchip { color: #1b1206; }
   <div class="tabpage" id="tabForecast">
     <div class="ctx" id="fcCtx"></div>
     <section class="cards fcards" id="fcCards" aria-label="Ringkasan forecast"></section>
-    <section class="panel vital" id="fcVital" aria-label="SKU vital menurut AI" hidden></section>
+    <section class="panel vital" id="fcVital" aria-label="Sugesti Utama AI: SKU vital" hidden></section>
     <section class="panel" aria-label="Forecast per famili">
       <div class="ph"><h2>Order in vs Forecast HQ, lalu Forecast HQ vs Forecast AI</h2>
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
@@ -783,7 +825,7 @@ html[data-theme=dark] .rvchip { color: #1b1206; }
     <section class="panel bfguide" id="bfGuide" aria-label="Arti strategi buffer"></section>
     <section class="panel" aria-label="Buffer per famili">
       <div class="ph"><h2>Saran buffer per famili dan SKU</h2>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input type="search" id="bfQ" placeholder="Cari Nomat / nama / kode" aria-label="Cari SKU di Saran Buffer" style="width:210px"><button type="button" id="bfOpenAll">Buka semua famili</button><button type="button" id="bfCloseAll">Tutup semua</button><button type="button" id="bfReset">Hapus perubahan manual</button></div></div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input type="search" id="bfQ" placeholder="Cari Nomat / nama / kode" aria-label="Cari SKU di Saran Buffer" style="width:210px"><button type="button" id="bfOpenAll">Buka semua famili</button><button type="button" id="bfCloseAll">Tutup semua</button><button type="button" id="bfReset">Hapus perubahan manual</button><button type="button" id="bfRmTg" title="Kolom karton, plastik, jumbo roll dan BOM (masih kosong sampai BOM diisi)">Sembunyikan bahan baku</button></div></div>
       <p class="note">Buffer = z × sebaran error × forecast × √(lead time ÷ 30) × faktor strategi. z: 90% = 1,28 · 95% = 1,64 · 98% = 2,05. Sebaran error dihitung per famili dari error forecast 6 closing terakhir (×1,4 di level SKU); bila histori kurang dari 2 bulan dipakai 25%. <b>Otomatis</b> memilih strategi per SKU lewat backtest 6 closing terakhir (skor: kurang 2× lebih berat dari lebih); SKU dengan histori sedikit ikut kelas ABC-XYZ-nya. <b>Kuantil (P90)</b> memakai rentang forecast SKU itu (Chronos, regressor kuantil, atau error historis). Klik angka <b>Buffer final</b> untuk mengubah (alasan wajib), pilih <b>Strategi</b> per famili atau SKU, klik <b>Status</b> untuk rincian hitungan. SKU diskontinu/diganti tidak dihitung.</p>
       <div class="scroll" style="max-height: 680px"><table id="bfTable" class="fct bft"></table></div>
       <div class="legend"><span class="bst b-low">Stok &lt; buffer</span><span class="bst b-noprod">Stok cukup, tanpa produksi</span><span class="bst b-up">Buffer naik</span><span class="bst b-down">Buffer turun</span><span class="bst b-new">Buffer baru</span><span class="bst b-same">Sesuai</span><span class="bst b-hab">Habiskan stok</span><span>Hari = buffer ÷ (forecast ÷ 30)</span></div>
@@ -802,7 +844,7 @@ html[data-theme=dark] .rvchip { color: #1b1206; }
           <select id="ppFam" aria-label="Filter famili"></select>
           <input type="search" id="ppQ" placeholder="Cari SKU / Nomat" aria-label="Cari SKU">
         </div></div>
-      <div class="ppctl"><button type="button" id="ppOpenAll">Buka semua mesin</button><button type="button" id="ppCloseAll">Tutup semua</button><button type="button" id="schReset">Kembalikan jadwal otomatis</button><button type="button" id="ppReset">Hapus perubahan manual</button><button type="button" id="ppXlsx" title="Unduh rencana produksi bulan ini sebagai Excel: tabel per mesin dengan target harian, daftar bar, PP per SKU dan kalender">Ekspor Excel</button><button type="button" id="ppToMon" title="Pakai jadwal ini sebagai rencana di Perencanaan Produksi (rencana harian, aktual, skenario). Data aktual yang sudah diisi tidak diubah.">Kirim ke Perencanaan Produksi ↗</button><span class="sub" id="ppHint"></span></div>
+      <div class="ppctl"><button type="button" id="ppOpenAll">Buka semua mesin</button><button type="button" id="ppCloseAll">Tutup semua</button><span class="seg" id="schMode" title="Otomatis: model menjadwalkan semua SKU yang belum Anda atur sendiri, dan ikut berubah bila PP berubah. Manual: hanya bar yang Anda taruh; SKU tanpa bar tampil merah."><span>Cara menjadwal</span><button type="button" data-schmode="auto">Otomatis</button><button type="button" data-schmode="manual">Manual</button></span><button type="button" id="schReset" class="pri" title="Model menjadwalkan SKU ke mesin: SKU bermasalah dulu, lalu hari stok tersisa paling sedikit, lalu PP terbesar">▶ Jalankan jadwal otomatis</button><button type="button" id="ppReset">Hapus perubahan manual</button><button type="button" id="ppXlsx" title="Unduh rencana produksi bulan ini sebagai Excel: tabel per mesin dengan target harian, daftar bar, PP per SKU dan kalender">Ekspor Excel</button><button type="button" id="ppToMon" title="Pakai jadwal ini sebagai rencana di Perencanaan Produksi (rencana harian, aktual, skenario). Data aktual yang sudah diisi tidak diubah.">Kirim ke Perencanaan Produksi ↗</button><span class="sub" id="ppHint"></span></div>
       <p class="note" id="schNote"></p>
       <div class="ppscroll" id="ppScroll"><table id="ppTable" class="fct ppt ppg"></table></div><div class="ppbar" id="ppBar" aria-hidden="true"><div></div></div>
       <div class="legend"><span><i class="schk"></i> SKU (geser / tarik ujung kanan)</span><span><i class="schk bad"></i> bermasalah, didahulukan</span><span><i class="schk man"></i> diatur manual</span><span><i class="schk ovr"></i> lewat akhir bulan</span><span><i class="schk clash"></i> bentrok</span><span><i class="sw offsw"></i> libur</span><span><i class="sw mntsw"></i> maintenance</span><span><i class="sw edsw"></i> target diisi manual</span><span>⚠ rencana beda dari target</span><span>Kolom SKU, Target, Rencana dan Hari dan baris tanggal tetap di tempat saat digeser (seperti freeze panes Excel)</span></div>
@@ -909,6 +951,7 @@ html[data-theme=dark] .rvchip { color: #1b1206; }
       <div class="mmbar">
         <input type="search" id="mmQ" placeholder="Cari Nomat, nama, kode artikel, brand" aria-label="Cari material" style="width:260px">
         <select id="mmFlt" aria-label="Saring material" style="width:auto"><option value="all">Semua material</option><option value="aktif">Aktif</option><option value="nonaktif">Nonaktif</option><option value="beda">Berubah / perlu dicek</option><option value="baru">Ada di data, tidak di master</option><option value="hilang">Di master, tidak di data</option><option value="manual">Diubah manual</option></select>
+        <button type="button" id="mmAddB" class="pri">+ Tambah SKU</button>
         <button type="button" id="mmDl">Unduh material master (Excel)</button>
         <button type="button" id="mmClear">Hapus material master</button>
       </div></div>
@@ -985,6 +1028,38 @@ html[data-theme=dark] .rvchip { color: #1b1206; }
 <script>
 (function () {
 'use strict';
+/* =====================================================================================================
+   LAMPU PERINGATAN: ambang dan warna semua lampu merah / kuning / hijau di Forecast Desk.
+   Ubah angka di blok ini saja; semua halaman membaca dari sini. Simpan file, muat ulang halaman.
+   - warna: kosongkan ('') untuk memakai warna tema, atau isi kode warna, mis. '#d92d20'.
+   - Angka persen ditulis tanpa tanda %, mis. 10 = 10%.
+   ===================================================================================================== */
+var LAMPU = {
+  warna: { merah: '', kuning: '', hijau: '', biru: '' },
+  forecast: {
+    selisihHq: { kuning: 5, merah: 10 },      // |Forecast HQ − order in| ÷ order in di closing terakhir (%)
+    akurasiHq: { kuning: 70, merah: 50 },     // akurasi Forecast HQ: di bawah angka kuning = kuning, di bawah merah = merah (%)
+    trenSelisih: 5,                           // tren berulang bila selisih HQ tiap bulan searah dan ≥ angka ini (%)
+    hqVsAi: { info: 5, kuning: 20, merah: 50 }, // beda Forecast HQ vs Forecast AI untuk M+1 (%); info = biru
+    tanpaHq: { kuning: 1, merah: 10 }         // jumlah SKU aktif tanpa Forecast HQ M+1
+  },
+  buffer: {
+    stokDiBawahBuffer: { kuning: 1, merah: 1 }, // jumlah SKU dengan stok bebas < buffer final
+    skorBuffer: { kuning: 70, merah: 50 },    // skor buffer backtest: di bawah angka ini (%)
+    tanpaProduksi: { kuning: 1, merah: 999 }, // jumlah SKU yang stoknya sudah menutup forecast + buffer
+    stokAkhirNegatif: 'merah'                 // proyeksi M+2 / M+3: stok akhir di bawah nol
+  },
+  rencana: {
+    belumTerjadwal: 'merah',                  // SKU dengan PP tapi belum punya bar di jadwal
+    belumDipetakan: 'merah',                  // SKU belum dipetakan ke area mesin
+    lewatAkhirBulan: 'kuning',                // bar melewati akhir bulan
+    diAtasKecepatan: 115                      // target harian > kecepatan mesin × angka ini (%) = panas
+  }
+};
+// tingkat lampu untuk nilai v: naik = makin besar makin buruk (selisih), turun = makin kecil makin buruk (akurasi)
+function lampu(v, t, turun) { if (v === null || v === undefined || isNaN(v) || !t) return ''; if (turun) return v < t.merah ? 'bad' : v < t.kuning ? 'warn' : 'ok'; return v >= t.merah ? 'bad' : v >= t.kuning ? 'warn' : 'ok'; }
+function lampuBatas(t, turun, sat) { sat = sat === undefined ? '%' : sat; if (!t) return ''; var off = !turun && t.merah >= 999; return turun ? 'kuning < ' + t.kuning + sat + ' · merah < ' + t.merah + sat : 'kuning ≥ ' + t.kuning + sat + (off ? '' : ' · merah ≥ ' + t.merah + sat); }
+(function () { var r = document.documentElement.style; [['merah', 'bad'], ['kuning', 'mid'], ['hijau', 'ok'], ['biru', 'blu']].forEach(function (x) { if (LAMPU.warna[x[0]]) r.setProperty('--lamp-' + x[0], LAMPU.warna[x[0]]); }); })();
 /* ---------- field definitions (same as ingest_closing.py) ---------- */
 var FIELDS = [
   ['nomat', 'Nomat (nomor material)', 'Kunci SKU utama', [/\bnomat\b/, /\bno\.?\s*mat\b/, /nomor\s*material/, /material\s*(no|number)/, /sap\s*(no|number|material)/]],
@@ -1885,9 +1960,9 @@ var RULES = [
   { id: 'merah', label: 'Baris merah atau dicoret di Excel', desc: 'Kode, Nomat atau nama berwarna merah (huruf atau isi sel) atau dicoret di file closing terakhir → Diskontinu. Hanya terbaca dari file .xlsx yang diunggah.', params: {} },
   { id: 'kata', label: 'Kata kunci di nama SKU', desc: 'Nama mengandung salah satu kata ini → Perlu cek.',
     params: { kata: ['Kata kunci (pisahkan koma)', 'disc, discontinue, discontinued, old, lama, stop, tidak produksi, tdk produksi, no prod, obsolete, phase out, delist'] } },
-  { id: 'pengganti', label: 'Diganti SKU di dekatnya', desc: 'SKU yang ditandai aturan lain (atau tanpa forecast) dan berada dekat SKU aktif dengan nama atau kode artikel mirip → Diganti oleh SKU itu. Order in-nya ditambahkan ke SKU pengganti untuk ML.',
+  { id: 'pengganti', label: 'Sudah diganti SKU baru di dekatnya', desc: 'SKU lama yang sudah tidak jalan (kena aturan lain atau tanpa forecast), dan di dekatnya ada SKU aktif dengan nama atau kode artikel mirip, dianggap sudah diganti oleh SKU baru itu (mis. kemasan atau Nomat baru). Artinya penjualan SKU lama pindah ke SKU baru: order in SKU lama ditambahkan ke histori SKU baru supaya forecast SKU baru punya histori.',
     params: { jarak: ['Maks. jarak baris', 5], mirip: ['Kemiripan nama minimal (%)', 60] } },
-  { id: 'master', label: 'Nonaktif di material master', desc: 'Status nonaktif di material master (file atau diubah di tabel Material master) → Diskontinu; bila Nomat pengganti diisi → Diganti oleh SKU itu.', params: {} },
+  { id: 'master', label: 'Nonaktif di material master', desc: 'Status nonaktif di material master (file atau diubah di tabel Material master) → Diskontinu (berhenti, tanpa pengganti); bila Nomat pengganti diisi → Diganti (penjualannya pindah ke SKU baru itu).', params: {} },
   { id: 'grup', label: 'Nama tidak cocok dengan famili', desc: 'Merek di awal nama tidak sama dengan famili tempat SKU itu berada, tapi sama dengan famili lain → Perlu cek (mungkin salah grup). Hanya berlaku bila famili berupa merek.', params: {} },
   { id: 'hq_aneh', label: 'Forecast HQ jauh dari order in', desc: 'Di closing terakhir HQ dan order in berbeda lebih dari sekian kali lipat, atau HQ ada tapi order in nol beberapa bulan → Perlu cek (mungkin salah input).',
     params: { kali: ['Batas beda (×)', 5], bulan: ['HQ ada tapi order nol selama (bulan)', 3] } }
@@ -1963,7 +2038,7 @@ function applyRules(m) {
         var cp = codePrefix(s.art, t.art), score = Math.max(sim, cp >= 0.85 ? (sim + cp) / 2 : 0);
         if ((same || (near !== null && near <= maxD && score >= minS)) && (!best || score > best.score || (score === best.score && near < best.near))) best = { t: t, score: same ? 1 : score, near: near, sim: sim, cp: cp };
       });
-      if (best) { s.succ = best.t; s.hits.push({ id: 'pengganti', status: 'diganti', why: 'mirip ' + fmt.format(Math.round(best.score * 100)) + '% dengan ' + (best.t.name || best.t.key) + (best.near !== null ? ', ' + best.near + ' baris dari situ' : '') }); hits.pengganti++; }
+      if (best) { s.succ = best.t; s.hits.push({ id: 'pengganti', status: 'diganti', why: 'kemungkinan digantikan SKU baru ' + (best.t.name || best.t.key) + ' (nama mirip ' + fmt.format(Math.round(best.score * 100)) + '%' + (best.near !== null ? ', ' + best.near + ' baris dari situ' : '') + ')' }); hits.pengganti++; }
     });
   }
   // final status: override > diganti > diskontinu > cek > aktif
@@ -1973,7 +2048,7 @@ function applyRules(m) {
   if (ruleCfg('master').on) all.forEach(function (s) {
     var mi = matStatus(s); if (!mi || mi.status !== 'nonaktif') return;
     var tg = mi.succ ? byKey[String(mi.succ).trim().toUpperCase()] : null;
-    if (tg && tg !== s) { s.succ = tg; s.hits.push({ id: 'master', status: 'diganti', why: 'nonaktif di material master' + (mi.from === 'manual' ? ' (diubah manual)' : '') + ', pengganti ' + (tg.nomat || tg.key) }); }
+    if (tg && tg !== s) { s.succ = tg; s.hits.push({ id: 'master', status: 'diganti', why: 'nonaktif di material master' + (mi.from === 'manual' ? ' (diubah manual)' : '') + ', digantikan SKU baru ' + (tg.nomat || tg.key) }); }
     else s.hits.push({ id: 'master', status: 'diskontinu', why: 'nonaktif di material master' + (mi.from === 'manual' ? ' (diubah manual)' : '') });
     hits.master++;
   });
@@ -2016,7 +2091,8 @@ function renderCek(m) {
   var cnt = { aktif: 0, cek: 0, diskontinu: 0, diganti: 0 }, nov = 0;
   m.all.forEach(function (s) { cnt[s.status]++; if (s.override) nov++; });
   $('cekSummary').innerHTML = Object.keys(STATUS).map(function (k) { return '<button type="button" class="stat" data-flt="' + k + '"><span class="pill p-' + STATUS[k][1] + '">' + STATUS[k][0] + '</span><b>' + cnt[k] + '</b></button>'; }).join('') +
-    '<span class="sub">' + nov + ' diubah manual · Diskontinu dan Diganti tidak dihitung di total, akurasi dan ML.</span>';
+    '<span class="sub">' + nov + ' diubah manual · Diskontinu dan Diganti tidak dihitung di total, akurasi dan ML.</span>' +
+    '<p class="stexp"><b>Arti status:</b> <b>Aktif</b> = masih dijual dan dihitung. <b>Perlu cek</b> = kena aturan, putuskan sendiri. <b>Diskontinu</b> = berhenti dijual, tanpa pengganti. <b>Diganti</b> = SKU lama berhenti dan <i>digantikan SKU baru</i> (mis. kemasan atau Nomat baru); penjualannya pindah, jadi order in SKU lama ditambahkan ke histori SKU baru.</p>';
   // SKU list
   var flt = $('cekFilter').value, q = normName($('cekSearch').value), L = m.latest, f1 = m.future[0];
   var list = m.all.filter(function (s) {
@@ -2030,13 +2106,13 @@ function renderCek(m) {
   var t = '<thead><tr><th>Status</th><th>SKU</th><th>Famili</th><th class="num">Baris</th><th class="num">Stok</th><th class="num">Order in ' + monthLabel(L) + '</th><th class="num">HQ ' + monthLabel(L) + '</th><th class="num">HQ ' + monthLabel(f1) + '</th><th>Alasan</th><th>Ubah status</th></tr></thead><tbody>';
   list.slice(0, 400).forEach(function (s) {
     var st = STATUS[s.status], ov = s.override;
-    t += '<tr class="st-' + s.status + '"><td><span class="pill p-' + st[1] + '">' + st[0] + '</span>' + (ov ? '<span class="sub"> manual</span>' : '') + (s.status === 'diganti' && s.succ ? '<span class="code" title="' + esc(s.succ.name || '') + '">→ ' + esc(s.succ.key) + '</span>' : '') + '</td>' +
+    t += '<tr class="st-' + s.status + '"><td><span class="pill p-' + st[1] + '">' + st[0] + '</span>' + (ov ? '<span class="sub"> manual</span>' : '') + (s.status === 'diganti' && s.succ ? '<span class="succ" title="SKU lama ini sudah tidak dijual; penjualannya pindah ke SKU baru ini. Order in SKU lama ditambahkan ke histori SKU baru.">digantikan oleh SKU baru:<b>' + esc(s.succ.name || s.succ.key) + '</b><span class="code">Nomat ' + esc(s.succ.nomat || s.succ.key) + '</span></span>' : '') + '</td>' +
       '<td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + esc(s.nomat || 'tanpa Nomat') + (s.art ? ' · ' + esc(s.art) : '') + (L && s.flag[L] ? ' · <b class="red">' + s.flag[L] + '</b>' : '') + '</span></td>' +
       '<td>' + esc(s.grp || s.family ? famOf(s) : '–') + '</td><td class="num col">' + (s.row[L] || '–') + '</td><td class="num">' + n(s.soh) + '</td><td class="num">' + n(s.oi[L]) + '</td><td class="num">' + n(s.orig[L]) + '</td><td class="num">' + n(s.fhq[f1]) + '</td>' +
       '<td class="wr">' + (s.hits.length ? s.hits.map(function (x) { return '<span class="why"><span class="pill p-' + STATUS[x.status][1] + '">' + STATUS[x.status][0] + '</span> ' + esc(x.why) + '</span>'; }).join('') : '<span class="sub">Tidak ada aturan yang kena</span>') + '</td>' +
       '<td style="white-space:nowrap"><select data-ov="' + esc(s.key) + '" aria-label="Status untuk ' + esc(s.name || s.key) + '"><option value="">Otomatis (' + STATUS[s.autoStatus][0] + ')</option>' +
-      Object.keys(STATUS).map(function (k) { return '<option value="' + k + '"' + (ov && ov.status === k ? ' selected' : '') + '>' + STATUS[k][0] + (k === 'diganti' ? ' oleh…' : '') + '</option>'; }).join('') + '</select>' +
-      (ov && ov.status === 'diganti' ? ' <input type="text" list="cekCodes" data-succ="' + esc(s.key) + '" value="' + esc(ov.succ || (s.succ ? s.succ.key : '')) + '" placeholder="Nomat pengganti" style="width:120px">' : '') + '</td></tr>';
+      Object.keys(STATUS).map(function (k) { return '<option value="' + k + '"' + (ov && ov.status === k ? ' selected' : '') + '>' + (k === 'diganti' ? 'Diganti SKU baru…' : STATUS[k][0]) + '</option>'; }).join('') + '</select>' +
+      (ov && ov.status === 'diganti' ? '<label class="succin">Nomat SKU baru yang menggantikan:<input type="text" list="cekCodes" data-succ="' + esc(s.key) + '" value="' + esc(ov.succ || (s.succ ? s.succ.key : '')) + '" placeholder="mis. 69920852"></label>' : '') + '</td></tr>';
   });
   if (!list.length) t += '<tr><td colspan="10" class="sub">Tidak ada SKU untuk saringan ini.</td></tr>';
   if (list.length > 400) t += '<tr><td colspan="10" class="sub">' + (list.length - 400) + ' SKU lagi. Persempit dengan pencarian.</td></tr>';
@@ -2267,6 +2343,27 @@ function familySpread(f, m, basis, k) {
   });
   return n2 >= 2 ? { v: Math.sqrt(se / n2) / (so / n2), n: n2 } : { v: DEFAULT_SPREAD, n: n2, dflt: true };
 }
+// ---------- Bahan baku (BOM per karton SKU) ----------
+// state.bom[nomat] = { ct: karton (pcs per karton produk), pl: plastik (kg per karton), jr: jumbo roll (kg per karton), desc: deskripsi BOM }
+// Masih kosong sampai BOM diisi di Material master; kolomnya bisa disembunyikan (state.rmHide).
+var RM = [['ct', 'Karton', 'pcs'], ['pl', 'Plastik', 'ton'], ['jr', 'Jumbo roll', 'ton']];
+function bomOf(s) { var b = (state.bom || {})[matKey(s)]; return b && (typeof b.ct === 'number' || typeof b.pl === 'number' || typeof b.jr === 'number' || b.desc) ? b : null; }
+function rmNeed(s, pp) {
+  var b = bomOf(s); if (!b || typeof pp !== 'number') return null;
+  return { ct: typeof b.ct === 'number' ? pp * b.ct : null, pl: typeof b.pl === 'number' ? pp * b.pl / 1000 : null, jr: typeof b.jr === 'number' ? pp * b.jr / 1000 : null };
+}
+function rmFmt(k, v) { if (v === null || v === undefined) return '–'; return k === 'ct' ? n(Math.round(v)) : fmt.format(Math.round(v * 100) / 100); }
+function rmAdd(a, x) { RM.forEach(function (r) { if (x && typeof x[r[0]] === 'number') { a[r[0]] = (a[r[0]] || 0) + x[r[0]]; } }); return a; }
+// P50/P90 for M+2 / M+3: Chronos or Regressor kuantil for that month, else the M+1 range scaled to that month's forecast
+function quantFut(s, m, mo, F, q1, F1) {
+  var C = m.chr || {}, G = m.gbr || {}, QS = BUFBT.qsrc || 'auto';
+  var c = C.fut && C.fut[s.key] && C.fut[s.key][mo];
+  if ((QS === 'auto' || QS === 'chronos') && c && typeof c.p50 === 'number' && typeof c.p90 === 'number') return { p50: c.p50, p90: Math.max(c.p50, c.p90), src: 'Chronos' };
+  var a = G.fut && G.fut[s.key] && G.fut[s.key][mo], b = G.qfut && G.qfut[s.key] && G.qfut[s.key][mo];
+  if ((QS === 'auto' || QS === 'gbr') && typeof a === 'number' && typeof b === 'number') return { p50: a, p90: Math.max(a, b), src: 'Regressor kuantil' };
+  if (q1 && F1 > 0) return { p50: q1.p50 / F1 * F, p90: q1.p90 / F1 * F, src: q1.src + ' (rasio M+1)' };
+  return null;
+}
 function bufferModel(m, over, prop) {
   var cfg = bufCfg(), z0;
   prop = prop || 'bf'; if (over) Object.keys(over).forEach(function (k) { cfg[k] = over[k]; });
@@ -2288,6 +2385,25 @@ function bufferModel(m, over, prop) {
       sug = Math.round(sug);
       var ed = state.bufEdits[s.key], fin = ed && typeof ed.v === 'number' ? ed.v : sug;
       var fs = s.fs || 0, prod = st === 'habiskan' ? 0 : Math.max(0, Math.round(F + fin - fs));
+      // multi-month: stok akhir M+1 = stok awal + PP − forecast → stok awal M+2, which gets its own buffer and PP (for raw material orders)
+      var hz = [];
+      if (prop === 'bf') {
+        var beg = fs, stop = false;
+        m.future.forEach(function (mo2, i) {
+          if (stop) return;
+          var Fi, bi, ppi, qi = q;
+          if (i === 0) { Fi = F; bi = fin; ppi = prod; }
+          else {
+            var b2 = basisOf(s, mo2, cfg.basis, false); if (!b2) { stop = true; return; }
+            Fi = Math.max(0, b2.v); qi = quantFut(s, m, mo2, Fi, q, F);
+            bi = Math.round(stratBuf(st, Fi, z0, spS, ltF, tf, st === 'kuantil' ? qi : null));
+            ppi = st === 'habiskan' ? 0 : Math.max(0, Math.round(Fi + bi - beg));
+          }
+          var end = beg + ppi - Fi;
+          hz.push({ mo: mo2, beg: beg, F: Fi, buf: bi, pp: ppi, end: end, rm: rmNeed(s, ppi), t: s.nw ? ppi * s.nw / 1000 : null });
+          beg = Math.max(0, end);
+        });
+      }
       var old = typeof s.buf0 === 'number' ? s.buf0 : null;
       var status;
       if (st === 'habiskan') status = ['Habiskan stok', 'hab'];
@@ -2297,7 +2413,7 @@ function bufferModel(m, over, prop) {
       else if (old && fin > old * 1.1) status = ['Buffer naik', 'up'];
       else if (old && fin < old * 0.9) status = ['Buffer turun', 'down'];
       else status = ['Sesuai', 'same'];
-      s[prop] = { q: q, bt: bt.sku[s.key] || null, F: F, src: b ? b.src : 'tidak ada forecast', z: z, spread: spS, spreadInfo: sp, ltF: ltF, fac: fac, st: st, auto: auto, sug: sug, fin: fin, ed: ed || null, days: F > 0 ? fin / (F / 30) : null, prod: prod, rm: s.nw ? prod * s.nw / 1000 : null, old: old, fs: fs, status: status, note: note };
+      s[prop] = { q: q, bt: bt.sku[s.key] || null, F: F, src: b ? b.src : 'tidak ada forecast', z: z, spread: spS, spreadInfo: sp, ltF: ltF, fac: fac, st: st, auto: auto, sug: sug, fin: fin, ed: ed || null, days: F > 0 ? fin / (F / 30) : null, prod: prod, rm: s.nw ? prod * s.nw / 1000 : null, need: rmNeed(s, prod), hz: hz, old: old, fs: fs, status: status, note: note };
       rows.push(s);
     });
   });
@@ -2337,6 +2453,7 @@ function bfAgg(list) {
 function renderBuffer(m) {
   if (!m.skus.length || !m.future.length) { $('bfCards').innerHTML = ''; $('bfTable').innerHTML = '<tbody><tr><td class="empty">Belum ada data. Unggah closing dan Forecast HQ di lembar <b>Input Data &amp; Model</b>.</td></tr></tbody>'; return; }
   var bm = bufferModel(m), cfg = bm.cfg, mo = bm.month, L = m.latest, tot = bfAgg(bm.rows);
+  $('bfRmTg').textContent = state.rmHide ? 'Tampilkan bahan baku' : 'Sembunyikan bahan baku';
   document.querySelectorAll('#bfCtl button[data-bk]').forEach(function (b) { var on = String(cfg[b.getAttribute('data-bk')]) === b.getAttribute('data-bv'); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
   // old rule production with HQ, for comparison
   var oldProd = 0, oldRm = 0;
@@ -2353,7 +2470,10 @@ function renderBuffer(m) {
     rows: chg.map(function (s) { var b = s.bf; return [sk(s), n(b.old), n(b.sug), '<b>' + n(b.fin) + '</b>' + (b.ed ? ' <span class="mtag">manual</span>' : ''), signed(b.fin - (b.old || 0)), STRATS[b.st][0]]; }), keys: keys(chg) };
   CH.lists.bfProd = { title: 'Rencana produksi per SKU · ' + monthLabel(mo), tab: 'Buffer', note: 'Rencana produksi = forecast + buffer final − stok bebas, terbesar dulu. Jadwal mesinnya ada di tab Rencana Produksi.', head: [['SKU'], ['Stok bebas', 1], ['Forecast', 1], ['Buffer', 1], ['Rencana produksi', 1]],
     rows: prodL.map(function (s) { var b = s.bf; return [sk(s), n(b.fs), n(Math.round(b.F)), n(b.fin), '<b>' + n(b.prod) + '</b>']; }), keys: keys(prodL) };
-  CH.lists.bfRm = { title: 'Kebutuhan bahan baku · ' + monthLabel(mo), note: '<b>Dummy.</b> Data BOM (bahan per karton) belum ada, jadi kebutuhan bahan baku belum dihitung. Setelah BOM tersedia, daftar ini berisi bahan baku × rencana produksi per SKU.', head: [], rows: [] };
+  var rmTot = { a: {}, k: 0 }; prodL.forEach(function (s) { if (s.bf.need) { rmAdd(rmTot.a, s.bf.need); rmTot.k++; } });
+  var rmL = prodL.filter(function (s) { return s.bf.need; });
+  CH.lists.bfRm = { title: 'Kebutuhan bahan baku · ' + monthLabel(mo), tab: 'Buffer', note: 'Rencana produksi × BOM per karton (diisi di Material master). Karton dalam pcs, plastik dan jumbo roll dalam ton. Untuk M+2 dan M+3 lihat panel <b>Proyeksi buffer per bulan</b>.' + (rmL.length < prodL.length ? ' ' + (prodL.length - rmL.length) + ' SKU yang diproduksi belum punya BOM.' : ''), head: [['SKU'], ['Rencana produksi', 1], ['Karton (pcs)', 1], ['Plastik (ton)', 1], ['Jumbo roll (ton)', 1], ['BOM']],
+    rows: rmL.map(function (s) { var x = s.bf.need; return [sk(s), n(s.bf.prod), rmFmt('ct', x.ct), rmFmt('pl', x.pl), rmFmt('jr', x.jr), esc((bomOf(s) || {}).desc || '')]; }), keys: keys(rmL) };
   CH.lists.bfLow = { title: 'SKU stok di bawah buffer', tab: 'Buffer', note: 'Stok bebas lebih kecil dari buffer final: perlu produksi di awal ' + monthLabel(mo) + '.', head: [['SKU'], ['Stok bebas', 1], ['Buffer final', 1], ['Kurang', 1], ['Rencana produksi', 1]],
     rows: low.map(function (s) { var b = s.bf; return [sk(s), n(b.fs), n(b.fin), '<b class="red">' + n(b.fs - b.fin) + '</b>', n(b.prod)]; }), keys: keys(low) };
   // strategy backtest + ABC-XYZ
@@ -2379,22 +2499,25 @@ function renderBuffer(m) {
   $('bfCards').innerHTML =
     listCard('bfFin', 'Buffer final · total mill', n(tot.fin), (tot.old ? 'Aturan lama ' + n(tot.old) + ' → ' + pctS((tot.fin / tot.old - 1) * 100) + '. ' : '') + 'Dasar: ' + basisName + ', SL ' + cfg.sl + '%, lead time ' + cfg.lt + ' hari.' + (man.length ? ' ' + man.length + ' SKU diubah manual.' : '') + (dflt ? ' ' + dflt + ' famili memakai sebaran error bawaan 25%.' : ''), tot.old ? (tot.fin <= tot.old ? 'Lebih ramping' : 'Lebih tebal') : '', tot.old ? (tot.fin <= tot.old ? 'ok' : 'warn') : '') +
     listCard('bfProd', 'Rencana produksi ' + monthLabel(mo), n(tot.prod), prodL.length + ' SKU. Dengan aturan lama + Forecast HQ: ' + n(Math.round(oldProd)) + ' (' + signed(tot.prod - oldProd) + ').', 'Hasil', '') +
-    listCard('bfRm', 'Kebutuhan bahan baku ' + monthLabel(mo), '–', 'Dummy: data BOM belum ada, jadi kebutuhan bahan baku belum dihitung.', 'Dummy', '') +
-    listCard('bfLow', 'SKU stok di bawah buffer', n(low.length) + ' SKU', low.length ? 'Stok bebas ' + n(low.reduce(function (a, s) { return a + s.bf.fs; }, 0)) + ' vs buffer ' + n(low.reduce(function (a, s) { return a + s.bf.fin; }, 0)) + '. Perlu produksi di awal ' + monthLabel(mo) + '.' : 'Semua SKU punya stok di atas buffer.', low.length ? 'Risiko kurang' : 'Aman', low.length ? 'bad' : 'ok') +
+    (state.rmHide ? '' : listCard('bfRm', 'Kebutuhan bahan baku ' + monthLabel(mo), rmTot.k ? RM.filter(function (r) { return typeof rmTot.a[r[0]] === 'number'; }).map(function (r) { return rmFmt(r[0], rmTot.a[r[0]]) + ' ' + r[2]; }).join(' · ') : '–', rmTot.k ? 'Dari BOM ' + rmTot.k + ' dari ' + prodL.length + ' SKU yang diproduksi.' : 'BOM belum diisi (Material master), jadi kebutuhan karton, plastik dan jumbo roll belum dihitung.', rmTot.k ? (rmTot.k < prodL.length ? 'BOM belum lengkap' : 'Lengkap') : 'Dummy', '')) +
+    listCard('bfLow', 'SKU stok di bawah buffer', n(low.length) + ' SKU', low.length ? 'Stok bebas ' + n(low.reduce(function (a, s) { return a + s.bf.fs; }, 0)) + ' vs buffer ' + n(low.reduce(function (a, s) { return a + s.bf.fin; }, 0)) + '. Perlu produksi di awal ' + monthLabel(mo) + '.' : 'Semua SKU punya stok di atas buffer.', low.length ? 'Risiko kurang' : 'Aman', lampu(low.length, LAMPU.buffer.stokDiBawahBuffer), lampuBatas(LAMPU.buffer.stokDiBawahBuffer, false, ' SKU')) +
     (recL.length ? listCard('bfRec', 'Rekomendasi AI', n(recL.length) + ' SKU', recL.slice(0, 2).map(function (r) { return (r.s.name || r.s.key) + ': ' + (r.to ? 'ganti ke ' + STRATS[r.to][0] : 'tinjau'); }).join(' · ') + (recL.length > 2 ? ' · …' : '') + '.', 'Perlu dicek', 'warn') : '') +
     (rvL.length ? listCard('bfRev', 'Ditandai untuk ditinjau', n(rvL.length) + ' SKU', 'Ditandai dari halaman Forecast: ' + rvL.slice(0, 2).map(function (s) { return s.name || s.key; }).join(', ') + (rvL.length > 2 ? ', …' : '') + '.', 'Tinjau', 'warn') : '') +
     (bm.cmp ? (function () { var A = bfAgg(bm.rows), B = { fin: 0, prod: 0 }; bm.rows.forEach(function (x) { if (x.bf2) { B.fin += x.bf2.fin; B.prod += x.bf2.prod; } }); var sa = bbAcc(bm.bt.glob.kuantil || bm.bt.auto.auto), sb = bbAcc(bm.cmp.bt.glob.kuantil || bm.cmp.bt.auto.auto);
       return fcCard('Bandingkan: ' + basisName + ' vs ' + BASIS_NAME[cfg.cmp], n(A.prod) + ' vs ' + n(B.prod), 'Rencana produksi ' + monthLabel(mo) + ' (karton). Buffer ' + n(A.fin) + ' vs ' + n(B.fin) + '. Skor buffer backtest ' + pct0(sa) + ' vs ' + pct0(sb) + '. Kolom biru di tabel = ' + BASIS_NAME[cfg.cmp] + '.', sa !== null && sb !== null ? (sb > sa ? BASIS_NAME[cfg.cmp] + ' lebih baik' : sa > sb ? basisName + ' lebih baik' : 'Sama') : '', ''); })() : '') +
-    listCard('bfAcc', 'Skor buffer · backtest ' + BT.months.length + ' bln', pct0(bbAcc(auto)), (auto ? 'Kurang dihitung ' + BUFBT.shortW + '×. Kuantil P90 (SKU baru otomatis): tertutup ' + fmt.format(Math.round(auto.cov / auto.n * 100)) + '% SKU-bulan, lebih ' + n(Math.round(auto.exc)) + ' karton, kurang ' + n(Math.round(auto.short)) + '. Standar untuk semua: skor ' + pct0(bbAcc(stdG)) + ', tertutup ' + fmt.format(Math.round(stdG.cov / stdG.n * 100)) + '%.' : 'Perlu minimal 3 closing untuk backtest strategi.') + (auto && BT.months.length < 3 ? ' Backtest baru ' + BT.months.length + ' bulan: belum bisa diandalkan.' : ''), btPill[0], btPill[1]) +
+    listCard('bfAcc', 'Skor buffer · backtest ' + BT.months.length + ' bln', pct0(bbAcc(auto)), (auto ? 'Kurang dihitung ' + BUFBT.shortW + '×. Kuantil P90 (SKU baru otomatis): tertutup ' + fmt.format(Math.round(auto.cov / auto.n * 100)) + '% SKU-bulan, lebih ' + n(Math.round(auto.exc)) + ' karton, kurang ' + n(Math.round(auto.short)) + '. Standar untuk semua: skor ' + pct0(bbAcc(stdG)) + ', tertutup ' + fmt.format(Math.round(stdG.cov / stdG.n * 100)) + '%.' : 'Perlu minimal 3 closing untuk backtest strategi.') + (auto && BT.months.length < 3 ? ' Backtest baru ' + BT.months.length + ' bulan: belum bisa diandalkan.' : ''), btPill[0], auto && BT.months.length >= 3 && lampu(bbAcc(auto), LAMPU.buffer.skorBuffer, true) !== 'ok' ? lampu(bbAcc(auto), LAMPU.buffer.skorBuffer, true) : btPill[1], auto ? 'skor ' + lampuBatas(LAMPU.buffer.skorBuffer, true) : '') +
     listCard('bfCls', 'Kelas ABC-XYZ', ['A', 'B', 'C', 'NPD'].filter(function (c) { return cc[c]; }).map(function (c) { return c + ' ' + cc[c]; }).join(' · ') || '–', 'Dari volume dan kestabilan order in, dihitung ulang tiap closing.' + (mis.length ? ' ' + mis.length + ' SKU beda jauh dengan kelas HQ.' : ''), mis.length ? mis.length + ' beda HQ' : '', mis.length ? 'warn' : '') +
-    listCard('bfNoP', 'SKU tanpa produksi ' + monthLabel(mo), n(noP.length) + ' SKU', noP.length ? 'Stok bebas ' + n(noP.reduce(function (a, s) { return a + s.bf.fs; }, 0)) + ' karton sudah menutup forecast + buffer.' : 'Semua SKU perlu produksi.', noP.length ? 'Stok berlebih' : '', noP.length ? 'warn' : '');
-  var C = bm.cmp, cN = C ? BASIS_NAME[cfg.cmp] : '', NC = C ? 16 : 13;
+    listCard('bfNoP', 'SKU tanpa produksi ' + monthLabel(mo), n(noP.length) + ' SKU', noP.length ? 'Stok bebas ' + n(noP.reduce(function (a, s) { return a + s.bf.fs; }, 0)) + ' karton sudah menutup forecast + buffer.' : 'Semua SKU perlu produksi.', noP.length ? 'Stok berlebih' : '', noP.length ? lampu(noP.length, LAMPU.buffer.tanpaProduksi) : '', lampuBatas(LAMPU.buffer.tanpaProduksi, false, ' SKU'));
+  var RH = !!state.rmHide, C = bm.cmp, cN = C ? BASIS_NAME[cfg.cmp] : '', NC = (C ? 15 : 12) + (RH ? 0 : 4);
+  var rmAgg = function (list) { var a = {}, k = 0; list.forEach(function (x) { if (x.bf && x.bf.need) { rmAdd(a, x.bf.need); k++; } }); return k ? a : null; };
+  var rmCells = function (need, desc, title) { if (RH) return ''; return RM.map(function (r, i) { return '<td class="num rmc' + (i ? '' : ' sep') + (need ? '' : ' dummy') + '"' + (title ? ' title="' + esc(title) + '"' : '') + '>' + (need ? rmFmt(r[0], need[r[0]]) : '–') + '</td>'; }).join('') + '<td class="rmc rmd' + (desc ? '' : ' dummy') + '">' + (desc ? esc(desc) : '–') + '</td>'; };
   var a2 = function (list) { var o = { F: 0, fin: 0, prod: 0 }; list.forEach(function (x) { var b2 = x.bf2; if (b2) { o.F += b2.F; o.fin += b2.fin; o.prod += b2.prod; } }); return o; };
   var cF = function (b2) { return C ? '<td class="num cmpc">' + (b2 ? n(Math.round(b2.F)) : '–') + '</td>' : ''; }, cB = function (b2) { return C ? '<td class="num cmpc">' + (b2 ? n(b2.fin) : '–') + '</td>' : ''; }, cP = function (b2, p1) { return C ? '<td class="num cmpc">' + (b2 ? n(b2.prod) + (b2.prod !== p1 ? '<span class="cmpd">' + signed(b2.prod - p1) + '</span>' : '') : '–') + '</td>' : ''; };
-  var h = '<thead><tr><th rowspan="2" class="l">Grup + SKU</th><th colspan="' + (C ? 5 : 4) + '" class="grp sep">DASAR · ' + monthLabel(mo) + '</th><th colspan="' + (C ? 6 : 5) + '" class="grp sep">BUFFER</th><th colspan="' + (C ? 4 : 3) + '" class="grp sep">HASIL · ' + monthLabel(mo) + '</th></tr><tr>' +
+  var h = '<thead><tr><th rowspan="2" class="l">Grup + SKU</th><th colspan="' + (C ? 5 : 4) + '" class="grp sep">DASAR · ' + monthLabel(mo) + '</th><th colspan="' + (C ? 6 : 5) + '" class="grp sep">BUFFER</th><th colspan="' + (C ? 3 : 2) + '" class="grp sep">HASIL · ' + monthLabel(mo) + '</th>' + (RH ? '' : '<th colspan="4" class="grp sep">BAHAN BAKU · ' + monthLabel(mo) + ' <span class="dummy">(BOM belum diisi)</span></th>') + '</tr><tr>' +
     '<th class="num sep wrap2">Stok bebas akhir ' + monthLabel(L) + '</th><th class="num wrap2">' + esc(basisName) + '</th>' + (C ? '<th class="num wrap2 cmpc">' + esc(cN) + ' <span class="sub">(B)</span></th>' : '') + '<th class="num" title="Median rentang forecast">P50</th><th class="num" title="Batas atas 90%">P90</th>' +
     '<th class="num sep wrap2">Buffer saat ini (aturan lama)</th><th class="num">Buffer saran</th><th class="num">Buffer final</th>' + (C ? '<th class="num wrap2 cmpc">Buffer final (B)</th>' : '') + '<th class="num">Hari</th><th>Strategi</th>' +
-    '<th class="num sep wrap2">Rencana produksi</th>' + (C ? '<th class="num wrap2 cmpc">Rencana produksi (B)</th>' : '') + '<th class="num wrap2">Bahan baku <span class="dummy">(dummy)</span></th><th>Status · klik untuk alasan</th></tr></thead><tbody>';
+    '<th class="num sep wrap2">Rencana produksi</th>' + (C ? '<th class="num wrap2 cmpc">Rencana produksi (B)</th>' : '') + '<th>Status · klik untuk alasan</th>' +
+    (RH ? '' : '<th class="num wrap2 sep" title="Karton kemasan yang dibutuhkan = rencana produksi × pcs karton per karton produk">Karton (pcs)</th><th class="num wrap2" title="Rencana produksi × kg plastik per karton ÷ 1000">Plastik (ton)</th><th class="num wrap2" title="Rencana produksi × kg jumbo roll per karton ÷ 1000">Jumbo roll (ton)</th><th class="wrap2">Deskripsi BOM</th>') + '</tr></thead><tbody>';
   var stratSel = function (key, cur, auto, fam) {
     return '<select class="bfst" data-strat="' + esc(key) + '" aria-label="Strategi">' + (fam ? '<option value="">Otomatis per SKU</option>' : '<option value="">Otomatis (' + STRATS[auto][0] + ')</option>') +
       Object.keys(STRATS).map(function (k) { return '<option value="' + k + '"' + (cur === k ? ' selected' : '') + '>' + STRATS[k][0] + '</option>'; }).join('') + '</select>';
@@ -2409,7 +2532,7 @@ function renderBuffer(m) {
     var a = bfAgg(f.skus), nRv = f.skus.filter(function (x) { return RV[x.key]; }).length, open = bq ? true : state.bfOpen[f.key] === undefined ? nRv > 0 : !!state.bfOpen[f.key], fst = state.bufStrat['fam:' + f.key] || state.bufStrat['fam:' + f.base] || '';
     h += '<tr class="fam"><td><div class="fl"><button type="button" class="exp" data-bfam="' + esc(f.key) + '" aria-expanded="' + open + '">' + (open ? '▼' : '▶') + '</button><div>' + esc(f.name) + '<span class="code">' + f.skus.length + ' SKU' + (nRv ? ' · <b class="rvf">⚑ ' + nRv + ' ditinjau</b>' : '') + ' · sebaran error ' + fmt.format(Math.round(f.buf.spread.v * 100)) + '%' + (f.buf.spread.dflt ? ' (bawaan)' : ' (' + f.buf.spread.n + ' bln)') + '</span></div></div></td>' +
       '<td class="num sep">' + n(a.fs) + '</td><td class="num">' + n(Math.round(a.F)) + '</td>' + (C ? cF(a2(f.skus)) : '') + qSum(f.skus) + '<td class="num sep">' + n(a.old) + '</td><td class="num bsug">' + n(a.sug) + '</td><td class="num">' + n(a.fin) + '</td>' + (C ? cB(a2(f.skus)) : '') + '<td class="num">' + (a.days === null ? '–' : fmt.format(Math.round(a.days * 10) / 10)) + '</td><td>' + stratSel('fam:' + f.key, fst, null, true) + '</td>' +
-      '<td class="num sep' + (a.prod === 0 ? ' zero' : '') + '">' + n(a.prod) + '</td>' + (C ? cP(a2(f.skus), a.prod) : '') + '<td class="num dummy">–</td><td></td></tr>';
+      '<td class="num sep' + (a.prod === 0 ? ' zero' : '') + '">' + n(a.prod) + '</td>' + (C ? cP(a2(f.skus), a.prod) : '') + '<td></td>' + rmCells(rmAgg(f.skus), '') + '</tr>';
     if (open) {
       fsk.slice(0, bq ? Infinity : lim).forEach(function (s) {
         var b = s.bf;
@@ -2417,15 +2540,16 @@ function renderBuffer(m) {
           '<td class="num sep">' + n(b.fs) + '</td><td class="num">' + n(Math.round(b.F)) + '</td>' + cF(s.bf2) + (b.q ? '<td class="num" title="' + esc(b.q.src) + '">' + n(Math.round(b.q.p50)) + '</td><td class="num" title="' + esc(b.q.src) + '">' + n(Math.round(b.q.p90)) + '</td>' : '<td class="num">–</td><td class="num">–</td>') + '<td class="num sep">' + n(b.old) + '</td><td class="num bsug">' + n(b.sug) + '</td>' +
           '<td class="num bfin' + (b.ed ? ' edited' : '') + '" tabindex="0" data-bfin="' + esc(s.key) + '" title="' + (b.ed ? 'Manual: ' + esc(b.ed.reason || '') + ' (saran ' + n(b.sug) + ')' : 'Klik untuk mengubah; alasan wajib') + '">' + n(b.fin) + (b.ed ? ' <span class="mtag">manual</span>' : '') + '</td>' + cB(s.bf2) +
           '<td class="num">' + (b.days === null ? '–' : fmt.format(Math.round(b.days * 10) / 10)) + '</td><td>' + stratSel(s.key, state.bufStrat[s.key] || '', b.auto[0], false) + (state.bufStrat[s.key] ? '' : '<span class="code" style="display:block;max-width:220px;white-space:normal">' + esc(b.auto[1]) + '</span>') + (bfWinTxt(BT, s.key) ? '<button type="button" class="bwin" data-bwin="' + esc(s.key) + '" title="Tanya asisten kenapa">🏆 ' + esc(bfWinTxt(BT, s.key)) + '</button>' : '') + '</td>' +
-          '<td class="num sep' + (b.prod === 0 ? ' zero' : '') + '">' + n(b.prod) + '</td>' + cP(s.bf2, b.prod) + '<td class="num dummy" title="Dummy: BOM belum ada">–</td>' +
-          '<td><button type="button" class="bst b-' + b.status[1] + '" data-bwhy="' + esc(s.key) + '">' + b.status[0] + '</button></td></tr>';
+          '<td class="num sep' + (b.prod === 0 ? ' zero' : '') + '">' + n(b.prod) + '</td>' + cP(s.bf2, b.prod) +
+          '<td><button type="button" class="bst b-' + b.status[1] + '" data-bwhy="' + esc(s.key) + '">' + b.status[0] + '</button></td>' + rmCells(b.need, (bomOf(s) || {}).desc || '', b.need ? '' : 'BOM SKU ini belum diisi. Isi di Material master.') + '</tr>';
       });
       if (!bq && f.skus.length > lim) h += '<tr class="more"><td colspan="' + NC + '">+' + (f.skus.length - lim) + ' SKU lainnya sudah termasuk di baris famili.</td></tr>';
     }
   });
   if (bq && !bHit) h += '<tr class="more"><td colspan="' + NC + '">Tidak ada SKU yang cocok dengan "' + esc(state.bfQ) + '".</td></tr>';
-  h += '<tr class="tot"><td>Total Serang<span class="code">' + bm.rows.length + ' SKU aktif' + (bq ? ' · ' + bHit + ' cocok dengan pencarian' : '') + '</span></td><td class="num sep">' + n(tot.fs) + '</td><td class="num">' + n(Math.round(tot.F)) + '</td>' + (C ? cF(a2(bm.rows)) : '') + qSum(bm.rows) + '<td class="num sep">' + n(tot.old) + '</td><td class="num bsug">' + n(tot.sug) + '</td><td class="num">' + n(tot.fin) + '</td>' + (C ? cB(a2(bm.rows)) : '') + '<td class="num">' + (tot.days === null ? '–' : fmt.format(Math.round(tot.days * 10) / 10)) + '</td><td></td><td class="num sep">' + n(tot.prod) + '</td>' + (C ? cP(a2(bm.rows), tot.prod) : '') + '<td class="num dummy">–</td><td></td></tr>';
+  h += '<tr class="tot"><td>Total Serang<span class="code">' + bm.rows.length + ' SKU aktif' + (bq ? ' · ' + bHit + ' cocok dengan pencarian' : '') + '</span></td><td class="num sep">' + n(tot.fs) + '</td><td class="num">' + n(Math.round(tot.F)) + '</td>' + (C ? cF(a2(bm.rows)) : '') + qSum(bm.rows) + '<td class="num sep">' + n(tot.old) + '</td><td class="num bsug">' + n(tot.sug) + '</td><td class="num">' + n(tot.fin) + '</td>' + (C ? cB(a2(bm.rows)) : '') + '<td class="num">' + (tot.days === null ? '–' : fmt.format(Math.round(tot.days * 10) / 10)) + '</td><td></td><td class="num sep">' + n(tot.prod) + '</td>' + (C ? cP(a2(bm.rows), tot.prod) : '') + '<td></td>' + rmCells(rmAgg(bm.rows), '') + '</tr>';
   $('bfTable').innerHTML = h + '</tbody>';
+  renderBfHz(m, bm);
   CH.bm = bm;
   renderBfGuide(bm, cnt, wT);
   // where P50/P90 come from (answers "dari model mana?")
@@ -2433,6 +2557,46 @@ function renderBuffer(m) {
   $('bfQsrc').innerHTML = '<b>P50/P90 bukan dari Ensemble.</b> Ensemble hanya memberi satu angka; rentangnya diambil dari: ' +
     [['chronos', 'Chronos (P10/P50/P90 dari CSV-nya)'], ['gbr', 'Regressor kuantil (pohon yang sama dengan Regressor, dilatih ke P50 dan P90)'], ['err', 'error historis ' + BASIS_NAME[cfg.basis] + ' (sebaran order in ÷ forecast 6 bulan, dikali forecast)'], ['none', 'tidak ada, memakai rumus Standar']]
       .filter(function (x) { return qc[x[0]]; }).map(function (x) { return '<span><b>' + qc[x[0]] + ' SKU</b> ' + x[1] + '</span>'; }).join(' · ') + '. ' + (cfg.qsrc === 'auto' ? 'Otomatis = yang pertama tersedia, urut seperti itu.' : 'Dipaksa: ' + QSRC_NAME[cfg.qsrc] + '.');
+}
+// Proyeksi buffer per bulan (M+1..M+3): stok akhir bulan ini = stok awal + PP − forecast = stok awal bulan berikutnya,
+// which gets its own buffer (same strategy) and PP. Used to estimate raw material orders.
+function renderBfHz(m, bm) {
+  var el = $('bfHz'); if (!el) return;
+  var mos = m.future.slice(0, 3), RH = !!state.rmHide, open = state.hzOpen || {}, cls0 = LAMPU.buffer.stokAkhirNegatif === 'kuning' ? 'warn' : 'bad';
+  if (!bm.rows.length || !mos.length) { el.hidden = true; return; } el.hidden = false;
+  var agg = function (list) {
+    return mos.map(function (mo, i) { var a = { beg: 0, F: 0, buf: 0, pp: 0, end: 0, t: 0, rm: {}, n: 0, rmN: 0, neg: 0 }; list.forEach(function (s) { var x = s.bf.hz[i]; if (!x) return; a.n++; a.beg += x.beg; a.F += x.F; a.buf += x.buf; a.pp += x.pp; a.end += x.end; if (x.end < 0) a.neg++; if (x.t) a.t += x.t; if (x.rm) { rmAdd(a.rm, x.rm); a.rmN++; } }); return a; });
+  };
+  var num = function (v, c) { return '<td class="num' + (c ? ' ' + c : '') + '">' + (v === null || v === undefined ? '–' : n(Math.round(v))) + '</td>'; };
+  var cellsOf = function (xs, isAgg) {
+    return mos.map(function (mo, i) { var x = xs[i]; if (!x || (isAgg && !x.n)) return '<td class="num sep">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td>';
+      return '<td class="num sep" title="Stok awal ' + monthLabel(mo) + (i ? ' = stok akhir ' + monthLabel(mos[i - 1]) : ' = stok bebas akhir ' + monthLabel(m.latest)) + '">' + n(Math.round(x.beg)) + '</td>' + num(x.F) + num(x.buf, 'bsug') + num(x.pp, 'hzpp' + (x.pp === 0 ? ' zero' : '')); }).join('') +
+      (function () { var x = xs[mos.length - 1] || xs[xs.length - 1]; if (!x || (isAgg && !x.n)) return '<td class="num sep">–</td>'; var neg = isAgg ? x.neg : x.end < 0; return '<td class="num sep' + (neg ? ' hzneg lamp-' + cls0 : '') + '"' + (neg ? ' title="Stok akhir di bawah nol: forecast tidak tertutup"' : '') + '>' + n(Math.round(x.end)) + '</td>'; })();
+  };
+  var h = '<div class="ph"><h2>Proyeksi buffer per bulan · ' + mos.map(monthLabel).join(', ') + '</h2><div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" data-hzall="1">Buka semua famili</button><button type="button" data-hzall="0">Tutup semua</button></div></div>' +
+    '<p class="hzx"><b>Cara hitung:</b> stok akhir ' + monthLabel(mos[0]) + ' = stok awal + rencana produksi (PP) − forecast, lalu menjadi <b>stok awal ' + (mos[1] ? monthLabel(mos[1]) : 'bulan berikutnya') + '</b>. Bulan itu dihitung buffer-nya sendiri (strategi yang sama, forecast bulan itu) dan PP = forecast + buffer − stok awal. ' +
+    'Buffer manual hanya berlaku untuk ' + monthLabel(mos[0]) + '. Dipakai untuk memperkirakan pesanan bahan baku.</p>';
+  // bahan baku per bulan (summary first: this is what the order is based on)
+  var all = agg(bm.rows), nP = mos.map(function (mo, i) { return bm.rows.filter(function (s) { return s.bf.hz[i] && s.bf.hz[i].pp > 0; }).length; });
+  h += '<table class="fct hzs"><thead><tr><th class="l">Total Serang</th>' + mos.map(function (mo, i) { return '<th class="num">' + monthLabel(mo) + ' <span class="sub">M+' + (i + 1) + '</span></th>'; }).join('') + '</tr></thead><tbody>' +
+    '<tr><td>Rencana produksi (karton)</td>' + all.map(function (a) { return num(a.n ? a.pp : null, 'hzpp'); }).join('') + '</tr>' +
+    '<tr><td>Rencana produksi (ton)</td>' + all.map(function (a) { return '<td class="num">' + (a.n ? fmt.format(Math.round(a.t * 10) / 10) : '–') + '</td>'; }).join('') + '</tr>' +
+    '<tr><td>Buffer (karton)</td>' + all.map(function (a) { return num(a.n ? a.buf : null); }).join('') + '</tr>' +
+    (RH ? '' : RM.map(function (r) { return '<tr class="rmr"><td>' + r[1] + ' (' + r[2] + ')</td>' + all.map(function (a) { return '<td class="num' + (a.rmN ? '' : ' dummy') + '">' + (a.rmN ? rmFmt(r[0], a.rm[r[0]]) : '–') + '</td>'; }).join('') + '</tr>'; }).join('') +
+      '<tr class="rmr"><td>SKU diproduksi tanpa BOM</td>' + all.map(function (a, i) { var k = bm.rows.filter(function (s) { var x = s.bf.hz[i]; return x && x.pp > 0 && !x.rm; }).length; return '<td class="num' + (k ? ' dummy' : '') + '">' + n(k) + ' dari ' + n(nP[i]) + '</td>'; }).join('') + '</tr>') +
+    '</tbody></table>';
+  if (!RH && !all.some(function (a) { return a.rmN; })) h += '<p class="sub" style="margin:4px 2px 10px">Bahan baku masih kosong: isi BOM (karton pcs, plastik kg, jumbo roll kg per karton) di <a href="#" data-goto="Master">Material master</a>. Kolom ini bisa disembunyikan dengan tombol <b>Sembunyikan bahan baku</b> di atas.</p>';
+  // per family + SKU
+  h += '<div class="scroll" style="max-height:560px"><table class="fct hzt"><thead><tr><th rowspan="2" class="l">Grup + SKU</th>' + mos.map(function (mo, i) { return '<th colspan="4" class="grp sep">M+' + (i + 1) + ' · ' + monthLabel(mo) + '</th>'; }).join('') + '<th rowspan="2" class="num sep wrap2">Stok akhir ' + monthLabel(mos[mos.length - 1]) + '</th></tr><tr>' +
+    mos.map(function () { return '<th class="num sep wrap2">Stok awal</th><th class="num">Forecast</th><th class="num">Buffer</th><th class="num">PP</th>'; }).join('') + '</tr></thead><tbody>';
+  m.fams.forEach(function (f) {
+    var sk = f.skus.filter(function (x) { return x.bf && x.bf.hz && x.bf.hz.length; }); if (!sk.length) return;
+    var o = !!open[f.key], a = agg(sk);
+    h += '<tr class="fam"><td><div class="fl"><button type="button" class="exp" data-hzf="' + esc(f.key) + '" aria-expanded="' + o + '">' + (o ? '▼' : '▶') + '</button><div>' + esc(f.name) + '<span class="code">' + sk.length + ' SKU</span></div></div></td>' + cellsOf(a, true) + '</tr>';
+    if (o) sk.forEach(function (s) { h += '<tr class="sku"><td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + esc(s.nomat || s.art || '') + ' · ' + esc(STRATS[s.bf.st][0]) + (s.bf.hz.length < mos.length ? ' · forecast ' + monthLabel(mos[s.bf.hz.length]) + ' belum ada' : '') + '</span></td>' + cellsOf(s.bf.hz, false) + '</tr>'; });
+  });
+  h += '<tr class="tot"><td>Total Serang<span class="code">' + bm.rows.length + ' SKU aktif</span></td>' + cellsOf(all, true) + '</tr></tbody></table></div>';
+  el.innerHTML = h;
 }
 // "Arti strategi": what each strategy means in plain words, with its backtest numbers next to it
 function renderBfGuide(bm, cnt, wT) {
@@ -2622,14 +2786,17 @@ function schedModel(pm, MST) {
     if (man && !man.length) { unplaced.push({ r: r, why: 'dikeluarkan dari jadwal (manual)', removed: true }); return; }
     var ok = man ? man.filter(function (p) { return byName[p.m]; }) : [];
     if (!ok.length) { auto.push(r); return; }
-    var t = r.pl * r.nw / 1000, pcs = ok.map(function (p) { return addPiece(r, byName[p.m], Math.max(1, Math.min(H0, p.s)), Math.max(1, Math.min(H0 - p.s + 1, p.l)), true); });
+    var t = r.pl * r.nw / 1000, pcs = ok.map(function (p) { return addPiece(r, byName[p.m], Math.max(1, Math.min(H0, p.s)), Math.max(1, Math.min(H0 - p.s + 1, p.l)), !p.a); });
     var nd = pcs.reduce(function (a, pc) { return a + pc.days.length; }, 0); pcs.forEach(function (pc) { pc.t = nd ? t * pc.days.length / nd : 0; });
   });
+  // manual mode: nothing is placed by the model; every SKU without a bar is "belum terjadwal" (red)
+  var manual = sc.mode === 'manual' && !sc._force;
   auto.forEach(function (r) {
-    if (r.mach.guess && !state.sample) { unplaced.push({ r: r, why: 'SKU belum dipetakan ke area mesin (isi Kelompok SKU di Input, atau pilih di sini)' }); return; }
+    if (r.mach.guess && !state.sample) { unplaced.push({ r: r, unmapped: true, why: 'SKU belum dipetakan ke area mesin (isi Kelompok SKU di Input, atau pilih di sini)' }); return; }
+    if (manual) { unplaced.push({ r: r, t: r.pl * r.nw / 1000, why: 'belum terjadwal' + (r.st[1] === 'low' ? ' · stok di bawah forecast, dahulukan' : '') }); return; }
     var t = r.pl * r.nw / 1000, tm = skuMachOf(r.s);
     var cand = tm && tm.mach && byName[tm.mach] && byName[tm.mach].rate > 0 ? [byName[tm.mach]] : machines.filter(function (x) { return x.type === r.mach.v && x.rate > 0; });
-    if (!cand.length) { unplaced.push({ r: r, t: t, why: r.mach.v ? 'area mesin ' + r.mach.v + ' tidak punya mesin dengan kapasitas' : 'area mesin belum dipetakan' }); return; }
+    if (!cand.length) { unplaced.push({ r: r, t: t, unmapped: !r.mach.v, why: r.mach.v ? 'area mesin ' + r.mach.v + ' tidak punya mesin dengan kapasitas' : 'area mesin belum dipetakan' }); return; }
     var left = t, guard = 0, hz = D; // fill the month on all candidate machines first, only then run past month end
     while (left > 1e-6 && guard++ < 60) {
       var best = null, bestD = Infinity;
@@ -2666,7 +2833,7 @@ function schedModel(pm, MST) {
     dl.forEach(function (d) { ds[d].forEach(function (pc) { var v = o[d].v / ds[d].length; pc.plan += v; pc.mc.plan += v; pc.mc.planT += v * r.nw / 1000; }); });
     if (!dl.length) flag(k, r, 'bar hanya di hari libur');
     if (sum !== r.pp && dl.length) flag(k, r, 'PP rencana ' + n(sum) + ' ≠ PP target ' + n(r.pp));
-    dl.forEach(function (d) { ds[d].forEach(function (pc) { var rt = rateOf(r, pc.mc); if (rt > 0 && o[d].v / ds[d].length * r.nw / 1000 > rt * 1.15) { o[d].hot = true; flag(k, r, 'target harian di atas kecepatan ' + pc.mc.name + ' (' + fmt.format(Math.round(rt * 10) / 10) + ' t/hari)'); } }); });
+    dl.forEach(function (d) { ds[d].forEach(function (pc) { var rt = rateOf(r, pc.mc); if (rt > 0 && o[d].v / ds[d].length * r.nw / 1000 > rt * LAMPU.rencana.diAtasKecepatan / 100) { o[d].hot = true; flag(k, r, 'target harian di atas kecepatan ' + pc.mc.name + ' (' + fmt.format(Math.round(rt * 10) / 10) + ' t/hari)'); } }); });
     pcs.forEach(function (pc) {
       if (pc.days.some(function (d) { return d > D; })) flag(k, r, 'lewat akhir bulan (selesai tgl ' + (pc.s + pc.l - 1 - D) + ' bulan berikutnya)');
       if (pc.clash) flag(k, r, 'bentrok dengan ' + (pc.clash.s.name || pc.clash.s.key) + ' di ' + pc.mc.name);
@@ -2679,8 +2846,8 @@ function schedModel(pm, MST) {
   return { P: P, D: D, H: Math.min(H0, maxEnd), H0: H0, machines: machines, byName: byName, items: items, byKey: byKey, unplaced: unplaced, tgt: tgt, issues: issues, cal: cal, rateOf: rateOf };
 }
 function skuLbl(s) { return '<span class="nm">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + esc(s.nomat || s.art || s.key) + '</span>'; }
-function listCard(id, k, v, note, pill, kind) {
-  return fcCard(k, v, note, pill, kind).replace('<div class="card ' + (kind || '') + '">', '<div class="card ' + (kind || '') + ' click" data-list="' + id + '" role="button" tabindex="0" aria-haspopup="dialog">').replace(/<\/div>$/, '<span class="more">Lihat daftar ›</span></div>');
+function listCard(id, k, v, note, pill, kind, lim) {
+  return fcCard(k, v, note, pill, kind, '', lim).replace('<div class="card ' + (kind || '') + '"', '<div class="card ' + (kind || '') + ' click" data-list="' + id + '" role="button" tabindex="0" aria-haspopup="dialog"').replace(/<\/div>$/, '<span class="more">Lihat daftar ›</span></div>');
 }
 // list dialog behind a card: L = { title, note, head: [[label, num]], rows: [[html]], keys: [sku key], tab }
 function openList(id) {
@@ -2702,10 +2869,14 @@ function renderPlan(m) {
   $('ppCtx').innerHTML = (state.sample ? '<span><span class="pill p-warn">MOCKUP</span></span>' : '') + '<span>Closing terakhir: <b>' + monthLabel(m.latest) + '</b></span><span>Bulan rencana: <b>' + monthLabel(P) + '</b> (' + pm.D + ' hari)</span><span>Dasar forecast: <b>' + { hq: 'Forecast HQ', ml: 'Ensemble AI', avg: 'Rata-rata HQ & ML', gbr: 'Regressor', chronos: 'Chronos', holt: 'Holt', hqc: 'HQ terkoreksi' }[pm.cfg.basis] + '</b> · buffer dari <a href="#" data-goto="Buffer">Saran Buffer</a></span>' + (state.sample ? '<span><span class="pill p-warn">CONTOH SIMULASI</span></span>' : '');
   document.querySelectorAll('#ppUnitSeg button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-pu') === state.ppUnit); });
   $('schSun').checked = !!state.ppSunOff; $('schCb').checked = !!state.ppCbOff;
+  var schMan = schedFor(P).mode === 'manual', nUn0 = sm.unplaced.filter(function (x) { return !x.removed && !x.unmapped; }).length, nMap0 = sm.unplaced.filter(function (x) { return x.unmapped; }).length;
+  if ($('schHint')) $('schHint').innerHTML = (schMan ? '<b>Mode Manual</b>: hanya bar yang Anda taruh. Tempatkan SKU merah lewat <b>Tempatkan di mesin…</b> atau klik dua kali hari kosong di baris mesin; <b>▶ Jalankan jadwal otomatis</b> mengisi sisanya.' : '<b>Mode Otomatis</b>: model menjadwalkan semua SKU yang belum Anda atur; bar tetap bisa digeser.') +
+    (nUn0 ? ' <span class="unt"><span class="warnlight">' + nUn0 + '</span> SKU belum terjadwal</span>' : '') + (nMap0 ? ' <span class="unt"><span class="warnlight">' + nMap0 + '</span> SKU belum dipetakan ke area mesin</span>' : '') + (!nUn0 && !nMap0 ? ' <span class="okt">✓ Semua SKU dengan PP sudah terjadwal.</span>' : ''); document.querySelectorAll('#schMode button').forEach(function (b) { var on = b.getAttribute('data-schmode') === (schMan ? 'manual' : 'auto'); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
   $('schH').textContent = 'Rencana produksi per mesin · ' + monthLabel(P);
   $('schNote').innerHTML = (demo ? '<span class="pill p-warn">MESIN CONTOH</span> Daftar mesin belum diunggah, jadi dipakai mesin contoh rekaan. ' : (!MST.length ? '<b>Daftar mesin belum ada</b>, jadi kalender masih kosong. Isi tabel <i>Daftar mesin</i> di <a href="#" data-goto="Input">Input Data &amp; Model</a>. ' : '')) +
     (function () { var nc = sm.machines.filter(function (x) { return !(x.cap > 0); }).length, ng = state.sample ? 0 : pm.rows.filter(function (r) { return r.mach.guess && r.pl > 0; }).length;
-      return (nc ? '<b>' + nc + ' mesin belum punya kapasitas</b>: barisnya kosong dan tidak dipakai jadwal otomatis (klik dua kali kolom kap. atau isi di <a href="#" data-goto="Input">Input</a>). ' : '') + (ng ? '<b>' + ng + ' SKU belum dipetakan ke area mesin</b>: ada di grup <i>Belum terjadwal</i> sampai Kelompok SKU diisi di <a href="#" data-goto="Input">Input</a> atau area mesin dipilih di tabel. ' : ''); })() +
+      return (nc ? '<b>' + nc + ' mesin belum punya kapasitas</b>: barisnya kosong dan tidak dipakai jadwal otomatis (klik dua kali kolom kap. atau isi di <a href="#" data-goto="Input">Input</a>). ' : '') + (ng ? '<b>' + ng + ' SKU belum dipetakan ke area mesin</b>: ada di grup merah <i>Belum dipetakan ke area mesin</i> sampai Kelompok SKU diisi di <a href="#" data-goto="Input">Input</a> atau area mesin dipilih di tabel. ' : ''); })() +
+    (schedFor(P).mode === 'manual' ? '<b>Mode Manual</b>: hanya bar yang Anda taruh. SKU tanpa bar tampil <b class="red">merah</b> di bawah area mesinnya; tekan <b>Tempatkan di mesin…</b> atau klik dua kali hari kosong di baris mesin, atau <b>▶ Jalankan jadwal otomatis</b> untuk mengisi yang belum terjadwal. ' : '') +
     'PP = forecast + buffer − stok bebas. Jadwal otomatis: SKU bermasalah dulu, lalu cover stok paling sedikit, ke mesin yang paling cepat kosong. <b>Geser</b> bar untuk pindah tanggal atau mesin, tarik <b>ujung kanan</b> untuk mengubah lama produksi, <b>klik dua kali</b> tempat kosong untuk menambah SKU atau maintenance, klik <b>tanggal</b> untuk libur. Klik bar untuk <b>memisah</b> dan menyisipkan SKU lain di tengah (A → B → A). Target harian = PP rencana ÷ hari produksi; klik dua kali angkanya untuk mengubah, sisa hari menyesuaikan. <b>Rencana</b> = total SKU di jadwal; bila beda dari target ditandai ⚠.';
   // ----- cards (each opens a list) -----
   var t1 = function (v) { return fmt.format(Math.round(v)) + ' t'; }, mach = function (r) { return esc(r.mach.v || '–') + (r.mach.guess ? ' <span class="sub">(tebakan)</span>' : ''); };
@@ -2720,7 +2891,7 @@ function renderPlan(m) {
     rows: withPP.map(function (r) { var pl = plOf(r); return [skuLbl(r.s), mach(r), n(r.ppBuf), '<b>' + n(r.pp) + '</b>' + (r.ppMan ? ' ✎' : ''), n(pl) + (pl !== r.pp ? ' ⚠' : ''), pl - r.pp ? '<b class="red">' + signed(pl - r.pp) + '</b>' : '0', span(r.s.key)]; }), keys: withPP.map(function (r) { return r.s.key; }) };
   CH.lists.ppBad = { title: 'SKU bermasalah · ' + monthLabel(P), tab: 'Plan', note: 'Stok bebas lebih kecil dari forecast bulan ini. Jadwal otomatis menaruhnya paling awal; cek kolom jadwal.', head: [['SKU'], ['Stok bebas', 1], ['Forecast', 1], ['Kurang', 1], ['PP', 1], ['Jadwal']],
     rows: bad.map(function (r) { return [skuLbl(r.s), n(r.fs), n(r.F), '<b class="red">' + n(r.fs - r.F) + '</b>', n(r.pp), span(r.s.key)]; }), keys: bad.map(function (r) { return r.s.key; }) };
-  CH.lists.ppUn = { title: 'Belum terjadwal', tab: 'Plan', note: 'SKU dengan PP yang belum (seluruhnya) masuk jadwal, dengan alasannya. Pilih area mesin di grup <b>Belum terjadwal</b> di tabel, atau lengkapi data di Input.', head: [['SKU'], ['PP', 1], ['Area mesin'], ['Alasan']],
+  CH.lists.ppUn = { title: 'Belum terjadwal', tab: 'Plan', note: 'SKU dengan PP yang belum (seluruhnya) masuk jadwal, dengan alasannya. Baris merah di tabel: tempatkan di mesin (tombol <b>Tempatkan di mesin…</b>), pilih area mesin di grup <b>Belum dipetakan</b>, atau tekan <b>▶ Jalankan jadwal otomatis</b>.', head: [['SKU'], ['PP', 1], ['Area mesin'], ['Alasan']],
     rows: un.map(function (u) { return [skuLbl(u.r.s), n(u.r.pp), mach(u.r), esc(u.why)]; }), keys: un.map(function (u) { return u.r.s.key; }) };
   CH.lists.ppIss = { title: 'Jadwal perlu dicek', tab: 'Plan', note: 'Bar yang lewat akhir bulan, bentrok dengan SKU lain di mesin yang sama, target harian di atas kecepatan mesin, atau jumlah target ≠ PP.', head: [['SKU'], ['Mesin'], ['Masalah']],
     rows: iss.map(function (x) { return [skuLbl(x.r.s), esc((sm.byKey[x.r.s.key] || []).map(function (pc) { return pc.mc.name; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).join(', ')), esc(x.why.join('; '))]; }), keys: iss.map(function (x) { return x.r.s.key; }) };
@@ -2729,7 +2900,7 @@ function renderPlan(m) {
   $('ppCards').innerHTML =
     listCard('ppAll', 'PP ' + monthLabel(P) + ' · target / rencana', (mt ? t1(all.t.pp) : n(all.pp)) + ' / ' + (mt ? t1(plTon) : n(plTot)), withPP.length + ' SKU. Target dari Saran Buffer' + (nLockT ? ', ' + nLockT + ' diubah manual' : '') + '. Rencana = jumlah target harian' + (plTot !== all.pp ? ' (selisih ' + (mt ? fmt.format(Math.round((plTon - all.t.pp) * 10) / 10) + ' t' : signed(plTot - all.pp)) + ')' : '') + '' + '.', plTot === all.pp ? 'Sesuai' : 'Selisih', plTot === all.pp ? '' : 'warn') +
     listCard('ppBad', 'SKU bermasalah', n(bad.length) + ' SKU', bad.length ? 'Stok bebas di bawah forecast ' + monthLabel(P) + '. Dijadwalkan paling awal.' : 'Stok bebas semua SKU menutup forecast.', bad.length ? 'Dahulukan' : 'Aman', bad.length ? 'bad' : 'ok') +
-    listCard('ppUn', 'Belum terjadwal', n(un.length) + ' SKU', un.length ? 'Tanpa berat bersih, area mesin tanpa mesin, atau dikeluarkan manual.' : 'Semua SKU dengan PP sudah masuk jadwal.', un.length ? 'Cek' : 'Lengkap', un.length ? 'warn' : 'ok') +
+    listCard('ppUn', 'Belum terjadwal', n(un.length) + ' SKU', un.length ? (schedFor(P).mode === 'manual' ? 'Mode manual: tempatkan di mesin atau jalankan jadwal otomatis. ' : '') + 'Juga: tanpa berat bersih, area mesin tanpa mesin, belum dipetakan, atau dikeluarkan manual.' : 'Semua SKU dengan PP sudah masuk jadwal.', un.length ? 'Belum di jadwal' : 'Lengkap', un.length ? (LAMPU.rencana.belumTerjadwal === 'kuning' ? 'warn' : 'bad') : 'ok', 'merah bila ada SKU dengan PP tanpa bar') +
     listCard('ppIss', 'Jadwal perlu dicek', n(iss.length) + ' SKU', iss.length ? 'Lewat akhir bulan, bentrok, atau target harian di atas kecepatan mesin.' : 'Semua bar selesai dalam bulan, tanpa bentrok.', iss.length ? 'Cek' : 'Rapi', iss.length ? 'warn' : 'ok') +
     listCard('ppGuess', 'Mesin belum pasti', n(guess.length) + ' SKU', guess.length ? 'Area mesin masih tebakan dari nama SKU.' : 'Semua SKU dengan PP punya area mesin dari data.', guess.length ? 'Tebakan' : 'Lengkap', guess.length ? 'warn' : 'ok');
   renderPlanGrid(pm, sm, mt, all);
@@ -2792,11 +2963,34 @@ function renderPlanGrid(pm, sm, mt, all) {
   if (!state.ppOpenT) state.ppOpenT = {}; if (!state.ppOpenMc) state.ppOpenMc = {};
   var types = []; sm.machines.forEach(function (x) { if (types.indexOf(x.type) < 0) types.push(x.type); });
   var rowsByType = {}; pm.rows.forEach(function (r) { var g = r.mach.v || ''; (rowsByType[g] = rowsByType[g] || []).push(r); });
+  // not on the schedule: red rows under their own area (belum terjadwal), and a red group at the bottom for SKUs
+  // without an area or whose area has no machine (belum dipetakan). Colours: LAMPU.rencana.
+  var placed = {}; sm.items.forEach(function (pc) { placed[pc.r.s.key] = 1; });
+  var whyOf = {}; sm.unplaced.forEach(function (x) { whyOf[x.r.s.key] = x; });
+  var lampOf = function (k) { return LAMPU.rencana[k] === 'kuning' ? 'warn' : 'bad'; };
+  var unIn = function (g) { return (rowsByType[g] || []).filter(function (r) { var w = whyOf[r.s.key]; return r.pp > 0 && !placed[r.s.key] && !(w && w.unmapped) && (!filt || hit(r)); }); };
+  var grp = function (id, title, sub, list, open0, withSel, lamp) {
+    if (!list.length) return;
+    var open = filt || (state.ppOpenT[id] === undefined ? open0 : state.ppOpenT[id] !== false), a = ppAgg(list);
+    h += '<tr class="fam' + (lamp ? ' unh lamp-' + lamp : '') + '"><td><div class="fl"><button type="button" class="exp" data-ppt="' + esc(id) + '" aria-expanded="' + open + '">' + (open ? '▼' : '▶') + '</button><div>' + (lamp ? '<span class="warnlight">' + list.length + '</span> ' : '') + title + '<span class="code">' + list.length + ' SKU · ' + sub + '</span></div></div></td>' +
+      paCells(pa(list)) + '<td></td><td class="sep" colspan="' + H + '"></td></tr>';
+    if (open) list.forEach(function (r) {
+      var sel = '';
+      if (withSel) {
+        var opts = machTypes(); if (r.mach.v && opts.indexOf(r.mach.v) < 0) opts.push(r.mach.v);
+        sel = '<select class="ppm" data-ppm="' + esc(r.s.key) + '" aria-label="Area mesin"><option value="">' + (r.mach.src === 'manual' ? '(otomatis)' : r.mach.v ? ({ file: 'File PP: ', template: 'Template: ', kelompok: 'Kelompok: ' }[r.mach.src] || 'Tebakan: ') + esc(r.mach.v) : '(pilih area mesin)') + '</option>' + opts.map(function (o) { return '<option' + (r.mach.src === 'manual' && o === r.mach.v ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select>';
+      }
+      var w = whyOf[r.s.key], canPlace = sm.machines.length && r.nw;
+      var row = skuRow(r, null, sel, (w ? '<span class="sub">' + esc(w.why) + '</span>' : '') + (canPlace ? ' <button type="button" class="pri sm" data-schplace="' + esc(r.s.key) + '">Tempatkan di mesin…</button>' : '') + (w && w.removed ? ' <button type="button" data-schauto="' + esc(r.s.key) + '">Jadwalkan otomatis</button>' : ''));
+      h += lamp ? row.replace('<tr class="sku', '<tr class="sku unsch lamp-' + lamp) : row;
+    });
+  };
+  grp('__un', 'Belum dipetakan ke area mesin', 'pilih area mesin di kolom kiri (atau isi Kelompok SKU di Input)', pm.rows.filter(function (r) { var w = whyOf[r.s.key]; return r.pp > 0 && !placed[r.s.key] && (types.indexOf(r.mach.v || '') < 0 || (w && w.unmapped)) && (!filt || hit(r)); }), true, true, lampOf('belumDipetakan'));
   types.forEach(function (g) {
-    var ms = sm.machines.filter(function (x) { return x.type === g; }), rr = rowsByType[g] || [], a = ppAgg(rr);
-    if (filt && !ms.some(function (x) { return x.items.some(function (pc) { return hit(pc.r); }); })) return;
+    var ms = sm.machines.filter(function (x) { return x.type === g; }), rr = rowsByType[g] || [], a = ppAgg(rr), un = unIn(g);
+    if (filt && !un.length && !ms.some(function (x) { return x.items.some(function (pc) { return hit(pc.r); }); })) return;
     var openT = filt || state.ppOpenT[g] !== false;
-    h += '<tr class="fam"><td><div class="fl"><button type="button" class="exp" data-ppt="' + esc(g) + '" aria-expanded="' + openT + '">' + (openT ? '▼' : '▶') + '</button><div>' + esc(g) + '<span class="code">' + rr.length + ' SKU · ' + ms.length + ' mesin</span></div></div></td>' +
+    h += '<tr class="fam"><td><div class="fl"><button type="button" class="exp" data-ppt="' + esc(g) + '" aria-expanded="' + openT + '">' + (openT ? '▼' : '▶') + '</button><div>' + esc(g) + (un.length ? ' <span class="warnlight lamp-' + lampOf('belumTerjadwal') + '" title="' + un.length + ' SKU di area ini belum terjadwal">' + un.length + '</span>' : '') + '<span class="code">' + rr.length + ' SKU · ' + ms.length + ' mesin' + (un.length ? ' · <b class="unt">' + un.length + ' belum terjadwal</b>' : '') + '</span></div></div></td>' +
       paCells(pa(rr)) + '<td></td>' + dayCells(typeDay[g], 'tsum') + '</tr>';
     if (!openT) return;
     ms.forEach(function (x) {
@@ -2808,26 +3002,8 @@ function renderPlanGrid(pm, sm, mt, all) {
         '<td class="tl sep" colspan="' + H + '">' + trk(x, x.items.map(function (pc) { return bar(pc, true); }).join('')) + '</td></tr>';
       if (openM) x.items.forEach(function (pc) { if (!filt || hit(pc.r)) h += skuRow(pc.r, pc); });
     });
+    grp('__un:' + g, 'Belum terjadwal di ' + esc(g), 'PP ada tapi belum punya bar: tempatkan di mesin atau jalankan jadwal otomatis', un, true, false, lampOf('belumTerjadwal'));
   });
-  // not on the schedule
-  var placed = {}; sm.items.forEach(function (pc) { placed[pc.r.s.key] = 1; });
-  var whyOf = {}; sm.unplaced.forEach(function (x) { whyOf[x.r.s.key] = x; });
-  var grp = function (id, title, sub, list, open0, withSel) {
-    if (!list.length) return;
-    var open = filt || (state.ppOpenT[id] === undefined ? open0 : state.ppOpenT[id] !== false), a = ppAgg(list);
-    h += '<tr class="fam"><td><div class="fl"><button type="button" class="exp" data-ppt="' + id + '" aria-expanded="' + open + '">' + (open ? '▼' : '▶') + '</button><div>' + title + '<span class="code">' + list.length + ' SKU · ' + sub + '</span></div></div></td>' +
-      paCells(pa(list)) + '<td></td><td class="sep" colspan="' + H + '"></td></tr>';
-    if (open) list.forEach(function (r) {
-      var sel = '';
-      if (withSel) {
-        var opts = machTypes(); if (r.mach.v && opts.indexOf(r.mach.v) < 0) opts.push(r.mach.v);
-        sel = '<select class="ppm" data-ppm="' + esc(r.s.key) + '" aria-label="Area mesin"><option value="">' + (r.mach.src === 'manual' ? '(otomatis)' : r.mach.v ? ({ file: 'File PP: ', template: 'Template: ', kelompok: 'Kelompok: ' }[r.mach.src] || 'Tebakan: ') + esc(r.mach.v) : '(pilih area mesin)') + '</option>' + opts.map(function (o) { return '<option' + (r.mach.src === 'manual' && o === r.mach.v ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select>';
-      }
-      var w = whyOf[r.s.key];
-      h += skuRow(r, null, sel, w ? '<span class="sub">' + esc(w.why) + '</span>' + (w.removed ? ' <button type="button" data-schauto="' + esc(r.s.key) + '">Jadwalkan otomatis</button>' : '') : '');
-    });
-  };
-  grp('__un', 'Belum terjadwal', 'PP ada tapi belum di jadwal', pm.rows.filter(function (r) { return r.pp > 0 && !placed[r.s.key] && (!filt || hit(r)); }), true, true);
   grp('__np', 'Tanpa produksi ' + monthLabel(P), 'stok bebas sudah menutup forecast + buffer', pm.rows.filter(function (r) { return r.pp === 0 && !placed[r.s.key] && (!filt || hit(r)); }), false, false);
   h += '<tr class="tot"><td>Total Serang<span class="code">' + pm.rows.length + ' SKU aktif' + (all.nwMiss ? ' · ' + all.nwMiss + ' tanpa berat' : '') + '</span></td>' + paCells(pa(pm.rows)) + '<td></td>' + dayCells(dayTot, 'tsum') + '</tr>';
   var tb = $('ppTable'); tb.style.width = (fixedW + H * dw) + 'px'; tb.style.setProperty('--fz1', W0 + 'px'); tb.style.setProperty('--fz2', (W0 + WN) + 'px'); tb.style.setProperty('--fz3', (W0 + 2 * WN) + 'px'); tb.innerHTML = h + '</tbody>'; ppSyncScroll();
@@ -2991,6 +3167,12 @@ function forecastModel(c) {
     if (r.category && String(r.category).trim()) s.category = String(r.category).trim();
     if (!s.nw && typeof r.net_weight_kg === 'number' && r.net_weight_kg > 0) s.nw = r.net_weight_kg;
     s.fhq[r.forecast_month] = typeof r.forecast_qty_ctn === 'number' ? r.forecast_qty_ctn : null; s.fver[r.forecast_month] = r.version;
+  });
+  // SKUs added by hand in Material master (an SKU missing from the files, or a new SKU without history)
+  (state.matNew || []).forEach(function (r) {
+    var s = find(r.nomat, r.art) || make(r.nomat, r.art);
+    s.added = r; if (!s.name) s.name = r.name; if (!s.brand && r.brand) s.brand = r.brand; if (!s.category && r.category) s.category = r.category; if (!s.family) s.family = r.family || r.brand || null; if (!s.nw && r.nw > 0) s.nw = r.nw;
+    if (s.fs === null || s.fs === undefined) { s.fs = 0; s.soh = 0; }
   });
   var fver = {}; fcRows.forEach(function (r) { fver[r.forecast_month] = r.version; });
   // view group = brand + family, so Paseo, Jolly, Nice ... in the same closing family are shown apart.
@@ -3372,8 +3554,8 @@ function aggr(list, m) {
   });
   return a;
 }
-function fcCard(k, v, note, pill, kind, chart) {
-  return '<div class="card ' + (kind || '') + (chart ? ' click" data-chart="' + chart + '" role="button" tabindex="0" aria-haspopup="dialog' : '') + '"><div class="h"><span class="k">' + esc(k) + '</span>' + (pill ? '<span class="pill p-' + (kind === 'ok' ? 'ok' : kind || 'off') + '">' + esc(pill) + '</span>' : '') + '</div><span class="v">' + esc(v) + '</span><span class="n">' + esc(note) + '</span>' + (chart ? '<span class="more">Lihat grafik ›</span>' : '') + '</div>';
+function fcCard(k, v, note, pill, kind, chart, lim) {
+  return '<div class="card ' + (kind || '') + (chart ? ' click" data-chart="' + chart + '" role="button" tabindex="0" aria-haspopup="dialog' : '') + '"' + (lim ? ' data-lim="' + esc(lim) + '"' : '') + '><div class="h"><span class="k">' + esc(k) + '</span>' + (pill ? '<span class="pill p-' + (kind === 'ok' ? 'ok' : kind || 'off') + '">' + esc(pill) + '</span>' : '') + '</div><span class="v">' + esc(v) + '</span><span class="n">' + esc(note) + '</span>' + (chart ? '<span class="more">Lihat grafik ›</span>' : '') + '</div>';
 }
 // 👁 Sugesti: per SKU, read from the signal (Forecast HQ vs Forecast AI) and the order in, with the numbers behind it.
 function aiNotes(s, m) {
@@ -3441,8 +3623,11 @@ function renderVital(m, list) {
   var el = $('fcVital'); if (!list.length) { el.hidden = true; el.innerHTML = ''; return; }
   var RV = state.bufReview || {}, share = list.reduce(function (a, s) { return a + s.vital.share; }, 0), todo = list.filter(function (s) { return s.vital.adv === 'tandai' && !RV[s.key]; });
   el.hidden = false;
-  el.innerHTML = '<div class="ph"><h2><span class="vlens" data-mascot="1">' + d10Lens(30) + '</span>Fokus AI · ' + list.length + ' SKU vital</h2>' +
-    '<div style="display:flex;gap:6px;flex-wrap:wrap">' + (todo.length ? '<button type="button" class="v-btn sm" data-rvall="1">⚑ Tandai ' + todo.length + ' yang disarankan</button>' : '') + '<button type="button" class="v-btn sm" data-vfilter="1">' + (state.fcVitalOnly ? 'Tampilkan semua SKU' : 'Hanya SKU vital di tabel') + '</button></div></div>' +
+  var op = sugOpen();
+  el.classList.toggle('shut', !op);
+  el.innerHTML = '<div class="ph"><h2><span class="vlens" data-mascot="1">' + d10Lens(30) + '</span>Sugesti Utama AI · ' + list.length + ' SKU vital' + (!op && todo.length ? ' <span class="sub" style="font-weight:400;font-family:var(--font);font-size:14px">· ' + todo.length + ' disarankan ditandai</span>' : '') + '</h2>' +
+    '<div style="display:flex;gap:6px;flex-wrap:wrap">' + (op && todo.length ? '<button type="button" class="v-btn sm" data-rvall="1">⚑ Tandai ' + todo.length + ' yang disarankan</button>' : '') + (op ? '<button type="button" class="v-btn sm" data-vfilter="1">' + (state.fcVitalOnly ? 'Tampilkan semua SKU' : 'Hanya SKU vital di tabel') + '</button>' : '') +
+    '<button type="button" class="v-btn sm" data-sugtg="1" aria-expanded="' + op + '">' + (op ? 'Sembunyikan ▴' : 'Tampilkan ▾') + '</button></div></div>' + (!op ? '' :
     '<p class="note">SKU ini yang paling menentukan akurasi forecast: bersama-sama menyumbang <b>' + fmt.format(Math.round(share * 100)) + '%</b> dari selisih Forecast HQ vs order in ' + Math.min(3, m.closingMonths.length) + ' bulan terakhir, atau HQ dan AI-nya berbeda jauh untuk ' + monthLabel(m.future[0]) + '. Asisten menyarankan mana yang <b>ditandai untuk ditinjau</b> di Saran buffer dan mana yang <b>dipelajari historinya</b> dulu.</p>' +
     '<ol class="vlist">' + list.map(function (s) {
       var v = s.vital, mk = RV[s.key];
@@ -3450,8 +3635,10 @@ function renderVital(m, list) {
         '<span class="vb"><button type="button" class="v-btn sm" data-vgo="' + esc(s.key) + '">Tunjukkan</button>' +
         '<button type="button" class="v-btn sm' + (mk ? ' on' : v.adv === 'tandai' ? ' pri' : '') + '" data-rv="' + esc(s.key) + '">' + (mk ? '✓ Ditandai' : '⚑ Tandai tinjau') + '</button>' +
         '<button type="button" class="v-btn sm' + (v.adv === 'histori' ? ' pri' : '') + '" data-vhist="' + esc(s.key) + '">Pelajari histori</button></span></li>';
-    }).join('') + '</ol>';
+    }).join('') + '</ol>');
 }
+// Sugesti Utama AI starts hidden; the planner's choice is remembered in this browser
+function sugOpen() { try { return localStorage.getItem('ppic_sug') === '1'; } catch (e) { return false; } }
 function toggleReview(k, on) {
   var m = CH.model, s = m && m.all.filter(function (x) { return x.key === k; })[0]; if (!s) return;
   state.bufReview = state.bufReview || {};
@@ -3511,32 +3698,34 @@ function renderForecastScreen(c) {
   var cards = '';
   if (L) {
     var oi = tot.oi[L] || 0, hq = tot.hq[L] || 0, bias = oi ? (hq - oi) / oi * 100 : null;
+    var lvB = bias === null ? '' : lampu(Math.abs(bias), LAMPU.forecast.selisihHq);
     cards += fcCard('Order in vs Forecast HQ · ' + monthLabel(L), pctS(bias), 'Order in ' + n(oi) + ' vs Forecast HQ ' + n(hq) + '. Selisih ' + signed(hq - oi) + ' karton.',
-      bias === null ? '' : Math.abs(bias) >= 10 ? 'Perlu perhatian' : Math.abs(bias) >= 5 ? 'Cukup jauh' : 'Wajar', bias === null ? '' : Math.abs(bias) >= 10 ? 'bad' : Math.abs(bias) >= 5 ? 'warn' : 'ok', 'oi');
+      { bad: 'Perlu perhatian', warn: 'Cukup jauh', ok: 'Wajar' }[lvB] || '', lvB, 'oi', 'selisih ' + lampuBatas(LAMPU.forecast.selisihHq));
     var acc = oi ? Math.max(0, 1 - (tot.absErr[L] || 0) / oi) * 100 : null, worst = null;
     m.fams.forEach(function (f) { var a = aggr(f.skus, m), o = a.oi[L] || 0; if (o >= oi * 0.02) { var x = Math.max(0, 1 - (a.absErr[L] || 0) / o) * 100; if (!worst || x < worst[1]) worst = [f.name, x]; } });
+    var tA = LAMPU.forecast.akurasiHq, lvA = acc === null ? '' : lampu(acc, tA, true);
     cards += fcCard('Akurasi Forecast HQ · ' + monthLabel(L), acc === null ? '–' : fmt.format(acc) + '%',
-      'Forecast HQ ORIG. Target 70%' + (acc !== null && acc < 70 ? ': kurang ' + fmt.format(70 - acc) + ' poin' : '') + '.' + (worst ? ' Terendah: ' + worst[0] + ' ' + fmt.format(worst[1]) + '%.' : ''),
-      acc === null ? '' : acc < 70 ? 'Di bawah target' : 'Sesuai target', acc === null ? '' : acc < 70 ? 'warn' : 'ok', 'acc');
+      'Forecast HQ ORIG. Target ' + tA.kuning + '%' + (acc !== null && acc < tA.kuning ? ': kurang ' + fmt.format(tA.kuning - acc) + ' poin' : '') + '.' + (worst ? ' Terendah: ' + worst[0] + ' ' + fmt.format(worst[1]) + '%.' : ''),
+      { bad: 'Jauh di bawah target', warn: 'Di bawah target', ok: 'Sesuai target' }[lvA] || '', lvA, 'acc', 'akurasi ' + lampuBatas(tA, true));
     var biases = m.past.map(function (mo) { var o = tot.oi[mo] || 0; return o ? (tot.hq[mo] - o) / o * 100 : null; }).filter(function (x) { return x !== null; });
     var avgB = biases.length ? biases.reduce(function (a, b) { return a + b; }, 0) / biases.length : null;
-    var same = biases.length >= 2 && biases.every(function (b) { return b >= 5; }) || biases.length >= 2 && biases.every(function (b) { return b <= -5; });
+    var tT = LAMPU.forecast.trenSelisih, same = biases.length >= 2 && biases.every(function (b) { return b >= tT; }) || biases.length >= 2 && biases.every(function (b) { return b <= -tT; });
     cards += fcCard('Tren selisih ' + (m.past.length > 1 ? monthLabel(m.past[0]) + '–' + monthLabel(m.past[m.past.length - 1]) : monthLabel(L)), pctS(avgB),
       biases.length < 2 ? 'Butuh minimal 2 bulan closing untuk melihat tren (ada ' + biases.length + ').' : m.past.map(function (mo, i) { return monthLabel(mo) + ' ' + pctS(biases[i]); }).join(' · ') + (same ? '. Arah selisih sama tiap bulan.' : '.'),
-      biases.length < 2 ? 'Data kurang' : same ? 'Pola berulang' : 'Bervariasi', biases.length < 2 ? '' : same ? 'bad' : 'ok', 'trend');
+      biases.length < 2 ? 'Data kurang' : same ? 'Pola berulang' : 'Bervariasi', biases.length < 2 ? '' : same ? 'bad' : 'ok', 'trend', 'merah bila selisih tiap bulan searah ≥ ' + tT + '%');
   }
   var f1 = m.future[0], fh = tot.fhq[f1], fml = tot.ml[f1], b1 = tot.both[f1];
-  var gapML = fml && fh !== undefined ? (fh - fml) / fml * 100 : null, nNo = tot.noHq[f1] || 0;
+  var gapML = fml && fh !== undefined ? (fh - fml) / fml * 100 : null, nNo = tot.noHq[f1] || 0, lvG = gapML === null ? '' : lampu(Math.abs(gapML), LAMPU.forecast.hqVsAi);
   cards += fcCard('Forecast ' + (f1 ? monthLabel(f1) : '') + ' (M+1)', fh === undefined ? '–' : n(fh),
     fh === undefined ? 'Forecast HQ ' + (f1 ? monthLabel(f1) : 'M+1') + ' belum diunggah.' + (fml !== undefined ? ' Forecast AI ' + n(fml) + '.' : '') :
       'Forecast HQ versi ' + m.fver[f1] + '. Forecast AI ' + n(fml) + (gapML !== null ? ', jadi HQ ' + fmt.format(Math.abs(Math.round(gapML))) + '% ' + (gapML >= 0 ? 'lebih tinggi' : 'lebih rendah') : '') + '.' + (nNo ? ' ' + nNo + ' SKU aktif tidak ada di HQ.' : ''),
-    fh === undefined ? 'Belum ada' : gapML === null ? '' : Math.abs(gapML) >= 20 ? 'Selisih besar' : Math.abs(gapML) >= 5 ? 'Selisih' : 'Sejalan',
-    fh === undefined ? 'warn' : gapML === null ? '' : Math.abs(gapML) >= 20 ? 'warn' : Math.abs(gapML) >= 5 ? '' : 'ok', L ? 'm1' : '');
+    fh === undefined ? 'Belum ada' : gapML === null ? '' : lvG === 'ok' && Math.abs(gapML) >= LAMPU.forecast.hqVsAi.info ? 'Selisih' : { bad: 'Selisih sangat besar', warn: 'Selisih besar', ok: 'Sejalan' }[lvG],
+    fh === undefined ? 'warn' : gapML === null ? '' : lvG === 'ok' && Math.abs(gapML) >= LAMPU.forecast.hqVsAi.info ? '' : lvG, L ? 'm1' : '', gapML === null ? '' : 'HQ vs AI ' + lampuBatas(LAMPU.forecast.hqVsAi));
   if (f1 && m.fms.indexOf(f1) >= 0 && L) {
     var miss = m.skus.filter(function (s) { return (s.oi[L] || 0) > 0 && typeof s.fhq[f1] !== 'number'; });
     var missQ = miss.reduce(function (a, s) { return a + s.oi[L]; }, 0);
     cards += fcCard('SKU tanpa Forecast HQ ' + monthLabel(f1), n(miss.length) + ' SKU', miss.length ? n(missQ) + ' karton order in ' + monthLabel(L) + ' tidak punya Forecast HQ ' + monthLabel(f1) + '.' : 'Semua SKU yang aktif di ' + monthLabel(L) + ' ada di Forecast HQ.',
-      miss.length ? 'Data kurang' : 'Lengkap', miss.length ? 'warn' : 'ok', 'nohq');
+      miss.length ? 'Data kurang' : 'Lengkap', lampu(miss.length, LAMPU.forecast.tanpaHq), 'nohq', lampuBatas(LAMPU.forecast.tanpaHq, false, ' SKU'));
   } else cards += fcCard('SKU tanpa Forecast HQ', '–', 'Perlu closing dan Forecast HQ bulan berikutnya.', '', '');
   if (m.bt.length) {
     var so = 0, sm = 0, sq = 0, win = 0;
@@ -4166,6 +4355,7 @@ $('fcTable').addEventListener('click', function (e) {
   var c = e.target.closest('td.v-ai[data-sku]'); if (c) openSku(c.getAttribute('data-sku'));
 });
 $('fcVitalOnly').addEventListener('change', function () { state.fcVitalOnly = this.checked; renderForecastScreen(combined()); });
+$('fcVital').addEventListener('click', function (e) { if (e.target.closest('[data-sugtg]')) { e.stopPropagation(); try { localStorage.setItem('ppic_sug', sugOpen() ? '0' : '1'); } catch (x) {} renderForecastScreen(combined()); return; } }, true);
 $('fcVital').addEventListener('click', function (e) {
   var b = e.target.closest('button'); if (!b) return;
   if (b.hasAttribute('data-rv')) toggleReview(b.getAttribute('data-rv'));
@@ -4263,7 +4453,7 @@ $('fcTable').addEventListener('click', function (e) {
   mnu.innerHTML = '<div class="mh">' + esc(s.name || k) + '</div>' +
     '<button type="button" data-set="">Otomatis (' + STATUS[s.autoStatus][0] + ')' + (!ov ? ' ✓' : '') + '</button>' +
     ['aktif', 'cek', 'diskontinu'].map(function (st) { return '<button type="button" data-set="' + st + '">' + STATUS[st][0] + (ov && ov.status === st ? ' ✓' : '') + '</button>'; }).join('') +
-    '<div class="mr"><label>Diganti oleh <input type="text" list="cekCodes" id="stSucc" value="' + esc(ov && ov.status === 'diganti' ? ov.succ || '' : s.autoSucc ? s.autoSucc.key : '') + '" placeholder="Nomat"></label><button type="button" data-set="diganti">OK</button></div>' +
+    '<div class="mr"><label>Diganti SKU baru, Nomat penggantinya: <input type="text" list="cekCodes" id="stSucc" value="' + esc(ov && ov.status === 'diganti' ? ov.succ || '' : s.autoSucc ? s.autoSucc.key : '') + '" placeholder="Nomat"></label><button type="button" data-set="diganti">OK</button></div>' +
     (s.hits.length ? '<div class="mw">' + s.hits.map(function (x) { return esc(x.why); }).join('<br>') + '</div>' : '');
   var r = b.getBoundingClientRect(); mnu.style.left = Math.min(r.left + window.scrollX, window.scrollX + document.documentElement.clientWidth - 280) + 'px'; mnu.style.top = (r.bottom + window.scrollY + 4) + 'px';
   mnu.hidden = false; mnu.setAttribute('data-k', k); var f1 = mnu.querySelector('button'); if (f1) f1.focus();
@@ -4288,11 +4478,57 @@ $('fcCloseAll').addEventListener('click', function () { state.fcOpen = {}; rende
 $('ppUnitSeg').addEventListener('click', function (e) { var b = e.target.closest('button[data-pu]'); if (b) { state.ppUnit = b.getAttribute('data-pu'); savePP(); renderAll(); } });
 $('schSun').addEventListener('change', function () { state.ppSunOff = $('schSun').checked; savePP(); renderAll(); });
 $('schCb').addEventListener('change', function () { state.ppCbOff = $('schCb').checked; savePP(); renderAll(); });
-$('schReset').addEventListener('click', function () {
-  if (!CH.pm) return; var sc = schedFor(CH.pm.P), k = Object.keys(sc.place).length + Object.keys(sc.day).length;
-  if (k && !confirm('Kembalikan jadwal ' + monthLabel(CH.pm.P) + ' ke otomatis? Bar dan target harian manual dihapus. PP target, rencana yang diisi sendiri, libur dan maintenance tetap.')) return;
-  sc.place = {}; sc.day = {}; savePP(); renderAll();
+// ▶ Jalankan jadwal otomatis: the model places SKUs on machines. "Isi yang belum terjadwal" keeps every bar already on the
+// grid; "Susun ulang dari nol" removes bars and typed daily targets first. In Manual mode the result is written as bars.
+$('schReset').addEventListener('click', function (e) {
+  if (!CH.pm || !CH.sm) return; e.stopPropagation(); var sc = schedFor(CH.pm.P), man = sc.mode === 'manual';
+  var nUn = CH.sm.unplaced.filter(function (x) { return !x.removed && !x.unmapped; }).length, nMap = CH.sm.unplaced.filter(function (x) { return x.unmapped; }).length;
+  bufPopover($('schReset'), '<div class="mh">Jalankan jadwal otomatis · ' + monthLabel(CH.pm.P) + '</div>' +
+    '<p class="sub">Urutan model: SKU bermasalah dulu, lalu hari stok tersisa paling sedikit, lalu PP terbesar. Tiap SKU ke mesin di area mesinnya yang paling cepat kosong.</p>' +
+    '<div class="ba" style="flex-direction:column;align-items:stretch">' +
+    (man ? '<button type="button" class="pri" data-schact="runfill"' + (nUn ? '' : ' disabled') + '>Isi ' + nUn + ' SKU yang belum terjadwal<br><small>bar yang sudah ada tetap</small></button>' : '') +
+    '<button type="button"' + (man ? '' : ' class="pri"') + ' data-schact="runscratch">Susun ulang dari nol<br><small>bar dan target harian yang diatur sendiri dihapus</small></button></div>' +
+    (man ? '' : '<p class="sub">Mode <b>Otomatis</b>: SKU tanpa bar manual sudah dijadwalkan model dan ikut berubah bila PP berubah.</p>') +
+    (nMap ? '<p class="sub"><b class="red">' + nMap + ' SKU belum dipetakan ke area mesin</b>: model tidak bisa menjadwalkannya sebelum area mesinnya dipilih.</p>' : ''));
 });
+// write the model's placement as bars (a: 1 = placed by the model, not shown as manual). only = SKU keys to place (null = all).
+function schAutoRun(scratch, only) {
+  var pm = CH.pm, sc = schedFor(pm.P), hold = {};
+  if (scratch) { sc.place = {}; sc.day = {}; }
+  if (only) pm.rows.forEach(function (r) { var k = r.s.key; if (only.indexOf(k) >= 0) { if (sc.place[k] && !sc.place[k].length) delete sc.place[k]; } else if (!sc.place[k]) { hold[k] = 1; sc.place[k] = []; } });
+  sc._force = true; var sm = schedModel(pm, CH.MST); delete sc._force;
+  Object.keys(hold).forEach(function (k) { delete sc.place[k]; });
+  var nP = 0;
+  if (sc.mode === 'manual') Object.keys(sm.byKey).forEach(function (k) { var pcs = sm.byKey[k]; if (hold[k] || pcs.some(function (pc) { return pc.man; }) || (sc.place[k] && sc.place[k].length)) return; sc.place[k] = pcs.map(function (pc) { return { m: pc.mc.name, s: pc.s, l: pc.l, a: 1 }; }); nP++; });
+  else nP = Object.keys(sm.byKey).length;
+  var left = sm.unplaced.filter(function (x) { return !x.removed && !hold[x.r.s.key]; }).length;
+  savePP(); renderAll();
+  toast('Jadwal otomatis dijalankan: ' + nP + ' SKU di jadwal' + (left ? ', ' + left + ' SKU masih belum terjadwal (merah).' : '.') + ' Tekan ↶ Urungkan untuk membatalkan.');
+}
+// Otomatis ↔ Manual. To Manual: the bars the model placed stay on the grid (written as bars). To Otomatis: bars the model
+// placed go back to the live schedule; bars placed by hand stay.
+function schSetMode(mode) {
+  if (!CH.pm || !CH.sm) return; var sc = schedFor(CH.pm.P), cur = sc.mode === 'manual' ? 'manual' : 'auto'; if (cur === mode) return;
+  if (mode === 'manual') { Object.keys(CH.sm.byKey).forEach(function (k) { var pcs = CH.sm.byKey[k]; if (!sc.place[k] || !sc.place[k].length) sc.place[k] = pcs.map(function (pc) { return { m: pc.mc.name, s: pc.s, l: pc.l, a: pc.man ? undefined : 1 }; }); }); sc.mode = 'manual'; }
+  else { Object.keys(sc.place).forEach(function (k) { var a = sc.place[k]; if (a.length && a.every(function (p) { return p.a; })) delete sc.place[k]; }); delete sc.mode; }
+  savePP(); renderAll(); toast(mode === 'manual' ? 'Mode Manual: hanya bar yang ada di jadwal. SKU tanpa bar tampil merah; tempatkan sendiri atau tekan ▶ Jalankan jadwal otomatis.' : 'Mode Otomatis: SKU tanpa bar manual dijadwalkan model.');
+}
+$('schMode').addEventListener('click', function (e) { var b = e.target.closest('[data-schmode]'); if (b) schSetMode(b.getAttribute('data-schmode')); });
+// "Tempatkan di mesin…" on a red (belum terjadwal) row
+function schPlaceMenu(btn, k) {
+  var sm = CH.sm, r = CH.pm.rows.filter(function (x) { return x.s.key === k; })[0]; if (!r) return;
+  var same = sm.machines.filter(function (x) { return x.type === r.mach.v; }), other = sm.machines.filter(function (x) { return x.type !== r.mach.v; });
+  var free = function (mc) { for (var d = 1; d <= sm.D; d++) if (!mc.off[d] && !mc.occ[d]) return d; return 1; };
+  var m0 = same.slice().sort(function (a, b) { return free(a) - free(b); })[0] || other[0]; if (!m0) return;
+  var opt = function (x) { return '<option value="' + esc(x.name) + '"' + (x === m0 ? ' selected' : '') + '>' + esc(x.name) + ' · kosong mulai tgl ' + free(x) + ' · ' + x.used + '/' + x.avail + ' hari</option>'; };
+  bufPopover(btn, '<div class="mh">' + esc(r.s.name || k) + '</div><div class="bw"><span>PP ' + monthLabel(sm.P) + '</span><span class="num">' + n(r.pp) + ' ctn · ' + fmt.format(Math.round(r.pp * r.nw / 100) / 10) + ' t</span><span>Area mesin</span><span class="num">' + esc(r.mach.v || '–') + '</span></div>' +
+    '<div class="mr"><label style="flex-basis:100%">Mesin<select id="schPlM">' + (same.length ? '<optgroup label="' + esc(r.mach.v) + '">' + same.map(opt).join('') + '</optgroup>' : '') + (other.length ? '<optgroup label="Area mesin lain">' + other.map(opt).join('') + '</optgroup>' : '') + '</select></label>' +
+    '<label>Mulai tgl<input type="number" id="schPlS" min="1" max="' + sm.H0 + '" value="' + free(m0) + '"></label><label>Lama (hari)<input type="number" id="schPlL" min="1" max="' + sm.H0 + '" placeholder="sesuai kecepatan"></label></div>' +
+    '<div class="ba"><button type="button" class="pri" data-schact="place">Tempatkan</button><button type="button" data-schact="auto1" title="Model memilih mesin dan tanggal untuk SKU ini saja">Otomatis untuk SKU ini</button></div>' +
+    '<p class="sub">Atau klik dua kali di hari kosong pada baris mesin untuk menaruh SKU di sana.</p>');
+  $('stMenu').setAttribute('data-schk', k);
+  $('schPlM').addEventListener('change', function () { var mc = sm.byName[this.value]; if (mc) $('schPlS').value = free(mc); });
+}
 $('schNote').addEventListener('click', function (e) { var a = e.target.closest('[data-goto]'); if (a) { e.preventDefault(); showTab(a.getAttribute('data-goto')); } });
 $('ppFam').addEventListener('change', function () { state.ppFam = $('ppFam').value; renderAll(); });
 $('ppQ').addEventListener('input', function () { state.ppQ = $('ppQ').value; clearTimeout(state._ppQt); state._ppQt = setTimeout(function () { renderAll(); $('ppQ').focus(); }, 250); });
@@ -4321,7 +4557,7 @@ function schMenu(bar) {
     '<span>Cek</span><span class="num">' + r.st[0] + (sm.issues[k] ? ' · ' + esc(sm.issues[k].why.join('; ')) : '') + '</span></div>' +
     '<div class="mr"><label style="flex-basis:100%">Mesin<select id="schSel"><optgroup label="' + esc(pc.mc.type) + '">' + same.map(opt).join('') + '</optgroup>' + (other.length ? '<optgroup label="Jenis lain">' + other.map(opt).join('') + '</optgroup>' : '') + '</select></label>' +
     '<label>Mulai tgl<input type="number" id="schS" min="1" max="' + sm.H0 + '" value="' + pc.s + '"></label><label>Lama (hari)<input type="number" id="schL" min="1" max="' + sm.H0 + '" value="' + pc.l + '"></label></div>' +
-    '<div class="ba"><button type="button" class="pri" data-schact="set">Simpan</button><button type="button" data-schact="fit" title="Lama bar dihitung dari PP ÷ kecepatan mesin">Sesuai kecepatan</button>' + (sc.place[k] ? '<button type="button" data-schact="auto" title="Hapus pengaturan manual SKU ini">Otomatis</button>' : '') + (sc.day[k] ? '<button type="button" data-schact="tgt">Target otomatis</button>' : '') + (pcs.length > 1 ? '<button type="button" data-schact="delpart" title="Hapus bagian ini saja; PP pindah ke bagian lain">Hapus bagian ini</button>' : '') + '<button type="button" data-schact="off" title="Keluarkan SKU ini dari jadwal bulan ini">Keluarkan</button></div>' +
+    '<div class="ba"><button type="button" class="pri" data-schact="set">Simpan</button><button type="button" data-schact="fit" title="Lama bar dihitung dari PP ÷ kecepatan mesin">Sesuai kecepatan</button>' + (sc.place[k] && sc.mode !== 'manual' ? '<button type="button" data-schact="auto" title="Hapus pengaturan manual SKU ini">Otomatis</button>' : sc.place[k] ? '<button type="button" data-schact="auto" title="Lepas SKU ini dari jadwal; tampil merah sebagai belum terjadwal">Lepas dari jadwal</button>' : '') + (sc.day[k] ? '<button type="button" data-schact="tgt">Target otomatis</button>' : '') + (pcs.length > 1 ? '<button type="button" data-schact="delpart" title="Hapus bagian ini saja; PP pindah ke bagian lain">Hapus bagian ini</button>' : '') + '<button type="button" data-schact="off" title="Keluarkan SKU ini dari jadwal bulan ini">Keluarkan</button></div>' +
     (pc.l > 1 ? '<div class="mh" style="margin-top:8px">Pisah bar (A → B → A)</div><div class="mr"><label>Pisah mulai tgl<input type="number" id="schCut" min="' + (pc.s + 1) + '" max="' + (pc.s + pc.l - 1) + '" value="' + (pc.s + Math.max(1, Math.floor(pc.l / 2))) + '"></label>' +
       '<label style="flex-basis:100%">Sisipkan SKU di tengah<select id="schIns"><option value="">(tidak ada, hanya dipisah)</option>' + schSkuOpts(pc.mc, k) + '</select></label><label>Lama sisipan (hari)<input type="number" id="schInsL" min="1" max="' + sm.H0 + '" value="" placeholder="sesuai PP"></label></div>' +
       '<div class="ba"><button type="button" data-schact="split" title="Bar dipotong di tanggal itu. Dengan SKU sisipan, bagian kedua dan bar sesudahnya di mesin ini digeser sejauh lama sisipan.">Pisah</button></div>' : ''));
@@ -4375,7 +4611,15 @@ $('stMenu').addEventListener('click', function (e) {
   var b = e.target.closest('button[data-schact]'); if (!b) return; e.stopPropagation();
   var act = b.getAttribute('data-schact'), mnu = $('stMenu'), sm = CH.sm; if (!sm) return;
   var sc = schedFor(sm.P), pi = mnu.getAttribute('data-schpi'), pc = pi !== null ? sm.items[+pi] : null, day = +mnu.getAttribute('data-schd'), mname = mnu.getAttribute('data-schm');
-  var done = function () { ['data-schpi', 'data-schd', 'data-schm'].forEach(function (a) { mnu.removeAttribute(a); }); closeStMenu(); };
+  var done = function () { ['data-schpi', 'data-schd', 'data-schm', 'data-schk'].forEach(function (a) { mnu.removeAttribute(a); }); closeStMenu(); };
+  if (act === 'runfill' || act === 'runscratch') { if (act === 'runscratch' && Object.keys(sc.place).some(function (k) { return (sc.place[k] || []).some(function (p) { return !p.a; }); }) && !confirm('Susun ulang jadwal ' + monthLabel(sm.P) + ' dari nol? Bar dan target harian yang diatur sendiri dihapus. PP target, libur dan maintenance tetap.')) return; done(); schAutoRun(act === 'runscratch', null); return; }
+  var pk = mnu.getAttribute('data-schk');
+  if (pk && act === 'auto1') { done(); schAutoRun(false, [pk]); return; }
+  if (pk && act === 'place') {
+    var pr = CH.pm.rows.filter(function (x) { return x.s.key === pk; })[0], pmc = sm.byName[$('schPlM').value], ps = Math.max(1, Math.min(sm.H0, Math.round(+$('schPlS').value) || 1));
+    if (!pr || !pmc) return; var pl = Math.max(1, Math.round(+$('schPlL').value) || schDaysNeeded(pr, pmc, ps));
+    sc.place[pk] = [{ m: pmc.name, s: ps, l: Math.min(pl, sm.H0 - ps + 1) }]; delete sc.day[pk]; done(); savePP(); renderAll(); return;
+  }
   if (pc) {
     var k = pc.r.s.key;
     if (act === 'set') { var m2 = $('schSel').value; done(); schSet(pc, m2, +$('schS').value || pc.s, +$('schL').value || pc.l); return; }
@@ -4449,7 +4693,8 @@ $('ppTable').addEventListener('click', function (e) {
   var th = e.target.closest('th[data-day]'); if (th) { e.stopPropagation(); schDayMenu(th); return; }
   var t = e.target.closest('button[data-ppt]'); if (t) { var g = t.getAttribute('data-ppt'); state.ppOpenT[g] = t.getAttribute('aria-expanded') !== 'true'; if (!state.ppOpenT[g]) state.ppOpenT[g] = false; renderAll(); return; }
   var mc = e.target.closest('button[data-ppmc]'); if (mc) { var k = mc.getAttribute('data-ppmc'); state.ppOpenMc[k] = !state.ppOpenMc[k]; renderAll(); return; }
-  var au = e.target.closest('button[data-schauto]'); if (au && CH.sm) { delete schedFor(CH.sm.P).place[au.getAttribute('data-schauto')]; savePP(); renderAll(); return; }
+  var pl = e.target.closest('button[data-schplace]'); if (pl && CH.sm) { e.stopPropagation(); schPlaceMenu(pl, pl.getAttribute('data-schplace')); return; }
+  var au = e.target.closest('button[data-schauto]'); if (au && CH.sm) { var ak = au.getAttribute('data-schauto'); if (schedFor(CH.sm.P).mode === 'manual') { schAutoRun(false, [ak]); return; } delete schedFor(CH.sm.P).place[ak]; savePP(); renderAll(); return; }
   if (e.target.closest('.bar')) e.stopPropagation();
 });
 $('ppTable').addEventListener('keydown', function (e) { var th = e.target.closest('th[data-day]'); if (th && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); schDayMenu(th); } });
@@ -5039,8 +5284,8 @@ function matStatus(s) {
   if (mr) return { status: mr.status, succ: mr.succ || '', from: 'master' };
   return null;
 }
-function saveMat() { try { localStorage.setItem('ppic_mat', JSON.stringify({ mat: state.mat, edits: state.matEdits || {}, grp: state.grpMode })); } catch (e) { toast('Penyimpanan browser penuh: material master hanya tersimpan sampai halaman ditutup. Unduh histori untuk menyimpannya.'); } }
-function loadMat() { try { var o = JSON.parse(localStorage.getItem('ppic_mat') || '{}') || {}; state.mat = o.mat || null; state.matEdits = o.edits || {}; state.grpMode = 'auto'; } catch (e) { state.mat = null; state.matEdits = {}; } }
+function saveMat() { try { localStorage.setItem('ppic_mat', JSON.stringify({ mat: state.mat, edits: state.matEdits || {}, grp: state.grpMode, added: state.matNew || [], bom: state.bom || {}, rmHide: !!state.rmHide })); } catch (e) { toast('Penyimpanan browser penuh: material master hanya tersimpan sampai halaman ditutup. Unduh histori untuk menyimpannya.'); } }
+function loadMat() { try { var o = JSON.parse(localStorage.getItem('ppic_mat') || '{}') || {}; state.mat = o.mat || null; state.matEdits = o.edits || {}; state.grpMode = 'auto'; state.matNew = o.added || []; state.bom = o.bom || {}; state.rmHide = !!o.rmHide; } catch (e) { state.mat = null; state.matEdits = {}; state.matNew = []; state.bom = {}; } }
 function matStatusOf(v) {
   var t = norm(v); if (!t) return 'aktif';
   return /non|inakt|inact|tidak|^n$|^no$|^0$|false|disc|obsol|block|stop|delist|^old$|lama|mati|^off$|^x$/.test(t) ? 'nonaktif' : 'aktif';
@@ -5082,7 +5327,9 @@ function matRows() {
     var e = ed[r.key]; done[r.key] = 1;
     out.push({ nomat: r.nomat, article_code: r.art, description: r.name, brand: r.brand, category: r.category, family: r.family, status_master: r.status, pengganti_master: r.succ, catatan: r.note, sumber: 'master', status_manual: e ? e.status || null : null, pengganti_manual: e ? e.succ || null : null, tanggal_manual: e ? e.at || null : null, file_master: state.mat.src });
   });
-  Object.keys(ed).forEach(function (k) { if (!done[k]) out.push({ nomat: k, sumber: 'manual', status_manual: ed[k].status || null, pengganti_manual: ed[k].succ || null, tanggal_manual: ed[k].at || null }); });
+  Object.keys(ed).forEach(function (k) { if (!done[k]) { done[k] = 1; out.push({ nomat: k, sumber: 'manual', status_manual: ed[k].status || null, pengganti_manual: ed[k].succ || null, tanggal_manual: ed[k].at || null }); } });
+  (state.matNew || []).forEach(function (r) { var o = out.filter(function (x) { return x.nomat === r.key; })[0]; if (!o) { o = { nomat: r.key }; out.push(o); done[r.key] = 1; } o.sumber = o.sumber === 'master' ? 'master' : 'tambah'; o.article_code = o.article_code || r.art || null; o.description = o.description || r.name || null; o.brand = o.brand || r.brand || null; o.category = o.category || r.category || null; o.family = o.family || r.family || null; o.berat_bersih_kg = r.nw || null; o.sku_baru = r.npd ? 'ya' : 'tidak'; o.tanggal_tambah = r.at || null; });
+  var B = state.bom || {}; Object.keys(B).forEach(function (k) { var o = out.filter(function (x) { return x.nomat === k; })[0]; if (!o) { o = { nomat: k, sumber: 'bom' }; out.push(o); } o.bom_karton_pcs = B[k].ct === undefined ? null : B[k].ct; o.bom_plastik_kg = B[k].pl === undefined ? null : B[k].pl; o.bom_jumbo_roll_kg = B[k].jr === undefined ? null : B[k].jr; o.bom_deskripsi = B[k].desc || null; });
   return out;
 }
 function matFromRows(rows, name) {
@@ -5090,6 +5337,12 @@ function matFromRows(rows, name) {
   var ms = rows.filter(function (r) { return r.sumber === 'master' && r.nomat !== null && r.nomat !== undefined; });
   if (ms.length) state.mat = { src: (ms[0].file_master || 'material master') + ' (dari ' + name + ')', at: '', rows: ms.map(function (r) { var k = cleanCode(r.nomat); return { key: k, nomat: k, art: r.article_code ? cleanCode(r.article_code) : null, name: r.description || null, brand: r.brand || null, category: r.category || null, family: r.family || null, status: r.status_master === 'nonaktif' ? 'nonaktif' : 'aktif', succ: r.pengganti_master ? cleanCode(r.pengganti_master) : null, note: r.catatan || null }; }) };
   rows.forEach(function (r) { if (r.nomat === null || r.nomat === undefined || !(r.status_manual || r.pengganti_manual)) return; state.matEdits[cleanCode(r.nomat)] = { status: r.status_manual || null, succ: r.pengganti_manual ? String(r.pengganti_manual) : '', at: r.tanggal_manual || '' }; });
+  var num = function (v) { return v === null || v === undefined || v === '' || isNaN(+v) ? undefined : +v; };
+  rows.forEach(function (r) {
+    if (r.nomat === null || r.nomat === undefined) return; var k = cleanCode(r.nomat);
+    if (r.sumber === 'tambah' && !(state.matNew || []).some(function (x) { return x.key === k; })) (state.matNew = state.matNew || []).push({ key: k, nomat: k, art: r.article_code ? cleanCode(r.article_code) : null, name: r.description || null, brand: r.brand || null, category: r.category || null, family: r.family || null, nw: num(r.berat_bersih_kg) || null, npd: r.sku_baru === 'ya', at: r.tanggal_tambah || '' });
+    if ([r.bom_karton_pcs, r.bom_plastik_kg, r.bom_jumbo_roll_kg, r.bom_deskripsi].some(function (v) { return v !== null && v !== undefined && v !== ''; })) (state.bom = state.bom || {})[k] = { ct: num(r.bom_karton_pcs), pl: num(r.bom_plastik_kg), jr: num(r.bom_jumbo_roll_kg), desc: r.bom_deskripsi || '' };
+  });
   saveMat();
 }
 function renderMat(m) {
@@ -5098,14 +5351,15 @@ function renderMat(m) {
     var mr = matRec(s), e = ed[matKey(s)], mi = matStatus(s), flags = [];
     if (mr) used[mr.key] = 1;
     var hasFc = fut.some(function (mo) { return (s.fhq[mo] || 0) > 0; }), hasOi = recent.some(function (mo) { return (s.oi[mo] || 0) > 0; });
-    var derived = (s.status === 'aktif' || s.status === 'cek') && (hasFc || hasOi) ? 'aktif' : 'nonaktif';
+    var derived = (s.status === 'aktif' || s.status === 'cek') && (hasFc || hasOi || s.added) ? 'aktif' : 'nonaktif';
     var st = mi ? mi.status : derived;
-    if (state.mat && !mr) flags.push(['warn', 'Belum ada di master']);
+    if (s.added) flags.push(['acc', s.added.npd ? 'SKU baru, ditambah manual' : 'Ditambah manual']);
+    if (state.mat && !mr && !s.added) flags.push(['warn', 'Belum ada di master']);
     if (mr && mr.nomat && s.nomat && mr.nomat !== s.nomat) flags.push(['bad', 'Nomat berubah: master ' + mr.nomat + ', data ' + s.nomat + ' (kode artikel sama)']);
     Object.keys(s.nomatHist || {}).forEach(function (x) { flags.push(['bad', 'Nomat berubah: ' + s.nomat + ' → ' + x + ' di ' + s.nomatHist[x] + ' (kode artikel sama ' + (s.art || '–') + ')']); });
     if (mr && mr.name && s.name && dice(nameTokens(mr.name, []), nameTokens(s.name, [])) < 0.6) flags.push(['warn', 'Nama di master: ' + mr.name]);
     if (st === 'nonaktif' && hasFc) flags.push(['warn', 'Nonaktif tapi ada Forecast HQ']);
-    if (s.status === 'diganti' && s.succ) flags.push(['acc', 'Diganti → ' + (s.succ.nomat || s.succ.key)]);
+    if (s.status === 'diganti' && s.succ) flags.push(['acc', 'Digantikan SKU baru ' + (s.succ.nomat || s.succ.key)]);
     else if (s.status === 'cek') flags.push(['warn', 'Perlu cek: ' + s.hits.map(function (x) { return x.why; }).join('; ')]);
     return { s: s, key: matKey(s), nomat: s.nomat, art: s.art, name: s.name, brand: s.brand || (mr && mr.brand), category: s.category || (mr && mr.category), family: s.family || (mr && mr.family), st: st, from: mi ? mi.from : 'data', mst: mr ? mr.status : null, e: e, succ: (e && e.succ) || (mr && mr.succ) || '', fhq: s.fhq[fut[0]], oi: L ? s.oi[L] : undefined, flags: flags, inData: true, inMaster: !!mr };
   });
@@ -5134,19 +5388,23 @@ function renderMat(m) {
     return q.split(' ').every(function (w) { return t.indexOf(w) >= 0; });
   });
   list.sort(function (a, b) { var fa = a.flags.some(function (f) { return f[0] === 'bad'; }) ? 0 : 1, fb = b.flags.some(function (f) { return f[0] === 'bad'; }) ? 0 : 1; return fa - fb || String(a.brand || '').localeCompare(String(b.brand || '')) || String(a.category || a.family || '').localeCompare(String(b.category || b.family || '')) || String(a.name || '').localeCompare(String(b.name || '')); });
-  var t = '<thead><tr><th>Status</th><th>Nomat</th><th>SKU</th><th>Perubahan</th><th>Brand</th><th>Kategori</th><th>Famili closing</th><th class="num">Forecast HQ ' + (fut[0] ? monthLabel(fut[0]) : 'M+1') + '</th><th class="num">Order in ' + (L ? monthLabel(L) : '') + '</th><th>Nomat pengganti</th><th></th></tr></thead><tbody>';
+  var RH = !!state.rmHide, B = state.bom || {}, NCm = RH ? 11 : 15;
+  var bomIn = function (k, f, ph, wide) { var b = B[k] || {}, v = b[f]; return '<td' + (wide ? '' : ' class="num"') + '><input type="text" class="bomin' + (wide ? ' w' : '') + '" data-bom="' + esc(k) + '" data-bf="' + f + '" value="' + esc(v === undefined || v === null ? '' : wide ? v : String(v).replace('.', ',')) + '" placeholder="' + ph + '"' + (wide ? '' : ' inputmode="decimal"') + ' aria-label="BOM ' + f + ' ' + esc(k) + '"></td>'; };
+  var t = '<thead><tr><th>Status</th><th>Nomat</th><th>SKU</th><th>Perubahan</th><th>Brand</th><th>Kategori</th><th>Famili closing</th><th class="num">Forecast HQ ' + (fut[0] ? monthLabel(fut[0]) : 'M+1') + '</th><th class="num">Order in ' + (L ? monthLabel(L) : '') + '</th><th>Nomat pengganti</th>' +
+    (RH ? '' : '<th class="num bomh" title="Berapa pcs karton kemasan untuk 1 karton produk (biasanya 1)">BOM karton<br><small>pcs / ctn</small></th><th class="num bomh" title="Kg plastik untuk 1 karton produk">BOM plastik<br><small>kg / ctn</small></th><th class="num bomh" title="Kg jumbo roll (kertas tisu) untuk 1 karton produk">BOM jumbo roll<br><small>kg / ctn</small></th><th class="bomh">Deskripsi BOM</th>') + '<th></th></tr></thead><tbody>';
   list.slice(0, 500).forEach(function (r) {
-    var auto = r.mst ? r.mst : r.s ? ((r.s.status === 'aktif' || r.s.status === 'cek') && (fut.some(function (mo) { return (r.s.fhq[mo] || 0) > 0; }) || recent.some(function (mo) { return (r.s.oi[mo] || 0) > 0; })) ? 'aktif' : 'nonaktif') : 'aktif';
+    var auto = r.mst ? r.mst : r.s ? ((r.s.status === 'aktif' || r.s.status === 'cek') && (r.s.added || fut.some(function (mo) { return (r.s.fhq[mo] || 0) > 0; }) || recent.some(function (mo) { return (r.s.oi[mo] || 0) > 0; })) ? 'aktif' : 'nonaktif') : 'aktif';
     t += '<tr class="st-' + r.st + '"><td style="white-space:nowrap"><select data-mms="' + esc(r.key) + '" aria-label="Status ' + esc(r.nomat || r.key) + '"><option value="">' + (r.mst ? 'Master' : 'Dari data') + ' (' + (auto === 'aktif' ? 'Aktif' : 'Nonaktif') + ')</option><option value="aktif"' + (r.e && r.e.status === 'aktif' ? ' selected' : '') + '>Aktif</option><option value="nonaktif"' + (r.e && r.e.status === 'nonaktif' ? ' selected' : '') + '>Nonaktif</option></select>' + (r.e && r.e.status ? ' <span class="sub">manual</span>' : '') + '</td>' +
       '<td class="col">' + esc(r.nomat || '–') + (r.art ? '<span class="code" style="display:block">' + esc(r.art) + '</span>' : '') + '</td>' +
       '<td><span class="nm" title="' + esc(r.name || '') + '">' + esc(r.name || '(tanpa nama)') + '</span></td>' +
       '<td class="wr">' + (r.flags.length ? r.flags.map(function (f) { return '<span class="pill p-' + f[0] + ' flag">' + esc(f[1]) + '</span>'; }).join('') : '<span class="sub">–</span>') + '</td><td>' + esc(r.brand || '–') + '</td><td>' + esc(r.category || '–') + '</td><td>' + esc(r.family ? titleCase(r.family) : '–') + '</td>' +
       '<td class="num">' + n(r.fhq) + '</td><td class="num">' + n(r.oi) + '</td>' +
       '<td><input type="text" list="cekCodes" data-mmsucc="' + esc(r.key) + '" value="' + esc(r.succ || '') + '" placeholder="Nomat baru" aria-label="Nomat pengganti untuk ' + esc(r.nomat || r.key) + '"></td>' +
-      '<td>' + (r.inData ? '<a href="#" class="go" data-mmgo="' + esc(r.s.key) + '">Forecast ›</a>' : '') + '</td></tr>';
+      (RH ? '' : bomIn(r.key, 'ct', 'pcs') + bomIn(r.key, 'pl', 'kg') + bomIn(r.key, 'jr', 'kg') + bomIn(r.key, 'desc', 'mis. karton 5 ply, plastik PE 40 mic', true)) +
+      '<td style="white-space:nowrap">' + (r.inData ? '<a href="#" class="go" data-mmgo="' + esc(r.s.key) + '">Forecast ›</a>' : '') + (r.s && r.s.added ? ' <button type="button" class="v-btn sm" data-mmdel="' + esc(r.s.added.key) + '" title="Hapus SKU yang ditambah manual">Hapus</button>' : '') + '</td></tr>';
   });
-  if (!list.length) t += '<tr><td colspan="11" class="sub">Tidak ada material untuk saringan ini.</td></tr>';
-  if (list.length > 500) t += '<tr><td colspan="11" class="sub">' + (list.length - 500) + ' material lagi. Persempit dengan pencarian.</td></tr>';
+  if (!list.length) t += '<tr><td colspan="' + NCm + '" class="sub">Tidak ada material untuk saringan ini.</td></tr>';
+  if (list.length > 500) t += '<tr><td colspan="' + NCm + '" class="sub">' + (list.length - 500) + ' material lagi. Persempit dengan pencarian.</td></tr>';
   $('mmTable').innerHTML = t + '</tbody>';
 }
 function mmSet(key, patch) {
@@ -5157,15 +5415,60 @@ function mmSet(key, patch) {
   saveMat(); renderAll();
 }
 $('mmTable').addEventListener('change', function (e) {
+  var bk = e.target.getAttribute('data-bom');
+  if (bk !== null) {
+    var f = e.target.getAttribute('data-bf'), raw = e.target.value.trim(), B = state.bom = state.bom || {}, b = B[bk] = B[bk] || {};
+    if (f === 'desc') { if (raw) b.desc = raw; else delete b.desc; }
+    else { var v = raw === '' ? null : parseNumber(raw)[0]; if (raw !== '' && (v === null || !(v >= 0))) { toast('BOM harus angka ≥ 0, mis. 1 atau 0,35.'); e.target.value = b[f] === undefined ? '' : String(b[f]).replace('.', ','); return; } if (v === null) delete b[f]; else b[f] = v; }
+    if (!Object.keys(b).length) delete B[bk];
+    saveMat(); renderAll(); return;
+  }
   var el = e.target, k = el.getAttribute('data-mms'), ks = el.getAttribute('data-mmsucc');
   if (k !== null) mmSet(k, { status: el.value || null });
   else if (ks !== null) { var v = el.value.trim().toUpperCase(); mmSet(ks, v ? { succ: v, status: 'nonaktif' } : { succ: null }); }
 });
-$('mmTable').addEventListener('click', function (e) { var a = e.target.closest('a[data-mmgo]'); if (a) { e.preventDefault(); fcGoto(a.getAttribute('data-mmgo'), 'fhq', CH.model ? CH.model.future[0] : ''); } });
+$('mmTable').addEventListener('click', function (e) { var d = e.target.closest('[data-mmdel]'); if (d) { var dk = d.getAttribute('data-mmdel'); state.matNew = (state.matNew || []).filter(function (x) { return x.key !== dk; }); saveMat(); renderAll(); toast('SKU ' + dk + ' dihapus dari tambahan manual. Tekan ↶ Urungkan bila keliru.'); return; } var a = e.target.closest('a[data-mmgo]'); if (a) { e.preventDefault(); fcGoto(a.getAttribute('data-mmgo'), 'fhq', CH.model ? CH.model.future[0] : ''); } });
 $('mmStats').addEventListener('click', function (e) { var b = e.target.closest('[data-mmf]'); if (b) { $('mmFlt').value = b.getAttribute('data-mmf'); renderMat(CH.model); } });
 $('mmQ').addEventListener('input', function () { if (CH.model) renderMat(CH.model); });
 $('mmFlt').addEventListener('change', function () { if (CH.model) renderMat(CH.model); });
 $('mmClear').addEventListener('click', function () { if (!state.mat) { toast('Belum ada material master yang diunggah.'); return; } state.mat = null; saveMat(); renderAll(); toast('Material master dihapus. Tekan ↶ Urungkan (Ctrl+Z) untuk mengembalikannya.'); });
+// + Tambah SKU: an SKU missing from the files, or a new SKU (NPD) without history. It joins Forecast (type the forecast there),
+// Saran buffer and Rencana produksi like any other SKU. Kept in this browser and in the history file (sheet material_master).
+function mmAddForm(on) {
+  var el = $('mmAdd'); if (!el) { $('mmStats').insertAdjacentHTML('beforebegin', '<div class="mmadd" id="mmAdd" hidden></div>'); el = $('mmAdd'); }
+  if (!on) { el.hidden = true; el.innerHTML = ''; return; }
+  var f = function (id, lab, ph, extra) { return '<label class="field">' + lab + '<input type="text" id="' + id + '" placeholder="' + ph + '"' + (extra || '') + '></label>'; };
+  el.innerHTML = '<div class="ph"><h3>Tambah SKU</h3><button type="button" class="ib" id="mmAddX" aria-label="Tutup">✕</button></div>' +
+    '<div class="seg" id="mmAddK"><span>Jenis</span><button type="button" class="on" data-npd="1">SKU baru (NPD, belum ada histori)</button><button type="button" data-npd="0">SKU yang sudah ada tapi belum di data</button></div>' +
+    '<div class="mmf">' + f('mmaNomat', 'Nomat *', 'mis. 69921999', ' inputmode="numeric"') + f('mmaArt', 'Kode artikel', 'opsional') + f('mmaName', 'Nama SKU *', 'mis. Paseo Facial 250s Travel') + f('mmaBrand', 'Brand', 'mis. PASEO', ' list="mmaBrands"') + f('mmaCat', 'Kategori', 'mis. FACIAL', ' list="mmaCats"') + f('mmaFam', 'Famili closing', 'opsional') + f('mmaNw', 'Berat bersih (kg / ctn)', 'untuk ton & jadwal mesin', ' inputmode="decimal"') + '</div>' +
+    (state.rmHide ? '' : '<div class="mmf"><span class="sub" style="flex-basis:100%">BOM per karton produk (boleh kosong dulu)</span>' + f('mmaCt', 'Karton (pcs / ctn)', 'mis. 1', ' inputmode="decimal"') + f('mmaPl', 'Plastik (kg / ctn)', 'mis. 0,12', ' inputmode="decimal"') + f('mmaJr', 'Jumbo roll (kg / ctn)', 'mis. 3,6', ' inputmode="decimal"') + f('mmaDesc', 'Deskripsi BOM', 'mis. karton 5 ply, PE 40 mic') + '</div>') +
+    '<p class="sub" style="margin:2px 0 8px">SKU ini ikut ke Forecast, Saran buffer dan Rencana produksi. SKU baru belum punya histori: isi Forecast HQ-nya langsung di lembar Forecast (ketik di sel).</p>' +
+    '<div style="display:flex;gap:6px"><button type="button" class="pri" id="mmAddSave">Simpan SKU</button><button type="button" id="mmAddCancel">Batal</button><span class="sub" id="mmAddMsg" role="status"></span></div>' +
+    '<datalist id="mmaBrands">' + uniq((CH.mm || []).map(function (r) { return r.brand; })).map(function (b) { return '<option value="' + esc(b) + '">'; }).join('') + '</datalist>' +
+    '<datalist id="mmaCats">' + uniq((CH.mm || []).map(function (r) { return r.category; })).map(function (b) { return '<option value="' + esc(b) + '">'; }).join('') + '</datalist>';
+  el.hidden = false; $('mmaNomat').focus();
+}
+function uniq(a) { var o = {}; a.forEach(function (x) { if (x) o[x] = 1; }); return Object.keys(o).sort(); }
+$('mmAddB').addEventListener('click', function () { mmAddForm(!$('mmAdd') || $('mmAdd').hidden); });
+$('mmPanel').addEventListener('click', function (e) {
+  var t = e.target;
+  if (t.id === 'mmAddX' || t.id === 'mmAddCancel') { mmAddForm(false); return; }
+  var k = t.closest('#mmAddK [data-npd]'); if (k) { $('mmAddK').querySelectorAll('button').forEach(function (b) { b.classList.toggle('on', b === k); }); return; }
+  if (t.id !== 'mmAddSave') return;
+  var v = function (id) { var x = $(id); return x ? x.value.trim() : ''; }, nm = function (id) { var x = v(id); if (!x) return undefined; var p = parseNumber(x)[0]; return p === null || !(p >= 0) ? NaN : p; };
+  var nomat = cleanCode(v('mmaNomat')), name = v('mmaName'), msg = $('mmAddMsg');
+  if (!nomat || !looksLikeCode(nomat)) { msg.textContent = 'Isi Nomat yang benar (angka / kode material).'; return; }
+  if (!name) { msg.textContent = 'Isi nama SKU.'; return; }
+  var exist = (CH.model ? CH.model.all : []).filter(function (s) { return s.nomat === nomat && !s.added; })[0];
+  if (exist) { msg.textContent = 'Nomat ' + nomat + ' sudah ada di data: ' + (exist.name || '') + '.'; return; }
+  if ((state.matNew || []).some(function (x) { return x.key === nomat; })) { msg.textContent = 'Nomat ' + nomat + ' sudah ditambahkan.'; return; }
+  var nums = { nw: nm('mmaNw'), ct: nm('mmaCt'), pl: nm('mmaPl'), jr: nm('mmaJr') };
+  if (Object.keys(nums).some(function (x) { return nums[x] !== undefined && isNaN(nums[x]); })) { msg.textContent = 'Berat dan BOM harus angka ≥ 0.'; return; }
+  var npd = !!($('mmAddK').querySelector('.on') || {}).getAttribute && $('mmAddK').querySelector('.on').getAttribute('data-npd') === '1';
+  (state.matNew = state.matNew || []).push({ key: nomat, nomat: nomat, art: v('mmaArt') ? cleanCode(v('mmaArt')) : null, name: name, brand: v('mmaBrand').toUpperCase() || null, category: v('mmaCat') || null, family: v('mmaFam') || null, nw: nums.nw || null, npd: npd, at: new Date().toISOString().slice(0, 10) });
+  if (nums.ct !== undefined || nums.pl !== undefined || nums.jr !== undefined || v('mmaDesc')) (state.bom = state.bom || {})[nomat] = { ct: nums.ct, pl: nums.pl, jr: nums.jr, desc: v('mmaDesc') };
+  saveMat(); mmAddForm(false); $('mmQ').value = nomat; renderAll(); toast('SKU ' + name + ' (' + nomat + ') ditambahkan. Isi forecast-nya di lembar Forecast.');
+});
 $('mmDl').addEventListener('click', function () {
   if (!canDownload) { toast('Unduhan diblokir di tampilan ini. Buka situs Cloudflare untuk mengunduh.'); return; }
   var rows = (CH.mm || []).map(function (r) { return { Nomat: r.nomat || r.key, 'Kode artikel': r.art || null, Deskripsi: r.name || null, Brand: r.brand || null, Kategori: r.category || null, Famili: r.family || null, Status: r.st === 'aktif' ? 'Aktif' : 'Nonaktif', 'Nomat pengganti': r.succ || null, Sumber: r.from === 'manual' ? 'diubah manual' : r.from === 'master' ? 'master' : 'dari data forecast/closing', Perubahan: r.flags.map(function (f) { return f[1]; }).join('; ') || null }; });
@@ -5239,8 +5542,8 @@ $('dlPack').addEventListener('click', function () {
 // After each user action the editable state is compared with the last snapshot; a difference becomes one undo step.
 // File data itself (closing / forecast uploads) is not part of undo; settings and corrections are.
 var UNDO_KEYS = { edits: 'koreksi angka', overrides: 'status SKU', rulesCfg: 'aturan status', bufEdits: 'buffer manual', bufStrat: 'strategi buffer', bufReview: 'tanda tinjau', bufCfg: 'pengaturan buffer', machines: 'mesin per SKU',
-  capEdits: 'kapasitas mesin', ppSched: 'jadwal produksi', machMaster: 'daftar mesin', skuGroups: 'kelompok SKU', skuMach: 'SKU → mesin', ppSunOff: 'kalender', ppCbOff: 'kalender', mat: 'material master', matEdits: 'material master', grpMode: 'pengelompokan' };
-var UNDO_OBJ = { edits: 1, overrides: 1, rulesCfg: 1, bufEdits: 1, bufStrat: 1, bufReview: 1, bufCfg: 1, machines: 1, capEdits: 1, ppSched: 1, skuMach: 1, matEdits: 1 };
+  capEdits: 'kapasitas mesin', ppSched: 'jadwal produksi', machMaster: 'daftar mesin', skuGroups: 'kelompok SKU', skuMach: 'SKU → mesin', ppSunOff: 'kalender', ppCbOff: 'kalender', mat: 'material master', matEdits: 'material master', grpMode: 'pengelompokan', matNew: 'SKU tambahan', bom: 'BOM bahan baku' };
+var UNDO_OBJ = { edits: 1, overrides: 1, rulesCfg: 1, bufEdits: 1, bufStrat: 1, bufReview: 1, bufCfg: 1, machines: 1, capEdits: 1, ppSched: 1, skuMach: 1, matEdits: 1, bom: 1 };
 var HIST = { u: [], r: [], cur: null, mute: 0 };
 function deepEmpty(v) { if (v === null || v === undefined) return true; if (typeof v !== 'object') return false; return Array.isArray(v) ? v.every(deepEmpty) : Object.keys(v).every(function (k) { return deepEmpty(v[k]); }); }
 function undoRepl(k, v) { if (k === 'missing' || (k === 'name' && this && 'src' in this)) return undefined; if (k !== '' && v && typeof v === 'object' && deepEmpty(v)) return undefined; return v; }
@@ -5263,7 +5566,7 @@ function histTick() {
   HIST.r = []; HIST.cur = s; histBtns();
 }
 function histRestore(sn) {
-  Object.keys(UNDO_KEYS).forEach(function (k) { var v = JSON.parse(sn.full[k]); if (v === null && UNDO_OBJ[k]) v = {}; if (v === null && k === 'skuGroups') v = []; if (v === null && k === 'grpMode') v = 'auto'; state[k] = v; });
+  Object.keys(UNDO_KEYS).forEach(function (k) { var v = JSON.parse(sn.full[k]); if (v === null && UNDO_OBJ[k]) v = {}; if (v === null && k === 'skuGroups') v = []; if (v === null && k === 'grpMode') v = 'auto'; if (v === null && k === 'matNew') v = []; state[k] = v; });
   _matIdx = null;
   savePP(); saveBuf(); saveRuleState(); saveEdits(); saveMat();
   HIST.mute++; try { renderAll(); } finally { HIST.mute--; }
@@ -5309,8 +5612,8 @@ loadRuleState(); loadBuf(); loadPP(); loadMat(); loadChronos();
 // The pages' own content (cards, tables, controls) is unchanged; this layer arranges it the Design 10 way and reads
 // alerts from the cards each page already computes (red = bad, amber = warn).
 var D10 = { acc: {}, cur: 'Brief', lang: 'id', big: false, side: 'alerts', open: window.innerWidth > 1100, right: false, rib: {}, talkUntil: 0, lastA: '' };
-try { var d10s = JSON.parse(localStorage.getItem('ppic_ui') || '{}') || {}; if (d10s.lang) D10.lang = d10s.lang; D10.big = !!d10s.big; D10.right = !!d10s.right; D10.dimOn = d10s.dim !== false; D10.talkOn = d10s.talk !== false; if (d10s.theme) document.documentElement.setAttribute('data-theme', d10s.theme); } catch (e) {}
-function d10Save() { try { localStorage.setItem('ppic_ui', JSON.stringify({ lang: D10.lang, big: D10.big, right: D10.right, dim: D10.dimOn !== false, talk: D10.talkOn !== false, theme: document.documentElement.getAttribute('data-theme') })); } catch (e) {} }
+try { var d10s = JSON.parse(localStorage.getItem('ppic_ui') || '{}') || {}; if (d10s.lang) D10.lang = d10s.lang; D10.big = !!d10s.big; D10.right = d10s.v >= 2 && !!d10s.right; D10.apw = d10s.w || 0; D10.dimOn = d10s.dim !== false; D10.talkOn = d10s.talk !== false; if (d10s.theme) document.documentElement.setAttribute('data-theme', d10s.theme); } catch (e) {}
+function d10Save() { try { localStorage.setItem('ppic_ui', JSON.stringify({ v: 2, w: D10.apw || 0, lang: D10.lang, big: D10.big, right: D10.right, dim: D10.dimOn !== false, talk: D10.talkOn !== false, theme: document.documentElement.getAttribute('data-theme') })); } catch (e) {} }
 var D10_TABS = ['Brief', 'Input', 'Master', 'Cek', 'Forecast', 'Buffer', 'Plan'];
 var D10_SN = {
   id: ['Ringkasan', 'Input data', 'Material master', 'Cek data SKU', 'Forecast', 'Saran buffer', 'Rencana produksi'],
@@ -5368,7 +5671,7 @@ function d10Alerts() {
   var cards = function (box, tab) {
     $(box).querySelectorAll('.card').forEach(function (c) {
       var lv = c.classList.contains('bad') ? 'red' : c.classList.contains('warn') ? 'amb' : c.classList.contains('ok') ? 'grn' : 'blu';
-      out.push({ lvl: lv, tab: tab, title: d10Tx(c, '.k'), amount: d10Tx(c, '.v'), text: d10Tx(c, '.n'), pill: d10Tx(c, '.pill'), list: c.getAttribute('data-list'), chart: c.getAttribute('data-chart') });
+      out.push({ lvl: lv, tab: tab, title: d10Tx(c, '.k'), amount: d10Tx(c, '.v'), text: d10Tx(c, '.n'), pill: d10Tx(c, '.pill'), lim: c.getAttribute('data-lim') || '', list: c.getAttribute('data-list'), chart: c.getAttribute('data-chart') });
     });
   };
   // Input: missing required files, files that failed, and the file checks of the file being viewed
@@ -5389,7 +5692,7 @@ function d10Alerts() {
   if (!state.mat) out.push({ lvl: 'blu', tab: 'Master', title: 'Material master belum dimuat', amount: '', text: 'Status aktif dibaca dari Forecast HQ dan order in. Unggah material master untuk status, kategori dan brand yang pasti.' });
   var nc = m.all.filter(function (s) { return s.status === 'cek'; }).length;
   if (nc) out.push({ lvl: 'amb', tab: 'Cek', title: 'SKU perlu dicek', amount: n(nc) + ' SKU', text: 'Kena aturan status: putuskan aktif, diskontinu atau diganti.', flt: 'cek' });
-  ['diganti', 'diskontinu'].forEach(function (st) { var k = m.all.filter(function (s) { return s.status === st; }).length; if (k) out.push({ lvl: 'blu', tab: 'Cek', title: 'SKU ' + st, amount: n(k) + ' SKU', text: 'Tidak dihitung di total, akurasi dan Forecast AI.', flt: st }); });
+  ['diganti', 'diskontinu'].forEach(function (st) { var k = m.all.filter(function (s) { return s.status === st; }).length; if (k) out.push({ lvl: 'blu', tab: 'Cek', title: st === 'diganti' ? 'SKU lama digantikan SKU baru' : 'SKU diskontinu', amount: n(k) + ' SKU', text: 'Tidak dihitung di total, akurasi dan Forecast AI.', flt: st }); });
   // monthly pages: every card of the page
   if (!d10Locked('Forecast')) {
     var vt = (m.vital || []).filter(function (s) { return !(state.bufReview || {})[s.key]; });
@@ -5416,9 +5719,11 @@ function d10Act(a, i, what) {
 function d10CardHTML(a, i, here) {
   var canSee = a.list || a.chart || a.flt || a.mmf || a.sec;
   var show = (a.lvl === 'red' || a.lvl === 'amb') && a.tab !== 'Brief' && !(a.tab === 'Input' && !a.sec);
-  return '<div class="acard ' + a.lvl + (here ? ' here' : '') + '"><div class="ah"><span class="lv">' + tl(a.lvl) + '</span>' + (D10.cur === 'Brief' ? '<span class="pg">' + esc(d10sn(a.tab)) + '</span>' : a.pill ? '<span class="pg">' + esc(a.pill) + '</span>' : '') +
+  var big = a.amount && a.amount !== '–' && a.amount !== 'wajib', vd = a.pill || { red: 'Buruk', amb: 'Perlu dilihat', grn: 'Baik', blu: 'Info', ack: 'Sudah dicek' }[a.lvl] || '';
+  return '<div class="acard ' + a.lvl + (here ? ' here' : '') + (a.was ? ' was-' + a.was : '') + '"><div class="ah"><span class="lv">' + tl(a.lvl) + '</span>' + (D10.cur === 'Brief' ? '<span class="pg">' + esc(d10sn(a.tab)) + '</span>' : !big && a.pill ? '<span class="pg">' + esc(a.pill) + '</span>' : '') +
     '<button type="button" class="v10-q" data-ask-i="' + i + '" title="' + tl('ask') + '">?</button></div>' +
-    '<div class="at"><b>' + esc(a.title) + '</b><span class="am">' + esc(a.amount) + '</span></div>' +
+    (big ? '<div class="at"><b>' + esc(a.title) + '</b></div><div class="aval" title="' + esc(a.text || '') + '"><span class="avn">' + esc(a.amount) + '</span><span class="avt"><b>' + esc(a.lvl === 'ack' ? vd + ' · sudah dicek' : vd) + '</b>' + (a.lim ? '<small>Batas ' + esc(a.lim) + '</small>' : '') + '</span></div>'
+      : '<div class="at"><b>' + esc(a.title) + '</b><span class="am">' + esc(a.amount) + '</span></div>') +
     (canSee || show || a.tab !== D10.cur || a.lvl === 'ack' ? '<div class="aa">' + (show ? '<button type="button" class="v-btn sm pri" data-aa="show" data-ai="' + i + '">' + tl('show') + '</button>' : '') +
     (a.vital && a.lvl !== 'ack' ? '<button type="button" class="v-btn sm" data-aa="mark" data-ai="' + i + '">' + tl('markB') + '</button>' : '') +
     (a.lvl === 'red' || a.lvl === 'amb' ? '<button type="button" class="v-btn sm" data-aa="ack" data-ai="' + i + '">' + tl('ackB') + '</button>' : a.lvl === 'ack' ? '<button type="button" class="v-btn sm" data-aa="unack" data-ai="' + i + '">' + tl('unack') + '</button>' : '') + (canSee ? '<button type="button" class="v-btn sm" data-aa="see" data-ai="' + i + '">' + d10SeeL(a) + '</button>' : '') +
@@ -5491,12 +5796,26 @@ function d10Ribbon(A) {
   if (rs !== AIX.ribSig) { AIX.ribSig = rs; aiType($('d10rib').querySelector('.v3-rib-t')); }
 }
 function d10RibHTML(lv, k, t, act, nav) { return '<div class="v3-rib v3-' + lv + '"><span class="v3-rib-m" data-mascot="1">' + d10Lens(40) + '</span><span class="v3-rib-k">' + k + '</span><span class="v3-rib-t">' + t + '</span>' + (act ? '<span class="v3-rib-a">' + act + '</span>' : '') + (nav || '') + '</div>'; }
+// side panel (Alerts / Tanya): drag its inner edge to change the width; the width is remembered
+function d10ApW(w) { D10.apw = w ? Math.max(260, Math.min(Math.round(w), Math.max(320, window.innerWidth - 420))) : 0; $('d10alerts').style.setProperty('--apw', D10.apw ? D10.apw + 'px' : ''); if (!D10.apw) $('d10alerts').style.removeProperty('--apw'); }
+function d10ApResize() {
+  var h = $('apResz'), p = $('d10alerts'); d10ApW(D10.apw);
+  h.addEventListener('pointerdown', function (e) {
+    e.preventDefault(); var x0 = e.clientX, w0 = p.getBoundingClientRect().width; h.classList.add('on'); document.body.classList.add('apdrag'); h.setPointerCapture(e.pointerId);
+    var mv = function (ev) { d10ApW(w0 + (D10.right ? x0 - ev.clientX : ev.clientX - x0)); };
+    var up = function () { h.removeEventListener('pointermove', mv); h.removeEventListener('pointerup', up); h.classList.remove('on'); document.body.classList.remove('apdrag'); d10Save(); if (CH.sm) { state._ppW = 0; window.dispatchEvent(new Event('resize')); } };
+    h.addEventListener('pointermove', mv); h.addEventListener('pointerup', up);
+  });
+  h.addEventListener('dblclick', function () { d10ApW(0); d10Save(); });
+  h.addEventListener('keydown', function (e) { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); d10ApW(p.getBoundingClientRect().width + ((e.key === 'ArrowRight') !== D10.right ? 20 : -20)); d10Save(); } });
+  h.tabIndex = 0;
+}
 function d10Panel(A) {
   var p = $('d10alerts'); p.classList.toggle('min', !D10.open); $('d10body').classList.toggle('right', D10.right);
   var isW = function (a) { return a.lvl === 'red' || a.lvl === 'amb'; }, nA = A.filter(function (a) { return isW(a) && (D10.cur === 'Brief' || a.tab === D10.cur); }).length;
   if (!$('apRail')) {
-    p.innerHTML = '<button type="button" class="railb" id="apRail" data-aopen="1"></button><span class="rail-t" id="apRailT" data-aopen="1"></span><div class="ah3" id="apHead"></div><div class="atabs" id="apTabs"></div><div class="ab" id="apList"></div>';
-    p.appendChild($('aiPanel'));
+    p.innerHTML = '<button type="button" class="railb" id="apRail" data-aopen="1"></button><span class="rail-t" id="apRailT" data-aopen="1"></span><div class="ah3" id="apHead"></div><div class="atabs" id="apTabs"></div><div class="ab" id="apList"></div><div class="aresz" id="apResz" role="separator" aria-orientation="vertical" title="Tarik untuk mengubah lebar panel (klik dua kali: lebar awal)"></div>';
+    p.appendChild($('aiPanel')); d10ApResize();
   }
   $('apRail').hidden = $('apRailT').hidden = D10.open; $('apHead').hidden = $('apTabs').hidden = !D10.open;
   $('apRail').innerHTML = d10Lens(38) + (nA ? '<span class="cnt">' + nA + '</span>' : ''); $('apRail').title = tl('alerts'); $('apRailT').textContent = tl('alerts');
@@ -5550,8 +5869,11 @@ function d10PlanStart() {
   var nM = master().reduce(function (a, g) { return a + g[1].length; }, 0), h;
   if (pm && CH.bm) {
     var rows = CH.bm.rows.filter(function (s) { return s.bf.prod > 0; }), tot = rows.reduce(function (a, s) { return a + s.bf.prod; }, 0);
-    h = '<h2>Rencana produksi ' + monthLabel(pm.P) + '</h2><p>Belum ada rencana untuk ' + monthLabel(pm.P) + '. Rencana otomatis memakai PP dari <b>Saran buffer</b>: <b>' + n(tot) + ' karton</b> untuk ' + n(rows.length) + ' SKU (forecast + buffer final − stok bebas), lalu dijadwalkan per area mesin › mesin › SKU' +
-      (nM ? ' ke ' + nM + ' mesin dari Data mesin.' : state.sample ? ' ke mesin contoh.' : '. Data mesin belum ada, jadi jadwal per mesin masih kosong.') + '</p><p class="bb"><button type="button" class="v-btn pri" id="ppMake">Buat rencana otomatis</button> <button type="button" class="v-btn" data-d10go="Buffer">Lihat Saran buffer</button></p>';
+    h = '<h2>Rencana produksi ' + monthLabel(pm.P) + '</h2><p>Belum ada rencana untuk ' + monthLabel(pm.P) + '. PP dari <b>Saran buffer</b>: <b>' + n(tot) + ' karton</b> untuk ' + n(rows.length) + ' SKU (forecast + buffer final − stok bebas), disusun per area mesin › mesin › SKU' +
+      (nM ? ' dengan ' + nM + ' mesin dari Data mesin.' : state.sample ? ' dengan mesin contoh.' : '. Data mesin belum ada, jadi jadwal per mesin masih kosong.') + '</p>' +
+      '<div class="ppways"><div><b>▶ Jadwal otomatis</b><span>Model menaruh semua SKU ke mesin: SKU bermasalah dulu, lalu stok paling tipis, lalu PP terbesar. Setelah itu bar tetap bisa digeser.</span><button type="button" class="v-btn pri" id="ppMake">▶ Jalankan jadwal otomatis</button></div>' +
+      '<div><b>✎ Susun manual</b><span>Mulai dari jadwal kosong: semua SKU tampil merah <i>belum terjadwal</i> di bawah area mesinnya, lalu Anda tempatkan sendiri. Model bisa dijalankan kapan saja untuk mengisi sisanya.</span><button type="button" class="v-btn" id="ppMakeMan">✎ Susun manual</button></div></div>' +
+      '<p class="bb"><button type="button" class="v-btn" data-d10go="Buffer">Lihat Saran buffer</button></p>';
   } else h = '<h2>Rencana produksi</h2><p>Rencana otomatis butuh file closing dan Forecast HQ' + (nM ? '. Data mesin sudah ada (' + nM + ' mesin), jadi halaman ini bisa dibuka; isinya terisi setelah forecast masuk.' : '.') + ' Untuk menjadwal dari file Excel sendiri, buka <b>Perencanaan Produksi</b>.</p><p class="bb"><button type="button" class="v-btn" data-d10go="Input">' + tl('toInput') + ' →</button> <a class="v-btn" href="/produksi/">Perencanaan Produksi ↗</a></p>';
   el.innerHTML = h;
 }
@@ -5706,7 +6028,8 @@ document.addEventListener('click', function (e) {
   var q = e.target.closest('.v10-q[data-ask-i], .v10-q[data-askc], .v10-q[data-help]'); if (q) { e.preventDefault(); d10AskEl(q); return; }
   if (e.target.closest('.v10-s, #d10fab')) { d10Find(); return; }
   var sb = e.target.closest('[data-sec]'); if (sb) { var sc = $(sb.getAttribute('data-sec')); if (sc) { sc.hidden = sb.closest('#secBar') ? !sc.hidden : false; d10SecBtns(); if (!sc.hidden) { d10Help(sc); sc.scrollIntoView({ block: 'start', behavior: 'smooth' }); } } return; }
-  if (e.target.id === 'ppMake' && CH.pm) { state.ppMade = state.ppMade || {}; state.ppMade[CH.pm.P] = true; d10SavePP(); renderAll(); toast('Rencana produksi ' + monthLabel(CH.pm.P) + ' dibuat dari Saran buffer.'); return; }
+  if (e.target.id === 'ppMakeMan' && CH.pm) { state.ppMade = state.ppMade || {}; state.ppMade[CH.pm.P] = true; var scM = schedFor(CH.pm.P); scM.mode = 'manual'; savePP(); d10SavePP(); renderAll(); toast('Rencana ' + monthLabel(CH.pm.P) + ' disusun manual. SKU merah belum terjadwal: tempatkan di mesin, atau tekan ▶ Jalankan jadwal otomatis.'); return; }
+  if (e.target.id === 'ppMake' && CH.pm) { delete schedFor(CH.pm.P).mode; savePP(); state.ppMade = state.ppMade || {}; state.ppMade[CH.pm.P] = true; d10SavePP(); renderAll(); toast('Rencana produksi ' + monthLabel(CH.pm.P) + ' dibuat dari Saran buffer.'); return; }
   if (e.target.id === 'ppUnmake' && CH.pm) { delete (state.ppMade || {})[CH.pm.P]; d10SavePP(); renderAll(); return; }
 });
 $('tabBrief').addEventListener('click', function (e) { var c = e.target.closest('.card[data-chart]'); if (c) { d10Go('Forecast'); openChart(c.getAttribute('data-chart')); return; } var l = e.target.closest('.card[data-list]'); if (l) openList(l.getAttribute('data-list')); });
@@ -6110,6 +6433,13 @@ $('bfGuide').addEventListener('click', function (e) { var b = e.target.closest('
 $('bfGuide').addEventListener('toggle', function (e) { if (e.target.id === 'bfGuideD') try { localStorage.setItem('ppic_bfguide', e.target.open ? '1' : '0'); } catch (x) {} }, true);
 // ---------- start ----------
 $('tabMaster').appendChild($('mmPanel'));
+$('tabBuffer').insertAdjacentHTML('beforeend', '<section class="panel" id="bfHz" aria-label="Proyeksi buffer per bulan"></section>');
+$('bfRmTg').addEventListener('click', function () { state.rmHide = !state.rmHide; saveMat(); renderAll(); });
+$('tabBuffer').addEventListener('click', function (e) {
+  var g = e.target.closest('#bfHz [data-goto]'); if (g) { e.preventDefault(); d10Go(g.getAttribute('data-goto')); return; }
+  var b = e.target.closest('[data-hzf]'); if (b) { state.hzOpen = state.hzOpen || {}; var k = b.getAttribute('data-hzf'); state.hzOpen[k] = !state.hzOpen[k]; if (CH.model && CH.bm) renderBfHz(CH.model, CH.bm); return; }
+  if (e.target.closest('[data-hzall]')) { state.hzOpen = state.hzOpen || {}; var on = e.target.closest('[data-hzall]').getAttribute('data-hzall') === '1'; (CH.model ? CH.model.fams : []).forEach(function (f) { state.hzOpen[f.key] = on; }); if (CH.model && CH.bm) renderBfHz(CH.model, CH.bm); }
+});
 $('useSample').hidden = true; // the only demo button is on Ringkasan
 function d10SavePP() { try { localStorage.setItem('ppic_ppmade', JSON.stringify(state.ppMade || {})); } catch (e) {} }
 try { state.ppMade = JSON.parse(localStorage.getItem('ppic_ppmade') || '{}') || {}; } catch (e) { state.ppMade = {}; }
@@ -6118,6 +6448,7 @@ $('clearAll').addEventListener('click', function () { state.ppMade = {}; D10.acc
 $('d10main').insertAdjacentHTML('beforeend', '<button type="button" id="d10fab" hidden title="Cari atau tanya (Ctrl K)">' + d10Lens(28) + '<span>🔍</span></button>');
 $('d10main').addEventListener('scroll', function () { $('d10fab').hidden = $('d10main').scrollTop < 300; }, { passive: true });
 $('ppToMon').textContent = 'Kirim ke Perencanaan Produksi ↗';
+$('schNote').insertAdjacentHTML('beforebegin', '<p class="schhint" id="schHint"></p>');
 var D10ON = true;
 window.addEventListener('resize', function () { if (window.innerWidth <= 1100 && D10.open && !D10._r) { D10._r = true; } });
 
