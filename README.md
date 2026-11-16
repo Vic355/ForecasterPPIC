@@ -193,7 +193,7 @@ Tab **Saran Buffer** menghitung buffer per SKU untuk bulan forecast pertama sete
   sendiri. Pupil mata tetap diam. Matikan di ⚙ Pengaturan → Asisten → Sorot & redupkan.
 - **Asisten berbicara**: teks pita alert, jawaban obrolan dan gelembung di bawah halaman muncul seperti diketik; asisten
   berkomentar saat data dimuat, saat pengaturan buffer, strategi, atau model Forecast AI diganti. Matikan di ⚙ Pengaturan.
-- **Forecast · SKU vital**: panel *Sugesti Utama AI* (dulu *Fokus AI*; tersembunyi di awal, buka dengan *Tampilkan ▾*) berisi SKU yang paling menentukan akurasi forecast, dengan saran *tandai tinjau*
+- **Forecast · SKU vital**: panel *Sugesti Utama AI* (dulu *Fokus AI*; di panel samping, tab Alerts halaman Forecast; tersembunyi di awal, buka dengan *Tampilkan ▾*) berisi SKU yang paling menentukan akurasi forecast, dengan saran *tandai tinjau*
   atau *pelajari histori*. Tanda tinjau dibawa ke Saran buffer (⚑ di baris, famili terbuka sendiri, kartu *Ditandai untuk
   ditinjau*), disimpan di browser dan di lembar `saran_buffer` (kolom `tinjau`). Filter *Hanya SKU vital ⚑* di tabel.
 - **Sinyal → Tanya**: klik sel Sinyal membuka tab Tanya dengan ringkasan histori forecast SKU itu dan alasan Forecast AI per
