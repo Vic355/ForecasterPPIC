@@ -47,7 +47,7 @@ h1 .h1sub b { color: var(--text, inherit); font-weight: 600; }
 .aichips { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px 12px 0; }
 .aichips button { font-size: 11px; min-height: 24px; padding: 1px 8px; border-radius: 999px; }
 .aiform { display: flex; gap: 6px; padding: 8px 12px 12px; }
-.aiform textarea { flex: 1; resize: none; font: inherit; font-size: 12.5px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--fg); }
+.aiform textarea { flex: 1; resize: vertical; min-height: 44px; max-height: 50vh; font: inherit; font-size: 12.5px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--fg); }
 @media print { .aibtn, .aipanel { display: none !important; } }
 .ppt td .mt { display: block; font-size: 10.5px; color: var(--muted); font-weight: 400; }
 .ppt select.ppm { font-size: 12px; min-height: 26px; padding: 1px 4px; max-width: 170px; }
@@ -622,7 +622,20 @@ html[data-theme=dark] .v3-grn .v3-rib-k, html[data-theme=dark] .v3-red .v3-rib-k
 
 /* ---- Desain 10, round 2 ---- */
 .warnlight { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px; background: #d92d20; color: #fff; font-size: 12px; font-weight: 700; box-shadow: 0 0 0 3px rgba(217,45,32,.35); }
-#d10main #fcCards, #d10main #bfCards, #d10main #ppCards, #d10main #cards { display: none !important; }
+/* page cards (back above each page, with a preview graphic) */
+#d10main .cards.fcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin: 12px 0 14px; }
+#d10main .cards .card { position: relative; border: 1px solid var(--line); border-left: 6px solid var(--lamp-biru); border-radius: 12px; background: var(--paper); box-shadow: 0 2px 8px rgba(0,0,0,.07); padding: 11px 14px 10px; gap: 4px; min-height: 150px; }
+#d10main .cards .card.bad { border-left-color: var(--lamp-merah); } #d10main .cards .card.warn { border-left-color: var(--lamp-kuning); } #d10main .cards .card.ok { border-left-color: var(--lamp-hijau); }
+#d10main .cards .card.click { cursor: pointer; transition: box-shadow .15s, transform .15s; } #d10main .cards .card.click:hover { box-shadow: 0 6px 18px rgba(0,0,0,.13); transform: translateY(-1px); }
+#d10main .cards .card .v { font-size: 24px; line-height: 1.15; }
+#d10main .cards .card.bad .v { color: var(--lamp-merah); } #d10main .cards .card.warn .v { color: var(--warn); } #d10main .cards .card.ok .v { color: var(--lamp-hijau); }
+#d10main .cards .card .n { font-size: 12.5px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+#d10main .cards .card .more { margin-top: auto; font-size: 12.5px; color: var(--acc); font-weight: 600; }
+.cspk { display: block; margin: 4px 0 2px; height: 40px; } .cspk svg { display: block; width: 100%; height: 40px; overflow: visible; }
+.cspk .l1 { fill: none; stroke: var(--s1, #2f6fd0); stroke-width: 2; } .cspk .l2 { fill: none; stroke: var(--s2, #e08a2e); stroke-width: 2; stroke-dasharray: 4 3; }
+.cspk .b { fill: var(--s1, #2f6fd0); opacity: .75; } .cspk .b.neg { fill: var(--lamp-merah); } .cspk .b.pos { fill: var(--lamp-kuning); } .cspk .b.fut { opacity: .35; }
+.cspk .hb { fill: var(--acc); opacity: .55; } .cspk .ref { stroke: var(--mut); stroke-width: 1; stroke-dasharray: 2 3; } .cspk .dot { fill: var(--s1, #2f6fd0); }
+#d10main #cards { display: none !important; }
 #d10main .tabpage p.note { display: none; }
 button.v10-q { padding: 0 !important; min-height: 0 !important; width: 17px; height: 17px; flex: 0 0 17px; border-radius: 50% !important; background: none; font-family: inherit; line-height: 1; cursor: pointer; }
 .v10-q[data-askc], .v10-q[data-ask-i], th .v10-q { cursor: pointer; }
@@ -756,6 +769,16 @@ html[data-theme=dark] .rvchip { color: #1b1206; }
 .ppg tr.sku.unsch.lamp-warn > td { background: color-mix(in srgb, var(--lamp-kuning) 12%, var(--paper)) !important; } .ppg tr.sku.unsch.lamp-warn > td:first-child { box-shadow: inset 5px 0 0 var(--lamp-kuning); }
 .ppg tr.fam b.unt { color: var(--lamp-merah); }
 .ppg button.sm { min-height: 24px; padding: 2px 8px; font-size: 12.5px; }
+/* Sugesti Utama AI inside the side panel */
+.alerts #fcVital { margin: 0 0 10px; padding: 10px 10px 8px; border-radius: 10px; }
+.alerts #fcVital .ph { flex-direction: column; align-items: stretch; gap: 6px; margin-bottom: 6px; }
+.alerts #fcVital h2 { font-size: 16px; font-family: var(--serif); margin: 0; flex-wrap: wrap; }
+.alerts #fcVital p.note { font-size: 12.5px; margin: 0 0 6px; }
+.alerts #fcVital .vlist li { grid-template-columns: 24px 1fr; padding: 6px 8px; gap: 6px; }
+.alerts #fcVital .vlist .vr { width: 22px; height: 22px; font-size: 12px; }
+.alerts #fcVital .vlist .vb { grid-column: 1 / -1; justify-content: flex-start; }
+.alerts #fcVital .vlist .vt .code { display: block; margin-left: 0; }
+.alerts #fcVital .vlist .vw { font-size: 12.5px; }
 /* alert value: big coloured number + verdict (colours from LAMPU) */
 .acard .aval { display: flex; align-items: center; gap: 10px; margin: 6px 0 8px; }
 .acard .avn { font-size: 21px; font-weight: 800; line-height: 1.15; padding: 3px 10px; border-radius: 8px; color: #fff; background: var(--lamp-biru); white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -5824,6 +5847,8 @@ function d10Panel(A) {
     '<button type="button" class="ib" data-aside="1" title="' + tl('side') + '">⇆</button><button type="button" class="ib" data-aclose="1" title="' + tl('hide') + '">' + (D10.right ? '›' : '‹') + '</button>';
   $('apTabs').innerHTML = '<button type="button" class="' + (D10.side === 'alerts' ? 'on' : '') + '" data-aside2="alerts">' + tl('alerts') + (nA ? '<b>' + nA + '</b>' : '') + '</button><button type="button" class="' + (D10.side === 'ask' ? 'on' : '') + '" data-aside2="ask">' + tl('ask') + '</button>';
   var showList = D10.open && D10.side === 'alerts';
+  // Sugesti Utama AI lives in this panel on the Forecast page: park it while the list is rebuilt
+  var fv = $('fcVital'); if (fv && !$('fvHold')) { $('tabForecast').insertAdjacentHTML('beforeend', '<div id="fvHold" hidden></div>'); } if (fv && fv.parentNode !== $('fvHold')) $('fvHold').appendChild(fv);
   $('apList').hidden = !showList; $('aiPanel').hidden = !(D10.open && D10.side === 'ask');
   if (!showList) return;
   var sc = $('apList').scrollTop, h;
@@ -5832,7 +5857,50 @@ function d10Panel(A) {
     var here = A.filter(function (a) { return D10.cur === 'Brief' ? isW(a) : a.tab === D10.cur; });
     h = '<div class="agh">' + tl('onPage') + ' · ' + esc(d10sn(D10.cur)) + '</div>' + (here.length ? here.map(function (a) { return d10CardHTML(a, A.indexOf(a), true); }).join('') : '<p class="sub" style="margin:2px 2px 8px;font-size:14px">' + tl('nothingHere') + '</p>');
   }
-  $('apList').innerHTML = h; $('apList').scrollTop = sc;
+  $('apList').innerHTML = h;
+  if (fv && D10.cur === 'Forecast' && d10HasData()) $('apList').insertBefore(fv, $('apList').firstChild);
+  $('apList').scrollTop = sc;
+}
+// ---------- preview graphic inside each page card ----------
+function sparkLine(ser, ref) {
+  var W = 200, H = 40, all = [].concat.apply([], ser.map(function (x) { return x.v; })).filter(function (v) { return typeof v === 'number' && isFinite(v); }); if (ref !== undefined) all.push(ref);
+  if (all.length < 2) return '';
+  var lo = Math.min.apply(null, all), hi = Math.max.apply(null, all); if (hi === lo) { hi += 1; lo -= 1; }
+  var y = function (v) { return (H - 4 - (v - lo) / (hi - lo) * (H - 8)).toFixed(1); };
+  var o = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' + (ref !== undefined ? '<line class="ref" x1="0" x2="' + W + '" y1="' + y(ref) + '" y2="' + y(ref) + '"/>' : '');
+  ser.forEach(function (x, k) { var n0 = x.v.length, pts = x.v.map(function (v, i) { return typeof v === 'number' ? (n0 < 2 ? W / 2 : i / (n0 - 1) * W).toFixed(1) + ',' + y(v) : null; }).filter(Boolean); if (pts.length > 1) o += '<polyline class="l' + (k + 1) + '" points="' + pts.join(' ') + '"/>'; if (pts.length) { var lp = pts[pts.length - 1].split(','); o += '<circle class="dot" cx="' + lp[0] + '" cy="' + lp[1] + '" r="2.5"/>'; } });
+  return o + '</svg>';
+}
+function sparkBars(v, cls) {
+  var W = 200, H = 40, xs = v.filter(function (x) { return typeof x === 'number' && isFinite(x); }); if (!xs.length) return '';
+  var hi = Math.max.apply(null, xs.map(Math.abs).concat([1e-9])), neg = xs.some(function (x) { return x < 0; }), base = neg ? H / 2 : H - 2, sc = neg ? H / 2 - 3 : H - 5, bw = W / v.length;
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' + v.map(function (x, i) { if (typeof x !== 'number') return ''; var h = Math.max(1.5, Math.abs(x) / hi * sc); return '<rect class="b ' + (cls ? cls(x, i) : '') + '" x="' + (i * bw + bw * 0.15).toFixed(1) + '" y="' + (x < 0 ? base : base - h).toFixed(1) + '" width="' + (bw * 0.7).toFixed(1) + '" height="' + h.toFixed(1) + '"/>'; }).join('') + (neg ? '<line class="ref" x1="0" x2="' + W + '" y1="' + base + '" y2="' + base + '"/>' : '') + '</svg>';
+}
+function sparkHBars(v) {
+  var W = 200, H = 40, hi = Math.max.apply(null, v.concat([1e-9])), rh = H / Math.max(v.length, 1);
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' + v.map(function (x, i) { return '<rect class="hb" x="0" y="' + (i * rh + 1).toFixed(1) + '" width="' + Math.max(2, x / hi * W).toFixed(1) + '" height="' + Math.max(2, rh - 2).toFixed(1) + '"/>'; }).join('') + '</svg>';
+}
+function cardSpark(c) {
+  var m = CH.model, ch = c.getAttribute('data-chart'), li = c.getAttribute('data-list');
+  if (ch && m && m.closingMonths) {
+    var mt = monthTotals(m, m.closingMonths);
+    if (ch === 'oi') return sparkLine([{ v: mt.map(function (t) { return t.oi; }) }, { v: mt.map(function (t) { return t.hq; }) }]);
+    if (ch === 'acc') return sparkLine([{ v: mt.map(function (t) { return t.acc; }) }], LAMPU.forecast.akurasiHq.kuning);
+    if (ch === 'trend') return sparkBars(mt.map(function (t) { return t.bias; }), function (x) { return Math.abs(x) >= LAMPU.forecast.trenSelisih ? (x > 0 ? 'pos' : 'neg') : ''; });
+    if (ch === 'nohq') return sparkBars(mt.map(function (t) { return t.noHq; }));
+    if (ch === 'm1') { var ft = monthTotals(m, m.future); return sparkBars(mt.slice(-3).map(function (t) { return t.oi; }).concat(ft.map(function (t) { return t.hasF ? t.fhq : null; })), function (x, i) { return i >= Math.min(3, mt.length) ? 'fut' : ''; }); }
+    if (ch === 'ml' && m.bt && m.bt.length) return sparkLine([{ v: m.bt.map(function (t) { return t.oi ? Math.max(0, 1 - t.mlAbs / t.oi) * 100 : null; }) }, { v: m.bt.map(function (t) { return t.oi ? Math.max(0, 1 - t.hqAbs / t.oi) * 100 : null; }) }]);
+  }
+  var L = li && CH.lists && CH.lists[li];
+  if (L && L.rows && L.rows.length && L.head) {
+    var j = -1; L.head.forEach(function (h, k) { if (j < 0 && h[1]) j = k; }); if (j < 0) return '';
+    var v = L.rows.map(function (r) { var t = String(r[j] || '').replace(/<[^>]+>/g, ''); var p = parseNumber(t.replace(/[^0-9.,\-]/g, ''))[0]; return p === null ? 0 : Math.abs(p); }).sort(function (a, b) { return b - a; }).slice(0, 5);
+    return v.some(function (x) { return x > 0; }) ? sparkHBars(v) : '';
+  }
+  return '';
+}
+function d10Sparks() {
+  ['fcCards', 'bfCards', 'ppCards'].forEach(function (id) { var box = $(id); if (!box) return; box.querySelectorAll('.card').forEach(function (c) { if (c.querySelector('.cspk')) return; var g = ''; try { g = cardSpark(c); } catch (e) { g = ''; } if (!g) return; var sp = document.createElement('span'); sp.className = 'cspk'; sp.innerHTML = g; var nn = c.querySelector('.n'); if (nn) c.insertBefore(sp, nn); else c.appendChild(sp); }); });
 }
 // ---------- Ringkasan ----------
 function d10Brief(A) {
@@ -6450,6 +6518,7 @@ $('d10main').addEventListener('scroll', function () { $('d10fab').hidden = $('d1
 $('ppToMon').textContent = 'Kirim ke Perencanaan Produksi ↗';
 $('schNote').insertAdjacentHTML('beforebegin', '<p class="schhint" id="schHint"></p>');
 var D10ON = true;
+var d10Render0 = d10Render; d10Render = function () { d10Render0(); d10Sparks(); }; // every page render also draws the card graphics
 window.addEventListener('resize', function () { if (window.innerWidth <= 1100 && D10.open && !D10._r) { D10._r = true; } });
 
 // open empty on Ringkasan (demo data only via its button), or on the page used last

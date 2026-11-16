@@ -248,7 +248,7 @@ details.more { margin-top: 10px; } details.more summary { cursor: pointer; font-
 .aibar .speech { flex: 1; min-height: 0; padding: 6px 12px; font-size: 13.5px; border-radius: 10px; }
 .aibar .speech::before { left: -7px; top: 50%; margin-top: -6px; border-top: 0; border-bottom: 1px solid var(--line); }
 .aibar .aib { white-space: nowrap; }
-.aipanel { position: fixed; z-index: 45; left: 16px; width: var(--aiw, 390px); min-width: 300px; max-width: calc(100vw - 40px); max-height: calc(100vh - 140px); overflow: auto; resize: horizontal; background: var(--panel2); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 18px 40px var(--shadow); padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.aipanel { position: fixed; z-index: 45; left: 16px; width: var(--aiw, 390px); min-width: 300px; max-width: calc(100vw - 40px); height: auto; min-height: 220px; max-height: calc(100vh - 80px); overflow: auto; resize: both; background: var(--panel2); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 18px 40px var(--shadow); padding: 12px; display: flex; flex-direction: column; gap: 10px; }
 .aipanel > * { flex: none; }
 /* bars on the grid */
 .pg td.rb { background: var(--bc) !important; color: #fff !important; cursor: grab; position: relative; border-right-color: var(--bc); box-shadow: inset 0 4px 0 var(--paper), inset 0 -4px 0 var(--paper); font-weight: 600; }
@@ -791,7 +791,8 @@ function main(PLAN, STORE) {
   // Asisten panel: on the left by default; drag its bottom-right corner to change the width (remembered)
   function openPanel(on) { var p = $('aipanel'); if (on === undefined) on = p.hidden; p.hidden = !on; if (on) { var r = $('aibar').getBoundingClientRect(); p.style.top = (r.bottom + 6) + 'px'; } }
   (function () { var p = $('aipanel'), w = 0; try { w = +localStorage.getItem('ppic_prod_aiw') || 0; } catch (e) {} if (w) p.style.width = w + 'px';
-    if (window.ResizeObserver) new ResizeObserver(function () { if (p.hidden) return; var x = Math.round(p.getBoundingClientRect().width); if (x > 0) try { localStorage.setItem('ppic_prod_aiw', x); } catch (e) {} }).observe(p); })();
+    if (window.ResizeObserver) new ResizeObserver(function () { if (p.hidden) return; var r = p.getBoundingClientRect(), x = Math.round(r.width); if (x > 0) try { localStorage.setItem('ppic_prod_aiw', x); if (p.style.height) localStorage.setItem('ppic_prod_aih', Math.round(r.height)); } catch (e) {} }).observe(p);
+    try { var hh = +localStorage.getItem('ppic_prod_aih') || 0; if (hh) p.style.height = hh + 'px'; } catch (e) {} })();
   function setSide(k) { openPanel(true); document.querySelectorAll('.stabs button').forEach(function (b) { b.classList.toggle('on', b.dataset.st === k); }); $('alertsBox').hidden = k !== 'alerts'; $('tanyaBox').hidden = k !== 'tanya'; }
   var JUST = 0;
   document.addEventListener('pointerdown', function (e) {
