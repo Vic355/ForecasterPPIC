@@ -99,7 +99,7 @@ The backtest is walk-forward: each closing month is predicted only from earlier 
   (< 0.5 / 0.5–1 / > 1), < 3 months = NPD. Disagreement with the HQ class is flagged.
 - **PP** (production need) = forecast + buffer final − stok bebas; stok bebas = stock on hand − outstanding DN − SC block.
 - Manual buffer edits need a reason and are kept.
-- **Multi-month projection (M+1..M+3)**: stok akhir M+1 = stok awal + PP − forecast becomes stok awal M+2; M+2 gets its own
+- **Multi-month projection (M+1..M+3)**: stok akhir M+1 = stok awal + PP − forecast becomes stok awal M+2 (negative allowed, carried as is); M+2 gets its own
   buffer (same strategy, that month's forecast; P50/P90 from Chronos / Regressor kuantil for that month, else the M+1 range
   scaled) and PP = max(0, forecast + buffer − stok awal); the same for M+3. Manual buffer edits apply to M+1 only.
 - **Raw materials**: need = PP × BOM per carton (karton pcs, plastik kg, jumbo roll kg), BOM typed per SKU in Material master

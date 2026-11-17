@@ -635,6 +635,20 @@ html[data-theme=dark] .v3-grn .v3-rib-k, html[data-theme=dark] .v3-red .v3-rib-k
 .cspk .l1 { fill: none; stroke: var(--s1, #2f6fd0); stroke-width: 2; } .cspk .l2 { fill: none; stroke: var(--s2, #e08a2e); stroke-width: 2; stroke-dasharray: 4 3; }
 .cspk .b { fill: var(--s1, #2f6fd0); opacity: .75; } .cspk .b.neg { fill: var(--lamp-merah); } .cspk .b.pos { fill: var(--lamp-kuning); } .cspk .b.fut { opacity: .35; }
 .cspk .hb { fill: var(--acc); opacity: .55; } .cspk .ref { stroke: var(--mut); stroke-width: 1; stroke-dasharray: 2 3; } .cspk .dot { fill: var(--s1, #2f6fd0); }
+/* compact page cards (planner: cards took too much room): one short row, graphic at the right of the value */
+#d10main .cards.fcards { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin: 8px 0 10px; }
+#d10main .cards .card { min-height: 0; padding: 7px 10px 6px; gap: 1px; border-left-width: 4px; box-shadow: 0 1px 4px rgba(0,0,0,.06); display: grid; grid-template-columns: minmax(0, 1fr) 76px; align-content: start; column-gap: 8px; }
+#d10main .cards .card > * { grid-column: 1; }
+#d10main .cards .card .k { font-size: 12px; }
+#d10main .cards .card .v { font-size: 18px; }
+#d10main .cards .card .n { font-size: 11.5px; -webkit-line-clamp: 2; }
+#d10main .cards .card .more { font-size: 11.5px; margin-top: 1px; }
+#d10main .cards .card .h { grid-column: 1 / -1; display: flex; gap: 6px; align-items: center; min-width: 0; }
+#d10main .cards .card .h .k { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#d10main .cards .card .h .pill { font-size: 10.5px; padding: 0 6px; white-space: nowrap; }
+#d10main .cards .card .n { -webkit-line-clamp: 1; }
+#d10main .cards .card .more { display: none; }
+#d10main .cards .card .cspk { grid-column: 2; grid-row: 2 / span 2; align-self: center; margin: 0; height: 32px; } #d10main .cards .card .cspk svg { height: 32px; }
 #d10main #cards { display: none !important; }
 #d10main .tabpage p.note { display: none; }
 button.v10-q { padding: 0 !important; min-height: 0 !important; width: 17px; height: 17px; flex: 0 0 17px; border-radius: 50% !important; background: none; font-family: inherit; line-height: 1; cursor: pointer; }
@@ -2424,7 +2438,7 @@ function bufferModel(m, over, prop) {
           }
           var end = beg + ppi - Fi;
           hz.push({ mo: mo2, beg: beg, F: Fi, buf: bi, pp: ppi, end: end, rm: rmNeed(s, ppi), t: s.nw ? ppi * s.nw / 1000 : null });
-          beg = Math.max(0, end);
+          beg = end; // negative is allowed: it is the basis for next month's buffer and PP
         });
       }
       var old = typeof s.buf0 === 'number' ? s.buf0 : null;
@@ -2531,16 +2545,24 @@ function renderBuffer(m) {
     listCard('bfAcc', 'Skor buffer · backtest ' + BT.months.length + ' bln', pct0(bbAcc(auto)), (auto ? 'Kurang dihitung ' + BUFBT.shortW + '×. Kuantil P90 (SKU baru otomatis): tertutup ' + fmt.format(Math.round(auto.cov / auto.n * 100)) + '% SKU-bulan, lebih ' + n(Math.round(auto.exc)) + ' karton, kurang ' + n(Math.round(auto.short)) + '. Standar untuk semua: skor ' + pct0(bbAcc(stdG)) + ', tertutup ' + fmt.format(Math.round(stdG.cov / stdG.n * 100)) + '%.' : 'Perlu minimal 3 closing untuk backtest strategi.') + (auto && BT.months.length < 3 ? ' Backtest baru ' + BT.months.length + ' bulan: belum bisa diandalkan.' : ''), btPill[0], auto && BT.months.length >= 3 && lampu(bbAcc(auto), LAMPU.buffer.skorBuffer, true) !== 'ok' ? lampu(bbAcc(auto), LAMPU.buffer.skorBuffer, true) : btPill[1], auto ? 'skor ' + lampuBatas(LAMPU.buffer.skorBuffer, true) : '') +
     listCard('bfCls', 'Kelas ABC-XYZ', ['A', 'B', 'C', 'NPD'].filter(function (c) { return cc[c]; }).map(function (c) { return c + ' ' + cc[c]; }).join(' · ') || '–', 'Dari volume dan kestabilan order in, dihitung ulang tiap closing.' + (mis.length ? ' ' + mis.length + ' SKU beda jauh dengan kelas HQ.' : ''), mis.length ? mis.length + ' beda HQ' : '', mis.length ? 'warn' : '') +
     listCard('bfNoP', 'SKU tanpa produksi ' + monthLabel(mo), n(noP.length) + ' SKU', noP.length ? 'Stok bebas ' + n(noP.reduce(function (a, s) { return a + s.bf.fs; }, 0)) + ' karton sudah menutup forecast + buffer.' : 'Semua SKU perlu produksi.', noP.length ? 'Stok berlebih' : '', noP.length ? lampu(noP.length, LAMPU.buffer.tanpaProduksi) : '', lampuBatas(LAMPU.buffer.tanpaProduksi, false, ' SKU'));
-  var RH = !!state.rmHide, C = bm.cmp, cN = C ? BASIS_NAME[cfg.cmp] : '', NC = (C ? 15 : 12) + (RH ? 0 : 4);
+  var RH = !!state.rmHide, C = bm.cmp, cN = C ? BASIS_NAME[cfg.cmp] : '', MOS = m.future.slice(0, 3), NC = (C ? 16 : 13) + 5 * Math.max(0, MOS.length - 1) + (RH ? 0 : 3 * MOS.length + 1);
+  // months M+1..M+3 in the main table: stok akhir = stok awal + PP − forecast becomes next month's stok awal (may be negative)
+  var cls0 = LAMPU.buffer.stokAkhirNegatif === 'kuning' ? 'warn' : 'bad';
+  var hzA = function (list) { return MOS.map(function (mo, i) { var a = { beg: 0, F: 0, buf: 0, pp: 0, end: 0, n: 0, neg: 0, rm: {}, rmN: 0 }; list.forEach(function (x) { var z = x.bf && x.bf.hz && x.bf.hz[i]; if (!z) return; a.n++; a.beg += z.beg; a.F += z.F; a.buf += z.buf; a.pp += z.pp; a.end += z.end; if (z.end < 0) a.neg++; if (z.rm) { rmAdd(a.rm, z.rm); a.rmN++; } }); return a.n ? a : null; }); };
+  var endC = function (z, cnt) { if (!z) return '<td class="num">–</td>'; var neg = z.end < 0; return '<td class="num' + (neg ? ' hzneg lamp-' + cls0 : '') + '" title="Stok akhir = stok awal + PP − forecast' + (cnt && z.neg ? ' · ' + z.neg + ' SKU negatif' : '') + (neg ? ' · negatif: forecast tidak tertutup, menjadi stok awal bulan berikutnya' : '') + '">' + n(Math.round(z.end)) + '</td>'; };
+  var futC = function (xs, cnt) { return MOS.slice(1).map(function (mo, j) { var z = xs && xs[j + 1]; if (!z) return '<td class="num sep">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td>';
+    return '<td class="num sep' + (z.beg < 0 ? ' hzneg lamp-' + cls0 : '') + '" title="Stok awal ' + monthLabel(mo) + ' = stok akhir ' + monthLabel(MOS[j]) + '">' + n(Math.round(z.beg)) + '</td><td class="num">' + n(Math.round(z.F)) + '</td><td class="num bsug">' + n(Math.round(z.buf)) + '</td><td class="num hzpp' + (z.pp === 0 ? ' zero' : '') + '" title="PP = forecast + buffer − stok awal (min 0)">' + n(Math.round(z.pp)) + '</td>' + endC(z, cnt); }).join(''); };
+  var rmC = function (xs, desc, title) { if (RH) return ''; return RM.map(function (r, ri) { return MOS.map(function (mo, i) { var z = xs && xs[i], ok = z && z.rm && (z.rmN === undefined || z.rmN > 0), v = ok ? z.rm[r[0]] : null; return '<td class="num rmc' + (i ? '' : ' sep') + (ok ? '' : ' dummy') + '"' + (title ? ' title="' + esc(title) + '"' : '') + '>' + (ok ? rmFmt(r[0], v) : '–') + '</td>'; }).join(''); }).join('') + '<td class="rmc rmd' + (desc ? '' : ' dummy') + '">' + (desc ? esc(desc) : '–') + '</td>'; };
   var rmAgg = function (list) { var a = {}, k = 0; list.forEach(function (x) { if (x.bf && x.bf.need) { rmAdd(a, x.bf.need); k++; } }); return k ? a : null; };
   var rmCells = function (need, desc, title) { if (RH) return ''; return RM.map(function (r, i) { return '<td class="num rmc' + (i ? '' : ' sep') + (need ? '' : ' dummy') + '"' + (title ? ' title="' + esc(title) + '"' : '') + '>' + (need ? rmFmt(r[0], need[r[0]]) : '–') + '</td>'; }).join('') + '<td class="rmc rmd' + (desc ? '' : ' dummy') + '">' + (desc ? esc(desc) : '–') + '</td>'; };
   var a2 = function (list) { var o = { F: 0, fin: 0, prod: 0 }; list.forEach(function (x) { var b2 = x.bf2; if (b2) { o.F += b2.F; o.fin += b2.fin; o.prod += b2.prod; } }); return o; };
   var cF = function (b2) { return C ? '<td class="num cmpc">' + (b2 ? n(Math.round(b2.F)) : '–') + '</td>' : ''; }, cB = function (b2) { return C ? '<td class="num cmpc">' + (b2 ? n(b2.fin) : '–') + '</td>' : ''; }, cP = function (b2, p1) { return C ? '<td class="num cmpc">' + (b2 ? n(b2.prod) + (b2.prod !== p1 ? '<span class="cmpd">' + signed(b2.prod - p1) + '</span>' : '') : '–') + '</td>' : ''; };
-  var h = '<thead><tr><th rowspan="2" class="l">Grup + SKU</th><th colspan="' + (C ? 5 : 4) + '" class="grp sep">DASAR · ' + monthLabel(mo) + '</th><th colspan="' + (C ? 6 : 5) + '" class="grp sep">BUFFER</th><th colspan="' + (C ? 3 : 2) + '" class="grp sep">HASIL · ' + monthLabel(mo) + '</th>' + (RH ? '' : '<th colspan="4" class="grp sep">BAHAN BAKU · ' + monthLabel(mo) + ' <span class="dummy">(BOM belum diisi)</span></th>') + '</tr><tr>' +
+  var h = '<thead><tr><th rowspan="2" class="l">Grup + SKU</th><th colspan="' + (C ? 5 : 4) + '" class="grp sep">DASAR · ' + monthLabel(mo) + '</th><th colspan="' + (C ? 6 : 5) + '" class="grp sep">BUFFER</th><th colspan="' + (C ? 4 : 3) + '" class="grp sep">HASIL · M+1 ' + monthLabel(mo) + '</th>' + MOS.slice(1).map(function (mo2, j) { return '<th colspan="5" class="grp sep">M+' + (j + 2) + ' · ' + monthLabel(mo2) + '</th>'; }).join('') + (RH ? '' : '<th colspan="' + (3 * MOS.length + 1) + '" class="grp sep">BAHAN BAKU · ' + MOS.map(monthLabel).join(', ') + (rmAgg(bm.rows) ? '' : ' <span class="dummy">(BOM belum diisi)</span>') + '</th>') + '</tr><tr>' +
     '<th class="num sep wrap2">Stok bebas akhir ' + monthLabel(L) + '</th><th class="num wrap2">' + esc(basisName) + '</th>' + (C ? '<th class="num wrap2 cmpc">' + esc(cN) + ' <span class="sub">(B)</span></th>' : '') + '<th class="num" title="Median rentang forecast">P50</th><th class="num" title="Batas atas 90%">P90</th>' +
     '<th class="num sep wrap2">Buffer saat ini (aturan lama)</th><th class="num">Buffer saran</th><th class="num">Buffer final</th>' + (C ? '<th class="num wrap2 cmpc">Buffer final (B)</th>' : '') + '<th class="num">Hari</th><th>Strategi</th>' +
-    '<th class="num sep wrap2">Rencana produksi</th>' + (C ? '<th class="num wrap2 cmpc">Rencana produksi (B)</th>' : '') + '<th>Status · klik untuk alasan</th>' +
-    (RH ? '' : '<th class="num wrap2 sep" title="Karton kemasan yang dibutuhkan = rencana produksi × pcs karton per karton produk">Karton (pcs)</th><th class="num wrap2" title="Rencana produksi × kg plastik per karton ÷ 1000">Plastik (ton)</th><th class="num wrap2" title="Rencana produksi × kg jumbo roll per karton ÷ 1000">Jumbo roll (ton)</th><th class="wrap2">Deskripsi BOM</th>') + '</tr></thead><tbody>';
+    '<th class="num sep wrap2">Rencana produksi</th>' + (C ? '<th class="num wrap2 cmpc">Rencana produksi (B)</th>' : '') + '<th class="num wrap2" title="Stok bebas + PP − forecast; menjadi stok awal bulan berikutnya">Stok akhir</th><th>Status · klik untuk alasan</th>' +
+    MOS.slice(1).map(function () { return '<th class="num sep wrap2">Stok awal</th><th class="num">Forecast</th><th class="num">Buffer</th><th class="num">PP</th><th class="num wrap2">Stok akhir</th>'; }).join('') +
+    (RH ? '' : RM.map(function (r) { return MOS.map(function (mo2, i) { return '<th class="num wrap2' + (i ? '' : ' sep') + '" title="PP ' + monthLabel(mo2) + ' × BOM ' + r[1].toLowerCase() + ' per karton">' + r[1] + ' ' + monthLabel(mo2) + ' <span class="sub">(' + r[2] + ')</span></th>'; }).join(''); }).join('') + '<th class="wrap2">Deskripsi BOM</th>') + '</tr></thead><tbody>';
   var stratSel = function (key, cur, auto, fam) {
     return '<select class="bfst" data-strat="' + esc(key) + '" aria-label="Strategi">' + (fam ? '<option value="">Otomatis per SKU</option>' : '<option value="">Otomatis (' + STRATS[auto][0] + ')</option>') +
       Object.keys(STRATS).map(function (k) { return '<option value="' + k + '"' + (cur === k ? ' selected' : '') + '>' + STRATS[k][0] + '</option>'; }).join('') + '</select>';
@@ -2555,7 +2577,7 @@ function renderBuffer(m) {
     var a = bfAgg(f.skus), nRv = f.skus.filter(function (x) { return RV[x.key]; }).length, open = bq ? true : state.bfOpen[f.key] === undefined ? nRv > 0 : !!state.bfOpen[f.key], fst = state.bufStrat['fam:' + f.key] || state.bufStrat['fam:' + f.base] || '';
     h += '<tr class="fam"><td><div class="fl"><button type="button" class="exp" data-bfam="' + esc(f.key) + '" aria-expanded="' + open + '">' + (open ? '▼' : '▶') + '</button><div>' + esc(f.name) + '<span class="code">' + f.skus.length + ' SKU' + (nRv ? ' · <b class="rvf">⚑ ' + nRv + ' ditinjau</b>' : '') + ' · sebaran error ' + fmt.format(Math.round(f.buf.spread.v * 100)) + '%' + (f.buf.spread.dflt ? ' (bawaan)' : ' (' + f.buf.spread.n + ' bln)') + '</span></div></div></td>' +
       '<td class="num sep">' + n(a.fs) + '</td><td class="num">' + n(Math.round(a.F)) + '</td>' + (C ? cF(a2(f.skus)) : '') + qSum(f.skus) + '<td class="num sep">' + n(a.old) + '</td><td class="num bsug">' + n(a.sug) + '</td><td class="num">' + n(a.fin) + '</td>' + (C ? cB(a2(f.skus)) : '') + '<td class="num">' + (a.days === null ? '–' : fmt.format(Math.round(a.days * 10) / 10)) + '</td><td>' + stratSel('fam:' + f.key, fst, null, true) + '</td>' +
-      '<td class="num sep' + (a.prod === 0 ? ' zero' : '') + '">' + n(a.prod) + '</td>' + (C ? cP(a2(f.skus), a.prod) : '') + '<td></td>' + rmCells(rmAgg(f.skus), '') + '</tr>';
+      '<td class="num sep' + (a.prod === 0 ? ' zero' : '') + '">' + n(a.prod) + '</td>' + (C ? cP(a2(f.skus), a.prod) : '') + (function (xs) { return endC(xs[0], true) + '<td></td>' + futC(xs, true) + rmC(xs, ''); })(hzA(f.skus)) + '</tr>';
     if (open) {
       fsk.slice(0, bq ? Infinity : lim).forEach(function (s) {
         var b = s.bf;
@@ -2564,13 +2586,13 @@ function renderBuffer(m) {
           '<td class="num bfin' + (b.ed ? ' edited' : '') + '" tabindex="0" data-bfin="' + esc(s.key) + '" title="' + (b.ed ? 'Manual: ' + esc(b.ed.reason || '') + ' (saran ' + n(b.sug) + ')' : 'Klik untuk mengubah; alasan wajib') + '">' + n(b.fin) + (b.ed ? ' <span class="mtag">manual</span>' : '') + '</td>' + cB(s.bf2) +
           '<td class="num">' + (b.days === null ? '–' : fmt.format(Math.round(b.days * 10) / 10)) + '</td><td>' + stratSel(s.key, state.bufStrat[s.key] || '', b.auto[0], false) + (state.bufStrat[s.key] ? '' : '<span class="code" style="display:block;max-width:220px;white-space:normal">' + esc(b.auto[1]) + '</span>') + (bfWinTxt(BT, s.key) ? '<button type="button" class="bwin" data-bwin="' + esc(s.key) + '" title="Tanya asisten kenapa">🏆 ' + esc(bfWinTxt(BT, s.key)) + '</button>' : '') + '</td>' +
           '<td class="num sep' + (b.prod === 0 ? ' zero' : '') + '">' + n(b.prod) + '</td>' + cP(s.bf2, b.prod) +
-          '<td><button type="button" class="bst b-' + b.status[1] + '" data-bwhy="' + esc(s.key) + '">' + b.status[0] + '</button></td>' + rmCells(b.need, (bomOf(s) || {}).desc || '', b.need ? '' : 'BOM SKU ini belum diisi. Isi di Material master.') + '</tr>';
+          endC(b.hz && b.hz[0]) + '<td><button type="button" class="bst b-' + b.status[1] + '" data-bwhy="' + esc(s.key) + '">' + b.status[0] + '</button></td>' + futC(b.hz) + rmC(b.hz, (bomOf(s) || {}).desc || '', b.need ? '' : 'BOM SKU ini belum diisi. Isi di Material master.') + '</tr>';
       });
       if (!bq && f.skus.length > lim) h += '<tr class="more"><td colspan="' + NC + '">+' + (f.skus.length - lim) + ' SKU lainnya sudah termasuk di baris famili.</td></tr>';
     }
   });
   if (bq && !bHit) h += '<tr class="more"><td colspan="' + NC + '">Tidak ada SKU yang cocok dengan "' + esc(state.bfQ) + '".</td></tr>';
-  h += '<tr class="tot"><td>Total Serang<span class="code">' + bm.rows.length + ' SKU aktif' + (bq ? ' · ' + bHit + ' cocok dengan pencarian' : '') + '</span></td><td class="num sep">' + n(tot.fs) + '</td><td class="num">' + n(Math.round(tot.F)) + '</td>' + (C ? cF(a2(bm.rows)) : '') + qSum(bm.rows) + '<td class="num sep">' + n(tot.old) + '</td><td class="num bsug">' + n(tot.sug) + '</td><td class="num">' + n(tot.fin) + '</td>' + (C ? cB(a2(bm.rows)) : '') + '<td class="num">' + (tot.days === null ? '–' : fmt.format(Math.round(tot.days * 10) / 10)) + '</td><td></td><td class="num sep">' + n(tot.prod) + '</td>' + (C ? cP(a2(bm.rows), tot.prod) : '') + '<td></td>' + rmCells(rmAgg(bm.rows), '') + '</tr>';
+  h += '<tr class="tot"><td>Total Serang<span class="code">' + bm.rows.length + ' SKU aktif' + (bq ? ' · ' + bHit + ' cocok dengan pencarian' : '') + '</span></td><td class="num sep">' + n(tot.fs) + '</td><td class="num">' + n(Math.round(tot.F)) + '</td>' + (C ? cF(a2(bm.rows)) : '') + qSum(bm.rows) + '<td class="num sep">' + n(tot.old) + '</td><td class="num bsug">' + n(tot.sug) + '</td><td class="num">' + n(tot.fin) + '</td>' + (C ? cB(a2(bm.rows)) : '') + '<td class="num">' + (tot.days === null ? '–' : fmt.format(Math.round(tot.days * 10) / 10)) + '</td><td></td><td class="num sep">' + n(tot.prod) + '</td>' + (C ? cP(a2(bm.rows), tot.prod) : '') + (function (xs) { return endC(xs[0], true) + '<td></td>' + futC(xs, true) + rmC(xs, ''); })(hzA(bm.rows)) + '</tr>';
   $('bfTable').innerHTML = h + '</tbody>';
   renderBfHz(m, bm);
   CH.bm = bm;
@@ -2596,9 +2618,9 @@ function renderBfHz(m, bm) {
       return '<td class="num sep" title="Stok awal ' + monthLabel(mo) + (i ? ' = stok akhir ' + monthLabel(mos[i - 1]) : ' = stok bebas akhir ' + monthLabel(m.latest)) + '">' + n(Math.round(x.beg)) + '</td>' + num(x.F) + num(x.buf, 'bsug') + num(x.pp, 'hzpp' + (x.pp === 0 ? ' zero' : '')); }).join('') +
       (function () { var x = xs[mos.length - 1] || xs[xs.length - 1]; if (!x || (isAgg && !x.n)) return '<td class="num sep">–</td>'; var neg = isAgg ? x.neg : x.end < 0; return '<td class="num sep' + (neg ? ' hzneg lamp-' + cls0 : '') + '"' + (neg ? ' title="Stok akhir di bawah nol: forecast tidak tertutup"' : '') + '>' + n(Math.round(x.end)) + '</td>'; })();
   };
-  var h = '<div class="ph"><h2>Proyeksi buffer per bulan · ' + mos.map(monthLabel).join(', ') + '</h2><div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" data-hzall="1">Buka semua famili</button><button type="button" data-hzall="0">Tutup semua</button><button type="button" class="pri" data-mrp="1" title="Kirim PP M+1–M+3 dan BOM per SKU ke halaman MRP bahan baku (/mrp/): kebutuhan, stok vs buffer, rencana pesan">Buka MRP bahan baku ↗</button></div></div>' +
+  var h = '<div class="ph"><h2>Ringkasan proyeksi per bulan · ' + mos.map(monthLabel).join(', ') + '</h2><div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" data-hzall="1">Buka semua famili</button><button type="button" data-hzall="0">Tutup semua</button><button type="button" class="pri" data-mrp="1" title="Kirim PP M+1–M+3 dan BOM per SKU ke halaman MRP bahan baku (/mrp/): kebutuhan, stok vs buffer, rencana pesan">Buka MRP bahan baku ↗</button></div></div>' +
     '<p class="hzx"><b>Cara hitung:</b> stok akhir ' + monthLabel(mos[0]) + ' = stok awal + rencana produksi (PP) − forecast, lalu menjadi <b>stok awal ' + (mos[1] ? monthLabel(mos[1]) : 'bulan berikutnya') + '</b>. Bulan itu dihitung buffer-nya sendiri (strategi yang sama, forecast bulan itu) dan PP = forecast + buffer − stok awal. ' +
-    'Buffer manual hanya berlaku untuk ' + monthLabel(mos[0]) + '. Dipakai untuk memperkirakan pesanan bahan baku.</p>';
+    'Stok akhir boleh negatif (forecast tidak tertutup) dan tetap dibawa ke bulan berikutnya. Buffer manual hanya berlaku untuk ' + monthLabel(mos[0]) + '. Dipakai untuk memperkirakan pesanan bahan baku.</p>';
   // bahan baku per bulan (summary first: this is what the order is based on)
   var all = agg(bm.rows), nP = mos.map(function (mo, i) { return bm.rows.filter(function (s) { return s.bf.hz[i] && s.bf.hz[i].pp > 0; }).length; });
   h += '<table class="fct hzs"><thead><tr><th class="l">Total Serang</th>' + mos.map(function (mo, i) { return '<th class="num">' + monthLabel(mo) + ' <span class="sub">M+' + (i + 1) + '</span></th>'; }).join('') + '</tr></thead><tbody>' +
@@ -2609,16 +2631,7 @@ function renderBfHz(m, bm) {
       '<tr class="rmr"><td>SKU diproduksi tanpa BOM</td>' + all.map(function (a, i) { var k = bm.rows.filter(function (s) { var x = s.bf.hz[i]; return x && x.pp > 0 && !x.rm; }).length; return '<td class="num' + (k ? ' dummy' : '') + '">' + n(k) + ' dari ' + n(nP[i]) + '</td>'; }).join('') + '</tr>') +
     '</tbody></table>';
   if (!RH && !all.some(function (a) { return a.rmN; })) h += '<p class="sub" style="margin:4px 2px 10px">Bahan baku masih kosong: isi BOM (karton pcs, plastik kg, jumbo roll kg per karton) di <a href="#" data-goto="Master">Material master</a>. Kolom ini bisa disembunyikan dengan tombol <b>Sembunyikan bahan baku</b> di atas.</p>';
-  // per family + SKU
-  h += '<div class="scroll" style="max-height:560px"><table class="fct hzt"><thead><tr><th rowspan="2" class="l">Grup + SKU</th>' + mos.map(function (mo, i) { return '<th colspan="4" class="grp sep">M+' + (i + 1) + ' · ' + monthLabel(mo) + '</th>'; }).join('') + '<th rowspan="2" class="num sep wrap2">Stok akhir ' + monthLabel(mos[mos.length - 1]) + '</th></tr><tr>' +
-    mos.map(function () { return '<th class="num sep wrap2">Stok awal</th><th class="num">Forecast</th><th class="num">Buffer</th><th class="num">PP</th>'; }).join('') + '</tr></thead><tbody>';
-  m.fams.forEach(function (f) {
-    var sk = f.skus.filter(function (x) { return x.bf && x.bf.hz && x.bf.hz.length; }); if (!sk.length) return;
-    var o = !!open[f.key], a = agg(sk);
-    h += '<tr class="fam"><td><div class="fl"><button type="button" class="exp" data-hzf="' + esc(f.key) + '" aria-expanded="' + o + '">' + (o ? '▼' : '▶') + '</button><div>' + esc(f.name) + '<span class="code">' + sk.length + ' SKU</span></div></div></td>' + cellsOf(a, true) + '</tr>';
-    if (o) sk.forEach(function (s) { h += '<tr class="sku"><td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + esc(s.nomat || s.art || '') + ' · ' + esc(STRATS[s.bf.st][0]) + (s.bf.hz.length < mos.length ? ' · forecast ' + monthLabel(mos[s.bf.hz.length]) + ' belum ada' : '') + '</span></td>' + cellsOf(s.bf.hz, false) + '</tr>'; });
-  });
-  h += '<tr class="tot"><td>Total Serang<span class="code">' + bm.rows.length + ' SKU aktif</span></td>' + cellsOf(all, true) + '</tr></tbody></table></div>';
+  h += '<p class="sub" style="margin:4px 2px 10px">Rincian per famili dan SKU untuk ' + mos.map(monthLabel).join(', ') + ' ada di tabel Saran buffer di atas (kolom M+2, M+3 dan bahan baku di ujung kanan).</p>';
   el.innerHTML = h;
 }
 // "Arti strategi": what each strategy means in plain words, with its backtest numbers next to it
