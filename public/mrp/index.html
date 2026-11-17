@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="sepia">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MRP Bahan Baku · PPIC</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,600&family=Source+Sans+3:wght@400;600;700&family=Source+Code+Pro:wght@400;500&display=swap">
+<style>
+:root { --font: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif; --mono: "Source Code Pro", ui-monospace, Menlo, Consolas, monospace; --serif: Literata, Georgia, serif; --W: 34px; --RH: 34px; --LW: 150px; }
+html[data-theme=sepia]{--bg:#efe9dc;--paper:#fcf8ef;--panel2:#f5efe2;--ink:#2b2a26;--mut:#6a665c;--line:#dcd3c0;--line2:#e9e2d2;--acc:#3f6b56;--acc2:#e3ece3;--bad:#b23a2a;--badbg:#f7e0d8;--warn:#865a00;--warnbg:#f8ecd0;--mid:#c48e1c;--ok:#2e7a4b;--okbg:#e0efe2;--blu:#2d5f9a;--blubg:#e4ebf3;--th:#f2ecdf;--grp:#f6f1e6;--hover:#f3eddf;--offb:#e6dfcf;--input:#fffdf7;--shadow:rgba(80,60,20,.12);--hot:#c8452f}
+html[data-theme=light]{--bg:#eef0f2;--paper:#ffffff;--panel2:#f5f6f7;--ink:#1d222a;--mut:#5c6470;--line:#d5d9de;--line2:#e7e9ec;--acc:#1f6b5c;--acc2:#e1f0ec;--bad:#b3261e;--badbg:#fbe5e2;--warn:#8a5a00;--warnbg:#fdf0d6;--mid:#c88a12;--ok:#1e7a44;--okbg:#e1f3e8;--blu:#1f5fbf;--blubg:#e6eefb;--th:#f1f3f5;--grp:#f6f7f8;--hover:#f3f5f7;--offb:#e4e7ea;--input:#fff;--shadow:rgba(20,30,40,.10);--hot:#c8452f}
+html[data-theme=dark]{--bg:#1b2026;--paper:#232a32;--panel2:#29303a;--ink:#e4dfd3;--mut:#a3aab4;--line:#38404b;--line2:#2d343e;--acc:#e3a55e;--acc2:#3d3223;--bad:#ff8272;--badbg:#3d201c;--warn:#f0b75a;--warnbg:#382c17;--mid:#e0a63a;--ok:#66d293;--okbg:#17322a;--blu:#86b4ff;--blubg:#1a2740;--th:#272e37;--grp:#262c34;--hover:#28303a;--offb:#161a1f;--input:#151a1f;--shadow:rgba(0,0,0,.35);--hot:#ff8a6a;color-scheme:dark}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 14px; line-height: 1.4; }
+button, select, input, textarea { font: inherit; color: inherit; }
+button { padding: 6px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); cursor: pointer; font-weight: 600; min-height: 32px; }
+button:hover { background: var(--hover); }
+button.pri { background: var(--acc); border-color: var(--acc); color: #fff; }
+html[data-theme=dark] button.pri { color: #1b1206; }
+button.ghost { border-color: transparent; background: transparent; }
+button.sm { min-height: 27px; padding: 2px 9px; font-size: 13px; }
+button.link { border: 0; background: none; padding: 0; min-height: 0; color: var(--blu); text-decoration: underline; font-weight: 600; }
+button:disabled { opacity: .5; cursor: default; }
+select, input[type=text], input[type=number], input[type=search], input[type=date], textarea { padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--input); min-height: 30px; }
+.mono { font-family: var(--mono); font-size: 12.5px; }
+.mut { color: var(--mut); }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0; }
+.top { display: flex; align-items: center; gap: 14px; padding: 10px 18px; background: var(--paper); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 40; }
+.brand { display: flex; align-items: baseline; gap: 10px; white-space: nowrap; }
+.brand h1 { font-size: 21px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 999px; font-size: 12.5px; font-weight: 700; background: var(--th); color: var(--mut); white-space: nowrap; }
+.chip.ok { background: var(--okbg); color: var(--ok); } .chip.warn { background: var(--warnbg); color: var(--warn); } .chip.bad { background: var(--badbg); color: var(--bad); } .chip.blu { background: var(--blubg); color: var(--blu); } .chip.acc { background: var(--acc2); color: var(--acc); }
+.ask { flex: 1; max-width: 520px; margin: 0 auto; display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; background: var(--input); color: var(--mut); cursor: text; }
+.ask kbd { margin-left: auto; font-family: var(--mono); font-size: 11px; border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; }
+.switch { display: flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.switch a, .switch span { padding: 6px 12px; font-weight: 600; text-decoration: none; color: var(--mut); white-space: nowrap; }
+.switch span { background: var(--acc2); color: var(--acc); }
+.switch a:hover { background: var(--hover); }
+.stepper { display: flex; background: var(--paper); border-bottom: 1px solid var(--line); padding: 0 12px; overflow-x: auto; }
+.st { flex: 1; min-width: 170px; display: flex; gap: 10px; align-items: center; padding: 10px 12px; border: 0; border-radius: 10px 10px 0 0; background: none; text-align: left; font-weight: 400; min-height: 0; position: relative; }
+.st + .st::before { content: ""; position: absolute; left: -14px; top: 50%; width: 22px; border-top: 1px solid var(--line); }
+.st .n { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--line); font-weight: 700; color: var(--mut); background: var(--paper); font-family: var(--serif); }
+.st b { display: block; font-size: 15px; }
+.st small { color: var(--mut); font-size: 12px; }
+.st.on { background: var(--acc2); box-shadow: inset 0 -3px 0 var(--acc); }
+.st.on .n { background: var(--acc); border-color: var(--acc); color: #fff; }
+.st .bd { margin-left: auto; }
+.demobar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 7px 20px; background: var(--warnbg); color: var(--warn); font-size: 13.5px; border-bottom: 1px solid var(--line); }
+.demobar .sp { flex: 1; }
+.btnlink { padding: 4px 10px; border: 1px solid currentColor; border-radius: 8px; color: inherit; text-decoration: none; font-weight: 600; }
+.aibar { position: sticky; top: 55px; z-index: 35; display: flex; gap: 10px; align-items: center; padding: 8px 20px; background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); }
+.speech { flex: 1; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 6px 12px; font-size: 13.5px; }
+.eye { flex: none; width: 30px; height: 30px; border-radius: 50%; border: 2.5px solid var(--acc); display: grid; place-items: center; background: var(--paper); }
+.eye i { width: 10px; height: 10px; border-radius: 50%; background: var(--ink); display: block; }
+.aipanel { position: fixed; z-index: 45; left: 16px; width: 400px; min-width: 300px; max-width: calc(100vw - 40px); max-height: calc(100vh - 140px); overflow: auto; resize: horizontal; background: var(--panel2); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 18px 40px var(--shadow); padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.aipanel > * { flex: none; }
+.stabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.stabs button.on { background: var(--acc2); border-color: var(--acc); color: var(--acc); }
+.alert { border: 1px solid var(--line); border-left: 4px solid var(--c, var(--blu)); background: var(--paper); border-radius: 10px; padding: 9px 11px; }
+.alert.red { --c: var(--bad); background: var(--badbg); } .alert.amb { --c: var(--mid); background: var(--warnbg); } .alert.grn { --c: var(--ok); }
+.alert .k { font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--c); }
+.alert .t { font-weight: 700; margin: 2px 0; }
+.alert .d { font-size: 13px; color: var(--mut); }
+.alert .acts { display: flex; gap: 6px; margin-top: 7px; flex-wrap: wrap; }
+.chat { display: flex; flex-direction: column; gap: 8px; }
+.msg { padding: 8px 10px; border-radius: 10px; background: var(--paper); border: 1px solid var(--line); font-size: 13.5px; }
+.msg.me { background: var(--acc2); border-color: transparent; align-self: flex-end; max-width: 90%; }
+.msg ul { margin: 4px 0; padding-left: 18px; }
+.sugg { display: flex; flex-wrap: wrap; gap: 6px; }
+.sugg button { min-height: 26px; padding: 2px 9px; font-size: 12.5px; border-radius: 999px; }
+main { padding: 16px 20px 60px; min-width: 0; }
+.phead { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.phead h2 { font-size: 22px; }
+.phead .sp { flex: 1; }
+.card { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; }
+.card h3 { font-size: 16px; margin-bottom: 6px; }
+.card .hd { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
+.card .hd h3 { margin: 0; }
+.card .hd .sp { flex: 1; }
+.howto { font-size: 13.5px; color: var(--mut); margin: 0 0 10px; }
+.howto b { color: var(--ink); }
+/* summary cards with preview graphics */
+.kcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(205px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.kc { --c: var(--blu); --cb: var(--blubg); display: flex; flex-direction: column; gap: 2px; text-align: left; font-weight: 400; padding: 11px 13px 9px; border: 1px solid color-mix(in srgb, var(--c) 35%, var(--line)); border-top: 4px solid var(--c); border-radius: 12px; background: var(--paper); box-shadow: 0 2px 6px var(--shadow); min-height: 0; }
+.kc:hover { background: var(--paper); box-shadow: 0 6px 16px var(--shadow); transform: translateY(-1px); }
+.kc.on { outline: 2px solid var(--c); outline-offset: 1px; }
+.kc.red { --c: var(--bad); --cb: var(--badbg); } .kc.amb { --c: var(--mid); --cb: var(--warnbg); } .kc.grn { --c: var(--ok); --cb: var(--okbg); } .kc.blu { --c: var(--blu); --cb: var(--blubg); } .kc.gry { --c: var(--mut); --cb: var(--th); }
+.kc .lb { display: flex; justify-content: space-between; gap: 6px; align-items: center; font-size: 12.5px; font-weight: 700; color: var(--mut); }
+.kc .pl { font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 999px; background: var(--cb); color: var(--c); white-space: nowrap; }
+.kc .v { font-family: var(--serif); font-size: 26px; font-weight: 600; color: var(--c); line-height: 1.15; }
+.kc .s { font-size: 12.5px; color: var(--mut); }
+.kc svg { display: block; width: 100%; height: 38px; margin-top: 4px; }
+/* tables */
+.tbox { overflow: auto; border: 1px solid var(--line2); border-radius: 10px; max-height: 64vh; }
+table { border-collapse: separate; border-spacing: 0; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { padding: 5px 9px; border-bottom: 1px solid var(--line2); text-align: left; white-space: nowrap; background: var(--paper); vertical-align: middle; }
+th { background: var(--th); font-size: 12.5px; color: var(--mut); font-weight: 700; position: sticky; top: 0; z-index: 2; }
+th.num, td.num { text-align: right; }
+th.grp { text-align: center; border-left: 2px solid var(--line); }
+td.sep, th.sep { border-left: 2px solid var(--line); }
+tr.cat td { background: var(--grp); font-weight: 700; }
+tr.mat td { background: var(--panel2); font-weight: 600; }
+tr.mat td:first-child { cursor: pointer; }
+tr.sku td:first-child { padding-left: 34px; }
+tr.tot td { font-weight: 700; background: var(--th); }
+td.dim, span.dim { color: var(--mut); }
+.dummy { color: var(--mut); font-style: italic; }
+td.bad { background: var(--badbg); color: var(--bad); font-weight: 700; }
+td.low { background: var(--warnbg); color: var(--warn); font-weight: 700; }
+td.ord { background: var(--acc2); color: var(--acc); font-weight: 700; }
+td.rcv { color: var(--ok); font-weight: 700; }
+input.cell { width: 86px; text-align: right; padding: 3px 6px; min-height: 28px; font-variant-numeric: tabular-nums; }
+input.cell.w { width: 210px; text-align: left; }
+input.cell.m { width: 130px; text-align: left; }
+input.cell.set { border-color: var(--mid); background: var(--warnbg); font-weight: 700; }
+select.cell { min-height: 28px; padding: 2px 6px; }
+.exp { border: 0; background: none; padding: 0 6px 0 0; min-height: 0; font-weight: 700; color: var(--mut); }
+.toolbar { display: flex; gap: 8px 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+.toolbar label { display: flex; gap: 6px; align-items: center; color: var(--mut); }
+.toolbar .sp { flex: 1; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; border-right: 1px solid var(--line); background: var(--paper); min-height: 30px; }
+.seg button:last-child { border-right: 0; }
+.seg button.on { background: var(--acc); color: #fff; }
+html[data-theme=dark] .seg button.on { color: #1b1206; }
+/* material MRP cards */
+.mlist { display: flex; flex-direction: column; gap: 10px; }
+.mc { background: var(--paper); border: 1px solid var(--line); border-left: 5px solid var(--c, var(--ok)); border-radius: 12px; }
+.mc.red { --c: var(--bad); } .mc.amb { --c: var(--mid); } .mc.blu { --c: var(--blu); } .mc.grn { --c: var(--ok); }
+.mc .row { display: grid; grid-template-columns: minmax(220px, 1.3fr) minmax(220px, 1.2fr) minmax(300px, 2fr) auto; gap: 14px; align-items: center; padding: 10px 14px; cursor: pointer; }
+.mc .nm b { display: block; font-size: 15px; }
+.mc .nm small { color: var(--mut); }
+.mc .facts { display: grid; grid-template-columns: auto auto; gap: 1px 12px; font-size: 13px; }
+.mc .facts span { color: var(--mut); }
+.mc .facts b { text-align: right; font-variant-numeric: tabular-nums; }
+.mc svg.spark { width: 100%; height: 62px; display: block; }
+.mc .det { padding: 4px 14px 14px; border-top: 1px solid var(--line2); }
+.mc .why { font-size: 13.5px; margin: 8px 0; }
+.mc .why li { margin: 2px 0; }
+svg .bufl { stroke: var(--mid); stroke-dasharray: 4 3; stroke-width: 1.4; fill: none; }
+svg .zero { stroke: var(--bad); stroke-width: 1; opacity: .5; }
+svg .oh { stroke: var(--acc); stroke-width: 2; fill: none; }
+svg .ohA { fill: color-mix(in srgb, var(--acc) 14%, transparent); }
+svg .neg { fill: color-mix(in srgb, var(--bad) 30%, transparent); }
+svg .rel { fill: var(--bad); } svg .arr { fill: var(--ok); } svg .po { fill: var(--blu); }
+svg text { font-size: 10px; fill: var(--mut); font-family: var(--font); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--mut); margin: 6px 0; }
+.legend i { display: inline-block; width: 14px; height: 3px; vertical-align: middle; margin-right: 4px; background: var(--acc); }
+.legend i.b { background: none; border-top: 2px dashed var(--mid); height: 0; }
+.legend i.r { width: 8px; height: 8px; background: var(--bad); transform: rotate(45deg); }
+.legend i.g { width: 8px; height: 8px; background: var(--ok); border-radius: 50%; }
+.legend i.p { width: 8px; height: 8px; background: var(--blu); border-radius: 50%; }
+.pop { position: fixed; z-index: 80; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 14px 30px var(--shadow); padding: 12px 14px; width: 330px; top: 56px; right: 16px; }
+.pop label { display: flex; gap: 9px; align-items: flex-start; padding: 6px 0; }
+.menu { position: fixed; z-index: 85; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 14px 30px var(--shadow); padding: 6px; display: flex; flex-direction: column; min-width: 260px; }
+.menu button { text-align: left; border: 0; font-weight: 600; }
+.menu button small { display: block; font-weight: 400; color: var(--mut); }
+#toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 9px 16px; border-radius: 10px; z-index: 95; font-size: 13.5px; max-width: 90vw; }
+.nav { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.flash { animation: flash 1.6s ease-out; }
+@keyframes flash { 0%, 30% { box-shadow: 0 0 0 3px var(--mid); } 100% { box-shadow: none; } }
+/* compact cards: value and graphic side by side */
+.kcards { grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); gap: 8px; margin-bottom: 10px; }
+.kc { display: grid; grid-template-columns: minmax(0, 1fr) 70px; column-gap: 8px; padding: 6px 10px; border-top-width: 3px; box-shadow: 0 1px 3px var(--shadow); }
+.kc > * { grid-column: 1; }
+.kc .lb { font-size: 12px; grid-column: 1 / -1; }
+.kc .v { font-size: 18px; }
+.kc .s { font-size: 11.5px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.kc svg { grid-column: 2; grid-row: 2 / span 2; align-self: center; height: 30px; margin: 0; }
+@media (max-width: 1100px) { .mc .row { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 900px) { .top { flex-wrap: wrap; } .ask { display: none; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><h1>MRP Bahan Baku</h1><span class="mut" id="brandSub"></span></div>
+  <div class="ask" id="askBar" role="button" tabindex="0"><span class="eye"><i></i></span><span>Tanya asisten tentang bahan baku…</span><kbd>Ctrl K</kbd></div>
+  <div class="switch"><a href="/" title="Kembali ke Forecast Desk (Saran buffer, Rencana produksi)">Forecast Desk</a><a href="/produksi/">Produksi</a><span>MRP</span></div>
+  <button id="expBtn">⇩ Ekspor</button>
+  <button id="setBtn" title="Pengaturan">⚙</button>
+</header>
+<nav class="stepper" id="stepper"></nav>
+<div class="demobar" id="demoBar" hidden><b>Data contoh.</b> <span id="demoTxt"></span><span class="sp"></span><a href="/" class="btnlink">Buka Saran buffer di Forecast Desk</a></div>
+<div class="aibar" id="aibar">
+  <span class="eye" title="Asisten"><i></i></span>
+  <div class="speech" id="speech"></div>
+  <button id="aiAlerts">Alerts <span class="chip bad" id="aiN">0</span></button>
+  <button id="aiAsk">Tanya</button>
+</div>
+<div class="aipanel" id="aipanel" hidden>
+  <div style="display:flex;align-items:center;gap:8px"><b style="font-family:var(--serif);font-size:16px">Asisten</b><span class="mut" style="font-size:12.5px">MRP bahan baku</span><span style="flex:1"></span><button class="ghost sm" id="aiClose">✕</button></div>
+  <div class="stabs"><button class="on" data-st="alerts">Alerts <span class="chip bad" id="alertN">0</span></button><button data-st="tanya">Tanya</button></div>
+  <div id="alertsBox" style="display:flex;flex-direction:column;gap:8px"></div>
+  <div id="tanyaBox" class="chat" hidden>
+    <div class="sugg" id="sugg"></div>
+    <div id="chatLog" class="chat"></div>
+    <form id="chatForm" style="display:flex;gap:6px"><input type="text" id="chatIn" placeholder="mis. kenapa JR-V2? · buffer KRT-5P = 20000" style="flex:1"><button class="pri">Kirim</button></form>
+  </div>
+</div>
+<main id="main"></main>
+<div class="pop" id="setPop" hidden>
+  <b style="font-family:var(--serif)">Pengaturan</b>
+  <label><input type="checkbox" id="optDummy"><span>Pakai BOM contoh untuk SKU tanpa BOM<small style="display:block;color:var(--mut)">Karton 1 pcs, jumbo roll ≈ berat bersih × 1,04, plastik ≈ berat bersih × 3,5% per karton. Matikan bila BOM sudah lengkap di Material master.</small></span></label>
+  <label><input type="checkbox" id="optSched"><span>Kebutuhan bulan pertama ikut jadwal harian<small style="display:block;color:var(--mut)">Bila Perencanaan Produksi punya rencana bulan itu, kebutuhan per hari mengikuti target harian per SKU. Selain itu dibagi rata Senin–Sabtu.</small></span></label>
+  <label style="padding-left:24px">Tema <select id="optTheme"><option value="sepia">Sepia</option><option value="light">Terang</option><option value="dark">Gelap</option></select></label>
+  <div style="display:flex;gap:6px;justify-content:space-between"><button id="resetRm" class="sm">Kembalikan bahan baku contoh</button><button id="popClose">Tutup</button></div>
+</div>
+<div class="menu" id="menu" hidden></div>
+<input type="file" id="impFile" accept=".xlsx,.xls" hidden>
+<div id="toast" hidden></div>
+<script>
+// MRP Bahan Baku: raw material requirements from the Forecast Desk projection (PP M+1..M+3 × BOM per karton).
+// Rule for raw materials: the BUFFER is the reorder point. When stok + PO terbuka (+ rencana pesan) falls to the buffer,
+// an order is released; it arrives after the lead time. Buffer saran = kebutuhan rata-rata per hari × (lead time + hari cadangan).
+// Data in: localStorage 'ppic_mrp' (sent by Forecast Desk → Saran buffer → Proyeksi buffer per bulan → Buka MRP bahan baku).
+// Raw material master, open POs and settings: localStorage 'ppic_mrp_rm'. Daily schedule (optional): 'ppic_prod'.
+var LS_IN = 'ppic_mrp', LS_RM = 'ppic_mrp_rm';
+(function () {
+  var inp = null; try { inp = JSON.parse(localStorage.getItem(LS_IN) || 'null'); } catch (e) {}
+  var demo = /[?&]contoh\b/.test(location.search) || !(inp && inp.skus && inp.skus.length && inp.months && inp.months.length);
+  if (!demo) { main(inp, false, null); return; }
+  fetch('/produksi/contoh-rencana-2026-11.json').then(function (r) { return r.json(); }).then(function (p) { main(demoInput(p), true, p); })
+    .catch(function (e) { document.getElementById('main').innerHTML = '<div class="card">Gagal memuat data contoh: ' + e + '</div>'; });
+})();
+function rng(seed) { var a = seed >>> 0; return function () { a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function addMonth(ym, k) { var y = +ym.slice(0, 4), m = +ym.slice(5, 7) - 1 + k; y += Math.floor(m / 12); m = ((m % 12) + 12) % 12; return y + '-' + String(m + 1).padStart(2, '0'); }
+// demo: the sample production plan (Perencanaan Produksi) gives SKUs, PP M+1 and net weight; M+2 / M+3 are PP M+1 ± 15%
+function demoInput(p) {
+  var r = rng(7079), by = {};
+  (p.lines || []).forEach(function (l) { var k = String(l.material); var s = by[k] || (by[k] = { key: k, mat: k, nomat: k, name: l.desc, fam: l.category || '', nw: l.net || 0, pp: [0, 0, 0], bom: null }); s.pp[0] = l.pp ? Math.max(s.pp[0], l.pp) : s.pp[0] + (l.ct || 0); }); // pp is per SKU (repeated on each machine line)
+  var skus = Object.keys(by).map(function (k) { var s = by[k]; s.pp[0] = Math.round(s.pp[0]); s.pp[1] = Math.round(s.pp[0] * (0.85 + r() * 0.3)); s.pp[2] = Math.round(s.pp[0] * (0.85 + r() * 0.3)); return s; });
+  return { v: 1, sample: true, sentAt: null, source: 'Contoh: rencana produksi contoh ' + (p.label || p.period), months: [p.period, addMonth(p.period, 1), addMonth(p.period, 2)], skus: skus };
+}
+function main(IN, DEMO, DEMOPLAN) {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var nf0 = new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }), nf1 = new Intl.NumberFormat('id-ID', { maximumFractionDigits: 1 }), nf2 = new Intl.NumberFormat('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  var BLN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+  var CAT = { ct: ['Karton', 'pcs'], pl: ['Plastik', 'ton'], jr: ['Jumbo roll', 'ton'] }, CATS = ['ct', 'pl', 'jr'];
+  function mLab(ym) { return BLN[+ym.slice(5, 7) - 1] + ' ' + ym.slice(2, 4); }
+  function iso(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function pd(s) { return new Date(s + 'T00:00:00'); }
+  function dLab(s) { var d = pd(s); return d.getDate() + ' ' + BLN[d.getMonth()]; }
+  function dLong(s) { var d = pd(s); return d.getDate() + ' ' + BLN[d.getMonth()] + ' ' + d.getFullYear(); }
+  function addD(s, k) { var d = pd(s); d.setDate(d.getDate() + k); return iso(d); }
+  function dDiff(a, b) { return Math.round((pd(b) - pd(a)) / 864e5); }
+  function q(v, u) { if (v == null || isNaN(v)) return '–'; return u === 'ton' ? (Math.abs(v) < 100 ? nf2 : nf1).format(v) : nf0.format(Math.round(v)); }
+  function qu(v, u) { return q(v, u) + ' ' + u; }
+  function num(x) { if (x === '' || x == null) return null; var v = typeof x === 'number' ? x : parseFloat(String(x).replace(/\s/g, '').replace(/\.(?=\d{3}(\D|$))/g, '').replace(',', '.')); return isNaN(v) ? null : v; }
+  function toast(t) { var el = $('toast'); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(function () { el.hidden = true; }, 3200); }
+  function today() { return iso(new Date()); }
+
+  /* ---------------- raw material master (saved) ---------------- */
+  function demoRM() {
+    return {
+      v: 1,
+      mats: [
+        { code: 'KRT-3P', name: 'Karton 3 ply (facial, napkin)', cat: 'ct', kw: '3 ply', lt: 14, safe: 7, cover: 30, moq: 5000, lot: 500, buf: null, soh: null },
+        { code: 'KRT-5P', name: 'Karton 5 ply (toilet, towel)', cat: 'ct', kw: '5 ply', lt: 14, safe: 7, cover: 30, moq: 5000, lot: 500, buf: null, soh: null },
+        { code: 'PLS-PP30', name: 'Plastik PP 30 mic', cat: 'pl', kw: 'pp 30', lt: 21, safe: 7, cover: 30, moq: 1, lot: 0.5, buf: null, soh: null },
+        { code: 'PLS-PE40', name: 'Plastik PE 40 mic', cat: 'pl', kw: 'pe 40', lt: 21, safe: 7, cover: 30, moq: 1, lot: 0.5, buf: null, soh: null },
+        { code: 'JR-V13', name: 'Jumbo roll virgin 13 gsm (impor)', cat: 'jr', kw: 'virgin', lt: 45, safe: 10, cover: 30, moq: 20, lot: 20, buf: null, soh: null },
+        { code: 'JR-R17', name: 'Jumbo roll recycled 17 gsm', cat: 'jr', kw: 'recycled', lt: 30, safe: 10, cover: 30, moq: 10, lot: 5, buf: null, soh: null }
+      ],
+      po: [], opt: { dummy: true, sched: true, stockDate: null }, demoStock: true, done: {}
+    };
+  }
+  var R = null; try { R = JSON.parse(localStorage.getItem(LS_RM) || 'null'); } catch (e) {}
+  if (!R || !R.mats) R = demoRM();
+  R.opt = R.opt || { dummy: true, sched: true }; R.po = R.po || []; R.done = R.done || {};
+  function save() { try { localStorage.setItem(LS_RM, JSON.stringify(R)); } catch (e) { toast('Gagal menyimpan: penyimpanan browser penuh.'); } }
+  var UI = { step: 1, open: {}, flt: 'all', exp: {}, side: 'alerts' };
+  try { var u0 = JSON.parse(localStorage.getItem('ppic_mrp_ui') || '{}') || {}; if (u0.step) UI.step = u0.step; } catch (e) {}
+  function saveUI() { try { localStorage.setItem('ppic_mrp_ui', JSON.stringify({ step: UI.step })); } catch (e) {} }
+
+  /* ---------------- BOM per SKU ---------------- */
+  function hasNum(b, k) { return b && typeof b[k] === 'number' && b[k] > 0; }
+  function dummyBom(s) {
+    var nw = s.nw > 0 ? s.nw : 5, n = (s.name || '') + ' ' + (s.fam || ''), t;
+    if (/facial|napkin|serbet|pocket/i.test(n)) t = 'karton 3 ply, plastik PP 30 mic, jumbo roll virgin';
+    else if (/toilet|bathroom|roll|kitchen|towel|hand/i.test(n)) t = 'karton 5 ply, plastik PE 40 mic, jumbo roll recycled';
+    else t = 'karton 3 ply, plastik PE 40 mic, jumbo roll virgin';
+    return { ct: 1, pl: Math.round(nw * 0.035 * 1000) / 1000, jr: Math.round(nw * 1.04 * 100) / 100, desc: t, dummy: true };
+  }
+  function bomFor(s) {
+    var b = s.bom; if (b && (hasNum(b, 'ct') || hasNum(b, 'pl') || hasNum(b, 'jr'))) return b;
+    return R.opt.dummy ? dummyBom(s) : null;
+  }
+  // which raw material of a category a SKU uses: the first whose keyword (comma-separated) is in the BOM description, else the first of the category
+  function pickMat(cat, desc) {
+    var list = R.mats.filter(function (m) { return m.cat === cat; }); if (!list.length) return null;
+    var d = String(desc || '').toLowerCase();
+    for (var i = 0; i < list.length; i++) { var kws = String(list[i].kw || '').toLowerCase().split(',').map(function (x) { return x.trim(); }).filter(Boolean); if (kws.some(function (k) { return d.indexOf(k) >= 0; })) return list[i]; }
+    return list[0];
+  }
+  /* ---------------- daily schedule (optional) ---------------- */
+  function getSched(m0) {
+    var plan = null;
+    if (DEMO) plan = DEMOPLAN; else { try { var st = JSON.parse(localStorage.getItem('ppic_prod') || 'null'); plan = st && st.plan; } catch (e) {} }
+    if (!plan || plan.period !== m0 || !plan.lines || !plan.lines.length) return null;
+    var out = {};
+    plan.lines.forEach(function (l) { var k = String(l.material), o = out[k] || (out[k] = {}); Object.keys(l.plan || {}).forEach(function (d) { if (d.slice(0, 7) === m0 && l.plan[d] > 0) o[d] = (o[d] || 0) + l.plan[d]; }); });
+    return out;
+  }
+
+  /* ---------------- MRP calculation ---------------- */
+  var C = null;
+  function roundU(v, u) { return u === 'ton' ? Math.ceil(v * 100) / 100 : Math.ceil(v); }
+  function lotUp(v, m) { var u = CAT[m.cat][1], lot = m.lot > 0 ? m.lot : (u === 'ton' ? 0.01 : 1), x = Math.ceil(v / lot - 1e-9) * lot; x = Math.max(x, m.moq > 0 ? m.moq : 0, lot); return Math.round(x * 1000) / 1000; }
+  function calc() {
+    var M = IN.months.slice(0, 3), start = M[0] + '-01', e = pd(addMonth(M[M.length - 1], 1) + '-01'); e.setDate(0);
+    var end = iso(e), days = [], di = {};
+    for (var d = start; d <= end; d = addD(d, 1)) { di[d] = days.length; days.push(d); }
+    var t0 = R.opt.stockDate || today(); if (t0 < start) t0 = start; if (t0 > end) t0 = end;
+    var i0 = di[t0], n = days.length, sched = R.opt.sched ? getSched(M[0]) : null, schedN = 0;
+    var X = {}, noBom = [], dummyN = 0, noMat = { ct: 0, pl: 0, jr: 0 }, skuN = 0;
+    R.mats.forEach(function (m) { X[m.code] = { m: m, u: CAT[m.cat][1], g: new Array(n).fill(0), G: M.map(function () { return 0; }), peg: {} }; });
+    var mdays = M.map(function (mo) { return days.filter(function (x) { return x.slice(0, 7) === mo; }); });
+    var wdays = mdays.map(function (ds) { var w = ds.filter(function (x) { return pd(x).getDay() !== 0; }); return w.length ? w : ds; });
+    (IN.skus || []).forEach(function (s) {
+      var tot = (s.pp || []).reduce(function (a, b) { return a + (b || 0); }, 0); if (!(tot > 0)) return; skuN++;
+      var b = bomFor(s); if (!b) { noBom.push(s); return; } if (b.dummy) dummyN++;
+      var sk = sched && sched[String(s.mat || s.nomat || s.key)]; if (sk) schedN++;
+      CATS.forEach(function (c) {
+        if (!hasNum(b, c)) return; var mt = pickMat(c, b.desc); if (!mt) { noMat[c]++; return; }
+        var x = X[mt.code], per = c === 'ct' ? b.ct : b[c] / 1000, pg = x.peg[s.key] || (x.peg[s.key] = { s: s, per: per, pp: M.map(function () { return 0; }), q: M.map(function () { return 0; }), dummy: !!b.dummy, sched: !!sk });
+        M.forEach(function (mo, i) {
+          var pp = (s.pp || [])[i] || 0;
+          if (i === 0 && sk) { pp = 0; Object.keys(sk).forEach(function (dd) { if (di[dd] == null) return; x.g[di[dd]] += sk[dd] * per; pp += sk[dd]; }); }
+          else if (pp > 0) { var ds = wdays[i], v = pp / ds.length * per; ds.forEach(function (dd) { x.g[di[dd]] += v; }); }
+          x.G[i] += pp * per; pg.pp[i] += pp; pg.q[i] += pp * per;
+        });
+      });
+    });
+    var poBy = {}; R.po.forEach(function (p) { (poBy[p.code] = poBy[p.code] || []).push(p); });
+    Object.keys(X).forEach(function (k) { sim(X[k], poBy[k] || []); });
+    function sim(x, pos_) {
+      var m = x.m, u = x.u, tot = x.G.reduce(function (a, b) { return a + b; }, 0), avgD = tot / n;
+      x.avgD = avgD; x.bufSug = roundU(avgD * ((+m.lt || 0) + (+m.safe || 0)), u);
+      x.buf = m.buf != null && m.buf !== '' ? +m.buf : x.bufSug; x.bufDays = avgD > 0 ? x.buf / avgD : null;
+      x.max = x.buf + avgD * (+m.cover || 0);
+      x.noStock = m.soh == null || m.soh === ''; var soh = x.noStock ? 0 : +m.soh; x.soh = soh;
+      var recPO = new Array(n).fill(0), recPL = new Array(n).fill(0), poIn = 0; x.poLate = []; x.po = pos_;
+      pos_.forEach(function (p) { var qq = +p.qty || 0; poIn += qq; var at = !p.eta || p.eta < t0 ? i0 : di[p.eta]; if (p.eta && p.eta < t0) x.poLate.push(p); if (at != null) recPO[at] += qq; });
+      x.poIn = poIn; x.pos0 = soh + poIn;
+      var pos = x.pos0, oh = soh, orders = [], ohA = new Array(n).fill(null), firstNeg = null, firstLow = null, minOh = Infinity, maxOh = -Infinity;
+      var trig = function () { return pos < x.buf || (pos <= x.buf && avgD > 0); };
+      var order = function (i, first) {
+        var Q = lotUp(x.max - pos, m), rel = days[i], arr = addD(rel, +m.lt || 0), ai = di[arr];
+        if (ai != null && ai > i) recPL[ai] += Q; else if (ai === i) oh += Q;
+        orders.push({ code: m.code, rel: rel, arr: arr, qty: Q, pos: pos, i: i, first: !!first, inH: ai != null }); pos += Q;
+      };
+      if (trig()) order(i0, true);
+      for (var i = i0; i < n; i++) {
+        oh += recPO[i] + recPL[i] - x.g[i]; pos -= x.g[i]; ohA[i] = oh;
+        if (oh < -1e-9 && firstNeg == null) firstNeg = i; if (oh < x.buf - 1e-9 && firstLow == null) firstLow = i;
+        minOh = Math.min(minOh, oh); maxOh = Math.max(maxOh, oh);
+        if (i < n - 1 && trig()) order(i, false);
+      }
+      x.orders = orders; x.ohA = ohA; x.recPO = recPO; x.recPL = recPL; x.minOh = minOh; x.maxOh = maxOh;
+      x.firstNeg = firstNeg == null ? null : days[firstNeg]; x.firstLow = firstLow == null ? null : days[firstLow];
+      x.now = orders.filter(function (o) { return o.rel === t0; })[0] || null;
+      x.next = orders[0] || null; x.endOh = ohA[n - 1];
+      x.excess = Math.max(0, x.pos0 - x.max);
+      if (x.noStock) x.st = ['gry', 'Isi stok', 'Stok on hand belum diisi'];
+      else if (x.firstNeg) x.st = ['red', 'Stok habis ' + dLab(x.firstNeg), 'Stok habis ' + dLong(x.firstNeg) + ' sebelum pesanan tiba: percepat PO atau cari stok'];
+      else if (x.now) x.st = ['red', 'Pesan hari ini', 'Stok + PO sudah di buffer atau di bawahnya'];
+      else if (x.next && dDiff(t0, x.next.rel) <= 14) x.st = ['amb', 'Pesan ' + dLab(x.next.rel), 'Stok + PO turun ke buffer dalam ' + dDiff(t0, x.next.rel) + ' hari'];
+      else if (x.excess > 0 && avgD > 0 && !orders.length) x.st = ['blu', 'Di atas maksimum', 'Stok + PO melebihi buffer + ' + (m.cover || 0) + ' hari kebutuhan'];
+      else if (!(avgD > 0)) x.st = ['gry', 'Tidak dipakai', 'Tidak ada kebutuhan di horizon ini'];
+      else x.st = ['grn', x.next ? 'Pesan ' + dLab(x.next.rel) : 'Aman', x.next ? 'Pesanan berikut ' + dLong(x.next.rel) : 'Stok + PO menutup kebutuhan sampai ' + dLong(days[n - 1])];
+    }
+    // weekly buckets from the stock date
+    var weeks = []; for (var w = i0; w < n; w += 7) weeks.push({ a: w, b: Math.min(n - 1, w + 6) });
+    C = { M: M, days: days, di: di, t0: t0, i0: i0, n: n, start: start, end: end, X: X, list: R.mats.map(function (m) { return X[m.code]; }), noBom: noBom, dummyN: dummyN, noMat: noMat, skuN: skuN, sched: !!sched, schedN: schedN, weeks: weeks };
+    C.orders = []; C.list.forEach(function (x) { C.orders = C.orders.concat(x.orders); }); C.orders.sort(function (a, b) { return a.rel < b.rel ? -1 : a.rel > b.rel ? 1 : 0; });
+    return C;
+  }
+  /* ---------------- graphics ---------------- */
+  // projected stock line (from the stock date), buffer dashed, release ▼ red, arrival ● green, PO ● blue
+  function spark(x, W, H, big) {
+    var a = C.i0, b = C.n - 1, pad = big ? 34 : 2, top = big ? 10 : 4, bot = big ? 18 : 6;
+    var lo = Math.min(0, x.minOh === Infinity ? 0 : x.minOh), hi = Math.max(x.max, x.maxOh === -Infinity ? 0 : x.maxOh, x.buf, 1);
+    var X = function (i) { return pad + (i - a) / Math.max(1, b - a) * (W - pad - 4); }, Y = function (v) { return top + (hi - v) / (hi - lo || 1) * (H - top - bot); };
+    var pts = []; for (var i = a; i <= b; i++) if (x.ohA[i] != null) pts.push(X(i).toFixed(1) + ',' + Y(x.ohA[i]).toFixed(1));
+    var s = '<svg class="spark" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" role="img" aria-label="Proyeksi stok ' + esc(x.m.code) + '">';
+    if (pts.length) s += '<polygon class="ohA" points="' + X(a).toFixed(1) + ',' + Y(Math.max(lo, 0)).toFixed(1) + ' ' + pts.join(' ') + ' ' + X(b).toFixed(1) + ',' + Y(Math.max(lo, 0)).toFixed(1) + '"/>';
+    if (lo < 0) s += '<rect class="neg" x="' + pad + '" y="' + Y(0).toFixed(1) + '" width="' + (W - pad - 4) + '" height="' + (Y(lo) - Y(0)).toFixed(1) + '"/><line class="zero" x1="' + pad + '" x2="' + (W - 4) + '" y1="' + Y(0).toFixed(1) + '" y2="' + Y(0).toFixed(1) + '"/>';
+    s += '<line class="bufl" x1="' + pad + '" x2="' + (W - 4) + '" y1="' + Y(x.buf).toFixed(1) + '" y2="' + Y(x.buf).toFixed(1) + '"/>';
+    if (pts.length) s += '<polyline class="oh" points="' + pts.join(' ') + '"/>';
+    if (big) {
+      C.M.forEach(function (mo) { var i = C.di[mo + '-01']; if (i == null || i < a) i = a; s += '<line x1="' + X(i) + '" x2="' + X(i) + '" y1="' + top + '" y2="' + (H - bot) + '" stroke="var(--line)"/><text x="' + (X(i) + 3) + '" y="' + (H - 5) + '">' + mLab(mo) + '</text>'; });
+      s += '<text x="2" y="' + (Y(x.buf) + 3) + '">buffer</text><text x="2" y="' + (top + 4) + '">' + esc(q(hi, x.u)) + '</text>';
+    }
+    var r = big ? 4.5 : 3;
+    x.orders.forEach(function (o) { var xx = X(o.i); s += '<path class="rel" d="M' + (xx - r) + ',' + (H - bot - 2 * r) + ' L' + (xx + r) + ',' + (H - bot - 2 * r) + ' L' + xx + ',' + (H - bot) + 'Z"><title>Pesan ' + dLong(o.rel) + ': ' + qu(o.qty, x.u) + '</title></path>'; var ai = C.di[o.arr]; if (ai != null) s += '<circle class="arr" cx="' + X(ai) + '" cy="' + Y(x.ohA[ai] != null ? x.ohA[ai] : 0) + '" r="' + r + '"><title>Tiba ' + dLong(o.arr) + '</title></circle>'; });
+    x.po.forEach(function (p) { var ai = !p.eta || p.eta < C.t0 ? C.i0 : C.di[p.eta]; if (ai != null) s += '<circle class="po" cx="' + X(ai) + '" cy="' + Y(x.ohA[ai] != null ? x.ohA[ai] : 0) + '" r="' + r + '"><title>PO ' + esc(p.no || '') + ' tiba ' + (p.eta ? dLong(p.eta) : '–') + '</title></circle>'; });
+    return s + '</svg>';
+  }
+  function share(parts) { var t = parts.reduce(function (a, p) { return a + p[0]; }, 0) || 1, x = 0; return '<svg viewBox="0 0 200 38" preserveAspectRatio="none">' + parts.map(function (p) { var w = p[0] / t * 200, r = '<rect x="' + x + '" y="14" width="' + w + '" height="14" fill="' + p[1] + '"><title>' + p[2] + ': ' + p[0] + '</title></rect>'; x += w; return r; }).join('') + '</svg>'; }
+  function bars(vals, cls) { var mx = Math.max.apply(null, vals.concat([1])), w = 200 / Math.max(1, vals.length); return '<svg viewBox="0 0 200 38" preserveAspectRatio="none">' + vals.map(function (v, i) { var h = v / mx * 34; return '<rect x="' + (i * w + 1) + '" y="' + (37 - h) + '" width="' + Math.max(1, w - 2) + '" height="' + h + '" rx="1.5" fill="' + cls + '"/>'; }).join('') + '</svg>'; }
+
+  /* ---------------- alerts ---------------- */
+  function alerts() {
+    var A = [];
+    C.list.forEach(function (x) {
+      if (x.st[0] === 'red' && x.firstNeg) A.push({ lvl: 'red', k: 'Stok habis', code: x.m.code, t: x.m.name + ': habis ' + dLong(x.firstNeg), d: 'Proyeksi stok di bawah nol sebelum pesanan tiba (lead time ' + x.m.lt + ' hari). Percepat PO terbuka, pinjam stok, atau geser produksi SKU yang memakainya.' });
+      else if (x.now) A.push({ lvl: 'red', k: 'Pesan hari ini', code: x.m.code, t: x.m.name + ': pesan ' + qu(x.now.qty, x.u), d: 'Stok + PO ' + qu(x.pos0, x.u) + ' sudah di buffer ' + qu(x.buf, x.u) + ' atau di bawahnya. Tiba ' + dLong(x.now.arr) + '.' });
+      else if (x.st[0] === 'amb') A.push({ lvl: 'amb', k: 'Pesan segera', code: x.m.code, t: x.m.name + ': pesan ' + dLong(x.next.rel), d: qu(x.next.qty, x.u) + ', tiba ' + dLong(x.next.arr) + '.' });
+      if (x.poLate.length) A.push({ lvl: 'amb', k: 'PO terlambat', code: x.m.code, t: x.m.name + ': ' + x.poLate.length + ' PO lewat ETA', d: x.poLate.map(function (p) { return (p.no || 'PO') + ' ' + qu(+p.qty, x.u) + ', ETA ' + dLong(p.eta); }).join('; ') + '. Dihitung tiba hari ini; konfirmasi ke pemasok.' });
+      if (x.st[0] === 'blu') A.push({ lvl: 'blu', k: 'Di atas maksimum', code: x.m.code, t: x.m.name + ': lebih ' + qu(x.excess, x.u), d: 'Stok + PO melebihi buffer + ' + x.m.cover + ' hari kebutuhan. Tunda PO terbuka bila bisa.' });
+      if (x.noStock && x.avgD > 0) A.push({ lvl: 'blu', k: 'Data', code: x.m.code, t: x.m.name + ': stok belum diisi', d: 'Isi stok on hand di langkah 2 agar MRP bisa menghitung.' });
+    });
+    if (C.noBom.length) A.push({ lvl: 'amb', k: 'BOM', t: C.noBom.length + ' SKU berproduksi tanpa BOM', d: 'Kebutuhan bahan bakunya tidak terhitung. Isi BOM di Material master (Forecast Desk) atau nyalakan BOM contoh di ⚙.' });
+    if (C.dummyN) A.push({ lvl: 'blu', k: 'BOM contoh', t: C.dummyN + ' dari ' + C.skuN + ' SKU memakai BOM contoh', d: 'BOM belum diisi di Material master, jadi dipakai BOM contoh dari berat bersih. Angkanya perkiraan.' });
+    return A;
+  }
+
+  /* ---------------- shell ---------------- */
+  var STEPS = [[1, 'Kebutuhan', 'PP × BOM per bulan'], [2, 'Stok & PO', 'stok, PO terbuka, buffer'], [3, 'MRP', 'proyeksi stok vs buffer'], [4, 'Rencana pesan', 'tanggal & jumlah pesan']];
+  function render() {
+    calc(); var A = alerts(), red = A.filter(function (a) { return a.lvl === 'red'; }).length;
+    $('brandSub').textContent = C.M.map(mLab).join(' · ') + ' · stok per ' + dLong(C.t0);
+    $('stepper').innerHTML = STEPS.map(function (s) {
+      var bd = s[0] === 3 ? C.list.filter(function (x) { return x.st[0] === 'red'; }).length : s[0] === 4 ? C.orders.filter(function (o) { return dDiff(C.t0, o.rel) <= 14 && !R.done[o.code + '|' + o.rel]; }).length : s[0] === 1 ? C.noBom.length : C.list.filter(function (x) { return x.noStock && x.avgD > 0; }).length + C.list.reduce(function (a, x) { return a + x.poLate.length; }, 0);
+      return '<button class="st' + (UI.step === s[0] ? ' on' : '') + '" data-step="' + s[0] + '"><span class="n">' + s[0] + '</span><span><b>' + s[1] + '</b><small>' + s[2] + '</small></span>' + (bd ? '<span class="chip ' + (s[0] === 3 ? 'bad' : 'warn') + ' bd">' + bd + '</span>' : '') + '</button>';
+    }).join('');
+    $('demoBar').hidden = !DEMO && !IN.sample;
+    $('demoTxt').textContent = DEMO ? 'Belum ada kiriman dari Forecast Desk, jadi dipakai rencana produksi contoh (M+2, M+3 = M+1 ± 15%), BOM contoh dan stok bahan baku contoh. Data sungguhan: Saran buffer → Proyeksi buffer per bulan → Buka MRP bahan baku.' : 'Forecast Desk mengirim data contoh (mockup). Unggah closing dan Forecast HQ di sana untuk angka sungguhan.';
+    $('aiN').textContent = A.length; $('alertN').textContent = A.length; $('aiN').className = 'chip ' + (red ? 'bad' : A.length ? 'warn' : 'ok');
+    $('speech').innerHTML = speech(A);
+    $('alertsBox').innerHTML = A.length ? A.map(function (a, i) { return '<div class="alert ' + (a.lvl === 'red' ? 'red' : a.lvl === 'amb' ? 'amb' : '') + '"><div class="k">' + esc(a.k) + '</div><div class="t">' + esc(a.t) + '</div><div class="d">' + esc(a.d) + '</div>' + (a.code ? '<div class="acts"><button class="sm" data-goto="' + esc(a.code) + '">Lihat di MRP</button><button class="sm" data-why="' + esc(a.code) + '">Kenapa?</button></div>' : '') + '</div>'; }).join('') : '<div class="alert grn"><div class="t">Tidak ada alert</div><div class="d">Semua bahan baku tertutup sampai ' + dLong(C.end) + '.</div></div>';
+    var v = UI.step === 1 ? vNeed() : UI.step === 2 ? vStock() : UI.step === 3 ? vMrp() : vOrders();
+    $('main').innerHTML = cards() + v + nav();
+    saveUI();
+  }
+  function speech(A) {
+    var red = C.list.filter(function (x) { return x.st[0] === 'red'; }), soon = C.orders.filter(function (o) { return dDiff(C.t0, o.rel) <= 14; });
+    if (!C.skuN) return 'Belum ada rencana produksi dengan PP. Kirim dari Forecast Desk (Saran buffer → Proyeksi buffer per bulan).';
+    var t = C.skuN + ' SKU berproduksi di ' + C.M.map(mLab).join(', ') + '. ';
+    if (red.length) t += '<b>' + red.length + ' bahan baku perlu tindakan sekarang</b>: ' + red.map(function (x) { return esc(x.m.code) + ' (' + esc(x.st[1].toLowerCase()) + ')'; }).join(', ') + '. ';
+    else t += 'Tidak ada bahan baku yang habis. ';
+    if (C.noBom.length) t += '<b>' + C.noBom.length + ' SKU tanpa BOM</b>, kebutuhannya belum terhitung. ';
+    if (soon.length) t += soon.length + ' rencana pesan dalam 14 hari. ';
+    t += 'Buffer = titik pesan ulang terakhir: begitu stok + PO menyentuh buffer, pesanan harus dibuat.';
+    return t;
+  }
+  function cards() {
+    var L = C.list, f = function (k) { return L.filter(k); };
+    var habis = f(function (x) { return !!x.firstNeg && !x.noStock; }), now = f(function (x) { return x.now && !x.firstNeg; }), soon = f(function (x) { return x.st[0] === 'amb'; }), late = f(function (x) { return x.poLate.length; }), over = f(function (x) { return x.st[0] === 'blu'; }), ok = f(function (x) { return x.st[0] === 'grn'; });
+    var sp = function (xs) { return xs.length ? spark(xs[0], 200, 38, false) : '<svg viewBox="0 0 200 38"><line x1="0" x2="200" y1="30" y2="30" stroke="var(--line)" stroke-dasharray="3 3"/></svg>'; };
+    var card = function (k, cls, lb, pl, v, s, g) { return '<button class="kc ' + cls + (UI.flt === k ? ' on' : '') + '" data-flt="' + k + '"><span class="lb">' + lb + '<span class="pl">' + pl + '</span></span><span class="v">' + v + '</span><span class="s">' + s + '</span>' + g + '</button>'; };
+    var bom = C.skuN ? Math.round((C.skuN - C.dummyN - C.noBom.length) / C.skuN * 100) : 0;
+    return '<section class="kcards" aria-label="Ringkasan">' +
+      card('habis', habis.length ? 'red' : 'grn', 'Habis sebelum pesanan tiba', habis.length ? '⚠ Percepat' : '✓ Tidak ada', habis.length + ' bahan baku', habis.length ? habis.map(function (x) { return x.m.code + ' ' + dLab(x.firstNeg); }).join(', ') : 'Proyeksi stok tidak pernah di bawah nol.', sp(habis)) +
+      card('now', now.length ? 'red' : 'grn', 'Pesan hari ini', now.length ? '⚠ Buat PO' : '✓ Tidak ada', now.length + ' bahan baku', now.length ? 'Stok + PO sudah di buffer: ' + now.map(function (x) { return x.m.code; }).join(', ') : 'Belum ada yang menyentuh buffer.', sp(now)) +
+      card('soon', soon.length ? 'amb' : 'grn', 'Pesan dalam 14 hari', soon.length ? 'ⓘ Siapkan' : '✓ Tidak ada', soon.length + ' bahan baku', soon.length ? soon.map(function (x) { return x.m.code + ' ' + dLab(x.next.rel); }).join(', ') : 'Pesanan berikutnya lebih dari 2 minggu lagi.', sp(soon)) +
+      card('late', late.length ? 'amb' : 'grn', 'PO lewat ETA', late.length ? 'ⓘ Konfirmasi' : '✓ Tepat waktu', late.reduce(function (a, x) { return a + x.poLate.length; }, 0) + ' PO', late.length ? late.map(function (x) { return x.m.code; }).join(', ') : 'Semua PO terbuka masih dalam jadwal.', sp(late)) +
+      card('over', over.length ? 'blu' : 'grn', 'Di atas maksimum', over.length ? 'ⓘ Modal tertahan' : '✓ Tidak ada', over.length + ' bahan baku', 'Maksimum = buffer + hari kebutuhan yang dipesan.', sp(over)) +
+      card('all', C.dummyN || C.noBom.length ? 'gry' : 'grn', 'BOM terisi', C.noBom.length ? '⚠ ' + C.noBom.length + ' tanpa BOM' : C.dummyN ? 'ⓘ Ada BOM contoh' : '✓ Lengkap', bom + '%', (C.skuN - C.dummyN - C.noBom.length) + ' dari ' + C.skuN + ' SKU punya BOM sendiri' + (C.dummyN ? ', ' + C.dummyN + ' pakai contoh' : ''), share([[C.skuN - C.dummyN - C.noBom.length, 'var(--ok)', 'BOM sendiri'], [C.dummyN, 'var(--mid)', 'BOM contoh'], [C.noBom.length, 'var(--bad)', 'tanpa BOM']])) +
+      '</section>';
+  }
+  function nav() {
+    var p = STEPS[UI.step - 2], nx = STEPS[UI.step];
+    return '<div class="nav">' + (p ? '<button data-step="' + p[0] + '">← ' + p[1] + '</button>' : '<span></span>') + (nx ? '<button class="pri" data-step="' + nx[0] + '">Lanjut ke ' + nx[1] + ' →</button>' : '<button class="pri" data-exp="xlsx">⇩ Ekspor rencana pesan (.xlsx)</button>') + '</div>';
+  }
+  /* ---------------- step 1: Kebutuhan ---------------- */
+  function vNeed() {
+    var M = C.M, h = '<div class="phead"><h2>Kebutuhan bahan baku</h2><span class="chip acc">' + esc(IN.source || 'Forecast Desk') + '</span>' + (IN.sentAt ? '<span class="mut">dikirim ' + esc(new Date(IN.sentAt).toLocaleString('id-ID')) + '</span>' : '') + '<span class="sp"></span><button class="sm" data-openall="1">Buka semua</button><button class="sm" data-openall="0">Tutup semua</button></div>';
+    h += '<p class="howto"><b>Kebutuhan = rencana produksi (PP) × BOM per karton.</b> PP ' + M.map(mLab).join(', ') + ' datang dari Saran buffer (proyeksi M+1–M+3: stok akhir bulan ini = stok awal + PP − forecast, menjadi stok awal bulan berikutnya). Karton dalam pcs, plastik dan jumbo roll dalam ton (BOM kg ÷ 1000). Bahan baku dipilih dari kata kunci di deskripsi BOM; tanpa kata kunci yang cocok dipakai bahan baku pertama di kategorinya.' +
+      (C.sched ? ' Kebutuhan ' + mLab(M[0]) + ' untuk ' + C.schedN + ' SKU mengikuti jadwal harian Perencanaan Produksi.' : '') + '</p>';
+    h += '<div class="tbox"><table><thead><tr><th rowspan="2">Bahan baku · SKU</th><th rowspan="2" class="num">BOM / ctn</th>' + M.map(function (mo, i) { return '<th colspan="2" class="grp">M+' + (i + 1) + ' · ' + mLab(mo) + '</th>'; }).join('') + '<th colspan="2" class="grp">Total</th></tr><tr>' + M.map(function () { return '<th class="num sep">PP (ctn)</th><th class="num">Kebutuhan</th>'; }).join('') + '<th class="num sep">PP (ctn)</th><th class="num">Kebutuhan</th></tr></thead><tbody>';
+    var sum = function (a) { return a.reduce(function (x, y) { return x + y; }, 0); };
+    CATS.forEach(function (c) {
+      var xs = C.list.filter(function (x) { return x.m.cat === c; }); if (!xs.length) return;
+      h += '<tr class="cat"><td colspan="' + (4 + M.length * 2) + '">' + CAT[c][0] + ' (' + CAT[c][1] + ')' + (C.noMat[c] ? ' · <span class="neg">' + C.noMat[c] + ' SKU tanpa bahan baku kategori ini</span>' : '') + '</td></tr>';
+      xs.forEach(function (x) {
+        var pg = Object.keys(x.peg).map(function (k) { return x.peg[k]; }).sort(function (a, b) { return sum(b.q) - sum(a.q); }), o = !!UI.open[x.m.code], u = x.u;
+        var ppT = M.map(function (mo, i) { return sum(pg.map(function (p) { return p.pp[i]; })); });
+        h += '<tr class="mat"><td data-tog="' + esc(x.m.code) + '"><button class="exp" aria-expanded="' + o + '">' + (o ? '▼' : '▶') + '</button><span class="mono">' + esc(x.m.code) + '</span> ' + esc(x.m.name) + ' <span class="mut">· ' + pg.length + ' SKU</span></td><td></td>' +
+          M.map(function (mo, i) { return '<td class="num sep">' + q(ppT[i], 'pcs') + '</td><td class="num"><b>' + q(x.G[i], u) + '</b></td>'; }).join('') + '<td class="num sep">' + q(sum(ppT), 'pcs') + '</td><td class="num"><b>' + qu(sum(x.G), u) + '</b></td></tr>';
+        if (o) pg.forEach(function (p) {
+          h += '<tr class="sku"><td title="' + esc(p.s.name) + '">' + esc((p.s.name || '').slice(0, 54)) + ' <span class="mono mut">' + esc(p.s.nomat || p.s.key) + '</span>' + (p.dummy ? ' <span class="dummy">BOM contoh</span>' : '') + (p.sched ? ' <span class="chip blu" title="Bulan pertama mengikuti jadwal harian">jadwal</span>' : '') + '</td><td class="num' + (p.dummy ? ' dummy' : '') + '">' + (u === 'ton' ? nf1.format(p.per * 1000) + ' kg' : nf1.format(p.per) + ' pcs') + '</td>' +
+            M.map(function (mo, i) { return '<td class="num sep">' + q(p.pp[i], 'pcs') + '</td><td class="num">' + q(p.q[i], u) + '</td>'; }).join('') + '<td class="num sep">' + q(sum(p.pp), 'pcs') + '</td><td class="num">' + q(sum(p.q), u) + '</td></tr>';
+        });
+      });
+    });
+    h += '</tbody></table></div>';
+    if (C.noBom.length) h += '<div class="card" style="margin-top:12px"><h3>' + C.noBom.length + ' SKU tanpa BOM</h3><p class="howto">Kebutuhan bahan bakunya belum terhitung. Isi BOM di Forecast Desk → Material master, lalu kirim ulang. ' + C.noBom.slice(0, 12).map(function (s) { return esc(s.name || s.key); }).join(', ') + (C.noBom.length > 12 ? ', …' : '') + '</p></div>';
+    return h;
+  }
+
+  /* ---------------- step 2: Stok & PO ---------------- */
+  function vStock() {
+    var h = '<div class="phead"><h2>Stok, PO terbuka dan buffer</h2><span class="sp"></span><label class="mut">Stok per tanggal <input type="date" id="stockDate" value="' + C.t0 + '" min="' + C.start + '" max="' + C.end + '"></label><button class="sm" data-imp="1">⇧ Impor Excel</button><button class="sm" data-exp="tpl">Template</button></div>';
+    h += '<p class="howto"><b>Buffer = titik pesan ulang terakhir.</b> Saran buffer = kebutuhan rata-rata per hari × (lead time + hari cadangan), jadi stok di buffer cukup untuk menunggu pesanan tiba plus cadangan. Isi <b>Buffer manual</b> untuk mengganti saran (kosongkan untuk kembali). Jumlah pesan = sampai buffer + <b>pesan untuk</b> N hari kebutuhan, dibulatkan ke MOQ dan kelipatan.' + (R.demoStock ? ' <span class="chip warn">stok &amp; PO contoh</span>' : '') + '</p>';
+    h += '<div class="card"><div class="hd"><h3>Bahan baku</h3><span class="sp"></span><button class="sm" data-addmat="1">+ Bahan baku</button></div><div class="tbox"><table><thead><tr><th>Kode</th><th>Nama</th><th>Kategori</th><th title="Kata kunci di deskripsi BOM SKU, pisahkan dengan koma">Kata kunci BOM</th><th class="num">Stok on hand</th><th class="num">Lead time (hari)</th><th class="num">Cadangan (hari)</th><th class="num">Keb. / hari</th><th class="num">Buffer saran</th><th class="num">Buffer manual</th><th class="num">Pesan untuk (hari)</th><th class="num">MOQ</th><th class="num">Kelipatan</th><th></th></tr></thead><tbody>';
+    C.list.forEach(function (x) {
+      var m = x.m, c = esc(m.code), inp = function (f, v, cls, ph) { return '<td class="num"><input class="cell' + (cls || '') + '" data-mf="' + f + '" data-code="' + c + '" value="' + (v == null ? '' : esc(String(v).replace('.', ','))) + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + ' aria-label="' + f + ' ' + c + '"></td>'; };
+      h += '<tr><td><input class="cell m mono" data-mf="code" data-code="' + c + '" value="' + c + '" aria-label="Kode"></td><td><input class="cell w" data-mf="name" data-code="' + c + '" value="' + esc(m.name) + '" aria-label="Nama ' + c + '"></td>' +
+        '<td><select class="cell" data-mf="cat" data-code="' + c + '">' + CATS.map(function (k) { return '<option value="' + k + '"' + (m.cat === k ? ' selected' : '') + '>' + CAT[k][0] + ' (' + CAT[k][1] + ')</option>'; }).join('') + '</select></td>' +
+        '<td><input class="cell m" data-mf="kw" data-code="' + c + '" value="' + esc(m.kw || '') + '" aria-label="Kata kunci ' + c + '"></td>' +
+        inp('soh', m.soh, x.noStock ? ' set' : '', 'isi') + inp('lt', m.lt) + inp('safe', m.safe) + '<td class="num dim">' + q(x.avgD, x.u) + '</td><td class="num">' + q(x.bufSug, x.u) + '</td>' + inp('buf', m.buf, m.buf != null && m.buf !== '' ? ' set' : '', q(x.bufSug, x.u)) + inp('cover', m.cover) + inp('moq', m.moq) + inp('lot', m.lot) +
+        '<td><button class="ghost sm" data-delmat="' + c + '" title="Hapus bahan baku">✕</button></td></tr>';
+    });
+    h += '</tbody></table></div></div>';
+    h += '<div class="card"><div class="hd"><h3>PO terbuka (belum diterima)</h3><span class="mut">ETA lewat = dihitung tiba hari ini dan diberi tanda</span><span class="sp"></span><button class="sm" data-addpo="1">+ PO</button></div><div class="tbox"><table><thead><tr><th>No PO</th><th>Bahan baku</th><th class="num">Qty</th><th>ETA</th><th>Status</th><th></th></tr></thead><tbody>';
+    if (!R.po.length) h += '<tr><td colspan="6" class="dim">Belum ada PO terbuka.</td></tr>';
+    R.po.forEach(function (p, i) {
+      var x = C.X[p.code], u = x ? x.u : '';
+      h += '<tr><td><input class="cell m mono" data-pf="no" data-i="' + i + '" value="' + esc(p.no || '') + '" aria-label="No PO"></td><td><select class="cell" data-pf="code" data-i="' + i + '">' + R.mats.map(function (m) { return '<option value="' + esc(m.code) + '"' + (m.code === p.code ? ' selected' : '') + '>' + esc(m.code) + ' · ' + esc(m.name) + '</option>'; }).join('') + '</select></td>' +
+        '<td class="num"><input class="cell" data-pf="qty" data-i="' + i + '" value="' + esc(String(p.qty == null ? '' : p.qty).replace('.', ',')) + '" aria-label="Qty"> <span class="mut">' + u + '</span></td><td><input type="date" class="cell" data-pf="eta" data-i="' + i + '" value="' + esc(p.eta || '') + '"></td>' +
+        '<td>' + (!p.eta ? '<span class="chip warn">ETA kosong</span>' : p.eta < C.t0 ? '<span class="chip warn">lewat ' + dDiff(p.eta, C.t0) + ' hari</span>' : '<span class="chip ok">tiba ' + dDiff(C.t0, p.eta) + ' hari lagi</span>') + (p.auto ? ' <span class="chip acc">dari rencana pesan</span>' : '') + '</td><td><button class="ghost sm" data-delpo="' + i + '">✕</button></td></tr>';
+    });
+    h += '</tbody></table></div></div>';
+    return h;
+  }
+
+  /* ---------------- step 3: MRP ---------------- */
+  var FLT = { all: function () { return true; }, habis: function (x) { return !!x.firstNeg && !x.noStock; }, now: function (x) { return x.now && !x.firstNeg; }, soon: function (x) { return x.st[0] === 'amb'; }, late: function (x) { return x.poLate.length; }, over: function (x) { return x.st[0] === 'blu'; }, act: function (x) { return x.st[0] === 'red' || x.st[0] === 'amb'; } };
+  function why(x) {
+    var m = x.m, u = x.u, L = [];
+    L.push('Kebutuhan ' + C.M.map(function (mo, i) { return mLab(mo) + ' ' + qu(x.G[i], u); }).join(', ') + ' → rata-rata ' + qu(x.avgD, u) + ' per hari.');
+    L.push('Buffer ' + qu(x.buf, u) + (m.buf != null && m.buf !== '' ? ' (manual; saran ' + qu(x.bufSug, u) + ')' : ' = ' + q(x.avgD, u) + ' × (' + m.lt + ' hari lead time + ' + m.safe + ' hari cadangan)') + (x.bufDays != null ? ', setara ' + nf1.format(x.bufDays) + ' hari.' : '.'));
+    L.push('Stok ' + qu(x.soh, u) + ' + PO terbuka ' + qu(x.poIn, u) + ' = ' + qu(x.pos0, u) + ' per ' + dLong(C.t0) + (x.pos0 <= x.buf ? ': <b>sudah di buffer atau di bawahnya</b>.' : ', ' + qu(x.pos0 - x.buf, u) + ' di atas buffer.'));
+    if (x.orders.length) L.push('Rencana pesan: ' + x.orders.map(function (o) { return '<b>' + dLong(o.rel) + '</b> ' + qu(o.qty, u) + ' (tiba ' + dLong(o.arr) + ')'; }).join('; ') + '. Jumlah = sampai buffer + ' + m.cover + ' hari kebutuhan, dibulatkan ke MOQ ' + q(m.moq, u) + ' / kelipatan ' + q(m.lot, u) + '.');
+    else L.push('Tidak ada pesanan baru sampai ' + dLong(C.end) + '.');
+    if (x.firstNeg) L.push('<b class="neg">Stok habis ' + dLong(x.firstNeg) + '</b>: pesanan hari ini baru tiba ' + (x.orders[0] ? dLong(x.orders[0].arr) : '–') + '. Percepat PO, minta kiriman parsial, atau geser produksi SKU yang memakainya.');
+    else if (x.firstLow) L.push('Stok on hand turun di bawah buffer mulai ' + dLong(x.firstLow) + ' (wajar selama menunggu pesanan), terendah ' + qu(x.minOh, u) + '.');
+    if (x.poLate.length) L.push('PO lewat ETA: ' + x.poLate.map(function (p) { return esc(p.no || 'PO') + ' (' + dLong(p.eta) + ')'; }).join(', ') + '.');
+    return L;
+  }
+  function weekTable(x) {
+    var u = x.u, W = C.weeks, row = function (lb, f, cls) { return '<tr><td>' + lb + '</td>' + W.map(function (w) { var v = f(w); return '<td class="num ' + (typeof cls === 'function' ? cls(w, v) : cls || '') + '">' + (v ? q(v, u) : '<span class="dim">–</span>') + '</td>'; }).join('') + '</tr>'; };
+    var sum = function (arr, w) { var s = 0; for (var i = w.a; i <= w.b; i++) s += arr[i]; return s; };
+    var rel = function (w) { return x.orders.filter(function (o) { return o.i >= w.a && o.i <= w.b; }).reduce(function (a, o) { return a + o.qty; }, 0); };
+    return '<div class="tbox" style="margin-top:8px"><table><thead><tr><th>Minggu mulai</th>' + W.map(function (w) { return '<th class="num">' + dLab(C.days[w.a]) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+      row('Kebutuhan', function (w) { return sum(x.g, w); }) + row('Terima PO', function (w) { return sum(x.recPO, w); }, 'rcv') + row('Terima rencana pesan', function (w) { return sum(x.recPL, w); }, 'rcv') +
+      row('<b>Rencana pesan (rilis)</b>', rel, function (w, v) { return v ? 'ord' : ''; }) +
+      '<tr><td><b>Stok akhir</b></td>' + W.map(function (w) { var v = x.ohA[w.b]; return '<td class="num ' + (v < 0 ? 'bad' : v < x.buf ? 'low' : '') + '"><b>' + q(v, u) + '</b></td>'; }).join('') + '</tr>' +
+      '<tr><td class="dim">Buffer</td>' + W.map(function () { return '<td class="num dim">' + q(x.buf, u) + '</td>'; }).join('') + '</tr></tbody></table></div>';
+  }
+  function vMrp() {
+    var f = FLT[UI.flt] || FLT.all, L = C.list.filter(f), ord = { red: 0, amb: 1, blu: 2, gry: 3, grn: 4 };
+    L.sort(function (a, b) { return ord[a.st[0]] - ord[b.st[0]]; });
+    var h = '<div class="phead"><h2>MRP: proyeksi stok vs buffer</h2><span class="sp"></span><div class="seg" role="group" aria-label="Tampilkan">' + [['all', 'Semua'], ['act', 'Perlu tindakan'], ['habis', 'Habis'], ['now', 'Pesan hari ini'], ['soon', '≤ 14 hari'], ['late', 'PO lewat ETA'], ['over', 'Di atas maks']].map(function (o) { return '<button data-flt="' + o[0] + '" class="' + (UI.flt === o[0] ? 'on' : '') + '">' + o[1] + '</button>'; }).join('') + '</div></div>';
+    h += '<p class="howto">Simulasi harian dari ' + dLong(C.t0) + ' sampai ' + dLong(C.end) + ': stok berkurang sesuai kebutuhan, bertambah saat PO atau rencana pesan tiba. <b>Begitu stok + PO (posisi stok) menyentuh buffer, pesanan dirilis hari itu</b> dan tiba setelah lead time. Klik baris untuk rincian dan tabel mingguan.</p>';
+    h += '<div class="legend"><span><i></i>stok on hand</span><span><i class="b"></i>buffer</span><span><i class="r"></i>rilis pesanan</span><span><i class="g"></i>rencana pesan tiba</span><span><i class="p"></i>PO terbuka tiba</span></div>';
+    if (!L.length) h += '<div class="card">Tidak ada bahan baku dengan filter ini. <button class="link" data-flt="all">Tampilkan semua</button></div>';
+    h += '<div class="mlist">' + L.map(function (x) {
+      var m = x.m, u = x.u, o = !!UI.exp[m.code];
+      return '<div class="mc ' + x.st[0] + '" id="mc-' + esc(m.code) + '"><div class="row" data-mexp="' + esc(m.code) + '"><div class="nm"><b>' + esc(m.name) + '</b><small class="mono">' + esc(m.code) + '</small> <small>· ' + CAT[m.cat][0] + ' · LT ' + m.lt + ' hari</small><div style="margin-top:4px"><span class="chip ' + ({ red: 'bad', amb: 'warn', blu: 'blu', grn: 'ok', gry: '' })[x.st[0]] + '" title="' + esc(x.st[2]) + '">' + esc(x.st[1]) + '</span>' + (x.poLate.length ? ' <span class="chip warn">PO lewat ETA</span>' : '') + '</div></div>' +
+        '<div class="facts"><span>Stok + PO</span><b>' + qu(x.pos0, u) + '</b><span>Buffer</span><b>' + qu(x.buf, u) + (x.bufDays != null ? ' · ' + nf1.format(x.bufDays) + ' hr' : '') + '</b><span>Keb. ' + C.M.length + ' bln</span><b>' + qu(x.G.reduce(function (a, b) { return a + b; }, 0), u) + '</b><span>Pesan berikut</span><b>' + (x.next ? dLab(x.next.rel) + ' · ' + q(x.next.qty, u) : '–') + '</b></div>' +
+        spark(x, 420, 62, false) + '<button class="sm" aria-expanded="' + o + '">' + (o ? 'Tutup ▴' : 'Rincian ▾') + '</button></div>' +
+        (o ? '<div class="det"><ul class="why">' + why(x).map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ul>' + spark(x, 1000, 170, true).replace('class="spark"', 'class="spark" style="height:170px"') + weekTable(x) + '</div>' : '') + '</div>';
+    }).join('') + '</div>';
+    return h;
+  }
+
+  /* ---------------- step 4: Rencana pesan ---------------- */
+  function vOrders() {
+    var h = '<div class="phead"><h2>Rencana pesan bahan baku</h2><span class="mut">' + C.orders.length + ' pesanan sampai ' + dLong(C.end) + '</span><span class="sp"></span><button class="pri" data-exp="xlsx">⇩ Ekspor (.xlsx)</button></div>';
+    h += '<p class="howto">Tanggal pesan = hari posisi stok (stok + PO + pesanan sebelumnya) menyentuh buffer. Setelah PO dibuat di SAP, klik <b>Sudah dipesan</b>: pesanan pindah ke PO terbuka dengan ETA = tanggal tiba, dan MRP dihitung ulang.</p>';
+    h += '<div class="tbox"><table><thead><tr><th>Pesan</th><th>Status</th><th>Bahan baku</th><th class="num">Jumlah</th><th>Tiba</th><th class="num">Posisi stok saat pesan</th><th class="num">Buffer</th><th>Catatan</th><th></th></tr></thead><tbody>';
+    if (!C.orders.length) h += '<tr><td colspan="9" class="dim">Tidak ada pesanan: stok + PO menutup kebutuhan sampai ' + dLong(C.end) + '.</td></tr>';
+    C.orders.forEach(function (o) {
+      var x = C.X[o.code], u = x.u, dd = dDiff(C.t0, o.rel), late = x.firstNeg && o.first;
+      var st = dd <= 0 ? '<span class="chip bad">hari ini</span>' : dd <= 14 ? '<span class="chip warn">' + dd + ' hari lagi</span>' : '<span class="chip">' + dd + ' hari lagi</span>';
+      h += '<tr><td><b>' + dLong(o.rel) + '</b></td><td>' + st + '</td><td><span class="mono">' + esc(o.code) + '</span> ' + esc(x.m.name) + '</td><td class="num"><b>' + qu(o.qty, u) + '</b></td><td>' + dLong(o.arr) + (o.inH ? '' : ' <span class="mut">(setelah horizon)</span>') + '</td><td class="num">' + q(o.pos, u) + '</td><td class="num">' + q(x.buf, u) + '</td><td>' + (late ? '<span class="neg">tiba setelah stok habis ' + dLab(x.firstNeg) + ': percepat</span>' : o.first && dd <= 0 ? 'posisi stok sudah di bawah buffer' : '') + '</td><td><button class="sm" data-po="' + esc(o.code + '|' + o.rel) + '">✓ Sudah dipesan</button></td></tr>';
+    });
+    h += '</tbody></table></div>';
+    return h;
+  }
+  /* ---------------- demo stock and POs (once, relative to the requirement) ---------------- */
+  function seedDemoStock() {
+    if (!R.demoStock || R.mats.some(function (m) { return m.soh != null && m.soh !== ''; })) return;
+    calc();
+    var plan = { 'KRT-3P': [9, 0, 0], 'KRT-5P': [45, 0, 0], 'PLS-PP30': [25, 0, 0], 'PLS-PE40': [30, 8, -3], 'JR-V13': [40, 30, 20], 'JR-R17': [120, 0, 0] }, seq = 4500123400;
+    R.mats.forEach(function (m) {
+      var x = C.X[m.code], p = plan[m.code] || [30, 0, 0], r = function (v) { return x.u === 'ton' ? Math.round(v * 10) / 10 : Math.round(v / 100) * 100; };
+      m.soh = r(x.avgD * p[0]);
+      if (p[1]) R.po.push({ no: String(seq++), code: m.code, qty: r(x.avgD * p[1]), eta: addD(C.t0, p[2]) });
+    });
+    save();
+  }
+
+  /* ---------------- events ---------------- */
+  function matBy(code) { return R.mats.filter(function (m) { return m.code === code; })[0]; }
+  document.addEventListener('click', function (e) {
+    var t = e.target, b;
+    if ((b = t.closest('[data-step]'))) { UI.step = +b.dataset.step; render(); scrollTo(0, 0); return; }
+    if ((b = t.closest('[data-flt]'))) { var k = b.dataset.flt; UI.flt = UI.flt === k && b.classList.contains('kc') ? 'all' : k; UI.step = 3; render(); return; }
+    if ((b = t.closest('[data-tog]'))) { var c = b.dataset.tog; UI.open[c] = !UI.open[c]; render(); return; }
+    if ((b = t.closest('[data-openall]'))) { var on = b.dataset.openall === '1'; R.mats.forEach(function (m) { UI.open[m.code] = on; }); render(); return; }
+    if ((b = t.closest('[data-mexp]'))) { var c2 = b.dataset.mexp; UI.exp[c2] = !UI.exp[c2]; render(); return; }
+    if ((b = t.closest('[data-goto]'))) { goMat(b.dataset.goto); return; }
+    if ((b = t.closest('[data-why]'))) { openPanel(true); side('tanya'); ask('kenapa ' + b.dataset.why); return; }
+    if ((b = t.closest('[data-addmat]'))) { var i = 1; while (matBy('BB-' + i)) i++; R.mats.push({ code: 'BB-' + i, name: 'Bahan baku baru', cat: 'pl', kw: '', lt: 21, safe: 7, cover: 30, moq: 0, lot: 0, buf: null, soh: null }); save(); render(); return; }
+    if ((b = t.closest('[data-delmat]'))) { var dc = b.dataset.delmat; if (!confirm('Hapus bahan baku ' + dc + '? PO terbukanya ikut terhapus.')) return; R.mats = R.mats.filter(function (m) { return m.code !== dc; }); R.po = R.po.filter(function (p) { return p.code !== dc; }); save(); render(); return; }
+    if ((b = t.closest('[data-addpo]'))) { R.po.push({ no: '', code: R.mats[0] ? R.mats[0].code : '', qty: null, eta: addD(C.t0, 14) }); save(); render(); return; }
+    if ((b = t.closest('[data-delpo]'))) { R.po.splice(+b.dataset.delpo, 1); save(); render(); return; }
+    if ((b = t.closest('[data-po]'))) { var pp = b.dataset.po.split('|'), o = C.orders.filter(function (x) { return x.code === pp[0] && x.rel === pp[1]; })[0]; if (!o) return; R.po.push({ no: '(baru ' + dLab(o.rel) + ')', code: o.code, qty: o.qty, eta: o.arr, auto: true }); R.demoStock = false; save(); render(); toast('Dipindah ke PO terbuka: ' + o.code + ' ' + qu(o.qty, C.X[o.code].u) + ', ETA ' + dLong(o.arr) + '. Isi nomor PO di langkah 2.'); return; }
+    if ((b = t.closest('[data-exp]'))) { $('menu').hidden = true; exportX(b.dataset.exp); return; }
+    if ((b = t.closest('[data-imp]'))) { $('impFile').click(); return; }
+    if (t.id === 'expBtn') { var rc = t.getBoundingClientRect(), mn = $('menu'); mn.innerHTML = '<button data-exp="xlsx">Excel MRP (.xlsx)<small>Rencana pesan, MRP mingguan, kebutuhan per SKU, bahan baku, PO terbuka</small></button><button data-exp="tpl">Template bahan baku &amp; PO<small>Isi stok dan PO dari SAP, lalu impor di langkah 2</small></button>'; mn.style.left = Math.max(8, rc.right - 300) + 'px'; mn.style.top = (rc.bottom + 4) + 'px'; mn.hidden = false; e.stopPropagation(); return; }
+    if (t.id === 'setBtn') { $('setPop').hidden = !$('setPop').hidden; return; }
+    if (t.id === 'popClose') { $('setPop').hidden = true; return; }
+    if (t.id === 'resetRm') { if (!confirm('Ganti bahan baku, stok dan PO dengan contoh? Isian Anda hilang.')) return; var o2 = R.opt; R = demoRM(); R.opt = o2; seedDemoStock(); render(); $('setPop').hidden = true; return; }
+    if (t.id === 'aiAlerts' || t.id === 'aiAsk') { openPanel(true); side(t.id === 'aiAsk' ? 'tanya' : 'alerts'); return; }
+    if (t.closest('#askBar')) { openPanel(true); side('tanya'); $('chatIn').focus(); return; }
+    if (t.id === 'aiClose') { openPanel(false); return; }
+    if ((b = t.closest('[data-st]'))) { side(b.dataset.st); return; }
+    if ((b = t.closest('[data-q]'))) { ask(b.dataset.q); return; }
+    if (!t.closest('#menu')) $('menu').hidden = true;
+    if (!t.closest('#aipanel') && !t.closest('#aibar') && !t.closest('#askBar')) openPanel(false);
+  });
+  document.addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.dataset.mf) {
+      var m = matBy(t.dataset.code), f = t.dataset.mf, v = t.value.trim(); if (!m) return;
+      if (f === 'code') { if (!v || (v !== m.code && matBy(v))) { toast('Kode kosong atau sudah dipakai.'); t.value = m.code; return; } R.po.forEach(function (p) { if (p.code === m.code) p.code = v; }); m.code = v; }
+      else if (f === 'name' || f === 'kw' || f === 'cat') m[f] = v;
+      else { var nv = num(v); if (v !== '' && (nv == null || nv < 0)) { toast('Harus angka ≥ 0, mis. 12 atau 2,5.'); render(); return; } m[f] = v === '' ? null : nv; if (f === 'soh') R.demoStock = false; }
+      save(); render(); return;
+    }
+    if (t.dataset.pf) {
+      var p = R.po[+t.dataset.i], g = t.dataset.pf, w = t.value.trim(); if (!p) return;
+      if (g === 'qty') { var qv = num(w); if (w !== '' && (qv == null || qv < 0)) { toast('Qty harus angka ≥ 0.'); render(); return; } p.qty = qv; } else p[g] = w;
+      R.demoStock = false; save(); render(); return;
+    }
+    if (t.id === 'stockDate') { R.opt.stockDate = t.value || null; save(); render(); return; }
+    if (t.id === 'optDummy') { R.opt.dummy = t.checked; save(); render(); return; }
+    if (t.id === 'optSched') { R.opt.sched = t.checked; save(); render(); return; }
+    if (t.id === 'optTheme') { document.documentElement.dataset.theme = t.value; try { var ui = JSON.parse(localStorage.getItem('ppic_ui') || '{}') || {}; ui.theme = t.value; localStorage.setItem('ppic_ui', JSON.stringify(ui)); } catch (x) {} return; }
+    if (t.id === 'impFile' && t.files[0]) { importX(t.files[0]); t.value = ''; }
+  });
+  document.addEventListener('keydown', function (e) { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openPanel(true); side('tanya'); $('chatIn').focus(); } if (e.key === 'Escape') { openPanel(false); $('menu').hidden = true; $('setPop').hidden = true; } });
+  function goMat(code) { UI.step = 3; UI.flt = 'all'; UI.exp[code] = true; render(); openPanel(false); var el = $('mc-' + code); if (el) { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); el.classList.add('flash'); } }
+
+  /* ---------------- assistant ---------------- */
+  function openPanel(on) { var p = $('aipanel'); p.hidden = !on; if (on) { var r = $('aibar').getBoundingClientRect(); p.style.top = (r.bottom + 6) + 'px'; } }
+  function side(s) { UI.side = s; [].forEach.call(document.querySelectorAll('[data-st]'), function (b) { b.classList.toggle('on', b.dataset.st === s); }); $('alertsBox').hidden = s !== 'alerts'; $('tanyaBox').hidden = s !== 'tanya'; if (s === 'tanya') sugg(); }
+  function sugg() { var red = C.list.filter(function (x) { return x.st[0] === 'red' || x.st[0] === 'amb'; })[0]; $('sugg').innerHTML = ['ringkasan', 'pesan minggu ini', red ? 'kenapa ' + red.m.code : 'kenapa ' + (R.mats[0] || {}).code, 'cara hitung buffer'].map(function (s) { return '<button data-q="' + esc(s) + '">' + esc(s) + '</button>'; }).join(''); }
+  function say(who, html) { var d = document.createElement('div'); d.className = 'msg' + (who === 'me' ? ' me' : ''); d.innerHTML = html; $('chatLog').appendChild(d); d.scrollIntoView({ block: 'nearest' }); }
+  function findMat(t) { var s = t.toLowerCase(); return C.list.filter(function (x) { return s.indexOf(x.m.code.toLowerCase()) >= 0; })[0] || C.list.filter(function (x) { return x.m.name && s.indexOf(x.m.name.toLowerCase().split(' (')[0]) >= 0; })[0] || null; }
+  function facts() {
+    return { stokPer: C.t0, horizon: C.M, aturan: 'buffer = titik pesan ulang; pesan saat stok + PO menyentuh buffer; jumlah = sampai buffer + N hari kebutuhan', bahanBaku: C.list.map(function (x) { return { kode: x.m.code, nama: x.m.name, satuan: x.u, stok: x.soh, poTerbuka: x.poIn, buffer: Math.round(x.buf * 100) / 100, kebutuhanPerHari: Math.round(x.avgD * 100) / 100, leadTimeHari: x.m.lt, status: x.st[1], stokHabis: x.firstNeg, pesan: x.orders.map(function (o) { return { tanggal: o.rel, qty: o.qty, tiba: o.arr }; }) }; }) };
+  }
+  function ask(text) {
+    var t = String(text || '').trim(); if (!t) return; say('me', esc(t)); var s = t.toLowerCase(), x = findMat(t), mm;
+    if ((mm = s.match(/^buffer\s+(\S+)\s*=\s*(auto|otomatis|[\d.,]+)/))) {
+      var m = R.mats.filter(function (z) { return z.code.toLowerCase() === mm[1]; })[0]; if (!m) { say('bot', 'Kode ' + esc(mm[1]) + ' tidak ada.'); return; }
+      var old = m.buf; m.buf = /auto|otomatis/.test(mm[2]) ? null : num(mm[2]); save(); render(); var y = C.X[m.code];
+      say('bot', 'Buffer <b>' + esc(m.code) + '</b> sekarang ' + qu(y.buf, y.u) + (m.buf == null ? ' (saran)' : ' (manual)') + '. ' + (y.next ? 'Pesanan berikut ' + dLong(y.next.rel) + ', ' + qu(y.next.qty, y.u) + '.' : 'Tidak ada pesanan di horizon.') + ' <button class="sm" data-q="buffer ' + esc(m.code) + ' = ' + (old == null ? 'auto' : old) + '">Batalkan</button>'); return;
+    }
+    if (/ringkas|summary|status/.test(s)) { say('bot', speech(alerts()) + '<ul>' + C.list.map(function (z) { return '<li><b>' + esc(z.m.code) + '</b>: ' + esc(z.st[1]) + '</li>'; }).join('') + '</ul>'); return; }
+    if (/cara|rumus|hitung buffer|buffer itu/.test(s) && !x) { say('bot', '<b>Buffer bahan baku = titik pesan ulang terakhir.</b> Saran = kebutuhan per hari × (lead time + hari cadangan). Setiap hari MRP mengurangi posisi stok (stok + PO terbuka + pesanan yang sudah direncanakan) dengan kebutuhan; begitu posisinya ≤ buffer, pesanan dirilis hari itu, jumlahnya sampai buffer + N hari kebutuhan, dibulatkan ke MOQ/kelipatan, dan tiba setelah lead time. Kebutuhan = PP M+1–M+3 dari Saran buffer × BOM per karton.'); return; }
+    if (/pesan|order|po\b/.test(s) && !x) { var lim = /minggu/.test(s) ? 7 : /bulan/.test(s) ? 31 : 14, os = C.orders.filter(function (o) { return dDiff(C.t0, o.rel) <= lim; }); say('bot', os.length ? 'Pesanan dalam ' + lim + ' hari:<ul>' + os.map(function (o) { var z = C.X[o.code]; return '<li><b>' + dLong(o.rel) + '</b> · ' + esc(o.code) + ' ' + qu(o.qty, z.u) + ' (tiba ' + dLong(o.arr) + ')</li>'; }).join('') + '</ul>' : 'Tidak ada pesanan dalam ' + lim + ' hari.'); return; }
+    if (x) { say('bot', '<b>' + esc(x.m.name) + '</b> (' + esc(x.m.code) + '): ' + esc(x.st[2]) + '.<ul>' + why(x).map(function (l) { return '<li>' + l + '</li>'; }).join('') + '</ul><button class="sm" data-goto="' + esc(x.m.code) + '">Lihat di MRP</button>'); return; }
+    var wait = document.createElement('div'); wait.className = 'msg mut'; wait.textContent = 'Asisten berpikir…'; $('chatLog').appendChild(wait);
+    fetch('/api/ask', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ messages: [{ role: 'system', content: 'Anda asisten PPIC untuk MRP bahan baku pabrik tisu. Jawab singkat dalam bahasa Indonesia, hanya dari fakta JSON berikut; bila tidak ada di fakta, katakan tidak tahu. Fakta: ' + JSON.stringify(facts()) }, { role: 'user', content: t }] }) })
+      .then(function (r) { return r.json(); }).then(function (j) { wait.remove(); say('bot', j && j.text ? esc(j.text).replace(/\n/g, '<br>') : 'AI tidak tersedia (' + esc((j && j.error) || 'tanpa jawaban') + '). Coba: <i>ringkasan</i>, <i>pesan minggu ini</i>, <i>kenapa KODE</i>, <i>buffer KODE = angka</i>.'); })
+      .catch(function () { wait.remove(); say('bot', 'AI tidak terjangkau dari halaman ini. Coba perintah: <i>ringkasan</i>, <i>pesan minggu ini</i>, <i>kenapa KODE</i>, <i>buffer KODE = angka</i> atau <i>buffer KODE = auto</i>.'); });
+  }
+  $('chatForm').addEventListener('submit', function (e) { e.preventDefault(); var v = $('chatIn').value; $('chatIn').value = ''; ask(v); });
+
+  /* ---------------- Excel ---------------- */
+  function loadScript(src) { return new Promise(function (ok, no) { var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = function () { no(new Error('gagal memuat ' + src)); }; document.head.appendChild(s); }); }
+  function withXlsx() { return window.XLSX ? Promise.resolve() : loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'); }
+  var MCOL = [['kode', 'code'], ['nama', 'name'], ['kategori', 'cat'], ['kata_kunci_bom', 'kw'], ['stok_on_hand', 'soh'], ['lead_time_hari', 'lt'], ['cadangan_hari', 'safe'], ['buffer_manual', 'buf'], ['pesan_untuk_hari', 'cover'], ['moq', 'moq'], ['kelipatan', 'lot']];
+  function exportX(kind) {
+    withXlsx().then(function () {
+      var wb = XLSX.utils.book_new(), add = function (name, rows) { XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), name); };
+      add('bahan_baku', [MCOL.map(function (c) { return c[0]; })].concat(R.mats.map(function (m) { return MCOL.map(function (c) { return m[c[1]] == null ? '' : m[c[1]]; }); })));
+      add('po_terbuka', [['no_po', 'kode', 'qty', 'eta']].concat(R.po.map(function (p) { return [p.no || '', p.code, p.qty == null ? '' : p.qty, p.eta || '']; })));
+      if (kind !== 'tpl') {
+        add('rencana_pesan', [['tanggal_pesan', 'kode', 'nama', 'qty', 'satuan', 'tiba', 'posisi_stok_saat_pesan', 'buffer', 'catatan']].concat(C.orders.map(function (o) { var x = C.X[o.code]; return [o.rel, o.code, x.m.name, o.qty, x.u, o.arr, Math.round(o.pos * 100) / 100, Math.round(x.buf * 100) / 100, x.firstNeg && o.first ? 'tiba setelah stok habis ' + x.firstNeg : '']; })));
+        var wk = [['kode', 'baris'].concat(C.weeks.map(function (w) { return C.days[w.a]; }))], sm = function (a, w) { var s = 0; for (var i = w.a; i <= w.b; i++) s += a[i]; return Math.round(s * 100) / 100; };
+        C.list.forEach(function (x) { wk.push([x.m.code, 'kebutuhan'].concat(C.weeks.map(function (w) { return sm(x.g, w); }))); wk.push([x.m.code, 'terima PO'].concat(C.weeks.map(function (w) { return sm(x.recPO, w); }))); wk.push([x.m.code, 'terima rencana pesan'].concat(C.weeks.map(function (w) { return sm(x.recPL, w); }))); wk.push([x.m.code, 'stok akhir'].concat(C.weeks.map(function (w) { return Math.round(x.ohA[w.b] * 100) / 100; }))); wk.push([x.m.code, 'buffer'].concat(C.weeks.map(function () { return Math.round(x.buf * 100) / 100; }))); });
+        add('mrp_mingguan', wk);
+        var pg = [['kode', 'nomat', 'sku', 'bom_per_ctn', 'satuan', 'bom_contoh'].concat(C.M.map(function (mo) { return 'pp_' + mo; }), C.M.map(function (mo) { return 'kebutuhan_' + mo; }))];
+        C.list.forEach(function (x) { Object.keys(x.peg).forEach(function (k) { var p = x.peg[k]; pg.push([x.m.code, p.s.nomat || p.s.key, p.s.name, p.per, x.u, p.dummy ? 'ya' : ''].concat(p.pp.map(Math.round), p.q.map(function (v) { return Math.round(v * 1000) / 1000; }))); }); });
+        add('kebutuhan_sku', pg);
+      }
+      XLSX.writeFile(wb, kind === 'tpl' ? 'Template_bahan_baku_PO.xlsx' : 'MRP_bahan_baku_' + C.t0 + '.xlsx');
+    }).catch(function (e) { toast('Ekspor gagal: ' + e.message); });
+  }
+  function importX(file) {
+    withXlsx().then(function () { return file.arrayBuffer(); }).then(function (buf) {
+      var wb = XLSX.read(buf, { type: 'array', cellDates: true }), ms = wb.Sheets.bahan_baku, ps = wb.Sheets.po_terbuka, n1 = 0, n2 = 0;
+      if (!ms && !ps) { toast('Lembar bahan_baku / po_terbuka tidak ada. Pakai Template.'); return; }
+      if (ms) { var rows = XLSX.utils.sheet_to_json(ms, { defval: '' }), list = []; rows.forEach(function (r) { if (!String(r.kode || '').trim()) return; var m = { buf: null, soh: null }; MCOL.forEach(function (c) { var v = r[c[0]]; m[c[1]] = ['code', 'name', 'cat', 'kw'].indexOf(c[1]) >= 0 ? String(v).trim() : num(v); }); if (!CAT[m.cat]) m.cat = /karton|ct/i.test(m.cat) ? 'ct' : /jumbo|jr/i.test(m.cat) ? 'jr' : 'pl'; list.push(m); }); if (list.length) { R.mats = list; n1 = list.length; } }
+      if (ps) { var rp = XLSX.utils.sheet_to_json(ps, { defval: '' }); R.po = rp.filter(function (r) { return String(r.kode || '').trim(); }).map(function (r) { var e = r.eta instanceof Date ? iso(r.eta) : String(r.eta || '').trim().slice(0, 10); return { no: String(r.no_po || ''), code: String(r.kode).trim(), qty: num(r.qty), eta: e }; }); n2 = R.po.length; }
+      R.demoStock = false; save(); render(); toast('Diimpor: ' + n1 + ' bahan baku, ' + n2 + ' PO.');
+    }).catch(function (e) { toast('Impor gagal: ' + e.message); });
+  }
+
+  /* ---------------- start ---------------- */
+  try { var th = (JSON.parse(localStorage.getItem('ppic_ui') || '{}') || {}).theme; if (th) { document.documentElement.dataset.theme = th; $('optTheme').value = th; } } catch (x) {}
+  $('optDummy').checked = R.opt.dummy !== false; $('optSched').checked = R.opt.sched !== false;
+  seedDemoStock(); render(); side('alerts');
+}
+</script>
+</body>
+</html>

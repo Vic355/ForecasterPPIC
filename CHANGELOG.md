@@ -3,7 +3,23 @@
 Changes to the PPIC Decision Support System (Forecast Desk), newest first. Built from the git history and pull requests
 of this repository. Dates are when the change reached `main`. How the parts fit together: [docs/sistem.md](docs/sistem.md).
 
+## 2026-11-17
+
+- **Saran buffer over three months, smaller cards.** The Saran buffer table now runs M+1 → M+3 like the Forecast table:
+  after M+1 (Rencana produksi, Stok akhir, Status) each later month has Stok awal, Forecast, Buffer, PP and Stok akhir, where
+  stok akhir = stok awal + PP − forecast becomes next month's stok awal and may be negative (no longer cut at 0). Bahan baku
+  per month (Karton, Plastik, Jumbo roll × M+1..M+3, Deskripsi BOM) moved to the very end. The projection panel below keeps
+  only the monthly totals and *Buka MRP bahan baku ↗*. Page cards (Forecast Desk and MRP) are compact: one line of title,
+  value with the graphic beside it, one line of note.
+
 ## 2026-11-16
+
+- **MRP Bahan Baku (`/mrp/`).** New page for raw material orders (karton, plastik, jumbo roll). Requirement = PP M+1–M+3 from
+  the Saran buffer projection × BOM per carton; for raw materials the **buffer is the reorder point**: when stock + PO reaches
+  it, an order is released (buffer + N days, MOQ / multiple) and arrives after the lead time. Steps Kebutuhan, Stok & PO, MRP
+  (projected stock vs buffer per material, weekly table), Rencana pesan (*Sudah dipesan* → open PO); summary cards with
+  preview graphics, assistant bar, Excel export / import. Opened from **Buka MRP bahan baku ↗** in Saran buffer or the search
+  bar; sample BOM for SKUs without one.
 
 - **Cards back on the pages.** The summary cards of Forecast, Saran buffer and Rencana produksi are shown again above each
   page as real cards (coloured edge by warning light, large value) with a small preview graphic (trend line, monthly bars or

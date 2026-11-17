@@ -13,6 +13,7 @@ Plant: The Univenus Serang (plant 7079). Unit: cartons (CT), tonnes where noted.
 | --- | --- | --- | --- |
 | **Forecast Desk** (PPIC Decision Support System) | `public/index.html` | browser | The main app: reads the Excel files, checks SKUs, forecasts, suggests buffers, builds the production plan. One self-contained HTML file. |
 | **Perencanaan Produksi** | `public/produksi/index.html` | browser | Daily plan per machine and SKU (run bars), actuals pasted from the production report, what-if scenarios. Its own page at `/produksi/`, opened from step 6 or the search bar. |
+| **MRP Bahan Baku** | `public/mrp/index.html` | browser | Raw material requirements (PP M+1..M+3 × BOM), stock vs buffer, order dates and quantities. Its own page at `/mrp/`, opened from Saran buffer or the search bar. |
 | **Worker** | `src/index.js`, `wrangler.jsonc` | Cloudflare | Serves `./public` as static files, plus `/api/ask` (Workers AI) for the Asisten's free-form questions. |
 | **Chronos script** | `ingest/forecast_chronos.py` | user's computer | Runs the Chronos foundation model on the exported history and writes `forecast_chronos.csv`, which is dropped back into the app. |
 | **Batch loader** | `ingest/ingest_closing.py` | user's computer | Optional. The same closing extraction into an append-only SQLite store. |
@@ -51,6 +52,8 @@ Kelas SKU    ─┘                                 └─> Forecast HQ vs order
                        Rencana produksi (PP per SKU → machines → days)
                                                          ▼
                        Perencanaan Produksi /produksi/ (daily plan, actuals, scenarios)
+
+  Saran buffer (PP M+1..M+3) × BOM ─> MRP Bahan Baku /mrp/ (stock + PO vs buffer → order dates and quantities)
 ```
 
 ## 3. Data keys and cleaning
@@ -96,7 +99,7 @@ The backtest is walk-forward: each closing month is predicted only from earlier 
   (< 0.5 / 0.5–1 / > 1), < 3 months = NPD. Disagreement with the HQ class is flagged.
 - **PP** (production need) = forecast + buffer final − stok bebas; stok bebas = stock on hand − outstanding DN − SC block.
 - Manual buffer edits need a reason and are kept.
-- **Multi-month projection (M+1..M+3)**: stok akhir M+1 = stok awal + PP − forecast becomes stok awal M+2; M+2 gets its own
+- **Multi-month projection (M+1..M+3)**: stok akhir M+1 = stok awal + PP − forecast becomes stok awal M+2 (negative allowed, carried as is); M+2 gets its own
   buffer (same strategy, that month's forecast; P50/P90 from Chronos / Regressor kuantil for that month, else the M+1 range
   scaled) and PP = max(0, forecast + buffer − stok awal); the same for M+3. Manual buffer edits apply to M+1 only.
 - **Raw materials**: need = PP × BOM per carton (karton pcs, plastik kg, jumbo roll kg), BOM typed per SKU in Material master
@@ -113,6 +116,18 @@ The backtest is walk-forward: each closing month is predicted only from earlier 
 - **Perencanaan Produksi** (`/produksi/`) takes that plan (or a plan Excel; date columns up to a chosen day are actuals,
   no date columns = PP list). Steps: Data masuk, Rencana (grid with draggable bars and action cards), Aktual (paste the
   output column, check, lock the day), Skenario (rush order / machine stop, preview, apply). Saved in `ppic_prod`.
+
+## 6b. MRP Bahan Baku
+
+- **Input**: PP M+1..M+3 per SKU from the multi-month projection and the BOM per SKU (Material master), sent with
+  **Buka MRP bahan baku ↗** (`ppic_mrp`). Month 1 follows the Perencanaan Produksi daily plan when one exists for it.
+- **Buffer = reorder point for raw materials.** Buffer saran = requirement per day × (lead time + cadangan days), or a manual
+  value. Daily simulation of stock + open PO + planned orders; when that position reaches the buffer an order is released for
+  buffer + N days of requirement − position (MOQ / multiple), arriving after the lead time. Stock below zero before arrival
+  is flagged *Stok habis*; stock + PO above buffer + N days is *Di atas maksimum*.
+- Raw material per SKU and category chosen by keyword in the BOM description. Materials, stock, POs and settings are kept in
+  `ppic_mrp_rm`; Excel export / import (sheets `bahan_baku`, `po_terbuka`, plus `rencana_pesan`, `mrp_mingguan`,
+  `kebutuhan_sku` on export).
 
 ## 7. Asisten
 
@@ -136,7 +151,7 @@ target above machine speed). Alert cards show the value in a large coloured badg
 
 | Where | What |
 | --- | --- |
-| Browser `localStorage` (`ppic_*` keys) | Corrections, SKU statuses, rules, buffer edits and strategies, Chronos rows, material master (with SKUs added by hand and BOM), plan (with *Otomatis/Manual* per month), UI settings (side panel width), Perencanaan Produksi plan and actuals (`ppic_prod`) |
+| Browser `localStorage` (`ppic_*` keys) | Corrections, SKU statuses, rules, buffer edits and strategies, Chronos rows, material master (with SKUs added by hand and BOM), plan (with *Otomatis/Manual* per month), UI settings (side panel width), Perencanaan Produksi plan and actuals (`ppic_prod`), MRP input (`ppic_mrp`) and raw materials / POs (`ppic_mrp_rm`) |
 | History file `Histori_Serang_*.xlsx` or `.ppic.gz` | Everything above plus the extracted closings. Sheets: `bulanan`, `mingguan`, `forecast_hq`, `kelas_sku`, `log`, `status_sku`, `aturan`, `koreksi`, `saran_buffer`, `forecast_ml`, `forecast_chronos`, `material_master`, `rencana_produksi`, `jadwal_produksi`, `target_harian`, `kalender_produksi`, `sku_mesin`, `kapasitas_mesin` |
 | `.ppic.gz` | Same content as the Excel, columnar JSON gzipped (~13 KB vs ~390 KB on the sample) |
 

@@ -18,7 +18,8 @@ the previous one:
    Clicking a card opens a chart of that measure with the SKUs behind it.
 6. **Saran buffer**: buffer per SKU and PP.
 7. **Rencana produksi**: schedule per machine and day. The flow ends here; the daily plan is the separate
-   **Perencanaan Produksi** page (`/produksi/`, see below).
+   **Perencanaan Produksi** page (`/produksi/`, see below). Raw material orders are planned on the **MRP Bahan Baku**
+   page (`/mrp/`), opened from Saran buffer.
 
 SKUs are keyed by **Nomat** (nomor material). Article Code is kept alongside, used to look up the HQ class, and used as the
 key only when a row has no Nomat (flagged "Tanpa Nomat"). Closing and forecast are joined by Nomat, then by Article Code.
@@ -287,6 +288,36 @@ Four steps:
 The assistant sits in a bar above the table; **Alerts** and **Tanya** open as a pop-up over the grid, and *Tunjukkan* dims the page and points at the row.
 
 Data stays in the browser (`localStorage` key `ppic_prod`: `plan` with lines per SKU per machine, `actual` per line and date). Sending a new schedule from Forecast Desk replaces the plan but keeps actuals; if the plan was edited on this page, it asks first. Forecast Desk also sends stock cover (days), forecast per day and ABC-XYZ class per SKU, which the assistant uses to tell which SKUs are "panas", plus PP of SKUs it could not schedule. Without any plan the page shows the November 2026 sample (`contoh-rencana-2026-11.json`), clearly labelled. **Ekspor**: Excel (plan + actuals, plan only, actuals) or a `.prod.gz` backup.
+
+## MRP Bahan Baku (`/mrp/`)
+
+Raw material requirements planning for carton (pcs), plastic (ton) and jumbo roll (ton). Open it from **Saran buffer →
+Proyeksi buffer per bulan → Buka MRP bahan baku ↗** (sends PP M+1..M+3 and the BOM per SKU, then opens the page), or type
+*mrp* / *bahan baku* in the search bar (Ctrl K). The page has a **Forecast Desk | Produksi | MRP** switch.
+
+**Rule for raw materials: the buffer is the reorder point.** The finished-goods buffer (Saran buffer) is driven by
+forecast error; for raw materials the buffer is simply the last point at which an order must be placed:
+
+- Kebutuhan (requirement) = PP per month × BOM per carton (karton pcs, plastik kg ÷ 1000, jumbo roll kg ÷ 1000). PP M+2 and
+  M+3 come from the multi-month projection (stok akhir M+1 = stok awal + PP − forecast → stok awal M+2). Month 1 can follow
+  the daily schedule of Perencanaan Produksi when it has a plan for that month; otherwise PP is spread over Monday–Saturday.
+- Buffer saran = average requirement per day × (lead time + cadangan days). A manual buffer overrides it.
+- Daily simulation from the stock date: position = stock + open POs + planned orders. **When the position falls to the
+  buffer, an order is released that day**, for buffer + *pesan untuk* N days of requirement − position, rounded up to MOQ
+  and multiple, and arrives after the lead time. Stock on hand below zero before the order arrives = *Stok habis* (expedite).
+- Each raw material is picked from the SKU's BOM description by keyword (e.g. *5 ply*, *PE 40*, *virgin*); without a match
+  the first material of the category is used.
+
+Four steps: **Kebutuhan** (per material with the SKUs behind it), **Stok & PO** (material master: stock, lead time,
+cadangan, buffer, MOQ, multiple, keywords; open POs with ETA; Excel import/template), **MRP** (one card per material with
+projected stock vs buffer, the reasoning and a weekly table), **Rencana pesan** (order date, quantity, arrival; *Sudah
+dipesan* moves an order to open POs). Summary cards with preview graphics on top; the assistant bar has Alerts and Tanya
+(`ringkasan`, `pesan minggu ini`, `kenapa KODE`, `buffer KODE = n` / `auto`, free questions via `/api/ask`).
+**Ekspor**: Excel with rencana_pesan, mrp_mingguan, kebutuhan_sku, bahan_baku, po_terbuka.
+
+SKUs without a BOM use a sample BOM (karton 1 pcs, jumbo roll ≈ net weight × 1.04, plastik ≈ net weight × 3.5% per
+carton), clearly marked and switchable off in ⚙. Without data from Forecast Desk the page uses the November 2026 sample
+plan. Storage: `ppic_mrp` (sent by Forecast Desk), `ppic_mrp_rm` (materials, stock, POs, settings).
 
 ## Asisten (prototipe)
 
