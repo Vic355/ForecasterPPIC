@@ -12,6 +12,12 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
   preview graphics, assistant bar, Excel export / import. Opened from **Buka MRP bahan baku ↗** in Saran buffer or the search
   bar; sample BOM for SKUs without one.
 
+- **Cards back on the pages.** The summary cards of Forecast, Saran buffer and Rencana produksi are shown again above each
+  page as real cards (coloured edge by warning light, large value) with a small preview graphic (trend line, monthly bars or
+  the top SKUs of the list). *Sugesti Utama AI* moved into the side panel (Alerts tab on the Forecast page), still hidden at
+  start. The Tanya input box can be made taller (drag its corner); the Perencanaan Produksi assistant panel resizes in width
+  and height.
+
 - **Planner requests, round 3.** Side panel (Alerts / Tanya) on the left by default and resizable by dragging its edge (width
   remembered); the Perencanaan Produksi assistant panel also opens on the left and can be resized. **Saran buffer**: projection
   per month M+1–M+3 (stok akhir M+1 = stok awal + PP − forecast → stok awal M+2 with its own buffer and PP) with PP and raw
