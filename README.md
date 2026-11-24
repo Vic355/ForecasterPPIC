@@ -119,6 +119,24 @@ Three inputs:
 - **Compact history (.ppic.gz)**: same content as Histori_Serang.xlsx (every sheet), stored as columns and gzip-compressed in the
   browser; the sample is ~13 KB against ~390 KB for the Excel. Upload or drop it like the Excel to continue.
 
+## Small screens and large data (Nov 2026)
+
+- **Top bar size**: *Pengaturan → Bagian atas* has Otomatis (default), Penuh, Ringkas and Sembunyi. Otomatis makes the header and
+  step bar compact (about 80 px instead of 130 px) when the window is shorter than 820 px, which covers 1366×768 laptops and
+  Windows scaling of 125–150 %. The ⌃ button in the header hides both and leaves a 26 px strip with the current step and
+  *Tampilkan langkah & pencarian*; Ctrl K still opens the search. The choice is saved in the browser.
+- **Regressor in the background**: training the regressor (gradient-boosted trees) was the step that froze the page, for
+  5–15 s on a 600–1,200-SKU, two-year history and again after every order-in or HQ edit. It now runs in a Web Worker, and the
+  training itself is about 1.5–2× faster (typed arrays, same trees and the same numbers to the last digit). Until it is done
+  the ensemble uses the other models, or the previous regressor result for the same months after an edit; a small
+  *Model Regressor dihitung di latar…* badge shows meanwhile and the page redraws itself when it finishes. Excel / .ppic.gz
+  downloads wait for it. Browsers without Workers train inline as before.
+- **Loading overlay and error banner**: loading files or the demo shows *Memuat dan menghitung data…*; page changes that take a
+  while show *Membuka halaman…*. A script error no longer leaves a half-drawn page: a banner shows the message with
+  *Muat ulang* and *Tutup*, and data stays in the browser. A history file that fails to unpack, or a file the browser cannot
+  read, now shows *gagal dibaca* instead of leaving "Membaca 1 file…" forever.
+- **Rencana produksi day grid** is drawn only while that page is open (it was the slowest part of every redraw).
+
 ## Deploy (Cloudflare Worker)
 
 ```

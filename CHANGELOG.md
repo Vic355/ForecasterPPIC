@@ -3,6 +3,14 @@
 Changes to the PPIC Decision Support System (Forecast Desk), newest first. Built from the git history and pull requests
 of this repository. Dates are when the change reached `main`. How the parts fit together: [docs/sistem.md](docs/sistem.md).
 
+## 2026-11-24
+
+- **Lighter on small laptops and large histories.** Header and step bar can be compact or hidden (*Pengaturan → Bagian atas*;
+  Otomatis = compact on short windows; ⌃ hides them, Ctrl K still searches). The regressor trains in a Web Worker and about
+  1.5–2× faster with identical results, so loading a 1,200-SKU two-year history no longer freezes the page for ~15 s (longest
+  block now under 1 s) and edits no longer retrain on the main thread. Loading overlay, error banner instead of a dead page,
+  downloads wait for the regressor, and the Rencana produksi grid is only drawn while its page is open.
+
 ## 2026-11-17
 
 - **Saran buffer over three months, smaller cards.** The Saran buffer table now runs M+1 → M+3 like the Forecast table:

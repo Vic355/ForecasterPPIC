@@ -802,6 +802,47 @@ html[data-theme=dark] .acard.red .avn, html[data-theme=dark] .acard.grn .avn, ht
 .acard .avt { display: flex; flex-direction: column; font-size: 13px; line-height: 1.25; min-width: 0; }
 .acard .avt b { font-size: 14.5px; } .acard.red .avt b { color: var(--lamp-merah); } .acard.amb .avt b { color: var(--warn); } .acard.grn .avt b { color: var(--lamp-hijau); }
 .acard .avt small { color: var(--mut); font-size: 12px; }
+
+/* ---- small screens: compact / hidden top bar (Pengaturan → Bagian atas; Otomatis = ringkas bila layar pendek) ---- */
+body.hd-c .d10h { padding: 3px 12px; gap: 10px; }
+body.hd-c .wm b { font-size: 16px; }
+body.hd-c .v3-cmd { padding: 1px 8px 1px 4px; border-width: 1px; border-radius: 9px; }
+body.hd-c .v3-cmd-m svg { width: 22px; height: 22px; }
+body.hd-c .v3-cmdin { padding: 3px 0; font-size: 14px; }
+body.hd-c .d10h .ib { width: 30px; height: 28px; min-height: 28px; font-size: 15px; }
+body.hd-c .d10h .v-btn { min-height: 28px; padding: 2px 10px; font-size: 13.5px; }
+body.hd-c nav.flow { padding: 3px 10px 0; }
+body.hd-c .v3-step { align-items: center; gap: 7px; padding: 2px 8px 4px; border-bottom-width: 3px; border-radius: 8px 8px 0 0; }
+body.hd-c .v3-step:before { top: 13px; }
+body.hd-c .v3-sn { width: 22px; height: 22px; font-size: 12px; border-width: 1.5px; }
+body.hd-c .v3-st b { font-size: 13.5px; white-space: nowrap; text-overflow: ellipsis; }
+body.hd-c .v3-st small { display: none; }
+body.hd-c #d10main > .wrap { padding-top: 10px; }
+body.hd-h .d10h, body.hd-h nav.flow { display: none; }
+body.hd-h.hd-peek .d10h { display: grid; }
+#d10hbar { display: none; }
+body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; height: 26px; padding: 0 12px; background: var(--paper); border-bottom: 1px solid var(--line); font-size: 12.5px; color: var(--mut); white-space: nowrap; overflow: hidden; }
+#d10hbar b { font-family: var(--serif); color: var(--ink); font-size: 13.5px; }
+#d10hbar .sp { flex: 1; }
+#d10hbar button { border: 0; background: none; color: var(--acc); font-weight: 700; cursor: pointer; padding: 2px 6px; min-height: 0; font-size: 12.5px; }
+#d10hbar button:hover { text-decoration: underline; }
+/* ---- loading overlay, background-work badge, error banner ---- */
+#busyO { position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; background: rgba(20, 16, 10, .28); cursor: progress; }
+#busyO[hidden] { display: none; }
+#busyO.soft { animation: busyIn .2s ease .35s both; } /* page changes: only visible when they take a while */
+@keyframes busyIn { from { opacity: 0; } to { opacity: 1; } }
+#busyO .busy-c { display: flex; flex-direction: column; align-items: center; gap: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 18px 40px var(--shadow); padding: 20px 28px; max-width: min(420px, 90vw); text-align: center; }
+#busyO .busy-c b { font-size: 15.5px; } #busyO .busy-c small { color: var(--mut); font-size: 12.5px; }
+.busy-s { width: 30px; height: 30px; border-radius: 50%; border: 3px solid var(--line); border-top-color: var(--acc); animation: busySpin .8s linear infinite; flex: none; }
+.busy-s.sm { width: 14px; height: 14px; border-width: 2px; }
+@keyframes busySpin { to { transform: rotate(360deg); } }
+#busyB { position: fixed; left: 14px; bottom: 14px; z-index: 62; display: flex; align-items: center; gap: 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px 5px 8px; font-size: 12.5px; box-shadow: 0 4px 14px var(--shadow); }
+#busyB[hidden] { display: none; }
+#appErr { position: fixed; left: 50%; top: 12px; transform: translateX(-50%); z-index: 410; width: min(640px, 94vw); background: var(--paper); border: 1px solid var(--bad); border-left: 6px solid var(--bad); border-radius: 10px; box-shadow: 0 18px 40px var(--shadow); padding: 10px 14px; display: flex; flex-direction: column; gap: 3px; font-size: 13.5px; }
+#appErr[hidden] { display: none; }
+#appErr b { color: var(--bad); } #appErr small { color: var(--mut); } #appErr span#appErrM { font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
+#appErr .ae-b { display: flex; gap: 6px; justify-content: flex-end; margin-top: 4px; }
+@media (prefers-reduced-motion: reduce) { .busy-s { animation-duration: 2s; } }
 </style>
 </head>
 <body>
@@ -810,12 +851,14 @@ html[data-theme=dark] .acard.red .avn, html[data-theme=dark] .acard.grn .avn, ht
   <div class="wm"><b>Forecast Desk</b><span class="p" id="d10plant">7079</span><span id="d10chip"></span></div>
   <div class="v3-cmd" id="d10cmd"><span class="v3-cmd-m" data-mascot="1" title="Tanya Asisten" id="d10cmdM"></span><input class="v3-cmdin" id="d10cmdIn" type="search" autocomplete="off" placeholder="Tanya, cari nomat, atau buka halaman…" aria-label="Tanya, cari nomat, atau buka halaman"><kbd class="v3-kbd">Ctrl K</kbd><div class="v3-cmdl" id="d10cmdL" hidden></div></div>
   <div class="hr">
+    <button type="button" class="ib" id="d10hdB" title="Sembunyikan langkah dan pencarian" aria-label="Sembunyikan langkah dan pencarian">⌃</button>
     <button type="button" class="ib" id="undoBtn" disabled title="Urungkan (Ctrl+Z)">↶</button><button type="button" class="ib" id="redoBtn" disabled title="Ulangi (Ctrl+Y)">↷</button>
     <div class="setw"><button type="button" class="v-btn" id="d10exp" aria-haspopup="true">⇩ <span data-l="excel">Excel</span></button><div class="setp expp" id="d10expP"></div></div>
     <div class="setw"><button type="button" class="v-btn" id="d10setB" aria-haspopup="true">⚙ <span data-l="settings">Pengaturan</span></button><div class="setp" id="d10setP"></div></div>
   </div>
 </header>
 <nav class="flow" id="d10flow" aria-label="Langkah"></nav>
+<div id="d10hbar"></div>
 <div class="d10body" id="d10body">
 <aside class="alerts" id="d10alerts" aria-label="Alerts"></aside>
 <main id="d10main">
@@ -1060,11 +1103,17 @@ html[data-theme=dark] .acard.red .avn, html[data-theme=dark] .acard.grn .avn, ht
 </main>
 </div>
 <div id="d10tip" role="tooltip"></div>
+<div id="busyO" hidden><div class="busy-c" role="status" aria-live="polite"><span class="busy-s" aria-hidden="true"></span><b id="busyT">Memuat…</b><small id="busyS"></small></div></div>
+<div id="busyB" hidden role="status"><span class="busy-s sm" aria-hidden="true"></span><span id="busyBT"></span></div>
+<div id="appErr" hidden role="alert"><b id="appErrT">Terjadi kesalahan</b><span id="appErrM"></span><small id="appErrS"></small><span class="ae-b"><button type="button" class="v-btn sm" id="appErrR">Muat ulang</button><button type="button" class="v-btn sm" id="appErrX">Tutup</button></span></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 (function () {
 'use strict';
+// errors anywhere show a message instead of leaving a half-drawn page (appError is defined with the shell code below)
+window.addEventListener('error', function (e) { if (e && e.message !== undefined) appError(e.error || e.message); });
+window.addEventListener('unhandledrejection', function (e) { appError(e && e.reason); });
 /* =====================================================================================================
    LAMPU PERINGATAN: ambang dan warna semua lampu merah / kuning / hijau di Forecast Desk.
    Ubah angka di blok ini saja; semua halaman membaca dari sini. Simpan file, muat ulang halaman.
@@ -1862,13 +1911,24 @@ function readFiles(files, kind) {
   if (typeof XLSX === 'undefined') { setStatus('Pustaka pembaca Excel gagal dimuat. Muat ulang halaman.', 'bad'); return; }
   var list = Array.prototype.slice.call(files), done = 0, msgs = [];
   setStatus('Membaca ' + list.length + ' file…');
+  if (!list.length) return;
+  busyShow(tl('busyLoad'));
   list.forEach(function (file) {
     var fr = new FileReader();
-    var fin = function () { if (++done === list.length) { $('dropMsg').textContent = msgs.join(' · '); renderAll(); if (kind === 'auto' || $('tabInput').hidden) toast(msgs.join(' · ')); } };
+    var fin = function () {
+      if (++done !== list.length) return;
+      $('dropMsg').textContent = msgs.join(' · ');
+      setTimeout(function () { // let the overlay paint, then the heavy redraw
+        try { renderAll(); } catch (e) { appError(e); }
+        busyHide();
+        if (kind === 'auto' || $('tabInput').hidden) toast(msgs.join(' · '));
+      }, 0);
+    };
+    fr.onerror = function () { msgs.push(file.name + ': gagal dibaca (' + ((fr.error && fr.error.message) || 'file tidak bisa dibuka') + ')'); fin(); };
     fr.onload = function () {
       var bytes = new Uint8Array(fr.result);
       if (bytes[0] === 0x1f && bytes[1] === 0x8b || /\.ppic(\.json)?$/i.test(file.name)) { // compact history (.ppic.gz)
-        unpack(bytes).then(function (o) { loadPack(file.name, o); msgs.push(file.name + ' → histori ringkas (' + n(((o.sheets || {}).bulanan || { r: [] }).r.length) + ' baris SKU-bulan)'); }, function (e) { msgs.push(file.name + ': gagal dibaca (' + e.message + ')'); }).then(fin);
+        unpack(bytes).then(function (o) { loadPack(file.name, o); msgs.push(file.name + ' → histori ringkas (' + n(((o.sheets || {}).bulanan || { r: [] }).r.length) + ' baris SKU-bulan)'); }, function (e) { msgs.push(file.name + ': gagal dibaca (' + e.message + ')'); }).catch(function (e) { msgs.push(file.name + ': gagal diproses (' + ((e && e.message) || e) + ')'); }).then(fin);
         return;
       }
       try { var wbk = XLSX.read(bytes, { type: 'array' }); wbk._raw = bytes; var r = addWorkbook(file, wbk, kind); msgs.push(file.name + ' → ' + r); }
@@ -2896,7 +2956,7 @@ function openList(id) {
 }
 function renderPlan(m) {
   var bm = CH.bm;
-  if (!m.skus.length || !m.future.length || !bm) { CH.pm = null; CH.sm = null; $('ppCards').innerHTML = ''; $('ppCtx').innerHTML = ''; $('schNote').innerHTML = ''; $('ppTable').innerHTML = '<tbody><tr><td class="empty">Belum ada data. Unggah closing dan Forecast HQ di lembar <b>Input Data &amp; Model</b>.</td></tr></tbody>'; renderPPData(null); return; }
+  if (!m.skus.length || !m.future.length || !bm) { CH.pm = null; CH.sm = null; CH.ppGrid = null; $('ppCards').innerHTML = ''; $('ppCtx').innerHTML = ''; $('schNote').innerHTML = ''; $('ppTable').innerHTML = '<tbody><tr><td class="empty">Belum ada data. Unggah closing dan Forecast HQ di lembar <b>Input Data &amp; Model</b>.</td></tr></tbody>'; renderPPData(null); return; }
   var pm = planModel(m, bm), P = pm.P, mt = state.ppUnit === 'mt', all = ppAgg(pm.rows);
   CH.pm = pm;
   var demo = !master().length && !!state.sample, MST = master().length ? master() : demo ? demoMaster(pm) : []; CH.MST = MST;
@@ -2939,8 +2999,11 @@ function renderPlan(m) {
     listCard('ppUn', 'Belum terjadwal', n(un.length) + ' SKU', un.length ? (schedFor(P).mode === 'manual' ? 'Mode manual: tempatkan di mesin atau jalankan jadwal otomatis. ' : '') + 'Juga: tanpa berat bersih, area mesin tanpa mesin, belum dipetakan, atau dikeluarkan manual.' : 'Semua SKU dengan PP sudah masuk jadwal.', un.length ? 'Belum di jadwal' : 'Lengkap', un.length ? (LAMPU.rencana.belumTerjadwal === 'kuning' ? 'warn' : 'bad') : 'ok', 'merah bila ada SKU dengan PP tanpa bar') +
     listCard('ppIss', 'Jadwal perlu dicek', n(iss.length) + ' SKU', iss.length ? 'Lewat akhir bulan, bentrok, atau target harian di atas kecepatan mesin.' : 'Semua bar selesai dalam bulan, tanpa bentrok.', iss.length ? 'Cek' : 'Rapi', iss.length ? 'warn' : 'ok') +
     listCard('ppGuess', 'Mesin belum pasti', n(guess.length) + ' SKU', guess.length ? 'Area mesin masih tebakan dari nama SKU.' : 'Semua SKU dengan PP punya area mesin dari data.', guess.length ? 'Tebakan' : 'Lengkap', guess.length ? 'warn' : 'ok');
-  renderPlanGrid(pm, sm, mt, all);
+  // the day grid is the slowest part of a redraw; it is drawn only while Rencana produksi is open (or when it opens)
+  CH.ppGrid = [pm, sm, mt, all];
+  if (!$('tabPlan').hidden) ppGridDraw();
 }
+function ppGridDraw() { var a = CH.ppGrid; if (!a) return; CH.ppGrid = null; renderPlanGrid(a[0], a[1], a[2], a[3]); }
 function renderPlanGrid(pm, sm, mt, all) {
   var P = pm.P, D = pm.D, H = sm.H, W0 = 260, WN = 92, WH = 46, fixedW = W0 + 2 * WN + WH;
   var dw = Math.max(32, Math.min(64, Math.floor((($('ppScroll').clientWidth || document.documentElement.clientWidth - 60) - fixedW - 2) / H)));
@@ -3356,42 +3419,58 @@ var GBR = { trees: 80, depth: 3, lr: 0.1, bins: 32, minRows: 12, btMonths: 6, ta
 function lg(v) { return v === null || v === undefined || !isFinite(v) ? -1 : Math.log1p(Math.max(0, v)); }
 // ---- tiny gradient boosting (squared loss, histogram splits, deterministic) ----
 // tau given: quantile regression (pinball loss): splits on the sign gradient, leaf = tau-quantile of the residuals.
-function qtl(arr, tau) { if (!arr.length) return 0; var a = arr.slice().sort(function (x, y) { return x - y; }), p = tau * (a.length - 1), i = Math.floor(p); return i + 1 < a.length ? a[i] + (p - i) * (a[i + 1] - a[i]) : a[i]; }
+function qtl(arr, tau) { if (!arr.length) return 0; var a = Float64Array.from(arr).sort(), p = tau * (a.length - 1), i = Math.floor(p); return i + 1 < a.length ? a[i] + (p - i) * (a[i + 1] - a[i]) : a[i]; }
+// Same trees and numbers as the first version, but with typed arrays, column-wise bins and no per-row closures
+// (about 5× faster on a 600-SKU, 24-month history). Sums run in the same order, so results are identical.
 function gbmFit(X, y, tau) {
-  var n = X.length, d = X[0].length, edges = [], B = [];
-  for (var f = 0; f < d; f++) {
-    var vals = X.map(function (r) { return r[f]; }).sort(function (a, b) { return a - b; }), e = [];
+  var n = X.length, d = X[0].length, edges = [], Bc = [], f, i, j;
+  for (f = 0; f < d; f++) {
+    var vals = new Float64Array(n); for (i = 0; i < n; i++) vals[i] = X[i][f]; vals.sort();
+    var e = [];
     for (var q = 1; q < GBR.bins; q++) { var v = vals[Math.floor(q * n / GBR.bins)]; if (v !== undefined && (!e.length || v > e[e.length - 1])) e.push(v); }
     edges.push(e);
+    var col = new Uint8Array(n);
+    for (i = 0; i < n; i++) { var x = X[i][f], b = 0; while (b < e.length && x > e[b]) b++; col[i] = b; }
+    Bc.push(col);
   }
-  for (var i = 0; i < n; i++) { var row = []; for (var f2 = 0; f2 < d; f2++) { var e2 = edges[f2], b = 0; while (b < e2.length && X[i][f2] > e2[b]) b++; row.push(b); } B.push(row); }
-  var base = tau ? qtl(y, tau) : y.reduce(function (a, b) { return a + b; }, 0) / n, pred = y.map(function () { return base; }), trees = [], raw = null;
-  var minLeaf = Math.max(3, Math.floor(n / 40));
-  var build = function (idx, r, depth) {
-    var S = 0; idx.forEach(function (i) { S += r[i]; });
-    var leaf = function () { return { v: tau ? qtl(idx.map(function (i) { return raw[i]; }), tau) : S / idx.length }; };
-    if (depth >= GBR.depth || idx.length < 2 * minLeaf) return leaf();
+  var base = tau ? qtl(y, tau) : y.reduce(function (a, b) { return a + b; }, 0) / n, pred = new Float64Array(n), trees = [];
+  for (i = 0; i < n; i++) pred[i] = base;
+  var minLeaf = Math.max(3, Math.floor(n / 40)), res = new Float64Array(n), raw = new Float64Array(n);
+  var hs = new Float64Array(GBR.bins + 1), hc = new Int32Array(GBR.bins + 1);
+  var build = function (idx, depth) {
+    var len = idx.length, S = 0, k;
+    for (k = 0; k < len; k++) S += res[idx[k]];
+    var leaf = function () {
+      var v;
+      if (tau) { var a = new Float64Array(len); for (var k2 = 0; k2 < len; k2++) a[k2] = raw[idx[k2]]; v = qtl(a, tau); } else v = S / len;
+      return { v: v };
+    };
+    if (depth >= GBR.depth || len < 2 * minLeaf) return leaf();
     var best = null;
     for (var f = 0; f < d; f++) {
-      var nb = edges[f].length + 1, hs = new Float64Array(nb), hc = new Int32Array(nb);
-      idx.forEach(function (i) { hs[B[i][f]] += r[i]; hc[B[i][f]]++; });
+      var nb = edges[f].length + 1, col = Bc[f];
+      for (k = 0; k < nb; k++) { hs[k] = 0; hc[k] = 0; }
+      for (k = 0; k < len; k++) { var ii = idx[k], bb = col[ii]; hs[bb] += res[ii]; hc[bb]++; }
       var sl = 0, cl = 0;
       for (var b = 0; b < nb - 1; b++) {
-        sl += hs[b]; cl += hc[b]; var cr = idx.length - cl; if (cl < minLeaf || cr < minLeaf) continue;
-        var g = sl * sl / cl + (S - sl) * (S - sl) / cr - S * S / idx.length;
+        sl += hs[b]; cl += hc[b]; var cr = len - cl; if (cl < minLeaf || cr < minLeaf) continue;
+        var g = sl * sl / cl + (S - sl) * (S - sl) / cr - S * S / len;
         if (g > 1e-9 && (!best || g > best.g)) best = { g: g, f: f, b: b };
       }
     }
     if (!best) return leaf();
-    var L = [], R = []; idx.forEach(function (i) { (B[i][best.f] <= best.b ? L : R).push(i); });
-    return { f: best.f, t: edges[best.f][best.b], l: build(L, r, depth + 1), r: build(R, r, depth + 1) };
+    var bc = Bc[best.f], nl = 0;
+    for (k = 0; k < len; k++) if (bc[idx[k]] <= best.b) nl++;
+    var L = new Int32Array(nl), R = new Int32Array(len - nl), li = 0, ri = 0;
+    for (k = 0; k < len; k++) { var i3 = idx[k]; if (bc[i3] <= best.b) L[li++] = i3; else R[ri++] = i3; }
+    return { f: best.f, t: edges[best.f][best.b], l: build(L, depth + 1), r: build(R, depth + 1) };
   };
-  var all = []; for (var k = 0; k < n; k++) all.push(k);
+  var all = new Int32Array(n); for (j = 0; j < n; j++) all[j] = j;
   for (var t = 0; t < GBR.trees; t++) {
-    var res = y.map(function (v, i) { return v - pred[i]; });
-    if (tau) { raw = res; res = res.map(function (v) { return v > 0 ? tau : tau - 1; }); }
-    var tr = build(all, res, 0);
-    trees.push(tr); for (var j = 0; j < n; j++) pred[j] += GBR.lr * gbmLeaf(tr, X[j]);
+    for (j = 0; j < n; j++) res[j] = y[j] - pred[j];
+    if (tau) { for (j = 0; j < n; j++) { raw[j] = res[j]; res[j] = res[j] > 0 ? tau : tau - 1; } }
+    trees.push(build(all, 0));
+    var tr = trees[trees.length - 1]; for (j = 0; j < n; j++) pred[j] += GBR.lr * gbmLeaf(tr, X[j]);
   }
   return { base: base, trees: trees, n: n };
 }
@@ -3406,11 +3485,13 @@ function gbrFeat(s, cms, k, tm, q, Rs, catMean) {
   var nz = ser.filter(function (v) { return v !== null; }), cv = cvOf(nz.slice(-ABC.months));
   return [lg(l1), lg(l2), lg(l3), lg(mean), lg(qq), r, lg(qq === null ? null : qq * r), lg(catMean(k, s)), +tm.slice(5, 7), nz.length, cv === null ? -1 : Math.min(3, cv)];
 }
-var _gbrCache = { key: null, res: null };
-function gbrRun(m, Rs) {
-  var cms = m.closingMonths, K = cms.length, skus = m.skus;
-  var key = cms.join(',') + '|' + m.future.join(',') + '|' + skus.map(function (s) { return s.key + ':' + JSON.stringify(s.oiM || s.oi) + JSON.stringify(s.hq) + JSON.stringify(s.fhq) + (s.grp || ''); }).join(';');
-  if (_gbrCache.key === key) return _gbrCache.res;
+var _gbrCache = { key: null, mk: null, res: null };
+function gbrKey(m) {
+  return m.closingMonths.join(',') + '|' + m.future.join(',') + '|' + m.skus.map(function (s) { return s.key + ':' + JSON.stringify(s.oiM || s.oi) + JSON.stringify(s.hq) + JSON.stringify(s.fhq) + (s.grp || ''); }).join(';');
+}
+// Trains the regressor. Pure function of the job (no page state), so it can also run inside the Web Worker below.
+function gbrCompute(job) {
+  var cms = job.cms, K = cms.length, skus = job.skus, Rs = job.Rs;
   var cm = {};
   var catMean = function (k, s) {
     var c = cm[k] || (cm[k] = (function () { var a = {}; skus.forEach(function (x) { var v = oiSeries(x, cms, k)[k - 1]; if (v === null || v === undefined) return; var g = x.grp || ''; a[g] = a[g] || [0, 0]; a[g][0] += v; a[g][1]++; }); return a; })());
@@ -3442,7 +3523,7 @@ function gbrRun(m, Rs) {
   }
   // future: one model per horizon; a horizon with too few rows uses the nearest shorter one
   var last = null;
-  m.future.forEach(function (fm, i) {
+  job.future.forEach(function (fm, i) {
     var h = i + 1, d = rows(h, K), mdl = d.X.length >= GBR.minRows ? gbmFit(d.X, d.y) : null;
     if (mdl) { last = mdl; res.n[fm] = d.X.length; if (h === 1) res.imp = gbrImportance(mdl); } else { mdl = last; res.n[fm] = last ? 'dari horizon lebih pendek' : 0; }
     if (!mdl) return;
@@ -3453,8 +3534,61 @@ function gbrRun(m, Rs) {
       if (mq) (res.qfut[s.key] = res.qfut[s.key] || {})[fm] = Math.max(0, Math.expm1(gbmPredict(mq, x)));
     });
   });
-  _gbrCache = { key: key, res: res };
   return res;
+}
+// ---- regressor training off the main thread ----
+// Training is the heaviest step of the app (seconds on a 600-SKU, 2-year history) and used to freeze the page. It now runs
+// in a Web Worker: until it is done the ensemble uses the other models (or the last regressor result for the same months,
+// e.g. after an edit) and the page redraws itself once the regressor is ready. Without Worker support it runs inline.
+var GBRW = { w: null, ok: typeof Worker !== 'undefined' && typeof Blob !== 'undefined' && !!window.URL, busy: null, next: null, id: 0, wait: [] };
+function gbrEmpty() { return { bt: {}, fut: {}, n: {}, imp: null, qbt: {}, qfut: {} }; }
+function gbrWorker() {
+  if (GBRW.w || !GBRW.ok) return GBRW.w;
+  try {
+    var src = '"use strict";\nvar GBR, ML, ABC, GBR_FEATS;\n' + [lg, qtl, gbmFit, gbmLeaf, gbmPredict, gbrFeat, oiSeries, skuRatio, cvOf, gbrImportance, gbrCompute].map(String).join('\n') +
+      '\nonmessage = function (e) { var d = e.data, r; GBR = d.GBR; ML = d.ML; ABC = d.ABC; GBR_FEATS = d.FEATS;' +
+      ' try { r = { id: d.id, res: gbrCompute(d.job) }; } catch (x) { r = { id: d.id, err: String(x && x.message || x) }; } postMessage(r); };';
+    GBRW.w = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
+    GBRW.w.onmessage = function (e) { gbrDone(e.data); };
+    GBRW.w.onerror = function (e) { if (e && e.preventDefault) e.preventDefault(); GBRW.ok = false; try { GBRW.w.terminate(); } catch (x) {} GBRW.w = null; gbrDone({ id: GBRW.busy ? GBRW.busy.id : -1, err: 'worker' }); };
+  } catch (e) { GBRW.ok = false; GBRW.w = null; }
+  return GBRW.w;
+}
+function gbrPost(t) {
+  t.id = ++GBRW.id; GBRW.busy = t; busyBadge(true);
+  GBRW.w.postMessage({ id: t.id, job: t.job, GBR: GBR, ML: ML, ABC: ABC, FEATS: GBR_FEATS });
+}
+function gbrDone(d) {
+  var t = GBRW.busy; if (!t || d.id !== t.id) return;
+  GBRW.busy = null;
+  var res;
+  if (d.err) { try { res = gbrCompute(t.job); } catch (e) { res = gbrEmpty(); appError(e); } } // worker failed: same work inline
+  else res = d.res;
+  _gbrCache = { key: t.key, mk: t.mk, res: res };
+  var nx = GBRW.next; GBRW.next = null;
+  if (nx && nx.key !== t.key && gbrWorker()) { gbrPost(nx); return; } // data changed meanwhile: train on the newest
+  busyBadge(false);
+  gbrRedraw();
+}
+// redraw with the finished regressor; wait while the user is typing in a cell or field of the page
+function gbrRedraw() {
+  var a = document.activeElement;
+  if (a && a !== document.body && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.id !== 'd10cmdIn' && $('d10main').contains(a)) { setTimeout(gbrRedraw, 800); return; }
+  if (GBRW.busy) return;
+  try { renderAll(); } catch (e) { appError(e); }
+  var w = GBRW.wait; GBRW.wait = []; w.forEach(function (f) { try { f(); } catch (e) { appError(e); } });
+}
+// run f once the regressor is ready (exports need the full model)
+function gbrReady(f) { if (!GBRW.busy) { f(); return; } GBRW.wait.push(f); toast(tl('busyWait')); }
+function gbrRun(m, Rs) {
+  var key = gbrKey(m), mk = m.closingMonths.join(',') + '|' + m.future.join(',');
+  if (_gbrCache.key === key) return _gbrCache.res;
+  var job = { cms: m.closingMonths.slice(), future: m.future.slice(), Rs: Rs.slice(), skus: m.skus.map(function (s) { return { key: s.key, oi: s.oi, oiM: s.oiM, hq: s.hq, fhq: s.fhq, grp: s.grp }; }) };
+  if (!gbrWorker()) { var res = gbrCompute(job); _gbrCache = { key: key, mk: mk, res: res }; return res; }
+  if (!GBRW.busy) gbrPost({ key: key, mk: mk, job: job });
+  else if (GBRW.busy.key !== key) GBRW.next = { key: key, mk: mk, job: job };
+  if (_gbrCache.mk === mk && _gbrCache.res) return _gbrCache.res; // same months (an edit): keep the last result meanwhile
+  return gbrEmpty();
 }
 function gbrImportance(mdl) {
   var c = GBR_FEATS.map(function () { return 0; });
@@ -4240,6 +4374,7 @@ $('copyWeekly').addEventListener('click', function () { var it = viewed(); if (i
 var canDownload = window.self === window.top;
 $('dlXlsx').hidden = !canDownload;
 $('dlXlsx').addEventListener('click', function () {
+  if (GBRW.busy) { gbrReady(function () { $('dlXlsx').click(); }); return; }
   var c = combined(), wb = XLSX.utils.book_new();
   histSheets(c).forEach(function (s) {
     XLSX.utils.book_append_sheet(wb, s[1].length ? XLSX.utils.json_to_sheet(s[1]) : XLSX.utils.aoa_to_sheet([['(kosong)']]), s[0]);
@@ -4380,7 +4515,7 @@ $('useSample').addEventListener('click', loadSample);
 function showTab(name) {
   document.querySelectorAll('.tab[data-tab]').forEach(function (b) { var on = b.getAttribute('data-tab') === name; b.classList.toggle('on', on); if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
   $('tabForecast').hidden = name !== 'Forecast'; $('tabInput').hidden = name !== 'Input'; $('tabCek').hidden = name !== 'Cek'; $('tabBuffer').hidden = name !== 'Buffer'; $('tabPlan').hidden = name !== 'Plan'; ['Brief', 'Master'].forEach(function (t) { $('tab' + t).hidden = name !== t; }); document.body.classList.toggle('wide', name === 'Plan'); if (name === 'Plan' && CH.sm && Math.abs(document.documentElement.clientWidth - (state._ppW || 0)) > 40) { state._ppW = document.documentElement.clientWidth; renderAll(); }
-  if (name === 'Plan') ppSyncScroll();
+  if (name === 'Plan') { ppGridDraw(); ppSyncScroll(); }
   try { localStorage.setItem('ppic_tab', name); } catch (e) {}
   if (typeof D10 === 'object' && D10) { D10.cur = name; d10Render(); }
 }
@@ -5579,6 +5714,7 @@ function loadPack(name, o) {
 }
 $('dlPack').hidden = !canDownload;
 $('dlPack').addEventListener('click', function () {
+  if (GBRW.busy) { gbrReady(function () { $('dlPack').click(); }); return; }
   var c = combined(), json = JSON.stringify(packObj(c)), name = histFileName(c) + (window.CompressionStream ? '.ppic.gz' : '.ppic.json');
   $('histMsg').textContent = 'Menyiapkan…';
   gzipBlob(json).then(function (blob) {
@@ -5664,14 +5800,24 @@ loadRuleState(); loadBuf(); loadPP(); loadMat(); loadChronos();
 // The pages' own content (cards, tables, controls) is unchanged; this layer arranges it the Design 10 way and reads
 // alerts from the cards each page already computes (red = bad, amber = warn).
 var D10 = { acc: {}, cur: 'Brief', lang: 'id', big: false, side: 'alerts', open: window.innerWidth > 1100, right: false, rib: {}, talkUntil: 0, lastA: '' };
-try { var d10s = JSON.parse(localStorage.getItem('ppic_ui') || '{}') || {}; if (d10s.lang) D10.lang = d10s.lang; D10.big = !!d10s.big; D10.right = d10s.v >= 2 && !!d10s.right; D10.apw = d10s.w || 0; D10.dimOn = d10s.dim !== false; D10.talkOn = d10s.talk !== false; if (d10s.theme) document.documentElement.setAttribute('data-theme', d10s.theme); } catch (e) {}
-function d10Save() { try { localStorage.setItem('ppic_ui', JSON.stringify({ v: 2, w: D10.apw || 0, lang: D10.lang, big: D10.big, right: D10.right, dim: D10.dimOn !== false, talk: D10.talkOn !== false, theme: document.documentElement.getAttribute('data-theme') })); } catch (e) {} }
+try { var d10s = JSON.parse(localStorage.getItem('ppic_ui') || '{}') || {}; if (d10s.lang) D10.lang = d10s.lang; D10.big = !!d10s.big; D10.right = d10s.v >= 2 && !!d10s.right; D10.apw = d10s.w || 0; D10.dimOn = d10s.dim !== false; D10.talkOn = d10s.talk !== false; D10.head = d10s.head || 'auto'; D10.headPrev = d10s.headPrev || 'auto'; if (d10s.theme) document.documentElement.setAttribute('data-theme', d10s.theme); } catch (e) {}
+function d10Save() { try { localStorage.setItem('ppic_ui', JSON.stringify({ v: 2, w: D10.apw || 0, lang: D10.lang, big: D10.big, right: D10.right, dim: D10.dimOn !== false, talk: D10.talkOn !== false, head: D10.head || 'auto', headPrev: D10.headPrev || 'auto', theme: document.documentElement.getAttribute('data-theme') })); } catch (e) {} }
 var D10_TABS = ['Brief', 'Input', 'Master', 'Cek', 'Forecast', 'Buffer', 'Plan'];
 var D10_SN = {
   id: ['Ringkasan', 'Input data', 'Material master', 'Cek data SKU', 'Forecast', 'Saran buffer', 'Rencana produksi'],
   en: ['Summary', 'Input data', 'Material master', 'SKU check', 'Forecast', 'Buffer', 'Production plan'],
   zh: ['概览', '数据输入', '物料主数据', 'SKU 检查', '预测', '安全库存', '生产计划'] };
 var D10_L = {
+  head: ['Bagian atas (langkah + pencarian)', 'Top bar (steps + search)', '顶部栏（步骤 + 搜索）'], hdAuto: ['Otomatis', 'Auto', '自动'], hdFull: ['Penuh', 'Full', '完整'], hdCompact: ['Ringkas', 'Compact', '紧凑'], hdHide: ['Sembunyi', 'Hidden', '隐藏'],
+  hdNote: ['Otomatis = ringkas bila layar pendek (laptop kecil). Pilihan disimpan di browser ini.', 'Auto = compact on short screens (small laptops). Saved in this browser.', '自动 = 屏幕较矮时（小笔记本）使用紧凑模式。保存在此浏览器。'],
+  hdHidden: ['Langkah dan pencarian disembunyikan. Tampilkan lagi lewat bar tipis di atas, atau tekan Ctrl K untuk mencari.', 'Steps and search are hidden. Bring them back from the thin bar at the top, or press Ctrl K to search.', '步骤和搜索已隐藏。点击顶部细条可恢复，或按 Ctrl K 搜索。'],
+  hdHideB: ['Sembunyikan langkah dan pencarian', 'Hide steps and search', '隐藏步骤和搜索'], hdShow: ['▾ Tampilkan langkah & pencarian', '▾ Show steps & search', '▾ 显示步骤和搜索'],
+  busyLoad: ['Memuat dan menghitung data…', 'Loading and calculating…', '正在加载并计算…'], busyNav: ['Membuka halaman…', 'Opening page…', '正在打开页面…'],
+  busySub: ['Data besar butuh beberapa detik. Jangan tutup halaman ini.', 'Large data takes a few seconds. Please keep this page open.', '数据较大需要几秒钟，请勿关闭此页面。'],
+  busyML: ['Model Regressor dihitung di latar…', 'Regressor is training in the background…', '回归模型正在后台计算…'],
+  busyWait: ['Tunggu sebentar: model Regressor masih dihitung. Unduhan mulai otomatis setelah selesai.', 'One moment: the Regressor is still training. The download starts by itself when it is done.', '请稍候：回归模型仍在计算，完成后会自动开始下载。'],
+  errT: ['Terjadi kesalahan', 'Something went wrong', '出现错误'], errSub: ['Halaman tetap berjalan dan data Anda tetap tersimpan di browser. Bila tampilan terlihat aneh, muat ulang halaman.', 'The page keeps running and your data stays saved in this browser. If the view looks wrong, reload the page.', '页面仍在运行，数据仍保存在浏览器中。如显示异常，请重新加载页面。'],
+  reload: ['Muat ulang', 'Reload', '重新加载'], closeB: ['Tutup', 'Close', '关闭'],
   settings: ['Pengaturan', 'Settings', '设置'], theme: ['Tema', 'Theme', '主题'], light: ['Terang', 'Light', '浅色'], sepia: ['Sepia', 'Sepia', '护眼'], dark: ['Gelap', 'Dark', '深色'],
   size: ['Ukuran teks', 'Text size', '字号'], normal: ['Normal', 'Normal', '标准'], big: ['Besar', 'Large', '大'], lang: ['Bahasa', 'Language', '语言'], help: ['Bantuan', 'Help', '帮助'],
   guide: ['📄 Panduan (PDF)', '📄 User guide (PDF)', '📄 使用指南 (PDF)'], soon: ['menyusul', 'coming soon', '即将提供'], data: ['Data', 'Data', '数据'],
@@ -5801,6 +5947,7 @@ function d10Render() {
   var sig = A.map(function (a) { return a.lvl + a.title + a.amount; }).join('|'); if (sig !== D10.lastA && A.some(function (a) { return a.lvl === 'red'; })) { D10.lastA = sig; setTimeout(d10Talk, 50); } else D10.lastA = sig;
   document.documentElement.lang = D10.lang === 'zh' ? 'zh-CN' : D10.lang;
   document.body.classList.toggle('big', D10.big);
+  d10Head();
   // header
   $('d10plant').textContent = ($('plant').value || '7079') + (m && m.latest ? ' · ' + monthLabel(m.latest) : '');
   $('d10chip').innerHTML = !has ? '<span class="v-chip v-gry">' + tl('noChip') + '</span>' : state.sample ? '<span class="v-chip v-amb">' + tl('demoChip') + '</span>' : '<span class="v-chip v-grn">' + tl('fileChip') + '</span>';
@@ -6039,7 +6186,7 @@ function d10AskEl(el) {
   var notes = [].slice.call(c.querySelectorAll(':scope > p.note, :scope > .ph + p.note')).map(function (x) { return x.innerHTML; }).filter(function (x) { return x.trim(); });
   d10Ask(tl('askQ') + ' "' + t.textContent.trim() + '"?', notes.join('<br><br>') || 'Belum ada penjelasan untuk bagian ini.');
 }
-function d10Find() { $('d10main').scrollTo({ top: 0, behavior: 'smooth' }); setTimeout(function () { $('d10cmdIn').focus(); }, 200); }
+function d10Find() { $('d10main').scrollTo({ top: 0, behavior: 'smooth' }); d10Peek(); setTimeout(function () { $('d10cmdIn').focus(); }, 200); }
 function d10Tip(q, on) {
   var t = $('d10tip'); if (!on) { t.classList.remove('on'); return; }
   var h = D10_HELP[q.getAttribute('data-help')]; if (!h) return;
@@ -6081,6 +6228,7 @@ function d10Settings() {
   var seg = function (attr, cur, opts) { return '<div class="seg2">' + opts.map(function (o) { return '<button type="button" data-' + attr + '="' + o[0] + '" class="' + (cur === o[0] ? 'on' : '') + '">' + o[1] + '</button>'; }).join('') + '</div>'; };
   $('d10setP').innerHTML = '<div class="sh">' + tl('theme') + '</div>' + seg('theme-set', th, [['light', tl('light')], ['sepia', tl('sepia')], ['dark', tl('dark')]]) +
     '<div class="sh">' + tl('size') + '</div>' + seg('size', D10.big ? 'big' : 'normal', [['normal', tl('normal')], ['big', tl('big')]]) +
+    '<div class="sh">' + tl('head') + '</div>' + seg('head', D10.head || 'auto', [['auto', tl('hdAuto')], ['full', tl('hdFull')], ['compact', tl('hdCompact')], ['hide', tl('hdHide')]]) + '<div class="note">' + tl('hdNote') + '</div>' +
     '<div class="sh">' + tl('lang') + '</div>' + seg('lang', D10.lang, [['en', 'English'], ['zh', '中文'], ['id', 'Indonesia']]) + (D10.lang !== 'id' ? '<div class="note">' + tl('langNote') + '</div>' : '') +
     '<div class="sh">' + tl('asst') + '</div><div class="note" style="margin:0 0 4px">' + tl('dimL') + '</div>' + seg('dim', D10.dimOn === false ? 'off' : 'on', [['on', tl('on')], ['off', tl('off')]]) +
     '<div class="note" style="margin:6px 0 4px">' + tl('talkL') + '</div>' + seg('talk', D10.talkOn === false ? 'off' : 'on', [['on', tl('on')], ['off', tl('off')]]) +
@@ -6101,6 +6249,7 @@ $('d10setP').addEventListener('click', function (e) {
   if (b.hasAttribute('data-theme-set')) { document.documentElement.setAttribute('data-theme', b.getAttribute('data-theme-set')); if (CH.spec && !$('chDlg').hidden) { try { drawChart(CH.spec); } catch (x) {} } }
   if (b.hasAttribute('data-size')) D10.big = b.getAttribute('data-size') === 'big';
   if (b.hasAttribute('data-lang')) D10.lang = b.getAttribute('data-lang');
+  if (b.hasAttribute('data-head')) d10SetHead(b.getAttribute('data-head'));
   if (b.hasAttribute('data-dim')) { D10.dimOn = b.getAttribute('data-dim') === 'on'; if (!D10.dimOn) aiFocusClose(); }
   if (b.hasAttribute('data-talk')) D10.talkOn = b.getAttribute('data-talk') === 'on';
   if (b.getAttribute('data-sact') === 'save') { if (!canDownload) toast(tl('expBlocked')); else $('dlPack').click(); }
@@ -6111,7 +6260,7 @@ $('d10expP').addEventListener('click', function (e) { e.stopPropagation(); var b
 document.addEventListener('click', function () { d10Pop(null); $('d10cmdL').hidden = true; });
 // ---------- clicks inside the layout ----------
 document.addEventListener('click', function (e) {
-  var g = e.target.closest('[data-d10go]'); if (g) { e.preventDefault(); d10Go(g.getAttribute('data-d10go')); return; }
+  var g = e.target.closest('[data-d10go]'); if (g) { e.preventDefault(); var gt = g.getAttribute('data-d10go'); if (d10Locked(gt) || gt === D10.cur) d10Go(gt); else busyRun(tl('busyNav'), function () { d10Go(gt); }, true); return; }
   var aa = e.target.closest('[data-aa]'); if (aa && D10.A) { var a = D10.A[+aa.getAttribute('data-ai')]; if (a) d10Act(a, 0, aa.getAttribute('data-aa')); return; }
   var r = e.target.closest('[data-rib]'); if (r) { D10.rib[D10.cur] = (D10.rib[D10.cur] || 0) + +r.getAttribute('data-rib'); var mine = D10.A.filter(function (a) { return (D10.cur === 'Brief' || a.tab === D10.cur) && (a.lvl === 'red' || a.lvl === 'amb'); }); D10.rib[D10.cur] = (D10.rib[D10.cur] + mine.length) % (mine.length || 1); d10Ribbon(D10.A); return; }
   if (e.target.closest('[data-mascot]')) { D10.open = true; D10.side = 'ask'; d10Panel(D10.A || []); d10AskOpen(); return; }
@@ -6121,7 +6270,7 @@ document.addEventListener('click', function (e) {
   var s2 = e.target.closest('[data-aside2]'); if (s2) { D10.side = s2.getAttribute('data-aside2'); d10Panel(D10.A || []); if (D10.side === 'ask') d10AskOpen(); return; }
   var ac = e.target.closest('[data-d10acc]'); if (ac) { var nx2 = D10_TABS[D10_TABS.indexOf(D10.cur) + 1]; D10.acc[D10.cur] = true;
     if (d10HasData()) { var nA = 0; state.ack = state.ack || {}; (D10.A || []).forEach(function (a) { if (a.tab === D10.cur && (a.lvl === 'red' || a.lvl === 'amb')) { state.ack[d10AckKey(a)] = { at: new Date().toISOString().slice(0, 10), via: 'terima' }; nA++; } }); try { localStorage.setItem('ppic_ack', JSON.stringify(state.ack)); } catch (x) {} if (nA) setTimeout(function () { aiSpeak(nA + ' peringatan di ' + d10sn(D10_TABS[D10_TABS.indexOf(nx2) - 1]) + ' diterima apa adanya (sudah dicek). Bisa dibatalkan di daftar alert halaman itu.'); }, 300); } d10Go(nx2); return; }
-  if (e.target.id === 'd10demo') { state.ppMade = {}; D10.acc = {}; d10SavePP(); loadSample(); return; }
+  if (e.target.id === 'd10demo') { state.ppMade = {}; D10.acc = {}; d10SavePP(); busyRun(tl('busyLoad'), loadSample); return; }
   var q = e.target.closest('.v10-q[data-ask-i], .v10-q[data-askc], .v10-q[data-help]'); if (q) { e.preventDefault(); d10AskEl(q); return; }
   if (e.target.closest('.v10-s, #d10fab')) { d10Find(); return; }
   var sb = e.target.closest('[data-sec]'); if (sb) { var sc = $(sb.getAttribute('data-sec')); if (sc) { sc.hidden = sb.closest('#secBar') ? !sc.hidden : false; d10SecBtns(); if (!sc.hidden) { d10Help(sc); sc.scrollIntoView({ block: 'start', behavior: 'smooth' }); } } return; }
@@ -6181,7 +6330,7 @@ $('d10cmdIn').addEventListener('keydown', function (e) {
   else if (e.key === 'Escape') { $('d10cmdL').hidden = true; $('d10cmdIn').blur(); }
 });
 $('d10cmdL').addEventListener('click', function (e) { e.stopPropagation(); var b = e.target.closest('[data-ci]'); if (b) d10CmdRun(D10.cmd[+b.getAttribute('data-ci')]); });
-document.addEventListener('keydown', function (e) { if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); $('d10cmdIn').focus(); } });
+document.addEventListener('keydown', function (e) { if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); d10Peek(); $('d10cmdIn').focus(); } });
 // ===================== AI layer: spotlight focus, moving eye, talking text, SKU threads, guidebook =====================
 // Settings (⚙ → Asisten): D10.dimOn = dim the page and center the cell an alert points to; D10.talkOn = the assistant
 // "speaks" (text appears as if typed). Both stored in ppic_ui. Reduced motion: no flying eye, text appears at once.
@@ -6550,6 +6699,59 @@ $('d10main').insertAdjacentHTML('beforeend', '<button type="button" id="d10fab" 
 $('d10main').addEventListener('scroll', function () { $('d10fab').hidden = $('d10main').scrollTop < 300; }, { passive: true });
 $('ppToMon').textContent = 'Kirim ke Perencanaan Produksi ↗';
 $('schNote').insertAdjacentHTML('beforebegin', '<p class="schhint" id="schHint"></p>');
+
+/* ---------- top bar size (Pengaturan → Bagian atas) ---------- */
+// auto: compact when the window is short (small laptops, or Windows scaling 125–150 %); hide: only a thin strip stays,
+// Ctrl K or the strip's button brings the search back.
+function d10HeadMode() { var m = D10.head || 'auto'; return m === 'auto' ? (window.innerHeight < 820 ? 'compact' : 'full') : m; }
+function d10Head() {
+  var m = d10HeadMode(), b = document.body;
+  b.classList.toggle('hd-c', m === 'compact' || m === 'hide'); b.classList.toggle('hd-h', m === 'hide');
+  if (m !== 'hide') b.classList.remove('hd-peek');
+  $('d10hdB').title = tl('hdHideB'); $('d10hdB').setAttribute('aria-label', tl('hdHideB'));
+  if (m === 'hide') {
+    var i = D10_TABS.indexOf(D10.cur);
+    $('d10hbar').innerHTML = '<b>Forecast Desk</b><span>' + (i > 0 ? esc(tl('step')) + ' ' + i + ' ' + esc(tl('of')) + ' ' + (D10_TABS.length - 1) + ' · ' : '') + esc(d10sn(D10.cur)) + '</span><span class="sp"></span><button type="button" data-hdshow="1">' + esc(tl('hdShow')) + '</button>';
+  }
+}
+function d10SetHead(m) { if (m !== 'hide') D10.headPrev = m; D10.head = m; d10Save(); d10Head(); }
+function d10Peek() { if (document.body.classList.contains('hd-h')) document.body.classList.add('hd-peek'); }
+$('d10hdB').addEventListener('click', function (e) { e.stopPropagation(); d10SetHead('hide'); toast(tl('hdHidden')); });
+$('d10hbar').addEventListener('click', function (e) { if (e.target.closest('[data-hdshow]')) d10SetHead(D10.headPrev && D10.headPrev !== 'hide' ? D10.headPrev : 'auto'); });
+$('d10cmdIn').addEventListener('blur', function () { setTimeout(function () { if (document.activeElement !== $('d10cmdIn')) document.body.classList.remove('hd-peek'); }, 250); });
+var d10HeadT = null; window.addEventListener('resize', function () { clearTimeout(d10HeadT); d10HeadT = setTimeout(d10Head, 120); });
+
+/* ---------- loading overlay, background-work badge, error banner ---------- */
+var BUSY = { n: 0 };
+function busyShow(label, soft) {
+  BUSY.n++; $('busyT').textContent = label || tl('busyLoad'); $('busyS').textContent = tl('busySub');
+  var o = $('busyO'); o.classList.toggle('soft', !!soft && (o.hidden || o.classList.contains('soft'))); o.hidden = false;
+}
+function busyHide() { if (--BUSY.n <= 0) { BUSY.n = 0; $('busyO').hidden = true; } }
+// show the overlay, let the browser paint it, then run the heavy work; errors end up in the banner, never a dead page
+function busyRun(label, fn, soft) {
+  busyShow(label, soft);
+  var done = false, go = function () { if (done) return; done = true; try { fn(); } catch (e) { appError(e); } busyHide(); };
+  requestAnimationFrame(function () { setTimeout(go, 0); }); setTimeout(go, 120); // rAF does not run in background tabs
+}
+function busyBadge(on) { $('busyBT').textContent = tl('busyML'); $('busyB').hidden = !on; }
+function tlSafe(k, d) { try { return tl(k); } catch (e) { return d; } }
+var APPERR = { t: 0 };
+function appError(e) {
+  var msg = String((e && (e.message || (e.reason && e.reason.message))) || e || '');
+  if (!msg || /ResizeObserver loop|^Script error\.?$/.test(msg)) return;
+  try { console.error(e); } catch (x) {}
+  var el = document.getElementById('appErr'); if (!el) return;
+  BUSY.n = 0; var o = document.getElementById('busyO'); if (o) o.hidden = true;
+  if (!el.hidden && Date.now() - APPERR.t < 3000) return; APPERR.t = Date.now();
+  document.getElementById('appErrT').textContent = tlSafe('errT', 'Terjadi kesalahan');
+  document.getElementById('appErrM').textContent = msg.slice(0, 300);
+  document.getElementById('appErrS').textContent = tlSafe('errSub', '');
+  document.getElementById('appErrR').textContent = tlSafe('reload', 'Muat ulang'); document.getElementById('appErrX').textContent = tlSafe('closeB', 'Tutup');
+  el.hidden = false;
+}
+$('appErrX').addEventListener('click', function () { $('appErr').hidden = true; });
+$('appErrR').addEventListener('click', function () { location.reload(); });
 var D10ON = true;
 var d10Render0 = d10Render; d10Render = function () { d10Render0(); d10Sparks(); }; // every page render also draws the card graphics
 window.addEventListener('resize', function () { if (window.innerWidth <= 1100 && D10.open && !D10._r) { D10._r = true; } });
