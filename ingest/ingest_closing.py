@@ -61,6 +61,8 @@ FIELDS: list[tuple[str, list[str]]] = [
     ("nomat",                 [r"\bnomat\b", r"\bno\.?\s*mat\b", r"nomor\s*material", r"material\s*(no|number)",
                                r"sap\s*(no|number|material)"]),
     ("description",           [r"description", r"deskripsi", r"nama\s*barang"]),
+    ("brand",                 [r"\bbrand\b", r"\bmere?k\b"]),
+    ("category",              [r"categor", r"kategori"]),
     ("uom",                   [r"^uom$", r"\bunit\b", r"satuan"]),
     ("net_weight_kg",         [r"net+\s*weight", r"berat\s*bersih"]),
     ("buffer_suggestion",     [r"buffer"]),
@@ -81,8 +83,9 @@ FIELDS: list[tuple[str, list[str]]] = [
     ("order_in",              [r"order\s*in"]),
     ("gap_vs_forecast",       [r"\bgap\b", r"less\s*/\s*over", r"over\s*/\s*less"]),
 ]
+TEXT_FIELDS = ("article_code", "nomat", "description", "brand", "category", "uom")
 NUMERIC_FIELDS = [f for f, _ in FIELDS
-                  if f not in ("article_code", "nomat", "description", "uom")]
+                  if f not in TEXT_FIELDS]
 
 # Weekly blocks: a run of W1..W5 (+ Total) headers, e.g. "W1 (1-05 JUL)", under a
 # group label (OI, GI, OS, GAP OS vs SOH) one or more rows above. The weekly table
@@ -106,7 +109,7 @@ def unit_from_sheet(name: str) -> str | None:
         return "MT"
     return None
 
-SNAPSHOT_COLUMNS = ["sku_id", "nomat", "article_code", "description", "family", "uom",
+SNAPSHOT_COLUMNS = ["sku_id", "nomat", "article_code", "description", "brand", "category", "family", "uom",
                     "net_weight_kg", "code_status"] + [
     f for f in NUMERIC_FIELDS if f != "net_weight_kg"]
 
@@ -385,6 +388,10 @@ def extract(ws, layout):
         code = nomat or art  # primary key: Nomat (nomor material); Article Code kept for the HQ class list
         rec = {"sku_id": code, "article_code": art, "family": family, "source_row": r, "nomat": nomat,
                "description": str(desc).strip() if desc is not None else None,
+               # Brand / Category columns of the closing sheet, when it has them (text, kept as written)
+               **{f: (str(ws.cell(r, cols[f]).value).strip() or None
+                      if f in cols and ws.cell(r, cols[f]).value is not None else None)
+                  for f in ("brand", "category")},
                "uom": (str(ws.cell(r, uom_c).value).strip().upper()
                        if uom_c and ws.cell(r, uom_c).value is not None else layout.get("unit")),
                "code_status": "old" if (is_old_code(code_cell)
@@ -492,6 +499,11 @@ CREATE VIEW IF NOT EXISTS v_sku_weekly AS
 def store(db_path, plant, closing, source, sheet, sha, rows, weekly_rows, issues):
     con = sqlite3.connect(db_path)
     con.executescript(SCHEMA)
+    # Databases made before a column was added (e.g. brand, category): add the missing columns.
+    have = {row[1] for row in con.execute("PRAGMA table_info(sku_snapshot)")}
+    for c in SNAPSHOT_COLUMNS:
+        if c not in have:
+            con.execute(f"ALTER TABLE sku_snapshot ADD COLUMN {c} {'REAL' if c in NUMERIC_FIELDS else 'TEXT'}")
     snap = closing_to_date(closing).isoformat()
     try:
         cur = con.execute(
