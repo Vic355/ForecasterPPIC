@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="sepia">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Riwayat versi · PPIC</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root { --font: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif; --serif: Literata, Georgia, serif; }
+html[data-theme=sepia]{--bg:#efe9dc;--paper:#fcf8ef;--ink:#2b2a26;--mut:#6a665c;--line:#dcd3c0;--line2:#e9e2d2;--acc:#3f6b56;--acc2:#e3ece3;--blu:#2d5f9a;--hover:#f1ead9}
+html[data-theme=light]{--bg:#eef0f2;--paper:#ffffff;--ink:#1d222a;--mut:#5c6470;--line:#d5d9de;--line2:#e7e9ec;--acc:#1f6b5c;--acc2:#e1f0ec;--blu:#1f5fbf;--hover:#f1f3f5}
+html[data-theme=dark]{--bg:#1b2026;--paper:#232a32;--ink:#e4dfd3;--mut:#a3aab4;--line:#38404b;--line2:#2d343e;--acc:#e3a55e;--acc2:#3d3223;--blu:#86b4ff;--hover:#2d353f}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; margin: 0; }
+.top { display: flex; align-items: center; gap: 14px; padding: 10px 18px; background: var(--paper); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; flex-wrap: wrap; }
+.top h1 { font-size: 21px; }
+.switch { display: flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-left: auto; }
+.switch a, .switch span { padding: 6px 12px; font-weight: 600; text-decoration: none; color: var(--mut); white-space: nowrap; }
+.switch span { background: var(--acc2); color: var(--acc); }
+.switch a:hover { background: var(--hover); }
+main { max-width: 860px; margin: 0 auto; padding: 22px 18px 60px; }
+.lead { color: var(--mut); margin: 0 0 18px; }
+.ctl { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+.ctl input { flex: 1; min-width: 220px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); font: inherit; }
+.ctl button { padding: 6px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
+.ctl button.on { background: var(--acc2); color: var(--acc); border-color: var(--acc); }
+.day { margin: 22px 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--mut); font-family: var(--font); font-weight: 700; }
+.rel { background: var(--paper); border: 1px solid var(--line2); border-radius: 12px; padding: 12px 16px; margin-bottom: 10px; }
+.rel h3 { font-size: 17px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.rel h3 .v { font-family: var(--font); font-size: 12px; font-weight: 700; color: var(--acc); background: var(--acc2); border-radius: 999px; padding: 1px 9px; }
+.rel h3 .cur { font-family: var(--font); font-size: 12px; font-weight: 700; color: #fff; background: var(--acc); border-radius: 999px; padding: 1px 9px; }
+html[data-theme=dark] .rel h3 .cur { color: #1b1206; }
+.rel h3 a { font-family: var(--font); font-size: 12.5px; font-weight: 600; color: var(--blu); }
+.rel .tags { display: flex; gap: 5px; flex-wrap: wrap; margin: 4px 0 2px; }
+.rel .tags span { font-size: 11.5px; font-weight: 700; color: var(--mut); border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; }
+.rel ul { margin: 6px 0 0; padding-left: 20px; }
+.rel li { margin: 3px 0; }
+.empty { color: var(--mut); }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Riwayat versi</h1><span style="color:var(--mut)">apa yang berubah di aplikasi PPIC, terbaru di atas</span>
+  <nav class="switch" aria-label="Aplikasi"><a href="/">Forecast Desk</a><a href="/produksi/">Produksi</a><a href="/mrp/">MRP</a><span>Versi</span></nav>
+</header>
+<main>
+  <p class="lead">Setiap versi masuk ke situs setelah pull request digabung ke <i>main</i>. Nomor versi = nomor pull request di GitHub. Bila tampilan terasa berbeda dari kemarin, cek di sini apa yang berubah.</p>
+  <div class="ctl"><input type="search" id="q" placeholder="Cari perubahan, mis. buffer, kolom, mesin" aria-label="Cari perubahan"><span id="tags"></span></div>
+  <div id="list"></div>
+</main>
+<script>
+// Newest first. v = pull request number (null for changes before pull requests). Keep in step with CHANGELOG.md.
+var REPO = 'https://github.com/Vic355/ForecasterPPIC/pull/';
+var R = [
+  { v: 20, d: '2026-11-25', t: 'Kolom seperti Excel, Material & status jadi satu langkah, riwayat versi, peringatan Jenis SKU', a: ['Forecast Desk', 'Produksi', 'MRP'], p: [
+    '<b>Kunci kolom</b> di semua tabel lebar (Forecast, Saran buffer, Material master, Cek data SKU, Pratinjau, Master mesin, Produksi, MRP): tombol <b>Kolom ▾</b> di atas tabel atau klik kanan judul kolom → <i>Kunci sampai kolom ini</i>. Kolom di kiri tetap terlihat saat tabel digulir ke samping, seperti <i>Freeze Panes</i> di Excel.',
+    '<b>Sembunyikan kolom</b> di semua tabel tersebut lewat menu yang sama (centang = tampilkan). Pilihan disimpan per tabel di browser; <i>Kembalikan bawaan</i> mengembalikannya. Menu Kolom di Material master kini memakai cara yang sama dan Status, Nomat, SKU terkunci dari awal.',
+    '<b>Peringatan Jenis SKU</b> di Material master: SKU baru tanpa <i>Histori dari Nomat</i>, SKU musiman tanpa <i>Musim aktif</i> (atau tidak terbaca), dan SKU diganti tanpa <i>Nomat pengganti</i> diberi tanda merah di baris dan sel Detail jenis, muncul di atas daftar, di kartu <i>Jenis belum lengkap</i> dan di Alerts. Saat memilih jenis, kursor langsung pindah ke isian yang wajib.',
+    '<b>Material master dan Cek data SKU digabung</b> menjadi satu langkah <b>Material &amp; status</b> (sekarang 4 langkah). Satu kolom <b>Status</b> (Aktif, Perlu cek, Diskontinu, Diganti) dengan alasannya; klik labelnya untuk mengubah. Aturan status pindah ke panel lipat <i>Aturan status otomatis</i>, saringan dan kartu status ada di atas tabel, dan <i>Koreksi angka</i> pindah ke bawah lembar Forecast.',
+    'Aturan baru <b>Data tidak cocok dengan Jenis SKU</b>: SKU musiman dengan order in di luar Musim aktif, SKU baru yang sudah punya order in sendiri berbulan-bulan, atau Histori dari Nomat yang tidak ada → Perlu cek. Sebaliknya, hal yang wajar untuk jenisnya (stok tanpa Forecast HQ di luar musim, order in nol sebelum SKU baru laku, order in jauh dari HQ di bulan awal) tidak lagi ditandai dan diberi keterangan hijau <i>✓ wajar</i> di kolom Status.',
+    '<b>Riwayat versi</b> (halaman ini), dibuka dari Pengaturan → Bantuan, dari pencarian (ketik <i>versi</i>) atau dari menu atas di Produksi dan MRP.'] },
+  { v: 17, d: '2026-11-25', t: 'Rencana produksi manual, output per mesin, Balance produksi', a: ['Forecast Desk', 'Produksi'], p: [
+    'Mode <b>Manual</b> tanpa saran otomatis: tarik kartu SKU ke baris mesin; bar mulai di hari kerja kosong pertama dan lamanya sisa PP ÷ output per hari.',
+    '<b>Output per mesin</b> (karton/hari) = kapasitas per hari ÷ berat bersih per karton × variasi output %, dari Master mesin.',
+    'Perencanaan Produksi mendapat langkah <b>Monitoring</b> (Harian / Bulanan) dengan <b>Balance produksi = rencana − GR gudang</b>.'] },
+  { v: 18, d: '2026-11-25', t: 'Input data di depan, Dashboard, Master mesin', a: ['Forecast Desk'], p: [
+    'Aplikasi dibuka di <b>Input data</b>, dikelompokkan: Penjualan &amp; forecast, Stok &amp; kelas SKU, Master data.',
+    '<b>Dashboard</b> menggantikan Ringkasan: angka utama, order in vs Forecast HQ / AI per bulan, grup terbesar, stok vs buffer, kapasitas.',
+    '<b>Master mesin</b>: kapasitas kg/hari, berat bersih, variasi output; nama asli mesin hanya disimpan terenkripsi di balik kode samaran.',
+    'Tombol besar <b>▶ Coba data contoh (demo)</b> saat belum ada data.'] },
+  { v: 19, d: '2026-11-25', t: 'Material master: Jenis SKU, kolom bisa disembunyikan, kolom bebas', a: ['Forecast Desk'], p: [
+    '<b>Jenis SKU</b> per Nomat (Reguler, SKU baru, Musiman, Musiman + histori, Diganti) dengan kolom <b>Detail jenis</b> yang hanya menampilkan isian untuk jenis itu.',
+    'Menu <b>Kolom ▾</b> untuk menyembunyikan kolom; <b>+ Kolom baru</b> di ujung tabel seperti Excel; tempel satu kolom dari Excel mengisi ke bawah.'] },
+  { v: 16, d: '2026-11-25', t: 'Nomat baru dan musiman, kolom bebas, Brand/Kategori dari closing', a: ['Forecast Desk'], p: [
+    '<b>Histori dari Nomat</b> (+ %): SKU baru meminjam order in Nomat lama supaya semua model punya histori.',
+    '<b>Musim aktif</b> (mis. Feb-Apr): di luar musim forecast, buffer dan PP 0.',
+    '<b>Kolom bebas</b> per Nomat untuk saringan dan pengelompokan; Brand dan Kategori kini dibaca dari file closing.'] },
+  { v: 15, d: '2026-11-24', t: 'Lebih ringan di laptop kecil', a: ['Forecast Desk'], p: [
+    'Bagian atas bisa ringkas atau disembunyikan (Pengaturan → Bagian atas).',
+    'Model Regressor dihitung di latar (Web Worker), 1,5–2× lebih cepat; halaman tidak lagi membeku saat memuat histori besar.',
+    'Layar memuat, banner kesalahan, dan unduhan menunggu model selesai.'] },
+  { v: 14, d: '2026-11-17', t: 'MRP bahan baku, Saran buffer M+1 sampai M+3, kartu ringkas', a: ['Forecast Desk', 'MRP'], p: [
+    'Halaman baru <b>MRP Bahan Baku</b> (karton, plastik, jumbo roll): kebutuhan dari PP × BOM, buffer sebagai titik pesan ulang, rencana pesan dan PO.',
+    'Tabel Saran buffer berjalan M+1 → M+3: stok akhir bulan ini menjadi stok awal bulan berikutnya.',
+    'Kartu halaman lebih ringkas.'] },
+  { v: 13, d: '2026-11-17', t: 'Kartu kembali di atas halaman, Sugesti Utama AI di panel samping', a: ['Forecast Desk'], p: [
+    'Kartu ringkasan Forecast, Saran buffer dan Rencana produksi tampil lagi dengan grafik kecil.',
+    '<i>Sugesti Utama AI</i> pindah ke panel samping; kotak Tanya bisa diperbesar.'] },
+  { v: 12, d: '2026-11-16', t: 'Permintaan planner putaran 3', a: ['Forecast Desk', 'Produksi'], p: [
+    'Panel samping bisa diubah lebarnya; buffer per bulan M+1–M+3 dengan bahan baku; BOM per SKU; <b>+ Tambah SKU</b>.',
+    'Rencana produksi: <i>Jalankan jadwal otomatis</i>, cara menjadwal Otomatis / Manual, SKU belum terjadwal tampil merah.',
+    'Semua ambang dan warna lampu peringatan di satu tempat (LAMPU).'] },
+  { v: 11, d: '2026-11-16', t: 'Halaman Perencanaan Produksi', a: ['Produksi'], p: [
+    '<b>/produksi/</b> menjadi halaman sendiri dengan langkah Data masuk, Rencana, Aktual, Skenario: grid seperti Excel dengan bar yang bisa digeser.',
+    'Forecast Desk berakhir di Rencana produksi dan mengirim jadwal ke halaman ini.'] },
+  { v: 10, d: '2026-11-16', t: 'Dokumentasi sistem dan changelog', a: ['Dokumen'], p: ['Gambaran sistem (docs/sistem.md) dan daftar perubahan (CHANGELOG.md).'] },
+  { v: 9, d: '2026-11-15', t: 'Asisten lebih menonjol', a: ['Forecast Desk'], p: [
+    '👁 <b>Tunjukkan</b> menyorot sel yang dimaksud; daftar SKU vital; tanda ⚑ tinjau terbawa ke Saran buffer.',
+    '<b>Skor buffer</b> asimetris (kurang dihitung 2× / 3×), pemenang backtest per bulan, panel <i>Arti strategi buffer</i>.'] },
+  { v: 8, d: '2026-11-15', t: 'Tata letak Desain 10', a: ['Forecast Desk'], p: [
+    'Bilah perintah (Ctrl K), alur langkah dengan kunci <i>Terima dan lanjut</i>, panel Alerts per halaman, pengaturan dan bantuan.'] },
+  { v: 7, d: '2026-11-15', t: 'Saran buffer: pemilih strategi lewat backtest, Kuantil P90, ABC-XYZ', a: ['Forecast Desk'], p: [
+    '<i>Otomatis</i> menguji setiap strategi di 6 closing terakhir dan memilih biaya terkecil; strategi baru Kuantil P90; kelas ABC-XYZ.'] },
+  { v: 6, d: '2026-11-15', t: 'Kemudahan pakai dan Forecast ML v2', a: ['Forecast Desk'], p: [
+    'Urungkan/ulangi di mana saja, file bisa dilepas di mana saja, pencarian, material master, histori ringkas .ppic.gz.',
+    'Regressor di browser, Chronos di komputer sendiri, dan <b>Ensemble</b> berbobot backtest.'] },
+  { v: null, d: '2026-11-13', t: 'Grup SKU per brand + famili', a: ['Forecast Desk'], p: ['Paseo, Jolly, Nice … tampil terpisah di dalam famili closing.'] },
+  { v: 5, d: '2026-11-12', t: 'Monitoring produksi harian', a: ['Produksi'], p: [
+    'Halaman /produksi/ (#1–#5): rencana vs aktual dari Excel, rencana bulanan sebagai input, grid Gantt dengan isian harian, kirim dari Rencana produksi.',
+    'Rencana produksi: kalender hari, bar yang bisa digeser, kolom beku seperti Excel, libur nasional 2026–2027.'] },
+  { v: null, d: '2026-11-11', t: 'Cek data SKU, lembar Forecast seperti Excel, Saran buffer', a: ['Forecast Desk'], p: [
+    'Status SKU otomatis (Aktif, Perlu cek, Diskontinu, Diganti) dengan ubah manual.',
+    'Lembar Forecast bisa dikoreksi seperti Excel dengan log koreksi; tab Saran buffer; Rencana produksi pertama; Asisten.'] },
+  { v: null, d: '2026-11-03', t: 'Versi pertama', a: ['Forecast Desk'], p: [
+    'Input closing dan Forecast HQ menjadi satu histori Serang, kelas SKU bawaan, layar Forecast dengan prototipe Forecast ML.'] }
+];
+var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+function dl(d) { var p = d.split('-'); return +p[2] + ' ' + MON[+p[1] - 1] + ' ' + p[0]; }
+function txt(h) { var e = document.createElement('div'); e.innerHTML = h; return e.textContent.toLowerCase(); }
+var area = '';
+function draw() {
+  var q = document.getElementById('q').value.trim().toLowerCase(), last = '', h = '';
+  R.forEach(function (r, i) {
+    if (area && r.a.indexOf(area) < 0) return;
+    if (q && q.split(/\s+/).some(function (w) { return txt(r.t + ' ' + r.p.join(' ')).indexOf(w) < 0; })) return;
+    if (r.d !== last) { h += '<h2 class="day">' + dl(r.d) + '</h2>'; last = r.d; }
+    h += '<article class="rel"><h3>' + (r.v ? '<span class="v">v' + r.v + '</span>' : '') + (i === 0 ? '<span class="cur">versi saat ini</span>' : '') + r.t + (r.v ? ' <a href="' + REPO + r.v + '" target="_blank" rel="noopener">PR #' + r.v + ' ↗</a>' : '') + '</h3>' +
+      '<div class="tags">' + r.a.map(function (a) { return '<span>' + a + '</span>'; }).join('') + '</div><ul>' + r.p.map(function (p) { return '<li>' + p + '</li>'; }).join('') + '</ul></article>';
+  });
+  document.getElementById('list').innerHTML = h || '<p class="empty">Tidak ada perubahan yang cocok.</p>';
+}
+document.getElementById('tags').innerHTML = ['', 'Forecast Desk', 'Produksi', 'MRP'].map(function (a) { return '<button type="button" data-a="' + a + '" class="' + (a === area ? 'on' : '') + '">' + (a || 'Semua') + '</button>'; }).join(' ');
+document.getElementById('tags').addEventListener('click', function (e) { var b = e.target.closest('[data-a]'); if (!b) return; area = b.getAttribute('data-a'); this.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); }); draw(); });
+document.getElementById('q').addEventListener('input', draw);
+try { var th = (JSON.parse(localStorage.getItem('ppic_ui') || '{}') || {}).theme; if (th) document.documentElement.setAttribute('data-theme', th); } catch (e) {}
+draw();
+</script>
+</body>
+</html>

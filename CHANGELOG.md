@@ -5,6 +5,29 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
 
 ## 2026-11-25
 
+- **Excel-style columns, version history, Jenis SKU warnings.** Every wide table (Forecast, Saran buffer, Material master,
+  Cek data SKU, Pratinjau, Master mesin, and the Produksi and MRP pages) gets **Kolom ▾** above it and a right-click menu on
+  its column headers: 🔒 *Kunci sampai kolom ini* freezes the columns up to that one while the table scrolls sideways (like
+  Freeze Panes), and each column can be hidden. Choices are kept per table in this browser (`ppic_tabel`); *Kembalikan
+  bawaan* resets. One shared script, `public/tabel.js`, re-applies them after every re-render; the Rencana produksi and
+  Produksi day grids keep their own frozen columns. Material master's own Kolom menu now uses it (Status, Nomat and SKU locked
+  by default, same columns hidden as before). **Riwayat versi** at `/riwayat/` (Pengaturan → Bantuan, search *versi*, 🕘 in
+  Produksi and MRP) lists the changes in Indonesian. **Material master** warns when a Jenis other than Reguler misses its
+  detail: SKU baru without *Histori dari Nomat*, Musiman without (or with an unreadable) *Musim aktif*, Diganti without
+  *Nomat pengganti*. Shown as a red banner, a *Jenis belum lengkap* count and filter, the row and Detail jenis cell, and an
+  alert; choosing a Jenis moves the cursor to the field it needs.
+- **Material master and Cek data SKU are one step: Material & status.** The flow has 4 numbered steps. One **Status** column
+  (Aktif, Perlu cek, Diskontinu, Diganti) with the rule reason; clicking it opens the same status menu as the Forecast sheet,
+  and a choice there also clears an older hand-set Aktif/Nonaktif so the status has one source. The rules are a fold-out
+  *Aturan status otomatis* above the table; status counts and filters (*Status: …*, *Kena aturan / tidak aktif / diubah*)
+  replace Aktif/Nonaktif; *Koreksi angka* moved under the Forecast sheet. Links, alerts and saved pages that pointed at Cek
+  data SKU open Material & status with the matching filter.
+- **Status rules know the Jenis SKU.** New rule *Data tidak cocok dengan Jenis SKU* (Perlu cek): seasonal SKU with order in
+  outside its Musim aktif, SKU baru with its own order in for 6+ months (maybe Reguler), Histori dari Nomat not in the data.
+  What is normal for the Jenis no longer trips the other rules: stock without Forecast HQ or zero order in outside the season,
+  zero order in before a new SKU sells, order in far from HQ in a new SKU's first months; the Status column says why in green
+  (*✓ … wajar*) and the filter *Tidak biasa tapi wajar karena Jenis SKU* lists them. The rules fold-out remembers open/closed.
+
 - **Manual production planning, machine output and Balance Production.** Rencana produksi in *Manual* mode no longer makes
   suggestions: the grid shows only the machines (or *Tidak ada data mesin* when there is no machine list, instead of sample
   machines), *Jalankan jadwal otomatis* is hidden, and the left panel lists the SKUs to schedule (PP, area mesin, stock cover,

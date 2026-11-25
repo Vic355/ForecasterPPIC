@@ -273,7 +273,7 @@ a.btnlink:hover { background: var(--hover); }
 <header class="top">
   <div class="brand"><h1>Perencanaan Produksi</h1><span class="mut" id="brandSub"></span></div>
   <div class="ask" id="askBar" role="button" tabindex="0"><span id="askLens"></span><span>Tanya asisten atau minta skenario…</span><kbd>Ctrl K</kbd></div>
-  <div class="switch"><a href="/" id="toMonthly" title="Kembali ke Forecast Desk (Rencana produksi bulanan)">Forecast Desk</a><span>Produksi</span><a href="/mrp/" title="MRP bahan baku: kebutuhan, stok vs buffer, rencana pesan">MRP</a></div>
+  <div class="switch"><a href="/" id="toMonthly" title="Kembali ke Forecast Desk (Rencana produksi bulanan)">Forecast Desk</a><span>Produksi</span><a href="/mrp/" title="MRP bahan baku: kebutuhan, stok vs buffer, rencana pesan">MRP</a><a href="/riwayat/" title="Riwayat versi: apa yang berubah">🕘</a></div>
   <button id="expBtn">⇩ Ekspor</button>
   <button id="setBtn">⚙</button>
 </header>
@@ -1062,5 +1062,6 @@ function main(PLAN, STORE) {
   boot();
 }
 </script>
+<script src="../tabel.js"></script>
 </body>
 </html>

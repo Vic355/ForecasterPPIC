@@ -31,18 +31,17 @@ with **Terima dan lanjut ke …**; a red count shows open alerts. Accepting a pa
 | --- | --- | --- | --- |
 | ⇩ | **Input data** (first screen) | Grouped: *Penjualan & forecast* (closing reports, Forecast HQ M+1..M+3, Chronos CSV, earlier history file), *Stok & kelas SKU* (Stock Level Check), *Master data* (material master, Master mesin) | One combined Serang history (`bulanan`, `mingguan`, `forecast_hq`, …) |
 | ▦ | **Dashboard** (was Ringkasan) | | Key numbers, order in vs forecast per month, top groups M+1, stock vs buffer, plan vs machine capacity, SKU status, open alerts |
-| 2 | **Material master** | Material master Excel (optional) | Active / inactive per Nomat, Nomat changes, successor SKUs |
-| 3 | **Cek data SKU** | Status rules + manual overrides | Status per SKU: Aktif, Perlu cek, Diskontinu, Diganti |
-| 4 | **Forecast** | Clean history | Forecast HQ vs order in, accuracy, Forecast AI (ensemble) M+1..M+3 |
-| 5 | **Saran buffer** | Forecast basis, service level, lead time, strategy | Buffer per SKU, PP = forecast + buffer − stok bebas |
-| 6 | **Rencana produksi** | PP, machines, SKU → machine type, calendar | Schedule per machine and day, Excel export |
+| 1 | **Material & status** (was Material master + Cek data SKU) | Material master Excel (optional), status rules (fold-out), manual status per SKU | One Status per SKU: Aktif, Perlu cek, Diskontinu, Diganti; Jenis SKU, Nomat changes, successor SKUs |
+| 2 | **Forecast** | Clean history | Forecast HQ vs order in, accuracy, Forecast AI (ensemble) M+1..M+3; *Koreksi angka* log below the sheet |
+| 3 | **Saran buffer** | Forecast basis, service level, lead time, strategy | Buffer per SKU, PP = forecast + buffer − stok bebas |
+| 4 | **Rencana produksi** | PP, machines, SKU → machine type, calendar | Schedule per machine and day, Excel export |
 
 Files can be dropped on any page; the kind is detected (history .xlsx / .ppic.gz, material master, Forecast HQ,
 Stock Level Check, production data, Chronos CSV, otherwise closing).
 
 ```
 Closing xlsx ─┐                                 ┌─> Forecast AI (Holt, HQ terkoreksi, Regressor, Chronos → Ensemble)
-Forecast HQ  ─┼─> Input ─> Material master ─> Cek data SKU ─┤
+Forecast HQ  ─┼─> Input ─> Material & status ───────────────┤
 Kelas SKU    ─┘                                 └─> Forecast HQ vs order in (accuracy, bias)
                                                          │
                      Chronos CSV (from forecast_chronos.py) ┘
@@ -62,7 +61,7 @@ Kelas SKU    ─┘                                 └─> Forecast HQ vs order
   key only when Nomat is missing ("Tanpa Nomat").
 - **Groups** = Brand · Category (from the closing, Forecast HQ or the material master), falling back to Brand · Family; a switch
   goes back to Brand · Family.
-- **Cek data SKU** rules (stock without HQ, red/struck-through codes, keywords, nearby similar SKU, brand mismatch,
+- **Status rules** (*Aturan status otomatis* in Material & status) (stock without HQ, red/struck-through codes, keywords, nearby similar SKU, brand mismatch,
   HQ vs order in far apart) give a status. Diskontinu and Diganti SKUs are left out of totals, accuracy and the ML;
   a replaced SKU's order in is added to its successor's history.
 - **Corrections** typed in the Forecast table never overwrite the file values; they are kept in a correction log
@@ -107,10 +106,22 @@ and PP. Free columns are not model inputs either.
 - **Musim aktif** (`state.season`): months the SKU sells; outside them Forecast AI / buffer / PP = 0 and the months are gaps.
 - **Kolom bebas** (`state.freeCols`): user columns per Nomat for filter and grouping on the Forecast sheet.
 - **Jenis SKU** (`state.skuClass`): Reguler, SKU baru, Musiman, Musiman + histori, Diganti; picks which inputs the Detail
-  column shows. Without a choice it follows the data. Material master has a Kolom menu; free columns
-  are added in the table's last column and can be pasted from Excel down a column.
+  column shows. Without a choice it follows the data. A Jenis other than Reguler without its input (Histori dari Nomat,
+  a readable Musim aktif, Nomat pengganti) is flagged *Jenis belum lengkap* (banner, count, filter, row, alert); the
+  forecast then treats the SKU as Reguler. Free columns are added in the table's last column and can be pasted from Excel
+  down a column.
 - Saved in `ppic_mat` and in the history sheet `atribut_sku` (nomat, histori_dari, histori_persen, musim_aktif, free columns);
   the same layout can be uploaded with *Unggah atribut SKU*.
+
+## 4d. Table columns (all pages)
+
+`public/tabel.js` is loaded by `/`, `/produksi/` and `/mrp/`. For every table with a header and ≥ 5 columns it adds
+**Kolom ▾** (shown when the table is wider than its box or has choices) and a right-click menu on header cells: lock the
+columns up to one (sticky `left`, like Freeze Panes) and hide columns (cells inside hidden columns get `display: none`,
+wider header cells lose the hidden part of their colspan). Columns are named by their header path, e.g. *Jun 26 · Order in*.
+Choices per table in `localStorage` `ppic_tabel`; defaults in `window.TT_DEF` (Material master: Status, Nomat, SKU locked;
+Brand, Kategori, Famili closing and BOM hidden). A MutationObserver re-applies after each re-render and a ResizeObserver
+after a resize. Tables with `data-tt="off"` and the day grids (`.ppg`, `.pg`) are skipped.
 
 ## 5. Buffer (Saran buffer)
 

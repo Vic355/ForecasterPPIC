@@ -177,7 +177,7 @@ svg text { font-size: 10px; fill: var(--mut); font-family: var(--font); }
 <header class="top">
   <div class="brand"><h1>MRP Bahan Baku</h1><span class="mut" id="brandSub"></span></div>
   <div class="ask" id="askBar" role="button" tabindex="0"><span class="eye"><i></i></span><span>Tanya asisten tentang bahan baku…</span><kbd>Ctrl K</kbd></div>
-  <div class="switch"><a href="/" title="Kembali ke Forecast Desk (Saran buffer, Rencana produksi)">Forecast Desk</a><a href="/produksi/">Produksi</a><span>MRP</span></div>
+  <div class="switch"><a href="/" title="Kembali ke Forecast Desk (Saran buffer, Rencana produksi)">Forecast Desk</a><a href="/produksi/">Produksi</a><span>MRP</span><a href="/riwayat/" title="Riwayat versi: apa yang berubah">🕘</a></div>
   <button id="expBtn">⇩ Ekspor</button>
   <button id="setBtn" title="Pengaturan">⚙</button>
 </header>
@@ -704,5 +704,6 @@ function main(IN, DEMO, DEMOPLAN) {
   seedDemoStock(); render(); side('alerts');
 }
 </script>
+<script src="../tabel.js"></script>
 </body>
 </html>
