@@ -16,6 +16,12 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
   detail: SKU baru without *Histori dari Nomat*, Musiman without (or with an unreadable) *Musim aktif*, Diganti without
   *Nomat pengganti*. Shown as a red banner, a *Jenis belum lengkap* count and filter, the row and Detail jenis cell, and an
   alert; choosing a Jenis moves the cursor to the field it needs.
+- **Material master and Cek data SKU are one step: Material & status.** The flow has 4 numbered steps. One **Status** column
+  (Aktif, Perlu cek, Diskontinu, Diganti) with the rule reason; clicking it opens the same status menu as the Forecast sheet,
+  and a choice there also clears an older hand-set Aktif/Nonaktif so the status has one source. The rules are a fold-out
+  *Aturan status otomatis* above the table; status counts and filters (*Status: …*, *Kena aturan / tidak aktif / diubah*)
+  replace Aktif/Nonaktif; *Koreksi angka* moved under the Forecast sheet. Links, alerts and saved pages that pointed at Cek
+  data SKU open Material & status with the matching filter.
 
 - **Manual production planning, machine output and Balance Production.** Rencana produksi in *Manual* mode no longer makes
   suggestions: the grid shows only the machines (or *Tidak ada data mesin* when there is no machine list, instead of sample
