@@ -5,6 +5,10 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
 
 ## 2026-11-25
 
+- **Rencana produksi, less clutter.** The SKU panel in Mode Manual is a compact list (one row per SKU: status dot, name,
+  Nomat, PP, shortfall; click for details), so dozens of SKUs fit without scrolling. **Sembunyikan ringkasan** hides the
+  summary cards and alert ribbon above the grid while arranging (on by default in Mode Manual). The demo now loads sample
+  machines, including Pop Up, and removes them again when the demo is left.
 - **Excel-style columns, version history, Jenis SKU warnings.** Every wide table (Forecast, Saran buffer, Material master,
   Cek data SKU, Pratinjau, Master mesin, and the Produksi and MRP pages) gets **Kolom ▾** above it and a right-click menu on
   its column headers: 🔒 *Kunci sampai kolom ini* freezes the columns up to that one while the table scrolls sideways (like
