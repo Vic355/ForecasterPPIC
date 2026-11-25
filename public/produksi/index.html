@@ -344,7 +344,7 @@ function main(PLAN, STORE) {
   var JENIS = [['Facial box', /FACIAL BOX/], ['Kiloan', /KILOAN/], ['Travel pack', /TRAVELPACK/], ['Softpack besar', /SOFTPACK BESAR|L FOLD/], ['Pop up & interfold', /POP ?UP|INTERFOLD/], ['Softpack', /SOFTPACK/]];
   function jenisOf(cat) { var c = String(cat || '').toUpperCase(); for (var i = 0; i < JENIS.length; i++) if (JENIS[i][1].test(c)) return JENIS[i][0]; return cat ? String(cat) : 'Lainnya'; }
   function lineTgt(l) { if (l.tgt != null) return +l.tgt; if (l.ct) return +l.ct; var t = 0; for (var k in l.plan) t += l.plan[k]; return t; }
-  function lineRate(l) { var mx = 0; for (var k in l.plan) mx = Math.max(mx, l.plan[k]); return Math.max(+l.target || 0, mx) || Math.max(1, Math.round(lineTgt(l) / 20)); }
+  function lineRate(l) { if (l.rate > 0) return +l.rate; var mx = 0; for (var k in l.plan) mx = Math.max(mx, l.plan[k]); return Math.max(+l.target || 0, mx) || Math.max(1, Math.round(lineTgt(l) / 20)); }
   var LINES = PLAN.lines.filter(function (l) { return DEMO ? Object.keys(l.plan || {}).length : true; });
   LINES.forEach(function (l) { l.plan = l.plan || {}; l.material = String(l.material || l.desc); l.machine = l.machine || '-'; });
   var MACH = {}, MLIST = [];
@@ -527,7 +527,7 @@ function main(PLAN, STORE) {
   window.addEventListener('scroll', clearSpot, { passive: true });
 
   // ---------- stepper ----------
-  var STEPS = [{ t: 'Data masuk', s: 'rencana, PP, mesin, kelompok SKU' }, { t: 'Rencana', s: 'target & jadwal harian per SKU' }, { t: 'Aktual', s: 'tempel output & cek' }, { t: 'Skenario', s: 'bagaimana kalau…' }];
+  var STEPS = [{ t: 'Data masuk', s: 'rencana, PP, mesin, kelompok SKU' }, { t: 'Rencana', s: 'target & jadwal harian per SKU' }, { t: 'Aktual', s: 'tempel GR gudang & cek' }, { t: 'Monitoring', s: 'balance produksi bulanan & harian' }, { t: 'Skenario', s: 'bagaimana kalau…' }];
   function renderStepper() {
     var C = CK, issues = C.kurang.length + C.unpl.length + C.over.length + C.hot.length;
     $('stepper').innerHTML = STEPS.map(function (s, i) { var n = i + 1, st = n === S.step ? 'on' : n === 1 ? 'done' : n === 2 ? (issues ? 'warn' : 'done') : n === 3 ? (S.mode === 'pp' ? '' : S.L >= S.pasteDay ? 'done' : 'warn') : ''; var sub = n === 2 && issues ? issues + ' hal perlu dikerjakan' : n === 3 && st === 'warn' ? dlab(S.pasteDay) + ' belum ditempel' : s.s; return '<button class="st ' + st + '" data-step="' + n + '"><span class="n">' + n + '</span><span><b>' + s.t + '</b><small>' + sub + '</small></span></button>'; }).join('');
@@ -537,7 +537,8 @@ function main(PLAN, STORE) {
     if (n === 1) say(S.mode === 'rencana' ? (DEMO ? 'Ini data contoh. ' : 'Sumber: ' + esc(PLAN.source || '-') + '. ') + (S.L ? 'Aktual s/d ' + dshort(S.L) + ' terkunci. ' : 'Belum ada aktual. ') + 'Target tiap SKU diambil dari PP/rencana.' : 'Hanya daftar PP yang masuk: ' + SLIST.length + ' material. Di Rencana, tekan <b>Isi otomatis</b> untuk membuat jadwal hariannya.');
     if (n === 2) { var t = []; if (C.unpl.length) t.push(C.unpl.length + ' SKU belum ada di rencana'); if (C.kurang.length) t.push(C.kurang.length + ' baris rencananya kurang dari target'); if (C.hot.length) t.push(C.hot.length + ' SKU panas habis stok sebelum diproduksi'); if (C.over.length) t.push(C.over.length + ' hari mesin lewat kapasitas'); say(t.length ? 'Yang perlu dikerjakan: ' + t.join(', ') + '. Mulai dari kartu kiri; tiap kartu punya tombolnya.' : 'Semua target tertutup rencana dan tidak ada mesin lewat kapasitas. Ketik angka di sel untuk mengubah, atau klik nama SKU untuk pindah mesin.'); }
     if (n === 3) say(S.mode === 'pp' ? 'Belum ada aktual: rencana belum berjalan.' : 'Salin kolom output dari laporan produksi ' + dlab(S.pasteDay, 1) + ' lalu tempel. Dua kolom (material, output) dicocokkan per material.');
-    if (n === 4) say('Coba “bagaimana kalau” tanpa mengubah rencana. Isi order mendadak atau mesin berhenti; saya bandingkan pilihannya dan tunjukkan sel mana yang berubah. Terapkan bila cocok.');
+    if (n === 4) say(S.L ? 'Balance produksi = rencana produksi − GR gudang. Positif berarti kurang dari rencana. Pilih <b>Harian</b> untuk satu tanggal, <b>Bulanan</b> untuk s/d ' + dshort(S.L) + '.' : 'Belum ada GR gudang. Tempel di langkah Aktual dulu.');
+    if (n === 5) say('Coba “bagaimana kalau” tanpa mengubah rencana. Isi order mendadak atau mesin berhenti; saya bandingkan pilihannya dan tunjukkan sel mana yang berubah. Terapkan bila cocok.');
   }
 
   // ---------- alerts ----------
@@ -566,7 +567,7 @@ function main(PLAN, STORE) {
     $('brandSub').textContent = (PLAN.label || PLAN.period || '') + ' · ' + (S.L ? 'aktual s/d ' + dshort(S.L) : 'belum ada aktual') + (DEMO ? ' · contoh' : '');
     $('demoBar').hidden = !DEMO;
     $('sideSub').textContent = STEPS[S.step - 1].t;
-    $('main').innerHTML = [v1, v2, v3, v4][S.step - 1]();
+    $('main').innerHTML = [v1, v2, v3, vMon, v4][S.step - 1]();
     renderAlerts(); persist();
     var g2 = $('gwrap'); if (g2) { if (keepScroll && sl) { g2.scrollLeft = sl[0]; g2.scrollTop = sl[1]; } else if (S.L) g2.scrollLeft = Math.max(0, (DI[S.L] - 4) * 42); } document.querySelectorAll('.pg.pv').forEach(function (t) { t.parentNode.scrollLeft = Math.max(0, (DI[tomorrow()] - 1) * 42); });
   }
@@ -671,7 +672,7 @@ function main(PLAN, STORE) {
     h += '<div class="card" style="padding:0;overflow:hidden"><div style="padding:12px 14px 8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><h3 style="margin:0">Cek terhadap rencana</h3><span class="chip ' + (T.n === rows.length ? 'ok' : 'warn') + '">' + T.n + ' / ' + rows.length + ' terisi</span><span class="mut">Total ' + f0(T.a) + ' / ' + f0(T.t) + ' CT (' + (pct(T.a, T.t) || 0) + '%)</span></div><div class="tbox" style="border:0;border-top:1px solid var(--line2);border-radius:0;max-height:56vh"><table><thead><tr><th>Mesin</th><th>Material</th><th>Deskripsi</th><th class="num">Rencana</th><th class="num">Aktual</th><th class="num">%</th><th></th></tr></thead><tbody>';
     rows.forEach(function (x) { var c = x.a == null ? 'na' : cls(x.a, x.t), fx = S.fixes[x.r.id + d]; h += '<tr data-arow="' + x.r.id + '"' + (c === 'bad' ? ' class="hit"' : '') + '><td class="mono">' + x.r.m + '</td><td class="mono">' + x.r.mat + '</td><td class="desc">' + esc(SKU[x.r.mat].desc) + '</td><td class="num">' + f0(x.t) + '</td><td class="num"><input class="cell' + (fx != null ? ' fix' : '') + '" data-fix="' + x.r.id + '" value="' + f0(x.a) + '"></td><td class="num"><span class="st2 ' + c + '">' + (x.a == null ? '–' : pct(x.a, x.t) + '%') + '</span></td><td>' + (fx != null ? '<span class="chip warn">dikoreksi dari ' + f0(fx) + '</span>' : '') + '</td></tr>'; });
     h += '<tr class="tot"><td colspan="3">Total</td><td class="num">' + f0(T.t) + '</td><td class="num">' + f0(T.a) + '</td><td class="num">' + (pct(T.a, T.t) || 0) + '%</td><td></td></tr></tbody></table></div><div class="toolbar" style="padding:10px 14px;margin:0"><span class="mut">Kekurangan muncul di Rencana sebagai “Target belum tertutup”.</span><span class="sp"></span><button class="pri" id="saveAct"' + (T.n ? '' : ' disabled') + '>Simpan aktual ' + dshort(d) + '</button></div></div></div>';
-    return h + nav('Rencana', 'Lanjut: skenario');
+    return h + nav('Rencana', 'Lanjut: monitoring');
   }
   function demoPaste() { var seed = 3; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; } var l = dayRows(S.pasteDay).map(function (x) { var f = 0.84 + rnd() * 0.2; if (x.r.m === 'CVFI31') f = 0.64; if (x.r.m === 'CVFI29') f = 0.72; return x.r.mat + '\t' + f0(Math.round(x.t * Math.min(1.03, f))); }); l.splice(5, 1); l.push('69990011\t240'); return l.join('\n'); }
   function doPaste() {
@@ -684,7 +685,77 @@ function main(PLAN, STORE) {
     var lo = res.rows.filter(function (x) { return x.a != null && x.a / x.t < 0.85; }).length; say(res.matched + ' baris cocok. ' + (lo ? lo + ' di bawah 85%, sudah saya tandai. ' : '') + (res.unknown.length ? 'Material ' + res.unknown.join(', ') + ' tidak ada di rencana hari itu. ' : '') + (res.missing ? res.missing + ' baris tanpa angka, mungkin mesin tidak jalan.' : ''));
   }
 
-  // ---------- 4. skenario ----------
+
+  // ---------- 4. monitoring: Balance Production = rencana produksi − GR gudang (goods receipt by warehouse) ----------
+  // Positive balance = less was received than planned. Daily: one date; monthly: everything up to the last GR date.
+  function grOf(r, d) { var a = actOf(r, d); return a == null ? 0 : a; }
+  function monDays() { return S.L ? DAYS.filter(function (d) { return d <= S.L && d >= PLAN.start; }) : []; }
+  function monSvgDaily(days, sel) {
+    var vals = days.map(function (d) { var p = 0, a = 0; S.rows.forEach(function (r) { p += r.plan[d] || 0; a += grOf(r, d); }); return { d: d, p: p, a: a, b: p - a }; });
+    var mx = Math.max(1, Math.max.apply(null, vals.map(function (v) { return Math.abs(v.b); }))), W = Math.max(640, days.length * 44), H = 120, mid = H / 2, bw = W / days.length;
+    var h = '<svg viewBox="0 0 ' + W + ' ' + (H + 18) + '" width="100%" style="max-height:200px" role="img" aria-label="Balance produksi per hari"><line x1="0" x2="' + W + '" y1="' + mid + '" y2="' + mid + '" stroke="var(--line)" stroke-width="1"/>';
+    vals.forEach(function (v, i) {
+      var w = Math.max(3, Math.min(26, bw - 8)), x = i * bw + (bw - w) / 2, hh = Math.abs(v.b) / mx * (mid - 6), y = v.b >= 0 ? mid - hh : mid, on = v.d === sel;
+      h += '<g data-mday="' + v.d + '" style="cursor:pointer"><rect x="' + (i * bw) + '" y="0" width="' + bw + '" height="' + (H + 18) + '" fill="' + (on ? 'var(--acc2)' : 'transparent') + '"/>' +
+        (v.p || v.a ? '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + Math.max(1, hh) + '" rx="2" fill="' + (v.b > 0 ? 'var(--bad)' : 'var(--ok)') + '"/>' : '') +
+        '<text x="' + (i * bw + bw / 2) + '" y="' + (H + 13) + '" text-anchor="middle" font-size="12" fill="var(--mut)">' + dt(v.d).getUTCDate() + '</text>' +
+        '<title>' + dlab(v.d, 1) + ': rencana ' + f0(v.p) + ', GR ' + f0(v.a) + ', balance ' + (v.b > 0 ? '+' : '') + f0(v.b) + ' CT</title></g>';
+    });
+    return h + '</svg><div class="mut" style="font-size:12px;display:flex;gap:14px"><span><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--bad)"></i> balance positif: GR kurang dari rencana</span><span><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--ok)"></i> negatif: GR melebihi rencana</span><span>Klik batang untuk melihat tanggal itu.</span></div>';
+  }
+  function monSvgCum(days) {
+    var all = DAYS.filter(function (d) { return d <= MONTH_END; }), cp = 0, ca = 0, P = [], A = [];
+    all.forEach(function (d) { S.rows.forEach(function (r) { cp += r.plan[d] || 0; if (d <= S.L) ca += grOf(r, d); }); P.push(cp); if (d <= S.L) A.push(ca); });
+    var W = 1200, H = 220, mx = Math.max(1, cp, ca), xs = function (i) { return 34 + i * (W - 110) / Math.max(1, all.length - 1); }, ys = function (v) { return 8 + (H - 30) * (1 - v / mx); };
+    var path = function (arr) { return arr.map(function (v, i) { return (i ? 'L' : 'M') + xs(i).toFixed(1) + ' ' + ys(v).toFixed(1); }).join(''); };
+    var li = A.length - 1, h = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="max-height:260px" role="img" aria-label="Rencana kumulatif dan GR gudang kumulatif">';
+    [0, .5, 1].forEach(function (t) { h += '<line x1="34" x2="' + (W - 76) + '" y1="' + ys(mx * t) + '" y2="' + ys(mx * t) + '" stroke="var(--line2)"/><text x="30" y="' + (ys(mx * t) + 4) + '" text-anchor="end" font-size="10" fill="var(--mut)">' + f0(mx * t / 1000) + 'rb</text>'; });
+    h += '<path d="' + path(P) + '" fill="none" stroke="var(--mut)" stroke-width="2" stroke-dasharray="5 4"/><path d="' + path(A) + '" fill="none" stroke="var(--acc)" stroke-width="2"/>';
+    if (li >= 0) h += '<line x1="' + xs(li) + '" x2="' + xs(li) + '" y1="' + ys(P[li]) + '" y2="' + ys(A[li]) + '" stroke="var(--bad)" stroke-width="2"/><circle cx="' + xs(li) + '" cy="' + ys(A[li]) + '" r="4" fill="var(--acc)" stroke="var(--paper)" stroke-width="2"/>' +
+      '<text x="' + (xs(li) + 6) + '" y="' + ((ys(P[li]) + ys(A[li])) / 2 + 4) + '" font-size="11" font-weight="700" fill="var(--ink)">balance ' + (P[li] - A[li] > 0 ? '+' : '') + f0(P[li] - A[li]) + '</text>';
+    h += '<text x="' + (W - 72) + '" y="' + (ys(cp) + 4) + '" font-size="11" fill="var(--ink)">Rencana</text>' + (li >= 0 ? '<text x="' + (xs(li) + 6) + '" y="' + (ys(A[li]) + 16) + '" font-size="11" fill="var(--ink)">GR gudang</text>' : '');
+    all.forEach(function (d, i) { if (i % 5 === 0 || d === MONTH_END) h += '<text x="' + xs(i) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="10" fill="var(--mut)">' + dt(d).getUTCDate() + '</text>'; });
+    all.forEach(function (d, i) { h += '<rect x="' + (xs(i) - 6) + '" y="0" width="12" height="' + (H - 18) + '" fill="transparent"><title>' + dlab(d, 1) + ': rencana kumulatif ' + f0(P[i]) + (i <= li ? ', GR kumulatif ' + f0(A[i]) + ', balance ' + f0(P[i] - A[i]) : '') + ' CT</title></rect>'; });
+    return h + '</svg><div class="mut" style="font-size:12px;display:flex;gap:14px"><span><i style="display:inline-block;width:16px;border-top:2px dashed var(--mut);vertical-align:middle"></i> Rencana kumulatif</span><span><i style="display:inline-block;width:16px;border-top:2px solid var(--acc);vertical-align:middle"></i> GR gudang kumulatif</span></div>';
+  }
+  function balCell(b, p) { var c = !p && !b ? 'na' : b <= 0 ? 'ok' : b / Math.max(1, p) <= 0.05 ? 'ok' : b / Math.max(1, p) <= 0.15 ? 'lo' : 'bad'; return '<td class="num"><span class="st2 ' + c + '">' + (b > 0 ? '+' : '') + f0(b) + '</span></td>'; }
+  function vMon() {
+    S.mon = S.mon || { v: 'harian', g: 'sku' };
+    var days = monDays(), h = '<div class="phead"><h2>Monitoring produksi</h2><span class="mut">Balance produksi = rencana produksi − GR gudang. Positif = GR kurang dari rencana.</span><span class="sp"></span><span class="seg"><button data-monv="harian" class="' + (S.mon.v === 'harian' ? 'on' : '') + '">Harian</button><button data-monv="bulanan" class="' + (S.mon.v === 'bulanan' ? 'on' : '') + '">Bulanan</button></span></div>';
+    if (!days.length || !S.rows.length) return h + '<div class="card">Belum ada GR gudang (aktual). Tempel output harian di langkah <b>Aktual</b>; balance produksi muncul di sini sesudahnya.</div>' + nav('Aktual', 'Lanjut: skenario');
+    var kc = function (k, v, d, c) { return '<div class="acard ' + (c || 'blu') + '"><div class="v">' + v + '</div><div class="k">' + k + '</div><div class="d">' + d + '</div></div>'; };
+    if (S.mon.v === 'harian') {
+      var work = days.filter(function (d) { return !isSun(d) || S.rows.some(function (r) { return r.plan[d] || actOf(r, d) != null; }); });
+      var d = S.mon.d && work.indexOf(S.mon.d) >= 0 ? S.mon.d : work[work.length - 1];
+      var rows = S.rows.filter(function (r) { return r.plan[d] || actOf(r, d) != null; }).sort(function (a, b) { return MLIST.indexOf(a.m) - MLIST.indexOf(b.m); });
+      var T = { p: 0, a: 0, cp: 0, ca: 0 }; S.rows.forEach(function (r) { T.p += r.plan[d] || 0; T.a += grOf(r, d); days.forEach(function (x) { if (x <= d) { T.cp += r.plan[x] || 0; T.ca += grOf(r, x); } }); });
+      var b = T.p - T.a, cb = T.cp - T.ca;
+      h += '<div class="toolbar"><label class="mut">Tanggal <select id="monD">' + work.slice().reverse().map(function (x) { return '<option value="' + x + '"' + (x === d ? ' selected' : '') + '>' + dlab(x) + '</option>'; }).join('') + '</select></label><span class="mut">GR gudang tersimpan s/d ' + dlab(S.L, 1) + '.</span></div>';
+      h += '<div class="cards">' + kc('Rencana ' + dshort(d), f0(T.p) + '<small>CT</small>', rows.length + ' baris SKU × mesin') + kc('GR gudang ' + dshort(d), f0(T.a) + '<small>CT</small>', (pct(T.a, T.p) || 0) + '% dari rencana', T.a >= T.p * 0.95 ? 'grn' : 'amb') +
+        kc('Balance ' + dshort(d), (b > 0 ? '+' : '') + f0(b) + '<small>CT</small>', b > 0 ? 'GR kurang dari rencana' : 'GR sesuai / melebihi rencana', b > T.p * 0.05 ? 'red' : 'grn') +
+        kc('Balance kumulatif s/d ' + dshort(d), (cb > 0 ? '+' : '') + f0(cb) + '<small>CT</small>', 'Rencana ' + f0(T.cp) + ' − GR ' + f0(T.ca) + ' sejak ' + dshort(PLAN.start), cb > T.cp * 0.05 ? 'red' : 'grn') + '</div>';
+      h += '<div class="card"><div class="hd"><h3>Balance per hari</h3><span class="mut">' + dshort(days[0]) + ' – ' + dshort(S.L) + '</span></div><div style="overflow-x:auto">' + monSvgDaily(work, d) + '</div></div>';
+      h += '<div class="card" style="padding:0;overflow:hidden"><div style="padding:12px 14px 8px"><h3 style="margin:0">Rencana vs GR gudang · ' + dlab(d, 1) + '</h3></div><div class="tbox" style="border:0;border-top:1px solid var(--line2);border-radius:0;max-height:56vh"><table><thead><tr><th>Mesin</th><th>Material</th><th>Deskripsi</th><th class="num">Rencana</th><th class="num">GR gudang</th><th class="num">Balance</th><th class="num">%</th><th class="num" title="Rencana − GR dari awal bulan s/d tanggal ini">Balance kumulatif</th></tr></thead><tbody>';
+      rows.forEach(function (r) { var p = r.plan[d] || 0, a = actOf(r, d), cp = 0, ca = 0; days.forEach(function (x) { if (x <= d) { cp += r.plan[x] || 0; ca += grOf(r, x); } }); h += '<tr><td class="mono">' + esc(r.m) + '</td><td class="mono">' + esc(r.mat) + '</td><td class="desc">' + esc(SKU[r.mat].desc) + '</td><td class="num">' + f0(p) + '</td><td class="num">' + (a == null ? '<span class="mut">tidak ada data</span>' : f0(a)) + '</td>' + balCell(p - (a || 0), p) + '<td class="num"><span class="st2 ' + (a == null ? 'na' : cls(a, p)) + '">' + (a == null || !p ? '–' : pct(a, p) + '%') + '</span></td>' + balCell(cp - ca, cp) + '</tr>'; });
+      if (!rows.length) h += '<tr><td colspan="8" class="mut">Tidak ada rencana atau GR di tanggal ini.</td></tr>';
+      h += '<tr class="tot"><td colspan="3">Total</td><td class="num">' + f0(T.p) + '</td><td class="num">' + f0(T.a) + '</td>' + balCell(b, T.p) + '<td class="num">' + (pct(T.a, T.p) || 0) + '%</td>' + balCell(cb, T.cp) + '</tr></tbody></table></div></div>';
+    } else {
+      var G = S.mon.g, key = function (r) { return G === 'mesin' ? r.m : G === 'jenis' ? MACH[r.m].jenis : r.mat; }, grp = {}, order = [];
+      S.rows.forEach(function (r) { var k = key(r); if (!grp[k]) { grp[k] = { k: k, m: {}, tgt: 0, p: 0, a: 0, f: 0 }; order.push(k); } var g = grp[k]; g.m[r.m] = 1; g.tgt += r.target || 0; g.p += planTo(r); g.a += actTo(r); g.f += future(r); });
+      var list = order.map(function (k) { return grp[k]; }).sort(function (x, y) { return (y.p - y.a) - (x.p - x.a); }), T2 = { tgt: 0, p: 0, a: 0, f: 0 }; list.forEach(function (g) { T2.tgt += g.tgt; T2.p += g.p; T2.a += g.a; T2.f += g.f; });
+      var bb = T2.p - T2.a, proj = T2.a + T2.f;
+      h += '<div class="toolbar"><label class="mut">Kelompokkan <select id="monG"><option value="sku"' + (G === 'sku' ? ' selected' : '') + '>per SKU</option><option value="mesin"' + (G === 'mesin' ? ' selected' : '') + '>per mesin</option><option value="jenis"' + (G === 'jenis' ? ' selected' : '') + '>per jenis mesin</option></select></label><span class="mut">' + esc(PLAN.label || PLAN.period || '') + ' · GR gudang s/d ' + dlab(S.L, 1) + '</span></div>';
+      h += '<div class="cards">' + kc('Target bulan', f0(T2.tgt) + '<small>CT</small>', 'PP / rencana bulan ini') + kc('Rencana s/d ' + dshort(S.L), f0(T2.p) + '<small>CT</small>', 'Yang seharusnya sudah masuk gudang') + kc('GR gudang s/d ' + dshort(S.L), f0(T2.a) + '<small>CT</small>', (pct(T2.a, T2.p) || 0) + '% dari rencana', T2.a >= T2.p * 0.95 ? 'grn' : 'amb') +
+        kc('Balance produksi', (bb > 0 ? '+' : '') + f0(bb) + '<small>CT</small>', bb > 0 ? 'GR kurang dari rencana s/d ' + dshort(S.L) : 'GR sesuai / melebihi rencana', bb > T2.p * 0.05 ? 'red' : 'grn') +
+        kc('Proyeksi akhir bulan', f0(proj) + '<small>CT</small>', 'GR + sisa rencana; ' + (proj - T2.tgt >= 0 ? 'lebih ' : 'kurang ') + f0(Math.abs(proj - T2.tgt)) + ' dari target', proj >= T2.tgt ? 'grn' : 'amb') + '</div>';
+      h += '<div class="card"><div class="hd"><h3>Rencana vs GR gudang, kumulatif</h3><span class="mut">s/d ' + dshort(MONTH_END) + '</span></div>' + monSvgCum(days) + '</div>';
+      h += '<div class="card" style="padding:0;overflow:hidden"><div style="padding:12px 14px 8px"><h3 style="margin:0">Balance produksi ' + (G === 'mesin' ? 'per mesin' : G === 'jenis' ? 'per jenis mesin' : 'per SKU') + '</h3><span class="mut" style="font-size:12.5px">Urut dari balance terbesar.</span></div><div class="tbox" style="border:0;border-top:1px solid var(--line2);border-radius:0;max-height:60vh"><table><thead><tr><th>' + (G === 'mesin' ? 'Mesin' : G === 'jenis' ? 'Jenis mesin' : 'Material') + '</th>' + (G === 'sku' ? '<th>Deskripsi</th><th>Mesin</th>' : '') + '<th class="num">Target</th><th class="num">Rencana s/d ' + dshort(S.L) + '</th><th class="num">GR gudang</th><th class="num">Balance</th><th class="num">%</th><th class="num">Sisa rencana</th><th class="num">Proyeksi vs target</th></tr></thead><tbody>';
+      list.forEach(function (g) { var pj = g.a + g.f - g.tgt; h += '<tr><td class="mono">' + esc(g.k) + '</td>' + (G === 'sku' ? '<td class="desc">' + esc(SKU[g.k].desc) + '</td><td class="mono">' + esc(Object.keys(g.m).join(', ')) + '</td>' : '') + '<td class="num">' + f0(g.tgt) + '</td><td class="num">' + f0(g.p) + '</td><td class="num">' + f0(g.a) + '</td>' + balCell(g.p - g.a, g.p) + '<td class="num"><span class="st2 ' + cls(g.a, g.p) + '">' + (g.p ? pct(g.a, g.p) + '%' : '–') + '</span></td><td class="num">' + f0(g.f) + '</td><td class="num"><span class="st2 ' + (pj >= 0 ? 'ok' : pj > -g.tgt * 0.05 ? 'lo' : 'bad') + '">' + (pj > 0 ? '+' : '') + f0(pj) + '</span></td></tr>'; });
+      h += '<tr class="tot"><td' + (G === 'sku' ? ' colspan="3"' : '') + '>Total</td><td class="num">' + f0(T2.tgt) + '</td><td class="num">' + f0(T2.p) + '</td><td class="num">' + f0(T2.a) + '</td>' + balCell(bb, T2.p) + '<td class="num">' + (pct(T2.a, T2.p) || 0) + '%</td><td class="num">' + f0(T2.f) + '</td><td class="num">' + (proj - T2.tgt > 0 ? '+' : '') + f0(proj - T2.tgt) + '</td></tr></tbody></table></div></div>';
+    }
+    return h + nav('Aktual', 'Lanjut: skenario');
+  }
+  // ---------- 5. skenario ----------
   function cloneRows() { return JSON.parse(JSON.stringify(S.rows)); }
   function runOn(rows, fn) { var keep = S.rows; S.rows = rows; try { fn(); } finally { S.rows = keep; } return rows; }
   function diffRows(a, b) { var D = { m: {}, r: {}, n: 0 }, A = {}; a.forEach(function (r) { A[r.id] = r; }); b.forEach(function (r) { var o = A[r.id] || { plan: {} }; DAYS.forEach(function (d) { var x = o.plan[d] || 0, y = r.plan[d] || 0; if (x === y) return; (D.r[r.id] = D.r[r.id] || {})[d] = [x && !y ? 'del' : !x ? 'new' : 'mod', x]; D.m[r.m] = 1; D.n++; }); }); return D; }
@@ -727,7 +798,7 @@ function main(PLAN, STORE) {
     h += '</div><details class="more card"><summary>Dari mana asisten tahu SKU mana yang “panas”?</summary>' + srcTable() + '</details></div><div>';
     if (S.options && S.options[S.optSel]) { var o = S.options[S.optSel]; h += '<div class="card" style="padding:10px 12px"><div class="toolbar" style="margin:0 0 8px"><b>Pratinjau: ' + esc(o.t) + '</b><span class="sp"></span><span class="legend"><span><i style="background:var(--okbg)"></i>baru</span><span><i style="background:var(--warnbg)"></i>berubah</span><span><i style="background:var(--badbg)"></i>dipindah</span></span><button class="pri" id="applyOpt">Terapkan ke rencana</button></div>' + grid(o.rows, o.diff) + '</div>'; }
     else h += '<div class="card mut">Isi skenario lalu tekan <b>Bandingkan pilihan</b>. Pratinjau mesin yang terkena muncul di sini, dengan sel yang berubah diwarnai.</div>';
-    return h + '</div></div>' + nav('Aktual', null);
+    return h + '</div></div>' + nav('Monitoring', null);
   }
   function srcTable() { return '<table class="src" style="margin-top:8px"><thead><tr><th>Sinyal</th><th>Sumber</th></tr></thead><tbody><tr><td><b>Stok (hari)</b></td><td>Forecast Desk: stok bebas ÷ forecast M+1 per hari. Bobot terbesar.</td></tr><tr><td><b>Tren order in</b></td><td>Closing: 3 bulan terakhir vs 3 sebelumnya.</td></tr><tr><td><b>Order &gt; forecast</b></td><td>Saran Buffer, backtest 6 closing: berapa bulan order in melebihi forecast + buffer.</td></tr><tr><td><b>Order mendadak</b></td><td>Baru: perubahan antar unggahan rencana produksi (PP naik atau dimajukan).</td></tr><tr><td><b>Kelas ABC-XYZ</b></td><td>Saran Buffer.</td></tr></tbody></table><p class="mut" style="font-size:12.5px;margin:6px 0 0">' + (DEMO ? 'Angka di data contoh ini dibuat-buat.' : PLAN.heat ? 'Dipakai sekarang: stok (hari) dan kelas ABC-XYZ dari Forecast Desk saat rencana dikirim. Sinyal lain menyusul.' : 'Belum ada data panas: kirim rencana dari Forecast Desk supaya stok (hari) ikut terbawa.') + '</p>'; }
 
@@ -744,6 +815,8 @@ function main(PLAN, STORE) {
   document.addEventListener('click', function (e) {
     var t = e.target, b;
     if (!t.closest('#menu') && !t.closest('[data-rm]') && !t.closest('[data-add]')) $('menu').hidden = true;
+    if ((b = t.closest('[data-monv]'))) { S.mon.v = b.dataset.monv; render(); return; }
+    if ((b = t.closest('[data-mday]'))) { S.mon.d = b.getAttribute('data-mday'); render(); return; }
     if (t.id === 'aiAlerts' || t.closest('#aiAlerts')) { if (!$('aipanel').hidden && !$('alertsBox').hidden) openPanel(false); else setSide('alerts'); return; }
     if (t.id === 'aiAsk') { setSide('tanya'); $('chatIn').focus(); return; }
     if (t.id === 'aiClose') { openPanel(false); return; }
@@ -768,7 +841,7 @@ function main(PLAN, STORE) {
     if (t.id === 'undoBtn') { var hs = S.hist.pop(); if (hs) { S.rows = JSON.parse(hs); render(true); toast('Diurungkan'); } return; }
     if (t.id === 'pasteDemo') { S.pasteText = demoPaste(); $('pasteBox').value = S.pasteText; return; }
     if (t.id === 'pasteGo') { S.pasteText = $('pasteBox').value; doPaste(); return; }
-    if (t.id === 'saveAct') { if (!S.L || S.pasteDay > S.L) S.L = S.pasteDay; S.pasteRes = null; S.pasteText = ''; S.pasteDay = DAYS.filter(function (x) { return x > S.L && !isSun(x); })[0]; render(); say('Aktual tersimpan dan tanggalnya terkunci. Kekurangannya sekarang ada di Rencana, kartu <b>Target belum tertutup</b>.'); return; }
+    if (t.id === 'saveAct') { if (!S.L || S.pasteDay > S.L) S.L = S.pasteDay; S.pasteRes = null; S.pasteText = ''; S.pasteDay = DAYS.filter(function (x) { return x > S.L && !isSun(x); })[0]; render(); say('Aktual tersimpan dan tanggalnya terkunci. Kekurangannya sekarang ada di Rencana, kartu <b>Target belum tertutup</b>, dan balance produksinya di <b>Monitoring</b>.'); return; }
     if ((b = t.closest('[data-scen]'))) { S.scen = b.dataset.scen; S.options = null; render(); return; }
     if (t.id === 'scenGo') { readScen(); S.options = scenarioOptions(); S.optSel = 0; render(); var o0 = S.options[0]; say(o0 ? 'Saya bandingkan ' + S.options.length + ' pilihan. Saran: <b>' + esc(o0.t) + '</b>' + (o0.late.length ? ', ' + o0.late.length + ' SKU mundur' + (o0.late.some(function (l) { return l.risk; }) ? ' dan ada yang stoknya habis duluan' : ' tanpa risiko stok habis') : ', tanpa SKU lain yang mundur') + '. Klik pilihan lain untuk membandingkan pratinjaunya.' : 'Tidak ada pilihan yang muat.'); return; }
     if ((b = t.closest('[data-osel]'))) { S.optSel = +b.dataset.osel; render(); return; }
@@ -853,6 +926,8 @@ function main(PLAN, STORE) {
   document.addEventListener('change', function (e) {
     var t = e.target;
     if (t.id === 'jf') { S.jf = t.value; render(); return; }
+    if (t.id === 'monD') { S.mon.d = t.value; render(); return; }
+    if (t.id === 'monG') { S.mon.g = t.value; render(); return; }
     if (t.id === 'pDay') { S.pasteDay = t.value; S.pasteRes = null; S.pasteText = ''; render(); sayStep(); return; }
     if (t.id === 'adS') { var q = ppLeft(t.value); $('adQ').value = q || Math.round(SKU[t.value].rate * 3); return; }
     if (t.dataset.fix) { var d = S.pasteDay, v = num(t.value), old = actOf(rowById(t.dataset.fix), d); if (v === undefined) return toast('Bukan angka'); if (old != null && old !== v && S.fixes[t.dataset.fix + d] == null) S.fixes[t.dataset.fix + d] = old; (S.act[t.dataset.fix] = S.act[t.dataset.fix] || {})[d] = v; if (S.pasteRes) S.pasteRes.rows = dayRows(d); render(); return; }
@@ -864,7 +939,7 @@ function main(PLAN, STORE) {
   $('chatForm').addEventListener('submit', function (e) { e.preventDefault(); var v = $('chatIn').value.trim(); if (v) ask(v); $('chatIn').value = ''; });
   function ask(q) {
     var ql = q.toLowerCase(), a = '', m = null;
-    if (ql.indexOf('rush') >= 0 || ql.indexOf('mendadak') >= 0) { var mt = SLIST.filter(function (s) { return ql.indexOf(s.desc.toLowerCase().split(' ').slice(0, 2).join(' ')) >= 0; })[0] || HOTTEST, qn = (q.match(/[\d.]{3,}/) || [String(S.rush.qty)])[0]; S.scen = 'rush'; S.rush = { mat: mt.mat, qty: num(qn) || S.rush.qty, due: S.rush.due }; S.options = scenarioOptions(); S.optSel = 0; S.step = 4; render(); a = 'Skenario order mendadak ' + f0(S.rush.qty) + ' CT ' + mt.desc + ' ada di langkah Skenario. Saran: ' + (S.options[0] ? S.options[0].t : 'tidak ada ruang') + '.'; }
+    if (ql.indexOf('rush') >= 0 || ql.indexOf('mendadak') >= 0) { var mt = SLIST.filter(function (s) { return ql.indexOf(s.desc.toLowerCase().split(' ').slice(0, 2).join(' ')) >= 0; })[0] || HOTTEST, qn = (q.match(/[\d.]{3,}/) || [String(S.rush.qty)])[0]; S.scen = 'rush'; S.rush = { mat: mt.mat, qty: num(qn) || S.rush.qty, due: S.rush.due }; S.options = scenarioOptions(); S.optSel = 0; S.step = 5; render(); a = 'Skenario order mendadak ' + f0(S.rush.qty) + ' CT ' + mt.desc + ' ada di langkah Skenario. Saran: ' + (S.options[0] ? S.options[0].t : 'tidak ada ruang') + '.'; }
     else if (ql.indexOf('panas') >= 0) a = 'Paling panas: ' + SLIST.slice().sort(function (x, y) { return y.score - x.score; }).slice(0, 4).map(function (s) { return s.desc.slice(0, 28) + ' (stok ' + Math.round(s.sig.cover) + ' hari)'; }).join('; ') + '.';
     else if (ql.indexOf('kosong') >= 0) { var st = tomorrow(); a = 'Mesin dengan ≥2 hari kosong minggu ini: ' + (MLIST.filter(function (x) { var c = 0; for (var i = DI[st]; i < DI[st] + 6; i++) if (freeDay(x, DAYS[i])) c++; return c >= 2; }).join(', ') || 'tidak ada') + '. Hari kosong diarsir hijau di baris kepala mesin.'; }
     else if ((m = MLIST.filter(function (x) { return ql.indexOf(x.toLowerCase()) >= 0; })[0])) { var mrs = S.rows.filter(function (r) { return r.m === m; }), k = mrs.reduce(function (s, r) { return s + Math.max(0, planTo(r) - actTo(r)); }, 0), pa = 0, aa = 0; DAYS.filter(function (d) { return isPast(d); }).slice(-5).forEach(function (d) { mrs.forEach(function (r) { pa += r.plan[d] || 0; aa += actOf(r, d) || 0; }); }); a = S.L ? m + ': kurang ' + f0(k) + ' CT dari rencana s/d ' + dshort(S.L) + '. Lima hari terakhir ' + (pct(aa, pa) || 0) + '% dari rencana.' : m + ': belum ada aktual.'; }

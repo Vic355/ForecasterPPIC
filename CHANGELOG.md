@@ -5,6 +5,14 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
 
 ## 2026-11-25
 
+- **Manual production planning, machine output and Balance Production.** Rencana produksi in *Manual* mode no longer makes
+  suggestions: the grid shows only the machines (or *Tidak ada data mesin* when there is no machine list, instead of sample
+  machines), *Jalankan jadwal otomatis* is hidden, and the left panel lists the SKUs to schedule (PP, area mesin, stock cover,
+  net weight, output per machine) instead of Alerts / Tanya. Drag a card onto a machine row: the bar starts on the first free
+  working day from the drop point and lasts sisa PP ÷ output per day. **Output per machine** (cartons/day) = kapasitas per hari
+  ÷ net weight per carton × variasi output %, read from the Machine Master (`meta.capDayT`, `meta.outPct`) and editable by
+  double-clicking the machine's capacity cell. Perencanaan Produksi gets a **Monitoring** step (Harian / Bulanan) with
+  **Balance produksi = rencana produksi − GR gudang**, per day and month to date, per SKU, machine or machine type.
 - **Input data first, Ringkasan becomes Dashboard, Master mesin.** The app opens on **Input data**, now grouped into
   *Penjualan & forecast*, *Stok & kelas SKU* and *Master data* (filter chips with filled/total counts). **Dashboard** (next
   to Input, unnumbered) shows the key-number cards, order in vs Forecast HQ / Forecast AI per month with hover and a
