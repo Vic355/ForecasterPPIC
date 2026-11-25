@@ -5,6 +5,26 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
 
 ## 2026-11-25
 
+- **Less clutter on Input, Forecast and Saran buffer; how Forecast AI learns.** **Dashboard** leaves the step flow and
+  becomes a header button (▦ Dashboard, with its alert count). Alerts no longer pop up on a page change: the Alerts panel
+  starts collapsed (its open state is remembered) and the automatic spotlight is off unless switched on in Pengaturan →
+  Asisten; the Buffer recommendation waits in Tanya. **Input data**: one-line demo strip and drop zone, Stok and Master
+  data groups side by side, each file listed in the slot of its type (month, version, Lihat, ✕), and **Cakupan data per
+  bulan** always visible (closing and Forecast HQ per month, file names on hover); the full file table moved behind
+  *Detail file*. **Grouping** in Forecast and Saran buffer: Brand rows first (total per brand, collapsible) over the
+  Brand · Kategori groups; also Brand only, Kategori only, Brand › Famili closing, Jenis SKU and any free column. Saran
+  buffer gets the same Brand, Kategori and Jenis SKU / free column filters. **Sugesti** on group and brand rows (group HQ vs
+  AI for M+1 and counts of vital, far-off, no-HQ and perlu-cek SKUs, names on hover). **Saran buffer**: the separate
+  *Ringkasan proyeksi per bulan* becomes a compact per-month strip in the table panel (MRP button moved there too);
+  *Arti status* explains each status with the action it implies and filters the table on click; ABC-XYZ is explained as
+  size × steadiness with a 3×3 table. **🧠 Cara Forecast AI belajar** (Forecast): the pipeline with live numbers, error after
+  0–80 trees on training rows and on the last unseen month, any tree drawn with a chosen SKU's path and its prediction
+  tree by tree, feature use, the walk-forward backtest grid and an honest note on LSTM / Prophet. The trainer returns this
+  trace from the Web Worker (`res.viz`).
+- **Rencana produksi, less clutter.** The SKU panel in Mode Manual is a compact list (one row per SKU: status dot, name,
+  Nomat, PP, shortfall; click for details), so dozens of SKUs fit without scrolling. **Sembunyikan ringkasan** hides the
+  summary cards and alert ribbon above the grid while arranging (on by default in Mode Manual). The demo now loads sample
+  machines, including Pop Up, and removes them again when the demo is left.
 - **Excel-style columns, version history, Jenis SKU warnings.** Every wide table (Forecast, Saran buffer, Material master,
   Cek data SKU, Pratinjau, Master mesin, and the Produksi and MRP pages) gets **Kolom ▾** above it and a right-click menu on
   its column headers: 🔒 *Kunci sampai kolom ini* freezes the columns up to that one while the table scrolls sideways (like
