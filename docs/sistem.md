@@ -107,10 +107,22 @@ and PP. Free columns are not model inputs either.
 - **Musim aktif** (`state.season`): months the SKU sells; outside them Forecast AI / buffer / PP = 0 and the months are gaps.
 - **Kolom bebas** (`state.freeCols`): user columns per Nomat for filter and grouping on the Forecast sheet.
 - **Jenis SKU** (`state.skuClass`): Reguler, SKU baru, Musiman, Musiman + histori, Diganti; picks which inputs the Detail
-  column shows. Without a choice it follows the data. Material master has a Kolom menu; free columns
-  are added in the table's last column and can be pasted from Excel down a column.
+  column shows. Without a choice it follows the data. A Jenis other than Reguler without its input (Histori dari Nomat,
+  a readable Musim aktif, Nomat pengganti) is flagged *Jenis belum lengkap* (banner, count, filter, row, alert); the
+  forecast then treats the SKU as Reguler. Free columns are added in the table's last column and can be pasted from Excel
+  down a column.
 - Saved in `ppic_mat` and in the history sheet `atribut_sku` (nomat, histori_dari, histori_persen, musim_aktif, free columns);
   the same layout can be uploaded with *Unggah atribut SKU*.
+
+## 4d. Table columns (all pages)
+
+`public/tabel.js` is loaded by `/`, `/produksi/` and `/mrp/`. For every table with a header and ≥ 5 columns it adds
+**Kolom ▾** (shown when the table is wider than its box or has choices) and a right-click menu on header cells: lock the
+columns up to one (sticky `left`, like Freeze Panes) and hide columns (cells inside hidden columns get `display: none`,
+wider header cells lose the hidden part of their colspan). Columns are named by their header path, e.g. *Jun 26 · Order in*.
+Choices per table in `localStorage` `ppic_tabel`; defaults in `window.TT_DEF` (Material master: Status, Nomat, SKU locked;
+Brand, Kategori, Famili closing and BOM hidden). A MutationObserver re-applies after each re-render and a ResizeObserver
+after a resize. Tables with `data-tt="off"` and the day grids (`.ppg`, `.pg`) are skipped.
 
 ## 5. Buffer (Saran buffer)
 
