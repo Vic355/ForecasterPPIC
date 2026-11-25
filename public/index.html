@@ -783,6 +783,34 @@ html[data-theme=dark] .rvchip { color: #1b1206; }
 .ppg tr.sku.unsch.lamp-warn > td { background: color-mix(in srgb, var(--lamp-kuning) 12%, var(--paper)) !important; } .ppg tr.sku.unsch.lamp-warn > td:first-child { box-shadow: inset 5px 0 0 var(--lamp-kuning); }
 .ppg tr.fam b.unt { color: var(--lamp-merah); }
 .ppg button.sm { min-height: 24px; padding: 2px 8px; font-size: 12.5px; }
+/* Rencana produksi, mode Manual: SKU panel on the left (replaces Alerts/Tanya), drag SKUs onto machine rows */
+.alerts .pskp { flex: 1; min-height: 0; overflow: auto; padding: 0 10px 12px; }
+.pskp .psh { position: sticky; top: 0; z-index: 2; background: var(--panel2); padding: 6px 0 8px; display: flex; flex-direction: column; gap: 6px; }
+.pskp .psh input[type=search] { width: 100%; }
+.pskp .psf { display: flex; flex-wrap: wrap; gap: 4px; }
+.pskp .psf button { min-height: 26px; padding: 2px 9px; font-size: 13px; border-radius: 999px; }
+.pskp .psf button.on { background: var(--acc); color: var(--paper); border-color: var(--acc); }
+.pskp .psg { margin: 10px 2px 4px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--mut); display: flex; justify-content: space-between; gap: 6px; }
+.psk { position: relative; background: var(--paper); border: 1px solid var(--line); border-left: 5px solid var(--lamp-merah, #b23a2a); border-radius: 9px; padding: 7px 9px 7px 24px; margin-bottom: 6px; cursor: grab; touch-action: none; user-select: none; font-size: 13.5px; line-height: 1.35; }
+.psk.st-kurang { border-left-color: var(--lamp-kuning, #c9a227); } .psk.st-cukup { border-left-color: var(--lamp-hijau, #3f6b56); opacity: .8; } .psk.st-nodata { border-left-color: var(--line); cursor: not-allowed; }
+.psk:hover { box-shadow: 0 2px 10px var(--shadow); } .psk:focus-visible { outline: 2px solid var(--acc); }
+.psk .grip { position: absolute; left: 6px; top: 8px; color: var(--mut); font-size: 13px; letter-spacing: -2px; }
+.psk .pn { font-weight: 600; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.psk .pc { font-family: var(--mono); font-size: 12px; color: var(--mut); }
+.psk .pv { display: flex; flex-wrap: wrap; gap: 2px 10px; margin-top: 3px; font-variant-numeric: tabular-nums; }
+.psk .pv b { font-weight: 700; } .psk .pv .red { color: var(--lamp-merah, #b23a2a); font-weight: 700; }
+.psk .pd { display: none; margin-top: 6px; border-top: 1px dashed var(--line); padding-top: 6px; font-size: 13px; }
+.psk.open .pd { display: block; cursor: auto; }
+.psk .pd table { width: 100%; border-collapse: collapse; } .psk .pd td { padding: 1px 0; } .psk .pd td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.psk .pmore { position: absolute; right: 6px; top: 5px; min-height: 22px; padding: 0 6px; font-size: 12px; border-radius: 6px; }
+.psghost { position: fixed; z-index: 400; pointer-events: none; background: var(--acc); color: var(--paper); border-radius: 8px; padding: 5px 10px; font-size: 13px; font-weight: 600; box-shadow: 0 8px 24px var(--shadow); max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.psghost small { display: block; font-weight: 400; opacity: .9; }
+body.psdrag, body.psdrag * { cursor: grabbing !important; }
+.ppg tr.mach.psok > td { background: color-mix(in srgb, var(--lamp-hijau, #3f6b56) 12%, var(--paper)) !important; }
+.ppg tr.mach.psother > td { background: color-mix(in srgb, var(--lamp-kuning, #c9a227) 10%, var(--paper)) !important; }
+.trk .psprev { position: absolute; top: 3px; bottom: 3px; border: 2px dashed var(--acc); background: color-mix(in srgb, var(--acc) 22%, transparent); border-radius: 6px; z-index: 3; pointer-events: none; font-size: 11.5px; font-weight: 700; color: var(--ink); padding: 0 4px; white-space: nowrap; overflow: hidden; display: flex; align-items: center; }
+.trk .psprev.warn { border-color: var(--lamp-kuning, #c9a227); background: color-mix(in srgb, var(--lamp-kuning, #c9a227) 25%, transparent); }
+.ppg tr.nodata td { padding: 18px 14px; font-size: 15px; color: var(--mut); text-align: left; }
 /* Sugesti Utama AI inside the side panel */
 .alerts #fcVital { margin: 0 0 10px; padding: 10px 10px 8px; border-radius: 10px; }
 .alerts #fcVital .ph { flex-direction: column; align-items: stretch; gap: 6px; margin-bottom: 6px; }
@@ -2774,6 +2802,19 @@ function machType(v) { if (!v) return null; var k = String(v).trim().toLowerCase
 var MACH_GUESS = [[/kitchen|k-?towel|\btowel\b/i, 'Kitchen Towel'], [/\bjrt\b|jumbo/i, 'JRT'], [/coreless/i, 'Coreless'], [/luncheon|napkin|serbet/i, 'Napkin Luncheon'], [/dinner/i, 'Dinner'], [/cocktail|coctail/i, 'Coctail'], [/handk|hanky/i, 'Handky'], [/m-?fold|multifold|sixfold/i, 'M-Fold'], [/l-?fold/i, 'Lfold'], [/bottom\s*pull/i, 'Bottompull'], [/pop\s*-?up|hbt/i, 'Pop Up dan HBT'], [/travel/i, 'Travel Pack'], [/kiloan|\bkg\b/i, 'Kiloan'], [/\bbox\b/i, 'Facial Box'], [/soft\s*-?pack/i, 'Softpack Besar'], [/toilet|\broll\b/i, 'SRT']];
 function guessMachine(name) { for (var i = 0; i < MACH_GUESS.length; i++) if (MACH_GUESS[i][0].test(name || '')) return MACH_GUESS[i][1]; return null; }
 function capOf(mname, base) { var e = state.capEdits[mname]; return e && typeof e.v === 'number' ? e.v : base; }
+// Machine Master entry: [name (alias), capTonPerMonth, remark, meta?]; meta = { capDayT, outPct, ... }.
+// Kapasitas per hari (t) and variasi output (%) for one machine; a planner's edit on this page wins.
+function machMeta(x) { return x && x[3] && typeof x[3] === 'object' ? x[3] : {}; }
+function machCapDay(x, avail) {
+  var meta = machMeta(x), e = state.capEdits[x[0]], pe = e && e.pct; // capEdits[m] = { v: t/bulan?, pct: variasi output %? }
+  var pct = typeof pe === 'number' ? pe : meta.outPct > 0 ? +meta.outPct : 100;
+  if (e && typeof e.d === 'number') return { capDay: e.d, pct: pct, src: 'edit' };
+  if (e && typeof e.v === 'number') return { capDay: avail ? e.v / avail : 0, pct: pct, src: 'edit' };
+  if (meta.capDayT > 0) return { capDay: +meta.capDayT, pct: pct, src: 'master' };
+  return { capDay: x[1] > 0 && avail ? x[1] / avail : 0, pct: pct, src: x[1] > 0 ? 'bulan' : 'none' };
+}
+// display name of a machine: the Machine Master keeps an alias code; machLabel shows the real name once unlocked
+function mLbl(name) { try { if (typeof machLabel === 'function') return machLabel(name); } catch (e) {} return name; }
 function skuMachOf(s) { var sm = state.skuMach || {}; return sm[s.nomat] || sm[s.key] || null; }
 function machineOf(s) {
   var mm = state.machines[s.key]; if (mm) return { v: machType(mm), src: 'manual' };
@@ -2859,11 +2900,15 @@ function schedModel(pm, MST) {
     var off = {}; [cal.per[g[0]], cal.per[x[0]]].forEach(function (o) { if (o) Object.keys(o).forEach(function (d) { off[d] = o[d]; }); });
     Object.keys(cal.g).forEach(function (d) { if (!off[d]) off[d] = cal.g[d]; });
     var avail = 0; for (var d = 1; d <= D; d++) if (!off[d]) avail++;
-    var mc = { name: x[0], type: g[0], cap: c, off: off, avail: avail, rate: avail ? c / avail : 0, occ: {}, items: [], rem: x[2] || '', load: 0, used: 0, plan: 0, planT: 0 };
+    // output capability: kapasitas per hari × variasi output %. Kapasitas per hari comes from the Machine Master (meta.capDayT,
+    // ton/day); a capacity typed here (t/month) or an older master without it is spread over the working days instead.
+    var cp = machCapDay(x, avail), mc = { name: x[0], type: g[0], cap: cp.capDay * cp.pct / 100 * avail, capDay: cp.capDay, pct: cp.pct, capSrc: cp.src, off: off, avail: avail, rate: cp.capDay * cp.pct / 100, occ: {}, items: [], rem: x[2] || '', load: 0, used: 0, plan: 0, planT: 0 };
     machines.push(mc); byName[mc.name] = mc;
   }); });
   var isOff = function (mc, d) { return d <= D && !!mc.off[d]; };
   var rateOf = function (r, mc) { var t = skuMachOf(r.s); return t && t.speed > 0 && (!t.mach || t.mach === mc.name) ? t.speed : mc.rate; };
+  // output capability in cartons/day for this SKU on this machine = kapasitas per hari ÷ berat bersih per karton × variasi output
+  var ctDay = function (r, mc) { var t = rateOf(r, mc); return r.nw && t > 0 ? t * 1000 / r.nw : 0; };
   var addPiece = function (r, mc, s, l, man) {
     var pc = { r: r, mc: mc, s: s, l: l, days: [], man: man, clash: null, t: 0, plan: 0 };
     for (var d = s; d < s + l; d++) if (!isOff(mc, d)) {
@@ -2939,7 +2984,7 @@ function schedModel(pm, MST) {
   });
   machines.forEach(function (mc) { var u = {}; mc.items.forEach(function (pc) { pc.days.forEach(function (d) { if (d <= D) u[d] = 1; }); }); mc.used = Object.keys(u).length; });
   var maxEnd = items.reduce(function (a, pc) { return Math.max(a, pc.s + pc.l - 1); }, D);
-  return { P: P, D: D, H: Math.min(H0, maxEnd), H0: H0, machines: machines, byName: byName, items: items, byKey: byKey, unplaced: unplaced, tgt: tgt, issues: issues, cal: cal, rateOf: rateOf };
+  return { P: P, D: D, H: Math.min(H0, maxEnd), H0: H0, machines: machines, byName: byName, items: items, byKey: byKey, unplaced: unplaced, tgt: tgt, issues: issues, cal: cal, rateOf: rateOf, ctDay: ctDay };
 }
 function skuLbl(s) { return '<span class="nm">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + esc(s.nomat || s.art || s.key) + '</span>'; }
 function listCard(id, k, v, note, pill, kind, lim) {
@@ -2959,21 +3004,23 @@ function renderPlan(m) {
   if (!m.skus.length || !m.future.length || !bm) { CH.pm = null; CH.sm = null; CH.ppGrid = null; $('ppCards').innerHTML = ''; $('ppCtx').innerHTML = ''; $('schNote').innerHTML = ''; $('ppTable').innerHTML = '<tbody><tr><td class="empty">Belum ada data. Unggah closing dan Forecast HQ di lembar <b>Input Data &amp; Model</b>.</td></tr></tbody>'; renderPPData(null); return; }
   var pm = planModel(m, bm), P = pm.P, mt = state.ppUnit === 'mt', all = ppAgg(pm.rows);
   CH.pm = pm;
-  var demo = !master().length && !!state.sample, MST = master().length ? master() : demo ? demoMaster(pm) : []; CH.MST = MST;
+  var manM = schedFor(P).mode === 'manual'; // manual mode: no model suggestions, no stand-in machines; without data it says so
+  var demo = !master().length && !!state.sample && !manM, MST = master().length ? master() : demo ? demoMaster(pm) : []; CH.MST = MST;
   var sm = schedModel(pm, MST); CH.sm = sm;
   renderPPData(pm);
   $('ppCtx').innerHTML = (state.sample ? '<span><span class="pill p-warn">MOCKUP</span></span>' : '') + '<span>Closing terakhir: <b>' + monthLabel(m.latest) + '</b></span><span>Bulan rencana: <b>' + monthLabel(P) + '</b> (' + pm.D + ' hari)</span><span>Dasar forecast: <b>' + { hq: 'Forecast HQ', ml: 'Ensemble AI', avg: 'Rata-rata HQ & ML', gbr: 'Regressor', chronos: 'Chronos', holt: 'Holt', hqc: 'HQ terkoreksi' }[pm.cfg.basis] + '</b> · buffer dari <a href="#" data-goto="Buffer">Saran Buffer</a></span>' + (state.sample ? '<span><span class="pill p-warn">CONTOH SIMULASI</span></span>' : '');
   document.querySelectorAll('#ppUnitSeg button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-pu') === state.ppUnit); });
   $('schSun').checked = !!state.ppSunOff; $('schCb').checked = !!state.ppCbOff;
   var schMan = schedFor(P).mode === 'manual', nUn0 = sm.unplaced.filter(function (x) { return !x.removed && !x.unmapped; }).length, nMap0 = sm.unplaced.filter(function (x) { return x.unmapped; }).length;
-  if ($('schHint')) $('schHint').innerHTML = (schMan ? '<b>Mode Manual</b>: hanya bar yang Anda taruh. Tempatkan SKU merah lewat <b>Tempatkan di mesin…</b> atau klik dua kali hari kosong di baris mesin; <b>▶ Jalankan jadwal otomatis</b> mengisi sisanya.' : '<b>Mode Otomatis</b>: model menjadwalkan semua SKU yang belum Anda atur; bar tetap bisa digeser.') +
+  if ($('schHint')) $('schHint').innerHTML = (schMan ? '<b>Mode Manual</b>: hanya bar yang Anda taruh, tanpa saran otomatis. Tarik SKU dari panel <b>SKU untuk dijadwalkan</b> di kiri ke baris mesin.' : '<b>Mode Otomatis</b>: model menjadwalkan semua SKU yang belum Anda atur; bar tetap bisa digeser.') +
     (nUn0 ? ' <span class="unt"><span class="warnlight">' + nUn0 + '</span> SKU belum terjadwal</span>' : '') + (nMap0 ? ' <span class="unt"><span class="warnlight">' + nMap0 + '</span> SKU belum dipetakan ke area mesin</span>' : '') + (!nUn0 && !nMap0 ? ' <span class="okt">✓ Semua SKU dengan PP sudah terjadwal.</span>' : ''); document.querySelectorAll('#schMode button').forEach(function (b) { var on = b.getAttribute('data-schmode') === (schMan ? 'manual' : 'auto'); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
   $('schH').textContent = 'Rencana produksi per mesin · ' + monthLabel(P);
-  $('schNote').innerHTML = (demo ? '<span class="pill p-warn">MESIN CONTOH</span> Daftar mesin belum diunggah, jadi dipakai mesin contoh rekaan. ' : (!MST.length ? '<b>Daftar mesin belum ada</b>, jadi kalender masih kosong. Isi tabel <i>Daftar mesin</i> di <a href="#" data-goto="Input">Input Data &amp; Model</a>. ' : '')) +
+  $('schReset').hidden = manM;
+  $('schNote').innerHTML = (demo ? '<span class="pill p-warn">MESIN CONTOH</span> Daftar mesin belum diunggah, jadi dipakai mesin contoh rekaan. ' : (!MST.length ? '<b>Tidak ada data mesin</b>, jadi kalender masih kosong. Isi tabel <i>Daftar mesin</i> di <a href="#" data-goto="Input">Input Data &amp; Model</a>. ' : '')) +
     (function () { var nc = sm.machines.filter(function (x) { return !(x.cap > 0); }).length, ng = state.sample ? 0 : pm.rows.filter(function (r) { return r.mach.guess && r.pl > 0; }).length;
       return (nc ? '<b>' + nc + ' mesin belum punya kapasitas</b>: barisnya kosong dan tidak dipakai jadwal otomatis (klik dua kali kolom kap. atau isi di <a href="#" data-goto="Input">Input</a>). ' : '') + (ng ? '<b>' + ng + ' SKU belum dipetakan ke area mesin</b>: ada di grup merah <i>Belum dipetakan ke area mesin</i> sampai Kelompok SKU diisi di <a href="#" data-goto="Input">Input</a> atau area mesin dipilih di tabel. ' : ''); })() +
-    (schedFor(P).mode === 'manual' ? '<b>Mode Manual</b>: hanya bar yang Anda taruh. SKU tanpa bar tampil <b class="red">merah</b> di bawah area mesinnya; tekan <b>Tempatkan di mesin…</b> atau klik dua kali hari kosong di baris mesin, atau <b>▶ Jalankan jadwal otomatis</b> untuk mengisi yang belum terjadwal. ' : '') +
-    'PP = forecast + buffer − stok bebas. Jadwal otomatis: SKU bermasalah dulu, lalu cover stok paling sedikit, ke mesin yang paling cepat kosong. <b>Geser</b> bar untuk pindah tanggal atau mesin, tarik <b>ujung kanan</b> untuk mengubah lama produksi, <b>klik dua kali</b> tempat kosong untuk menambah SKU atau maintenance, klik <b>tanggal</b> untuk libur. Klik bar untuk <b>memisah</b> dan menyisipkan SKU lain di tengah (A → B → A). Target harian = PP rencana ÷ hari produksi; klik dua kali angkanya untuk mengubah, sisa hari menyesuaikan. <b>Rencana</b> = total SKU di jadwal; bila beda dari target ditandai ⚠.';
+    (manM ? '<b>Mode Manual</b>: tidak ada saran otomatis. Tarik SKU dari panel <b>SKU untuk dijadwalkan</b> di kiri ke baris mesin, di tanggal mulainya; lama bar = sisa PP ÷ output mesin per hari (kapasitas per hari ÷ berat bersih per karton × variasi output). Atau klik dua kali hari kosong di baris mesin. ' : '') +
+    'PP = forecast + buffer − stok bebas. ' + (manM ? '' : 'Jadwal otomatis: SKU bermasalah dulu, lalu cover stok paling sedikit, ke mesin yang paling cepat kosong. ') + '<b>Geser</b> bar untuk pindah tanggal atau mesin, tarik <b>ujung kanan</b> untuk mengubah lama produksi, <b>klik dua kali</b> tempat kosong untuk menambah SKU atau maintenance, klik <b>tanggal</b> untuk libur. Klik bar untuk <b>memisah</b> dan menyisipkan SKU lain di tengah (A → B → A). Target harian = PP rencana ÷ hari produksi; klik dua kali angkanya untuk mengubah, sisa hari menyesuaikan. <b>Rencana</b> = total SKU di jadwal; bila beda dari target ditandai ⚠.';
   // ----- cards (each opens a list) -----
   var t1 = function (v) { return fmt.format(Math.round(v)) + ' t'; }, mach = function (r) { return esc(r.mach.v || '–') + (r.mach.guess ? ' <span class="sub">(tebakan)</span>' : ''); };
   var span = function (k) { var g = sm.tgt[k]; return g && g.n ? 'tgl ' + g.first + (g.last !== g.first ? '–' + g.last : '') + (g.last > pm.D ? ' <b class="red">lewat</b>' : '') : '–'; };
@@ -2995,13 +3042,14 @@ function renderPlan(m) {
     rows: guess.map(function (r) { return [skuLbl(r.s), esc(r.mach.v || 'belum ada'), n(r.pp)]; }), keys: guess.map(function (r) { return r.s.key; }) };
   $('ppCards').innerHTML =
     listCard('ppAll', 'PP ' + monthLabel(P) + ' · target / rencana', (mt ? t1(all.t.pp) : n(all.pp)) + ' / ' + (mt ? t1(plTon) : n(plTot)), withPP.length + ' SKU. Target dari Saran Buffer' + (nLockT ? ', ' + nLockT + ' diubah manual' : '') + '. Rencana = jumlah target harian' + (plTot !== all.pp ? ' (selisih ' + (mt ? fmt.format(Math.round((plTon - all.t.pp) * 10) / 10) + ' t' : signed(plTot - all.pp)) + ')' : '') + '' + '.', plTot === all.pp ? 'Sesuai' : 'Selisih', plTot === all.pp ? '' : 'warn') +
-    listCard('ppBad', 'SKU bermasalah', n(bad.length) + ' SKU', bad.length ? 'Stok bebas di bawah forecast ' + monthLabel(P) + '. Dijadwalkan paling awal.' : 'Stok bebas semua SKU menutup forecast.', bad.length ? 'Dahulukan' : 'Aman', bad.length ? 'bad' : 'ok') +
-    listCard('ppUn', 'Belum terjadwal', n(un.length) + ' SKU', un.length ? (schedFor(P).mode === 'manual' ? 'Mode manual: tempatkan di mesin atau jalankan jadwal otomatis. ' : '') + 'Juga: tanpa berat bersih, area mesin tanpa mesin, belum dipetakan, atau dikeluarkan manual.' : 'Semua SKU dengan PP sudah masuk jadwal.', un.length ? 'Belum di jadwal' : 'Lengkap', un.length ? (LAMPU.rencana.belumTerjadwal === 'kuning' ? 'warn' : 'bad') : 'ok', 'merah bila ada SKU dengan PP tanpa bar') +
+    listCard('ppBad', 'SKU bermasalah', n(bad.length) + ' SKU', bad.length ? 'Stok bebas di bawah forecast ' + monthLabel(P) + '.' + (manM ? '' : ' Dijadwalkan paling awal.') : 'Stok bebas semua SKU menutup forecast.', bad.length ? 'Dahulukan' : 'Aman', bad.length ? 'bad' : 'ok') +
+    listCard('ppUn', 'Belum terjadwal', n(un.length) + ' SKU', un.length ? (manM ? 'Mode manual: tarik SKU dari panel kiri ke mesin. ' : '') + 'Juga: tanpa berat bersih, area mesin tanpa mesin, belum dipetakan, atau dikeluarkan manual.' : 'Semua SKU dengan PP sudah masuk jadwal.', un.length ? 'Belum di jadwal' : 'Lengkap', un.length ? (LAMPU.rencana.belumTerjadwal === 'kuning' ? 'warn' : 'bad') : 'ok', 'merah bila ada SKU dengan PP tanpa bar') +
     listCard('ppIss', 'Jadwal perlu dicek', n(iss.length) + ' SKU', iss.length ? 'Lewat akhir bulan, bentrok, atau target harian di atas kecepatan mesin.' : 'Semua bar selesai dalam bulan, tanpa bentrok.', iss.length ? 'Cek' : 'Rapi', iss.length ? 'warn' : 'ok') +
     listCard('ppGuess', 'Mesin belum pasti', n(guess.length) + ' SKU', guess.length ? 'Area mesin masih tebakan dari nama SKU.' : 'Semua SKU dengan PP punya area mesin dari data.', guess.length ? 'Tebakan' : 'Lengkap', guess.length ? 'warn' : 'ok');
   // the day grid is the slowest part of a redraw; it is drawn only while Rencana produksi is open (or when it opens)
   CH.ppGrid = [pm, sm, mt, all];
   if (!$('tabPlan').hidden) ppGridDraw();
+  if (typeof D10 === 'object' && D10 && D10.cur === 'Plan' && $('pskList')) ppSkuPanel();
 }
 function ppGridDraw() { var a = CH.ppGrid; if (!a) return; CH.ppGrid = null; renderPlanGrid(a[0], a[1], a[2], a[3]); }
 function renderPlanGrid(pm, sm, mt, all) {
@@ -3084,9 +3132,11 @@ function renderPlanGrid(pm, sm, mt, all) {
       h += lamp ? row.replace('<tr class="sku', '<tr class="sku unsch lamp-' + lamp) : row;
     });
   };
-  grp('__un', 'Belum dipetakan ke area mesin', 'pilih area mesin di kolom kiri (atau isi Kelompok SKU di Input)', pm.rows.filter(function (r) { var w = whyOf[r.s.key]; return r.pp > 0 && !placed[r.s.key] && (types.indexOf(r.mach.v || '') < 0 || (w && w.unmapped)) && (!filt || hit(r)); }), true, true, lampOf('belumDipetakan'));
+  var manM = schedFor(P).mode === 'manual';
+  if (manM && !sm.machines.length) h += '<tr class="nodata"><td colspan="' + (4 + H) + '"><b>Tidak ada data mesin.</b> Isi daftar mesin (Machine Master) di <a href="#" data-goto="Input">Input data</a>; SKU yang perlu dijadwalkan ada di panel kiri.</td></tr>';
+  if (!manM) grp('__un', 'Belum dipetakan ke area mesin', 'pilih area mesin di kolom kiri (atau isi Kelompok SKU di Input)', pm.rows.filter(function (r) { var w = whyOf[r.s.key]; return r.pp > 0 && !placed[r.s.key] && (types.indexOf(r.mach.v || '') < 0 || (w && w.unmapped)) && (!filt || hit(r)); }), true, true, lampOf('belumDipetakan'));
   types.forEach(function (g) {
-    var ms = sm.machines.filter(function (x) { return x.type === g; }), rr = rowsByType[g] || [], a = ppAgg(rr), un = unIn(g);
+    var ms = sm.machines.filter(function (x) { return x.type === g; }), rr = rowsByType[g] || [], a = ppAgg(rr), un = manM ? [] : unIn(g);
     if (filt && !un.length && !ms.some(function (x) { return x.items.some(function (pc) { return hit(pc.r); }); })) return;
     var openT = filt || state.ppOpenT[g] !== false;
     h += '<tr class="fam"><td><div class="fl"><button type="button" class="exp" data-ppt="' + esc(g) + '" aria-expanded="' + openT + '">' + (openT ? '▼' : '▶') + '</button><div>' + esc(g) + (un.length ? ' <span class="warnlight lamp-' + lampOf('belumTerjadwal') + '" title="' + un.length + ' SKU di area ini belum terjadwal">' + un.length + '</span>' : '') + '<span class="code">' + rr.length + ' SKU · ' + ms.length + ' mesin' + (un.length ? ' · <b class="unt">' + un.length + ' belum terjadwal</b>' : '') + '</span></div></div></td>' +
@@ -3095,15 +3145,15 @@ function renderPlanGrid(pm, sm, mt, all) {
     ms.forEach(function (x) {
       if (filt && !x.items.some(function (pc) { return hit(pc.r); })) return;
       var openM = filt || !!state.ppOpenMc[x.name], e = state.capEdits[x.name];
-      h += '<tr class="mach" data-m="' + esc(x.name) + '"><td><div class="fl"><button type="button" class="exp" data-ppmc="' + esc(x.name) + '" aria-expanded="' + openM + '"' + (x.items.length ? '' : ' disabled') + ' title="Tampilkan SKU dan target harian">' + (openM ? '▼' : '▶') + '</button><div>' + esc(x.name) + '<span class="code">' + x.items.length + ' SKU' + (x.rem ? ' · ' + esc(x.rem) : '') + '</span></div></div></td>' +
-        '<td class="num cap sep' + (e ? ' edited' : '') + '" tabindex="0" data-cap="' + esc(x.name) + '" title="' + (x.cap > 0 ? 'Kapasitas ' + fmt.format(x.cap) + ' t/bulan, ' + fmt.format(Math.round(x.rate * 10) / 10) + ' t/hari.' : 'Kapasitas belum ada: mesin ini tidak dipakai jadwal otomatis, tapi SKU bisa ditaruh manual.') + ' Klik dua kali untuk mengubah.">' + (x.cap > 0 ? 'kap. ' + fmt.format(Math.round(x.cap)) + ' t<span class="mt">' + fmt.format(Math.round(x.rate * 10) / 10) + ' t/hari</span>' : 'kap. –<span class="mt">belum diisi</span>') + '</td>' +
+      h += '<tr class="mach" data-m="' + esc(x.name) + '"><td><div class="fl"><button type="button" class="exp" data-ppmc="' + esc(x.name) + '" aria-expanded="' + openM + '"' + (x.items.length ? '' : ' disabled') + ' title="Tampilkan SKU dan target harian">' + (openM ? '▼' : '▶') + '</button><div>' + esc(mLbl(x.name)) + '<span class="code">' + x.items.length + ' SKU' + (x.rem ? ' · ' + esc(x.rem) : '') + '</span></div></div></td>' +
+        '<td class="num cap sep' + (e ? ' edited' : '') + '" tabindex="0" data-cap="' + esc(x.name) + '" title="' + (x.rate > 0 ? 'Kapasitas per hari ' + fmt.format(Math.round(x.capDay * 100) / 100) + ' t × variasi output ' + Math.round(x.pct) + '% = ' + fmt.format(Math.round(x.rate * 10) / 10) + ' t/hari (' + fmt.format(Math.round(x.cap)) + ' t dalam ' + x.avail + ' hari kerja). Output per SKU (karton/hari) = ini ÷ berat bersih per karton.' : 'Tidak ada data kapasitas: mesin ini tidak dipakai jadwal otomatis, tapi SKU bisa ditaruh manual.') + ' Klik dua kali untuk mengubah kapasitas per hari atau variasi output.">' + (x.rate > 0 ? fmt.format(Math.round(x.rate * 10) / 10) + ' t/hari<span class="mt">' + fmt.format(Math.round(x.capDay * 10) / 10) + ' × ' + Math.round(x.pct) + '%</span>' : 'kap. –<span class="mt">tidak ada data</span>') + '</td>' +
         '<td class="num ppr" title="Output terencana mesin ini = jumlah target harian SKU di mesin ini">' + (mt ? fmt.format(Math.round(x.planT * 10) / 10) : n(Math.round(x.plan)) + '<span class="mt">' + fmt.format(Math.round(x.planT * 10) / 10) + ' t</span>') + '</td><td class="num" title="Hari terpakai / hari kerja">' + x.used + '/' + x.avail + '</td>' +
         '<td class="tl sep" colspan="' + H + '">' + trk(x, x.items.map(function (pc) { return bar(pc, true); }).join('')) + '</td></tr>';
       if (openM) x.items.forEach(function (pc) { if (!filt || hit(pc.r)) h += skuRow(pc.r, pc); });
     });
-    grp('__un:' + g, 'Belum terjadwal di ' + esc(g), 'PP ada tapi belum punya bar: tempatkan di mesin atau jalankan jadwal otomatis', un, true, false, lampOf('belumTerjadwal'));
+    if (!manM) grp('__un:' + g, 'Belum terjadwal di ' + esc(g), 'PP ada tapi belum punya bar: tempatkan di mesin atau jalankan jadwal otomatis', un, true, false, lampOf('belumTerjadwal'));
   });
-  grp('__np', 'Tanpa produksi ' + monthLabel(P), 'stok bebas sudah menutup forecast + buffer', pm.rows.filter(function (r) { return r.pp === 0 && !placed[r.s.key] && (!filt || hit(r)); }), false, false);
+  if (!manM) grp('__np', 'Tanpa produksi ' + monthLabel(P), 'stok bebas sudah menutup forecast + buffer', pm.rows.filter(function (r) { return r.pp === 0 && !placed[r.s.key] && (!filt || hit(r)); }), false, false);
   h += '<tr class="tot"><td>Total Serang<span class="code">' + pm.rows.length + ' SKU aktif' + (all.nwMiss ? ' · ' + all.nwMiss + ' tanpa berat' : '') + '</span></td>' + paCells(pa(pm.rows)) + '<td></td>' + dayCells(dayTot, 'tsum') + '</tr>';
   var tb = $('ppTable'); tb.style.width = (fixedW + H * dw) + 'px'; tb.style.setProperty('--fz1', W0 + 'px'); tb.style.setProperty('--fz2', (W0 + WN) + 'px'); tb.style.setProperty('--fz3', (W0 + 2 * WN) + 'px'); tb.innerHTML = h + '</tbody>'; ppSyncScroll();
 }
@@ -4436,7 +4486,7 @@ function ppToMonDo(silent) {
     var r = pc.r, k = r.s.key, g = sm.tgt[k], mat = String(r.s.nomat || r.s.art || k), plan = {}, ct = 0, n = 0;
     pc.days.forEach(function (d) { var x = g && g.d[d]; if (!x || x.pcs.indexOf(pc) < 0) return; var v = Math.round(x.v / x.pcs.length); if (!v) return; var iso = dateOfDay(P, d); plan[iso] = v; ct += v; n++; if (iso > last) last = iso; });
     var id = pc.mc.name + '-' + mat; seen[id] = (seen[id] || 0) + 1; if (seen[id] > 1) id += '-' + seen[id];
-    return { id: id, machine: pc.mc.name, material: mat, desc: r.s.name || mat, category: pc.mc.type || '', net: r.nw || 0, target: n ? Math.round(ct / n) : 0, ct: ct, plan: plan };
+    return { id: id, machine: pc.mc.name, material: mat, desc: r.s.name || mat, category: pc.mc.type || '', net: r.nw || 0, target: n ? Math.round(ct / n) : 0, ct: ct, plan: plan, rate: Math.round(sm.ctDay(r, pc.mc)) || 0 }; // rate = output ct/hari of this SKU on this machine
   }).filter(function (l) { return l.ct > 0; });
   var off = []; for (var d = 1; d <= D; d++) if (sm.cal.g[d]) off.push(dateOfDay(P, d));
   var store = {}; try { store = JSON.parse(localStorage.getItem('ppic_prod') || '{}') || {}; } catch (e) { store = {}; }
@@ -4447,7 +4497,7 @@ function ppToMonDo(silent) {
   lines.forEach(function (l) { ids[l.id] = l; });
   Object.keys(actual).forEach(function (id) {
     if (ids[id]) { used[id] = 1; return; }
-    var mat = id.split('-')[1], to = lines.filter(function (l) { return l.material === mat && !used[l.id] && !actual[l.id]; })[0];
+    var pt = id.split('-'), mat = pt.length > 2 && /^\d{1,2}$/.test(pt[pt.length - 1]) ? pt[pt.length - 2] : pt[pt.length - 1], to = lines.filter(function (l) { return l.material === mat && !used[l.id] && !actual[l.id]; })[0];
     if (to) { actual[to.id] = actual[id]; delete actual[id]; used[to.id] = 1; moved++; }
   });
   store.plan = { period: P, label: new Date(P + '-01T00:00:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }), start: dateOfDay(P, 1), end: last, offDays: off, source: 'Rencana Produksi (tab di PPIC Forecast Desk), dikirim ' + new Date().toLocaleString('id-ID'), fromPP: true, loadedAt: new Date().toISOString(), lines: lines, heat: heat, pp: ppl };
@@ -4698,9 +4748,136 @@ function schSetMode(mode) {
   if (!CH.pm || !CH.sm) return; var sc = schedFor(CH.pm.P), cur = sc.mode === 'manual' ? 'manual' : 'auto'; if (cur === mode) return;
   if (mode === 'manual') { Object.keys(CH.sm.byKey).forEach(function (k) { var pcs = CH.sm.byKey[k]; if (!sc.place[k] || !sc.place[k].length) sc.place[k] = pcs.map(function (pc) { return { m: pc.mc.name, s: pc.s, l: pc.l, a: pc.man ? undefined : 1 }; }); }); sc.mode = 'manual'; }
   else { Object.keys(sc.place).forEach(function (k) { var a = sc.place[k]; if (a.length && a.every(function (p) { return p.a; })) delete sc.place[k]; }); delete sc.mode; }
-  savePP(); renderAll(); toast(mode === 'manual' ? 'Mode Manual: hanya bar yang ada di jadwal. SKU tanpa bar tampil merah; tempatkan sendiri atau tekan ▶ Jalankan jadwal otomatis.' : 'Mode Otomatis: SKU tanpa bar manual dijadwalkan model.');
+  savePP(); renderAll(); toast(mode === 'manual' ? 'Mode Manual: hanya bar yang ada di jadwal, tanpa saran otomatis. Tarik SKU dari panel kiri ke baris mesin.' : 'Mode Otomatis: SKU tanpa bar manual dijadwalkan model.');
 }
 $('schMode').addEventListener('click', function (e) { var b = e.target.closest('[data-schmode]'); if (b) schSetMode(b.getAttribute('data-schmode')); });
+// ---------- Mode Manual: "SKU untuk dijadwalkan" panel on the left, drag an SKU onto a machine row ----------
+function ppManual() { return !!(CH.pm && CH.sm && schedFor(CH.pm.P).mode === 'manual'); }
+// what is still needed for one SKU: its bars, the cartons they can make at each machine's output, and what is short
+function ppSkuInfo(r) {
+  var sm = CH.sm, pcs = sm.byKey[r.s.key] || [], cap = 0;
+  pcs.forEach(function (pc) { pc.days.forEach(function () { cap += sm.ctDay(r, pc.mc); }); });
+  var st = !r.nw ? 'nodata' : !pcs.length ? 'belum' : cap + 0.5 < r.pl ? 'kurang' : 'cukup';
+  return { pcs: pcs, cap: cap, st: st, short: Math.max(0, Math.round(r.pl - cap)) };
+}
+// working days a bar needs on machine mc from day s for qty cartons (output per day = kapasitas/hari ÷ berat bersih × variasi)
+function ppDaysFor(r, mc, s, qty) {
+  var sm = CH.sm, cd = sm.ctDay(r, mc); if (!(cd > 0)) return 1;
+  var need = Math.max(1, Math.ceil(qty / cd - 0.05)), got = 0, d = s;
+  while (got < need && d <= sm.H0) { if (!(d <= sm.D && mc.off[d])) got++; d++; }
+  return Math.max(1, d - s);
+}
+function ppFirstFree(mc, k, day) { var sm = CH.sm, d = Math.max(1, day); while (d <= sm.H0 && ((d <= sm.D && mc.off[d]) || mc.occ[d])) d++; return d <= sm.H0 ? d : null; }
+// where a drop would land: start day (first free working day from the drop point) and length
+function ppDropPlan(k, mname, day) {
+  var sm = CH.sm, r = CH.pm.rows.filter(function (x) { return x.s.key === k; })[0], mc = sm.byName[mname]; if (!r || !mc) return null;
+  var info = ppSkuInfo(r), s0 = ppFirstFree(mc, k, day); if (!s0) return { r: r, mc: mc, full: true };
+  var qty = info.st === 'kurang' ? info.short : r.pl;
+  return { r: r, mc: mc, info: info, s: s0, l: ppDaysFor(r, mc, s0, qty), qty: qty, other: !!(r.mach.v && mc.type !== r.mach.v), nodata: !(sm.ctDay(r, mc) > 0) };
+}
+function ppDropSku(k, mname, day) {
+  var sm = CH.sm, sc = schedFor(sm.P), x = ppDropPlan(k, mname, day); if (!x) return;
+  if (x.full) { toast(mLbl(mname) + ' tidak punya hari kosong lagi sampai ' + SCH_X + ' hari setelah akhir bulan.'); return; }
+  var nb = { m: x.mc.name, s: x.s, l: Math.min(x.l, sm.H0 - x.s + 1) };
+  if (x.info.st === 'kurang') { var a = schFreeze(k); a.push(nb); a.sort(function (p, q) { return p.s - q.s; }); }
+  else sc.place[k] = [nb];
+  delete sc.day[k]; savePP(); renderAll();
+  toast((x.r.s.name || k) + (x.info.st === 'cukup' ? ' dipindah ke ' : x.info.st === 'kurang' ? ' ditambah (sisa ' + n(x.qty) + ' ct) di ' : ' ditaruh di ') + mLbl(x.mc.name) + ', tgl ' + nb.s + ', ' + nb.l + ' hari' + (x.nodata ? '. Mesin ini tidak ada data kapasitas: lama bar 1 hari, tarik ujung kanannya.' : '.') + (x.other ? ' Area mesin SKU ini ' + x.r.mach.v + ', bukan ' + x.mc.type + '.' : ''));
+}
+function ppSkuPanel() {
+  var el = $('pskList'); if (!el) return;
+  if (!CH.pm || !CH.sm) { el.innerHTML = '<p class="sub" style="margin:8px 2px">Tidak ada data. Muat closing dan Forecast HQ dulu.</p>'; return; }
+  var sm = CH.sm, P = CH.pm.P, f = state.psF || 'todo', q = normName(state.psQ || ''), srt = state.psS || 'area';
+  var rows = CH.pm.rows.filter(function (r) { return r.pl > 0; }).map(function (r) { return { r: r, i: ppSkuInfo(r) }; });
+  var cnt = { todo: 0, belum: 0, kurang: 0, cukup: 0, all: rows.length }; rows.forEach(function (x) { cnt[x.i.st] = (cnt[x.i.st] || 0) + 1; if (x.i.st === 'belum' || x.i.st === 'kurang') cnt.todo++; });
+  var vis = rows.filter(function (x) { if (f === 'todo' && !(x.i.st === 'belum' || x.i.st === 'kurang')) return false; if (f !== 'todo' && f !== 'all' && x.i.st !== f) return false; return !q || normName((x.r.s.name || '') + ' ' + (x.r.s.nomat || '') + ' ' + (x.r.s.art || '') + ' ' + (x.r.s.brand || '') + ' ' + (x.r.s.family || '')).indexOf(q) >= 0; });
+  var cov = function (x) { return x.r.cover === null ? 9999 : x.r.cover; };
+  vis.sort(srt === 'cover' ? function (a, b) { return cov(a) - cov(b); } : srt === 'pp' ? function (a, b) { return b.r.pl * (b.r.nw || 0) - a.r.pl * (a.r.nw || 0); } : function (a, b) { var A = a.r.mach.v || '~', B = b.r.mach.v || '~'; return A < B ? -1 : A > B ? 1 : String(a.r.s.name || '').localeCompare(String(b.r.s.name || '')); });
+  var t1 = function (ct, nw) { return nw ? fmt.format(Math.round(ct * nw / 100) / 10) + ' t' : ''; };
+  var stL = { belum: 'Belum di jadwal', kurang: 'Kurang', cukup: 'Cukup', nodata: 'Tidak ada data' };
+  var card = function (x) {
+    var r = x.r, s = r.s, k = s.key, i = x.i, open = state.psOpen === k;
+    var where = i.pcs.length ? i.pcs.map(function (pc) { return esc(mLbl(pc.mc.name)) + ' tgl ' + pc.s + '–' + (pc.s + pc.l - 1); }).join(', ') : '';
+    var ms = sm.machines.filter(function (mc) { return mc.type === r.mach.v; });
+    var det = '<table>' +
+      (s.brand || s.family ? '<tr><td>Brand / famili</td><td class="num">' + esc([s.brand, s.family].filter(Boolean).join(' · ')) + '</td></tr>' : '') +
+      (s.category ? '<tr><td>Kategori</td><td class="num">' + esc(s.category) + '</td></tr>' : '') +
+      '<tr><td>Area mesin</td><td class="num">' + esc(r.mach.v || 'tidak ada data') + (r.mach.guess ? ' (tebakan)' : '') + '</td></tr>' +
+      '<tr><td>Stok bebas</td><td class="num">' + n(r.fs) + ' ct</td></tr><tr><td>Forecast ' + monthLabel(P) + '</td><td class="num">' + n(r.F) + ' ct</td></tr><tr><td>Buffer final</td><td class="num">' + n(r.buf) + ' ct</td></tr>' +
+      '<tr><td>Stok cukup untuk</td><td class="num">' + (r.cover === null ? 'tidak ada data' : fmt.format(Math.round(r.cover)) + ' hari') + '</td></tr>' +
+      '<tr><td>Berat bersih</td><td class="num">' + (r.nw ? fmt.format(r.nw) + ' kg/ct' : '<b class="red">tidak ada data</b>') + '</td></tr>' +
+      (i.pcs.length ? '<tr><td>Di jadwal</td><td class="num">' + where + '</td></tr><tr><td>Bisa dibuat bar itu</td><td class="num">' + n(Math.round(i.cap)) + ' ct</td></tr>' : '') + '</table>' +
+      '<div class="psg" style="margin:6px 0 2px"><span>Output per mesin (' + esc(r.mach.v || '–') + ')</span></div>' +
+      (ms.length ? '<table>' + ms.map(function (mc) { var cd = sm.ctDay(r, mc); return '<tr><td>' + esc(mLbl(mc.name)) + '</td><td class="num">' + (cd > 0 ? n(Math.round(cd)) + ' ct/hari · ' + Math.ceil(r.pl / cd - 0.05) + ' hari' : 'tidak ada data') + '</td></tr>'; }).join('') + '</table>' : '<p class="sub" style="margin:0">Tidak ada data mesin untuk area ini.</p>') +
+      '<p class="sub" style="margin:4px 0 0">Output = kapasitas per hari ÷ berat bersih per karton × variasi output.</p>';
+    return '<div class="psk st-' + i.st + (open ? ' open' : '') + '" tabindex="0" data-psk="' + esc(k) + '" title="' + (i.st === 'nodata' ? 'Tidak ada data berat bersih: tidak bisa dijadwalkan.' : 'Tarik ke baris mesin di tanggal mulai') + '">' +
+      '<span class="grip" aria-hidden="true">⋮⋮</span><button type="button" class="pmore" data-psmore="' + esc(k) + '" aria-expanded="' + open + '" title="Detail">' + (open ? '▴' : '▾') + '</button>' +
+      '<span class="pn">' + esc(s.name || k) + '</span><span class="pc">' + esc(s.nomat || s.art || k) + (r.nw ? ' · ' + fmt.format(r.nw) + ' kg/ct' : '') + '</span> ' +
+      (r.st[1] === 'low' ? '<span class="bst b-low" title="' + esc(r.st[2]) + '">' + r.st[0] + '</span> ' : '') + '<span class="bst b-' + (i.st === 'cukup' ? 'same' : i.st === 'kurang' ? 'up' : i.st === 'nodata' ? 'noprod' : 'low') + '">' + stL[i.st] + '</span>' +
+      '<div class="pv"><span>PP <b>' + n(r.pl) + '</b> ct ' + t1(r.pl, r.nw) + '</span>' + (i.st === 'kurang' ? '<span class="red">sisa ' + n(i.short) + ' ct</span>' : '') + (i.pcs.length ? '<span>' + where + '</span>' : '') + '</div>' +
+      '<div class="pd">' + det + '</div></div>';
+  };
+  var h = '', lastG = null;
+  vis.forEach(function (x) { var g = x.r.mach.v || 'Tanpa area mesin'; if (srt === 'area' && g !== lastG) { var ng = vis.filter(function (y) { return (y.r.mach.v || 'Tanpa area mesin') === g; }).length, nm = sm.machines.filter(function (mc) { return mc.type === g; }).length; h += '<div class="psg"><span>' + esc(g) + '</span><span>' + ng + ' SKU · ' + (nm ? nm + ' mesin' : 'tidak ada data mesin') + '</span></div>'; lastG = g; } h += card(x); });
+  var fb = function (k, t) { return '<button type="button" data-psf="' + k + '" class="' + (f === k ? 'on' : '') + '">' + t + ' ' + (cnt[k] || 0) + '</button>'; };
+  var focus = document.activeElement && document.activeElement.id === 'psQ', sc0 = el.scrollTop;
+  el.innerHTML = '<div class="psh"><input type="search" id="psQ" placeholder="Cari SKU / Nomat / brand" aria-label="Cari SKU" value="' + esc(state.psQ || '') + '">' +
+    '<div class="psf">' + fb('todo', 'Perlu dijadwalkan') + fb('cukup', 'Cukup') + fb('all', 'Semua') + '</div>' +
+    '<label class="sub" style="display:flex;gap:6px;align-items:center">Urutkan<select id="psS" style="width:auto"><option value="area"' + (srt === 'area' ? ' selected' : '') + '>Area mesin</option><option value="cover"' + (srt === 'cover' ? ' selected' : '') + '>Stok tersisa (hari)</option><option value="pp"' + (srt === 'pp' ? ' selected' : '') + '>PP terbesar (ton)</option></select></label>' +
+    '<span class="sub">' + (sm.machines.length ? 'Tarik kartu ke baris mesin, di tanggal mulainya. Bar mengisi hari kerja berikutnya sesuai output mesin.' : '<b>Tidak ada data mesin.</b> Isi Machine Master di Input data.') + '</span></div>' +
+    (h || '<p class="sub" style="margin:8px 2px">' + (rows.length ? (f === 'todo' ? '✓ Semua SKU dengan PP sudah punya bar yang cukup.' : 'Tidak ada yang cocok.') : 'Tidak ada SKU dengan PP bulan ini.') + '</p>');
+  el.scrollTop = sc0; if (focus) { var qi = $('psQ'); qi.focus(); qi.setSelectionRange(qi.value.length, qi.value.length); }
+}
+document.addEventListener('click', function (e) {
+  if (!e.target.closest('#pskList')) return;
+  var b = e.target.closest('[data-psf]'); if (b) { state.psF = b.getAttribute('data-psf'); ppSkuPanel(); return; }
+  var m = e.target.closest('[data-psmore]'); if (m) { var k = m.getAttribute('data-psmore'); state.psOpen = state.psOpen === k ? null : k; ppSkuPanel(); return; }
+});
+document.addEventListener('click', function (e) { var b = e.target.closest('[data-schmode2]'); if (b) { schSetMode(b.getAttribute('data-schmode2')); return; } var g = e.target.closest('#ppTable a[data-goto]'); if (g) { e.preventDefault(); showTab(g.getAttribute('data-goto')); } });
+document.addEventListener('input', function (e) { if (e.target.id === 'psQ') { state.psQ = e.target.value; clearTimeout(state._psT); state._psT = setTimeout(ppSkuPanel, 200); } });
+document.addEventListener('change', function (e) { if (e.target.id === 'psS') { state.psS = e.target.value; ppSkuPanel(); } });
+// pointer drag from the panel to a machine row: highlights machines of the SKU's area, previews the bar, drops on release
+(function () {
+  var dg = null, prev = null, rowsHl = [];
+  var clear = function () { if (prev) { prev.remove(); prev = null; } rowsHl.forEach(function (tr) { tr.classList.remove('psok', 'psother', 'drop'); }); rowsHl = []; };
+  var spot = function (x, y) {
+    var hit = document.elementsFromPoint(x, y), trk = null; for (var i = 0; i < hit.length; i++) { if (hit[i].classList && hit[i].classList.contains('trk')) { trk = hit[i]; break; } var tr = hit[i].closest && hit[i].closest('tr.mach'); if (tr) { trk = tr.querySelector('.trk'); break; } }
+    if (!trk) return null; var rc = trk.getBoundingClientRect(); return { trk: trk, m: trk.getAttribute('data-m'), day: Math.max(1, Math.floor((x - rc.left) / CH.dw) + 1) };
+  };
+  document.addEventListener('pointerdown', function (e) {
+    var c = e.target.closest('.psk[data-psk]'); if (!c || e.button !== 0 || e.target.closest('button, input, select, .pd')) return;
+    if (c.classList.contains('st-nodata')) { toast('Tidak ada data berat bersih untuk SKU ini: output per hari tidak bisa dihitung.'); return; }
+    dg = { k: c.getAttribute('data-psk'), x: e.clientX, y: e.clientY, on: false, card: c, ghost: null, at: null };
+  });
+  document.addEventListener('pointermove', function (e) {
+    if (!dg) return;
+    if (!dg.on) { if (Math.abs(e.clientX - dg.x) + Math.abs(e.clientY - dg.y) < 6) return; dg.on = true; document.body.classList.add('psdrag');
+      var r = CH.pm.rows.filter(function (x) { return x.s.key === dg.k; })[0]; dg.r = r;
+      dg.ghost = document.createElement('div'); dg.ghost.className = 'psghost'; document.body.appendChild(dg.ghost);
+      document.querySelectorAll('#ppTable tr.mach').forEach(function (tr) { var mc = CH.sm.byName[tr.getAttribute('data-m')]; if (!mc) return; tr.classList.add(mc.type === r.mach.v ? 'psok' : 'psother'); rowsHl.push(tr); });
+    }
+    e.preventDefault(); dg.ghost.style.left = (e.clientX + 14) + 'px'; dg.ghost.style.top = (e.clientY + 10) + 'px';
+    var sp = spot(e.clientX, e.clientY); if (prev) { prev.remove(); prev = null; }
+    dg.at = null; var r = dg.r;
+    if (sp) {
+      var x = ppDropPlan(dg.k, sp.m, sp.day);
+      if (x && !x.full) {
+        dg.at = sp; prev = document.createElement('div'); prev.className = 'psprev' + (x.other || x.nodata ? ' warn' : ''); prev.style.left = ((x.s - 1) * CH.dw) + 'px'; prev.style.width = (x.l * CH.dw - 2) + 'px'; prev.textContent = (r.s.name || dg.k); sp.trk.appendChild(prev);
+        dg.ghost.innerHTML = esc(r.s.name || dg.k) + '<small>' + esc(mLbl(sp.m)) + ' · tgl ' + x.s + ' · ' + x.l + ' hari · ' + (x.nodata ? 'tidak ada data kapasitas' : n(Math.round(CH.sm.ctDay(r, x.mc))) + ' ct/hari') + (x.other ? ' · area lain' : '') + '</small>';
+      } else dg.ghost.innerHTML = esc(r.s.name || dg.k) + '<small>' + esc(mLbl(sp.m)) + ' penuh</small>';
+    } else dg.ghost.innerHTML = esc(r.s.name || dg.k) + '<small>Lepas di baris mesin</small>';
+    // keep scrolling while the pointer sits near the edge of the page
+    var mn = $('d10main'); if (mn) { var mr = mn.getBoundingClientRect(); if (e.clientY > mr.bottom - 40) mn.scrollTop += 14; else if (e.clientY < mr.top + 40) mn.scrollTop -= 14; }
+    var bx = $('ppScroll'); if (bx && sp) { var br = bx.getBoundingClientRect(); if (e.clientX > br.right - 40) bx.scrollLeft += 16; }
+  });
+  var end = function (e) {
+    if (!dg) return; var d = dg; dg = null; document.body.classList.remove('psdrag'); if (d.ghost) d.ghost.remove(); clear();
+    if (!d.on) { if (e.type === 'pointerup') { state.psOpen = state.psOpen === d.k ? null : d.k; ppSkuPanel(); } return; }
+    if (e.type === 'pointerup' && d.at) ppDropSku(d.k, d.at.m, d.at.day);
+  };
+  document.addEventListener('pointerup', end); document.addEventListener('pointercancel', end);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && dg) { if (dg.ghost) dg.ghost.remove(); document.body.classList.remove('psdrag'); clear(); dg = null; } });
+})();
 // "Tempatkan di mesin…" on a red (belum terjadwal) row
 function schPlaceMenu(btn, k) {
   var sm = CH.sm, r = CH.pm.rows.filter(function (x) { return x.s.key === k; })[0]; if (!r) return;
@@ -4800,6 +4977,19 @@ $('stMenu').addEventListener('click', function (e) {
   var sc = schedFor(sm.P), pi = mnu.getAttribute('data-schpi'), pc = pi !== null ? sm.items[+pi] : null, day = +mnu.getAttribute('data-schd'), mname = mnu.getAttribute('data-schm');
   var done = function () { ['data-schpi', 'data-schd', 'data-schm', 'data-schk'].forEach(function (a) { mnu.removeAttribute(a); }); closeStMenu(); };
   if (act === 'runfill' || act === 'runscratch') { if (act === 'runscratch' && Object.keys(sc.place).some(function (k) { return (sc.place[k] || []).some(function (p) { return !p.a; }); }) && !confirm('Susun ulang jadwal ' + monthLabel(sm.P) + ' dari nol? Bar dan target harian yang diatur sendiri dihapus. PP target, libur dan maintenance tetap.')) return; done(); schAutoRun(act === 'runscratch', null); return; }
+  if (act === 'capset' || act === 'capreset') {
+    var cm = mnu.getAttribute('data-schm'), cd = $('capD') ? $('capD').value.trim().replace(/\./g, '').replace(',', '.') : '', cpv = $('capP') ? +$('capP').value : 100;
+    if (act === 'capreset') delete state.capEdits[cm];
+    else {
+      var mc0 = sm.byName[cm], x0 = null; (CH.MST || []).forEach(function (g) { g[1].forEach(function (mm) { if (mm[0] === cm) x0 = mm; }); });
+      var keep = state.capEdits[cm]; delete state.capEdits[cm]; var b0 = x0 ? machCapDay(x0, mc0 ? mc0.avail : 26) : { capDay: 0, pct: 100 }; if (keep) state.capEdits[cm] = keep;
+      var ce = { at: new Date().toISOString().slice(0, 10) };
+      if (cd !== '' && !isNaN(+cd) && +cd >= 0 && Math.abs(+cd - b0.capDay) >= 0.005) ce.d = +cd;
+      if (cpv > 0 && cpv !== Math.round(b0.pct)) ce.pct = cpv;
+      if (ce.d !== undefined || ce.pct !== undefined) state.capEdits[cm] = ce; else delete state.capEdits[cm];
+    }
+    done(); savePP(); renderAll(); return;
+  }
   var pk = mnu.getAttribute('data-schk');
   if (pk && act === 'auto1') { done(); schAutoRun(false, [pk]); return; }
   if (pk && act === 'place') {
@@ -4920,14 +5110,26 @@ function tgStartEdit(td, initial) {
   i.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === 'Tab') { ev.preventDefault(); finish(true, ev.key === 'Tab'); } else if (ev.key === 'Escape') { ev.preventDefault(); finish(false); } });
   i.addEventListener('blur', function () { finish(true); });
 }
-$('ppTable').addEventListener('dblclick', function (e) { var td = e.target.closest('td[data-cap]'); if (td) { capStartEdit(td); return; } var tg = e.target.closest('td[data-tk]'); if (tg) tgStartEdit(tg); });
+// output capability of one machine: kapasitas per hari (t) × variasi output (%), and what that gives per SKU in cartons/day
+function capMenu(td) {
+  var sm = CH.sm, mc = sm && sm.byName[td.getAttribute('data-cap')]; if (!mc) return;
+  var e = state.capEdits[mc.name] || {}, f1 = function (v) { return fmt.format(Math.round(v * 100) / 100); };
+  var skus = CH.pm.rows.filter(function (r) { return r.nw && (r.mach.v === mc.type || mc.items.some(function (pc) { return pc.r === r; })); }).slice(0, 8);
+  bufPopover(td, '<div class="mh">' + esc(mLbl(mc.name)) + ' · output per hari</div>' +
+    '<p class="sub" style="margin:0 0 6px">Output (karton/hari) = kapasitas per hari ÷ berat bersih per karton × variasi output.</p>' +
+    '<div class="mr"><label>Kapasitas per hari (ton)<input type="text" inputmode="decimal" id="capD" value="' + (mc.capDay ? f1(mc.capDay) : '') + '" placeholder="tidak ada data"></label><label>Variasi output (%)<input type="number" id="capP" min="1" max="150" value="' + Math.round(mc.pct) + '"></label></div>' +
+    '<p class="sub" style="margin:4px 0">Sumber: ' + ({ master: 'Machine Master', edit: 'diubah di sini', bulan: 'kapasitas per bulan ÷ ' + mc.avail + ' hari kerja', none: '<b>tidak ada data</b>' }[mc.capSrc] || '') + '. Efektif ' + f1(mc.rate) + ' t/hari.</p>' +
+    (skus.length ? '<div class="bw">' + skus.map(function (r) { return '<span>' + esc((r.s.name || r.s.key).slice(0, 34)) + ' · ' + fmt.format(r.nw) + ' kg/ct</span><span class="num">' + (mc.rate > 0 ? n(Math.round(sm.ctDay(r, mc))) + ' ct/hari' : 'tidak ada data') + '</span>'; }).join('') + '</div>' : '') +
+    '<div class="ba"><button type="button" class="pri" data-schact="capset">Simpan</button>' + (state.capEdits[mc.name] ? '<button type="button" data-schact="capreset">Kembali ke data mesin</button>' : '') + '</div>');
+  $('stMenu').setAttribute('data-schm', mc.name); var i = $('capD'); if (i) { i.focus(); i.select(); }
+}
+$('ppTable').addEventListener('dblclick', function (e) { var td = e.target.closest('td[data-cap]'); if (td) { capMenu(td); return; } var tg = e.target.closest('td[data-tk]'); if (tg) tgStartEdit(tg); });
 $('ppTable').addEventListener('keydown', function (e) {
   if (e.target.tagName === 'INPUT') return;
   var td = e.target.closest('td[data-cap]');
   if (td) {
-    if (e.key === 'Enter' || e.key === 'F2') { e.preventDefault(); capStartEdit(td); }
+    if (e.key === 'Enter' || e.key === 'F2' || /^[0-9]$/.test(e.key)) { e.preventDefault(); capMenu(td); }
     else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); delete state.capEdits[td.getAttribute('data-cap')]; savePP(); renderAll(); }
-    else if (/^[0-9]$/.test(e.key)) { e.preventDefault(); capStartEdit(td, e.key); }
     return;
   }
   var tg = e.target.closest('td[data-tk]'); if (!tg) return;
@@ -5980,7 +6182,8 @@ function d10Render() {
 }
 function d10Ribbon(A) {
   var cur = D10.cur, has = d10HasData(), mine = A.filter(function (a) { return (cur === 'Brief' || a.tab === cur) && (a.lvl === 'red' || a.lvl === 'amb'); }), h;
-  if (cur === 'Brief' && !has) h = d10RibHTML('amb', tl('amb'), tl('briefWarn'));
+  if (cur === 'Plan' && has && !d10Locked(cur) && ppManual()) h = d10RibHTML('blu', 'MANUAL', 'Mode manual: tidak ada saran otomatis. Tarik SKU dari panel kiri ke baris mesin; kartu merah belum di jadwal, kuning masih kurang.', '<button type="button" class="v-btn sm" data-schmode2="auto">Kembali ke Otomatis</button>');
+  else if (cur === 'Brief' && !has) h = d10RibHTML('amb', tl('amb'), tl('briefWarn'));
   else if (d10Locked(cur)) h = d10RibHTML('blu', tl('blu'), tl('lockRib'), '<button type="button" class="v-btn sm" data-d10go="Input">' + tl('toInput') + ' →</button>');
   else if (!mine.length) h = d10RibHTML('grn', tl('grn'), tl('okHere'));
   else {
@@ -6026,6 +6229,15 @@ function d10Panel(A) {
   // Sugesti Utama AI lives in this panel on the Forecast page: park it while the list is rebuilt
   var fv = $('fcVital'); if (fv && !$('fvHold')) { $('tabForecast').insertAdjacentHTML('beforeend', '<div id="fvHold" hidden></div>'); } if (fv && fv.parentNode !== $('fvHold')) $('fvHold').appendChild(fv);
   $('apList').hidden = !showList; $('aiPanel').hidden = !(D10.open && D10.side === 'ask');
+  // Rencana produksi in Mode Manual: the panel lists the SKUs to schedule instead of Alerts / Tanya (no suggestions)
+  if (!$('pskList')) { var pl0 = document.createElement('div'); pl0.id = 'pskList'; pl0.className = 'pskp'; pl0.hidden = true; $('apList').insertAdjacentElement('afterend', pl0); }
+  var psk = D10.open && D10.cur === 'Plan' && d10HasData() && ppManual();
+  $('pskList').hidden = !psk;
+  if (psk) {
+    $('apList').hidden = true; $('aiPanel').hidden = true; $('apTabs').hidden = true;
+    $('apHead').innerHTML = '<h3>SKU untuk dijadwalkan<small>Mode manual · ' + esc(monthLabel(CH.pm.P)) + '</small></h3><button type="button" class="ib" data-aside="1" title="' + tl('side') + '">⇆</button><button type="button" class="ib" data-aclose="1" title="' + tl('hide') + '">' + (D10.right ? '›' : '‹') + '</button>';
+    ppSkuPanel(); return;
+  }
   if (!showList) return;
   var sc = $('apList').scrollTop, h;
   if (!d10HasData() && D10.cur !== 'Input') h = '<div class="acard blu"><div class="ah"><span class="lv">' + tl('blu') + '</span></div><div class="at"><b>' + tl('noDataT') + '</b></div><p>' + tl('noDataP') + '</p><div class="aa"><button type="button" class="v-btn sm" data-d10go="Input">' + tl('toInput') + ' →</button></div></div>';
@@ -6116,7 +6328,7 @@ function d10PlanStart() {
     h = '<h2>Rencana produksi ' + monthLabel(pm.P) + '</h2><p>Belum ada rencana untuk ' + monthLabel(pm.P) + '. PP dari <b>Saran buffer</b>: <b>' + n(tot) + ' karton</b> untuk ' + n(rows.length) + ' SKU (forecast + buffer final − stok bebas), disusun per area mesin › mesin › SKU' +
       (nM ? ' dengan ' + nM + ' mesin dari Data mesin.' : state.sample ? ' dengan mesin contoh.' : '. Data mesin belum ada, jadi jadwal per mesin masih kosong.') + '</p>' +
       '<div class="ppways"><div><b>▶ Jadwal otomatis</b><span>Model menaruh semua SKU ke mesin: SKU bermasalah dulu, lalu stok paling tipis, lalu PP terbesar. Setelah itu bar tetap bisa digeser.</span><button type="button" class="v-btn pri" id="ppMake">▶ Jalankan jadwal otomatis</button></div>' +
-      '<div><b>✎ Susun manual</b><span>Mulai dari jadwal kosong: semua SKU tampil merah <i>belum terjadwal</i> di bawah area mesinnya, lalu Anda tempatkan sendiri. Model bisa dijalankan kapan saja untuk mengisi sisanya.</span><button type="button" class="v-btn" id="ppMakeMan">✎ Susun manual</button></div></div>' +
+      '<div><b>✎ Susun manual</b><span>Mulai dari jadwal kosong, tanpa saran otomatis: hanya mesin di kalender, dan SKU yang perlu dijadwalkan ada di panel kiri. Tarik SKU ke baris mesin; lama bar dihitung dari output mesin per hari.</span><button type="button" class="v-btn" id="ppMakeMan">✎ Susun manual</button></div></div>' +
       '<p class="bb"><button type="button" class="v-btn" data-d10go="Buffer">Lihat Saran buffer</button></p>';
   } else h = '<h2>Rencana produksi</h2><p>Rencana otomatis butuh file closing dan Forecast HQ' + (nM ? '. Data mesin sudah ada (' + nM + ' mesin), jadi halaman ini bisa dibuka; isinya terisi setelah forecast masuk.' : '.') + ' Untuk menjadwal dari file Excel sendiri, buka <b>Perencanaan Produksi</b>.</p><p class="bb"><button type="button" class="v-btn" data-d10go="Input">' + tl('toInput') + ' →</button> <a class="v-btn" href="/produksi/">Perencanaan Produksi ↗</a></p>';
   el.innerHTML = h;
@@ -6274,7 +6486,7 @@ document.addEventListener('click', function (e) {
   var q = e.target.closest('.v10-q[data-ask-i], .v10-q[data-askc], .v10-q[data-help]'); if (q) { e.preventDefault(); d10AskEl(q); return; }
   if (e.target.closest('.v10-s, #d10fab')) { d10Find(); return; }
   var sb = e.target.closest('[data-sec]'); if (sb) { var sc = $(sb.getAttribute('data-sec')); if (sc) { sc.hidden = sb.closest('#secBar') ? !sc.hidden : false; d10SecBtns(); if (!sc.hidden) { d10Help(sc); sc.scrollIntoView({ block: 'start', behavior: 'smooth' }); } } return; }
-  if (e.target.id === 'ppMakeMan' && CH.pm) { state.ppMade = state.ppMade || {}; state.ppMade[CH.pm.P] = true; var scM = schedFor(CH.pm.P); scM.mode = 'manual'; savePP(); d10SavePP(); renderAll(); toast('Rencana ' + monthLabel(CH.pm.P) + ' disusun manual. SKU merah belum terjadwal: tempatkan di mesin, atau tekan ▶ Jalankan jadwal otomatis.'); return; }
+  if (e.target.id === 'ppMakeMan' && CH.pm) { state.ppMade = state.ppMade || {}; state.ppMade[CH.pm.P] = true; var scM = schedFor(CH.pm.P); scM.mode = 'manual'; savePP(); d10SavePP(); renderAll(); toast('Rencana ' + monthLabel(CH.pm.P) + ' disusun manual, tanpa saran otomatis. Tarik SKU dari panel kiri ke baris mesin.'); return; }
   if (e.target.id === 'ppMake' && CH.pm) { delete schedFor(CH.pm.P).mode; savePP(); state.ppMade = state.ppMade || {}; state.ppMade[CH.pm.P] = true; d10SavePP(); renderAll(); toast('Rencana produksi ' + monthLabel(CH.pm.P) + ' dibuat dari Saran buffer.'); return; }
   if (e.target.id === 'ppUnmake' && CH.pm) { delete (state.ppMade || {})[CH.pm.P]; d10SavePP(); renderAll(); return; }
 });
