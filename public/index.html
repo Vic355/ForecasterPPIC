@@ -814,7 +814,8 @@ html[data-theme=dark] .rvchip { color: #1b1206; }
 .mmneed { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; background: var(--badbg, #fbe5e2); border: 1px solid var(--bad); border-radius: 8px; padding: 7px 10px; font-size: 12.5px; color: var(--ink); margin-bottom: 4px; }
 .mmt td.detc { white-space: nowrap; }
 .mmt td.stc { white-space: nowrap; } .mmt .stchip.big { font-size: 12px; min-height: 24px; padding: 0 10px; margin-left: 0; }
-.mmt .stwhy { display: block; white-space: normal; max-width: 220px; font-size: 11px; color: var(--muted); margin-top: 2px; } .mmt td.detc input.refin { width: 100px; } .mmt td.detc input.pctin { width: 52px; } .mmt td.detc input.seain, .mmt td.detc input[data-mmsucc] { width: 110px; } .mmt .dlab { display: inline-block; min-width: 74px; font-size: 11px; color: var(--mut); }
+.mmt .stok { display: block; white-space: normal; min-width: 190px; max-width: 240px; font-size: 11px; color: var(--ok); margin-top: 2px; }
+.mmt .stwhy { display: block; white-space: normal; min-width: 190px; max-width: 240px; font-size: 11px; color: var(--muted); margin-top: 2px; } .mmt td.detc input.refin { width: 100px; } .mmt td.detc input.pctin { width: 52px; } .mmt td.detc input.seain, .mmt td.detc input[data-mmsucc] { width: 110px; } .mmt .dlab { display: inline-block; min-width: 74px; font-size: 11px; color: var(--mut); }
 .mmt th.addh { white-space: nowrap; background: var(--panel2); } .mmt th.addh input { width: 120px; font-weight: 400; } .mmt td.addc { background: var(--panel2); } .mmadd textarea { width: 100%; min-height: 90px; font: 12px/1.4 ui-monospace, monospace; }
 .fct .code .atag { font-weight: 400; color: var(--mut); }
 .mmt th.bomh { background: var(--note, #fff6d6); } .mmt th.bomh small { font-weight: 400; color: var(--mut); }
@@ -1135,7 +1136,7 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
     <div class="ph"><h2>Material &amp; status SKU <span class="sub" id="mmSrc" style="font-weight:400"></span></h2>
       <div class="mmbar">
         <input type="search" id="mmQ" placeholder="Cari Nomat, nama, kode artikel, brand" aria-label="Cari material" style="width:260px">
-        <select id="mmFlt" aria-label="Saring material" style="width:auto"><option value="all">Semua material</option><option value="masalah">Kena aturan / tidak aktif / diubah</option><option value="st:aktif">Status: Aktif</option><option value="st:cek">Status: Perlu cek</option><option value="st:diskontinu">Status: Diskontinu</option><option value="st:diganti">Status: Diganti</option><option value="beda">Berubah di master</option><option value="baru">Ada di data, tidak di master</option><option value="hilang">Di master, tidak di data</option><option value="manual">Diubah manual</option><option value="j:npd">Jenis: SKU baru (NPD)</option><option value="j:musim">Jenis: Musiman</option><option value="j:musimref">Jenis: Musiman + histori</option><option value="j:ganti">Jenis: Diganti</option><option value="j:reguler">Jenis: Reguler</option><option value="kurang">Jenis belum lengkap (perlu diisi)</option></select>
+        <select id="mmFlt" aria-label="Saring material" style="width:auto"><option value="all">Semua material</option><option value="masalah">Kena aturan / tidak aktif / diubah</option><option value="st:aktif">Status: Aktif</option><option value="st:cek">Status: Perlu cek</option><option value="st:diskontinu">Status: Diskontinu</option><option value="st:diganti">Status: Diganti</option><option value="beda">Berubah di master</option><option value="baru">Ada di data, tidak di master</option><option value="hilang">Di master, tidak di data</option><option value="manual">Diubah manual</option><option value="j:npd">Jenis: SKU baru (NPD)</option><option value="j:musim">Jenis: Musiman</option><option value="j:musimref">Jenis: Musiman + histori</option><option value="j:ganti">Jenis: Diganti</option><option value="j:reguler">Jenis: Reguler</option><option value="kurang">Jenis belum lengkap (perlu diisi)</option><option value="wajar">Tidak biasa tapi wajar karena Jenis SKU</option></select>
         <button type="button" id="mmAddB" class="pri">+ Tambah SKU</button>
         <span data-tt-for="mmTable"></span>
         <input type="file" id="mmAttrF" accept=".xlsx,.xlsm,.xls,.csv" hidden>
@@ -2188,6 +2189,8 @@ var RULES = [
     params: { jarak: ['Maks. jarak baris', 5], mirip: ['Kemiripan nama minimal (%)', 60] } },
   { id: 'master', label: 'Nonaktif di material master', desc: 'Status nonaktif di material master (file atau diubah di tabel Material master) → Diskontinu (berhenti, tanpa pengganti); bila Nomat pengganti diisi → Diganti (penjualannya pindah ke SKU baru itu).', params: {} },
   { id: 'grup', label: 'Nama tidak cocok dengan famili', desc: 'Merek di awal nama tidak sama dengan famili tempat SKU itu berada, tapi sama dengan famili lain → Perlu cek (mungkin salah grup). Hanya berlaku bila famili berupa merek.', params: {} },
+  { id: 'jenis', label: 'Data tidak cocok dengan Jenis SKU', desc: 'Memeriksa SKU yang bukan Reguler: SKU musiman yang punya order in di luar Musim aktif, SKU baru yang sudah punya order in sendiri sekian bulan (mungkin Reguler), Histori dari Nomat yang tidak ada di data → Perlu cek. Sebaliknya, stok tanpa Forecast HQ atau order in nol di luar musim, dan order in jauh dari HQ di bulan awal SKU baru, dianggap wajar dan tidak ditandai.',
+    params: { bulan: ['SKU baru: order in sendiri paling lama (bulan)', 6] } },
   { id: 'hq_aneh', label: 'Forecast HQ jauh dari order in', desc: 'Di closing terakhir HQ dan order in berbeda lebih dari sekian kali lipat, atau HQ ada tapi order in nol beberapa bulan → Perlu cek (mungkin salah input).',
     params: { kali: ['Batas beda (×)', 5], bulan: ['HQ ada tapi order nol selama (bulan)', 3] } }
 ];
@@ -2216,12 +2219,24 @@ function applyRules(m) {
   m.famKeys.forEach(function (fk) { var t = normName(fk).split(' ')[0]; if (t) famFirst[t] = fk; });
   all.forEach(function (s) { if (s.family && s.name) { withFam++; if (normName(s.family).split(' ').indexOf(normName(s.name).split(' ')[0]) >= 0) brandLike++; } });
   var famIsBrand = withFam && brandLike / withFam >= 0.6;
+  var cJ = ruleCfg('jenis');
   all.forEach(function (s) {
-    s.hits = [];
+    s.hits = []; s.okWhy = [];
     var add = function (id, st, why) { s.hits.push({ id: id, status: st, why: why }); hits[id]++; };
     var c;
+    // Jenis SKU context: what looks odd for a Reguler SKU can be normal for a seasonal or new one
+    var jk = matKey(s), J = jenisOf(jk, s, null), sp = seasonParse(((state.season || {})[jk] || {}).spec), ref = (state.skuRef || {})[jk];
+    if (!(sp && sp.ok)) sp = null;
+    var isNew = J === 'npd' || J === 'musimref', ownOi = cms.filter(function (mo) { return (s.oi[mo] || 0) > 0; }), fresh = isNew && ownOi.length <= 3;
+    var offNext = sp && f1 && !seasonIn(sp, f1), offRecent = function (k) { return sp && cms.slice(-k).some(function (mo) { return !seasonIn(sp, mo); }); };
+    var ok = function (why) { if (cJ.on && s.okWhy.indexOf(why) < 0) s.okWhy.push(why); return cJ.on; };
+    if (cJ.on) {
+      if (sp) { var outOi = cms.filter(function (mo) { return (s.oi[mo] || 0) > 0 && !seasonIn(sp, mo); }); if (outOi.length) add('jenis', 'cek', 'musiman (aktif ' + sp.label + ') tapi ada order in di luar musim: ' + outOi.slice(-3).map(monthLabel).join(', ') + '; cek Musim aktif atau datanya'); }
+      if (isNew && ownOi.length >= (+cJ.bulan || 6)) add('jenis', 'cek', 'Jenis SKU baru tapi sudah punya order in sendiri ' + ownOi.length + ' bulan; mungkin Reguler');
+      if (ref && ref.from && !all.some(function (t) { return t !== s && (t.key === ref.from || t.nomat === ref.from || t.art === ref.from); })) add('jenis', 'cek', 'Histori dari Nomat ' + ref.from + ' tidak ada di data');
+    }
     c = ruleCfg('stok_tanpa_fc');
-    if (c.on && L && s.oi[L] !== undefined && (s.soh || 0) > 0 && !hasFc(s)) {
+    if (c.on && L && s.oi[L] !== undefined && (s.soh || 0) > 0 && !hasFc(s) && !((offNext || offRecent(Math.max(1, +c.bulan || 1))) && ok('musiman (aktif ' + sp.label + '): stok tanpa Forecast HQ di luar musim itu wajar'))) {
       var k = Math.max(1, +c.bulan || 1), recent = cms.slice(-k), oiR = recent.reduce(function (a, mo) { return a + (s.oi[mo] || 0); }, 0);
       if (oiR > 0) add('stok_tanpa_fc', 'cek', 'stok ' + n(s.soh) + ', tanpa Forecast HQ, tapi masih ada order in ' + n(oiR));
       else add('stok_tanpa_fc', 'diskontinu', 'stok ' + n(s.soh) + ', tanpa Forecast HQ, order in nol ' + k + ' bulan');
@@ -2240,9 +2255,9 @@ function applyRules(m) {
     c = ruleCfg('hq_aneh');
     if (c.on && L) {
       var q = s.hq[L], o = s.oi[L], kx = +c.kali || 5;
-      if (q > 0 && o > 0 && Math.max(q, o) >= 100 && (q / o >= kx || o / q >= kx)) add('hq_aneh', 'cek', 'HQ ' + n(q) + ' vs order in ' + n(o) + ' (' + fmt.format(Math.round(Math.max(q / o, o / q) * 10) / 10) + '×)');
+      if (q > 0 && o > 0 && Math.max(q, o) >= 100 && (q / o >= kx || o / q >= kx) && !(fresh && ok('SKU baru: di bulan awal order in biasa jauh dari Forecast HQ'))) add('hq_aneh', 'cek', 'HQ ' + n(q) + ' vs order in ' + n(o) + ' (' + fmt.format(Math.round(Math.max(q / o, o / q) * 10) / 10) + '×)');
       var kb = Math.max(1, +c.bulan || 3);
-      if (cms.length >= kb) { var lastK = cms.slice(-kb); if (lastK.every(function (mo) { return (s.hq[mo] || 0) > 0 && !(s.oi[mo] > 0); })) add('hq_aneh', 'cek', 'HQ ada tapi order in nol ' + kb + ' bulan'); }
+      if (cms.length >= kb) { var lastK = cms.slice(-kb); if (lastK.every(function (mo) { return (s.hq[mo] || 0) > 0 && !(s.oi[mo] > 0); }) && !(isNew && !ownOi.length && ok('SKU baru: belum ada order in sendiri, histori dipinjam' + (ref && ref.from ? ' dari ' + ref.from : ''))) && !(offRecent(kb) && ok('musiman (aktif ' + sp.label + '): order in nol di luar musim itu wajar'))) add('hq_aneh', 'cek', 'HQ ada tapi order in nol ' + kb + ' bulan'); }
     }
   });
   // successors: flagged or forecast-less SKUs next to an active look-alike
@@ -4724,6 +4739,8 @@ $('rules').addEventListener('change', function (e) {
   if (el.type === 'checkbox') c.on = el.checked; else c[el.getAttribute('data-param')] = el.value;
   saveRuleState(); renderAll();
 });
+$('mmRules').addEventListener('toggle', function () { try { localStorage.setItem('ppic_rules_open', this.open ? '1' : '0'); } catch (e) {} });
+try { $('mmRules').open = localStorage.getItem('ppic_rules_open') === '1'; } catch (e) {}
 $('rulesReset').addEventListener('click', function () { state.rulesCfg = {}; saveRuleState(); renderAll(); });
 /* in-place editing on the Forecast table */
 var fcFocus = null; // {k, f, m} to refocus after a re-render
@@ -6182,14 +6199,14 @@ function renderMat(m) {
   // a Jenis other than Reguler needs its detail: warn on the row, mark the empty input, count it
   rows.forEach(function (r) { r.need = jenisNeed(r); r.fs = r.s ? r.s.status : (r.st === 'nonaktif' ? 'diskontinu' : 'aktif'); });
   CH.mm = rows;
-  var cnt = { aktif: 0, nonaktif: 0, beda: 0, baru: 0, hilang: 0, manual: 0, kurang: 0, 'st:aktif': 0, 'st:cek': 0, 'st:diskontinu': 0, 'st:diganti': 0 };
-  rows.forEach(function (r) { if (r.need.length) cnt.kurang++; cnt['st:' + r.fs]++; if (r.s && r.s.override) cnt.manual++; cnt[r.st]++; if (r.flags.some(function (f) { return f[0] === 'bad' || f[0] === 'warn'; })) cnt.beda++; if (state.mat && r.inData && !r.inMaster) cnt.baru++; if (!r.inData) cnt.hilang++; if (r.e) cnt.manual++; });
+  var cnt = { aktif: 0, nonaktif: 0, beda: 0, baru: 0, hilang: 0, manual: 0, kurang: 0, 'st:aktif': 0, 'st:cek': 0, 'st:diskontinu': 0, 'st:diganti': 0, wajar: 0 };
+  rows.forEach(function (r) { if (r.need.length) cnt.kurang++; cnt['st:' + r.fs]++; if (r.s && (r.s.okWhy || []).length) cnt.wajar++; if (r.s && r.s.override) cnt.manual++; cnt[r.st]++; if (r.flags.some(function (f) { return f[0] === 'bad' || f[0] === 'warn'; })) cnt.beda++; if (state.mat && r.inData && !r.inMaster) cnt.baru++; if (!r.inData) cnt.hilang++; if (r.e) cnt.manual++; });
   $('mmSrc').textContent = state.mat ? '· ' + state.mat.src + ' · ' + state.mat.rows.length + ' material' : '· belum ada file master, status dibaca dari data';
   $('chSlotNote').textContent = state.chronos ? state.chronos.model + ' · ' + state.chronos.rows.length + ' baris' + (state.chronos.origin ? ' · closing ' + monthLabel(state.chronos.origin) + (m.latest && state.chronos.origin !== m.latest ? ' (lama: closing terakhir ' + monthLabel(m.latest) + ', jalankan ulang)' : '') : '') : 'Belum ada. Tarik CSV ke sini.';
   $('mmSlotNote').textContent = state.mat ? state.mat.src + ' · ' + state.mat.rows.length + ' material' : 'Belum ada. Tarik Excel ke sini.';
   $('mmStats').innerHTML = (cnt.kurang ? '<div class="mmneed" role="alert"><span><b>⚠ ' + cnt.kurang + ' SKU belum lengkap untuk jenisnya.</b> SKU baru perlu <i>Histori dari Nomat</i>, SKU musiman perlu <i>Musim aktif</i>, SKU diganti perlu <i>Nomat pengganti</i>. Tanpa isian itu forecast memperlakukannya seperti SKU reguler.</span> <button type="button" class="v-btn sm" data-mmf="kurang">Tampilkan yang belum lengkap</button></div>' : '') +
-    [['kurang', 'Jenis belum lengkap', 'bad'], ['st:aktif', 'Aktif', 'ok'], ['st:cek', 'Perlu cek', 'warn'], ['st:diskontinu', 'Diskontinu', 'off'], ['st:diganti', 'Diganti', 'acc'], ['beda', 'Berubah di master', 'warn'], ['baru', 'Belum di master', 'warn'], ['hilang', 'Tidak di data', 'off'], ['manual', 'Diubah manual', 'acc']]
-    .filter(function (x) { return (x[0] !== 'baru' && x[0] !== 'hilang' || state.mat) && (x[0] !== 'kurang' || cnt.kurang); }).map(function (x) { return '<button type="button" class="stat" data-mmf="' + x[0] + '"><span class="pill p-' + x[2] + '">' + x[1] + '</span><b>' + cnt[x[0]] + '</b></button>'; }).join('');
+    [['kurang', 'Jenis belum lengkap', 'bad'], ['st:aktif', 'Aktif', 'ok'], ['st:cek', 'Perlu cek', 'warn'], ['st:diskontinu', 'Diskontinu', 'off'], ['st:diganti', 'Diganti', 'acc'], ['wajar', 'Tidak biasa tapi wajar (jenis)', 'ok'], ['beda', 'Berubah di master', 'warn'], ['baru', 'Belum di master', 'warn'], ['hilang', 'Tidak di data', 'off'], ['manual', 'Diubah manual', 'acc']]
+    .filter(function (x) { return (x[0] !== 'baru' && x[0] !== 'hilang' || state.mat) && (x[0] !== 'kurang' || cnt.kurang) && (x[0] !== 'wajar' || cnt.wajar); }).map(function (x) { return '<button type="button" class="stat" data-mmf="' + x[0] + '"><span class="pill p-' + x[2] + '">' + x[1] + '</span><b>' + cnt[x[0]] + '</b></button>'; }).join('');
   var q = normName($('mmQ').value), flt = $('mmFlt').value;
   var list = rows.filter(function (r) {
     if (flt === 'aktif' || flt === 'nonaktif') { if (r.st !== flt) return false; }
@@ -6198,6 +6215,7 @@ function renderMat(m) {
     else if (flt === 'beda') { if (!r.flags.some(function (f) { return f[0] === 'bad' || f[0] === 'warn'; })) return false; }
     else if (flt === 'baru') { if (!(state.mat && r.inData && !r.inMaster)) return false; }
     else if (flt === 'hilang') { if (r.inData) return false; }
+    else if (flt === 'wajar') { if (!(r.s && (r.s.okWhy || []).length)) return false; }
     else if (flt === 'manual') { if (!r.e && !(r.s && r.s.override)) return false; }
     else if (flt.slice(0, 2) === 'j:') { if (r.jenis !== flt.slice(2)) return false; }
     else if (flt === 'kurang' || flt === 'npdkosong') { if (!r.need.length) return false; }
@@ -6215,7 +6233,7 @@ function renderMat(m) {
     status: ['<th title="Status SKU: Aktif, Perlu cek (kena aturan), Diskontinu, Diganti. Klik untuk mengubah. Diskontinu dan Diganti tidak dihitung di total, akurasi, ML, buffer dan PP.">Status</th>', function (r) {
       if (r.s) { var S = r.s, st = STATUS[S.status], why = S.hits.map(function (x) { return x.why; }).join('; ');
         return '<td class="stc"><button type="button" class="stchip big p-' + st[1] + '" data-st="' + esc(S.key) + '" title="' + esc((S.override ? 'Diubah manual. ' : '') + (why || 'Tidak ada aturan yang kena.') + ' Klik untuk mengubah status.') + '">' + st[0] + ' ▾</button>' + (S.override ? '<span class="sub"> manual</span>' : '') +
-          (S.status === 'diganti' && S.succ ? '<span class="code" style="display:block">→ ' + esc(S.succ.nomat || S.succ.key) + '</span>' : '') + (why && S.status !== 'aktif' ? '<span class="stwhy">' + esc(why) + '</span>' : '') + '</td>'; }
+          (S.status === 'diganti' && S.succ ? '<span class="code" style="display:block">→ ' + esc(S.succ.nomat || S.succ.key) + '</span>' : '') + (why && S.status !== 'aktif' ? '<span class="stwhy">' + esc(why) + '</span>' : '') + ((S.okWhy || []).length ? '<span class="stok" title="Data ini tidak biasa untuk SKU reguler, tapi cocok dengan Jenis SKU-nya, jadi tidak ditandai.">✓ ' + esc(S.okWhy.join('; ')) + '</span>' : '') + '</td>'; }
       var auto = r.auto || 'aktif'; return '<td style="white-space:nowrap"><select data-mms="' + esc(r.key) + '" aria-label="Status ' + lab(r) + '"><option value="">' + (r.mst ? 'Master' : 'Dari data') + ' (' + (auto === 'aktif' ? 'Aktif' : 'Nonaktif') + ')</option><option value="aktif"' + (r.e && r.e.status === 'aktif' ? ' selected' : '') + '>Aktif</option><option value="nonaktif"' + (r.e && r.e.status === 'nonaktif' ? ' selected' : '') + '>Nonaktif</option></select>' + (r.e && r.e.status ? ' <span class="sub">manual</span>' : '') + '</td>'; }],
     nomat: ['<th>Nomat</th>', function (r) { return '<td class="col">' + esc(r.nomat || '–') + (r.art ? '<span class="code" style="display:block">' + esc(r.art) + '</span>' : '') + '</td>'; }],
     sku: ['<th>SKU</th>', function (r) { return '<td><span class="nm" title="' + esc(r.name || '') + '">' + esc(r.name || '(tanpa nama)') + '</span></td>'; }],

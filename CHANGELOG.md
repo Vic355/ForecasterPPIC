@@ -22,6 +22,11 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
   *Aturan status otomatis* above the table; status counts and filters (*Status: …*, *Kena aturan / tidak aktif / diubah*)
   replace Aktif/Nonaktif; *Koreksi angka* moved under the Forecast sheet. Links, alerts and saved pages that pointed at Cek
   data SKU open Material & status with the matching filter.
+- **Status rules know the Jenis SKU.** New rule *Data tidak cocok dengan Jenis SKU* (Perlu cek): seasonal SKU with order in
+  outside its Musim aktif, SKU baru with its own order in for 6+ months (maybe Reguler), Histori dari Nomat not in the data.
+  What is normal for the Jenis no longer trips the other rules: stock without Forecast HQ or zero order in outside the season,
+  zero order in before a new SKU sells, order in far from HQ in a new SKU's first months; the Status column says why in green
+  (*✓ … wajar*) and the filter *Tidak biasa tapi wajar karena Jenis SKU* lists them. The rules fold-out remembers open/closed.
 
 - **Manual production planning, machine output and Balance Production.** Rencana produksi in *Manual* mode no longer makes
   suggestions: the grid shows only the machines (or *Tidak ada data mesin* when there is no machine list, instead of sample
