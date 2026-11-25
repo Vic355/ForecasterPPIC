@@ -768,6 +768,22 @@ td.aispotc, tr.aispotc > td { background: var(--paper) !important; }
 .vlist .vb { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; } .v-btn.on { background: var(--acc2); border-color: var(--acc); color: var(--acc); }
 @media (max-width: 900px) { .vlist li { grid-template-columns: 26px 1fr; } .vlist .vb { grid-column: 1 / -1; justify-content: flex-start; } }
 .fct tr.sku.vital > td:first-child { box-shadow: inset 4px 0 0 var(--notel); }
+.mlh { font-family: var(--serif); font-size: 16.5px; margin: 18px 0 4px; }
+.mlflow { display: flex; align-items: stretch; gap: 4px; flex-wrap: wrap; margin: 6px 0; } .mlflow > i { align-self: center; font-style: normal; color: var(--mut); }
+.mlb { flex: 1 1 110px; border: 1px solid var(--line); border-radius: 9px; padding: 7px 9px; background: var(--paper); display: flex; flex-direction: column; gap: 2px; min-width: 110px; }
+.mlb b { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--acc); } .mlb span { font-weight: 700; font-size: 13.5px; } .mlb small { font-size: 11.5px; color: var(--mut); line-height: 1.3; }
+.mlctl { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin: 4px 0 8px; font-size: 13.5px; } .mlctl input[type=range] { width: 220px; vertical-align: middle; } .mlctl select { max-width: 380px; }
+.mlsku { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; font-size: 13.5px; margin-top: 6px; } .mlsku p { margin: 0 0 6px; line-height: 1.45; } .mlsp small { color: var(--mut); font-size: 11.5px; }
+.mlft td { padding: 2px 8px; font-size: 12.5px; border-bottom: 1px solid var(--line2); }
+.mlimp > div { display: grid; grid-template-columns: 200px 1fr 46px; align-items: center; gap: 8px; font-size: 13px; margin: 2px 0; } .mlimp i { display: block; height: 10px; border-radius: 0 4px 4px 0; background: var(--s3); } .mlimp b { text-align: right; }
+.mlwf { border-collapse: collapse; font-size: 12.5px; } .mlwf th, .mlwf td { padding: 3px 7px; border: 1px solid var(--line2); text-align: center; } .mlwf td:first-child { text-align: left; white-space: nowrap; }
+.mlwf td.tr { background: var(--ok-soft); color: var(--ok); } .mlwf td.te { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+.mlhon { border: 1px solid var(--line); border-left: 4px solid var(--acc); border-radius: 8px; padding: 8px 12px; font-size: 13.5px; line-height: 1.45; background: var(--paper); } .mlhon ul { margin: 4px 0; padding-left: 18px; } .mlhon li { margin: 3px 0; }
+@media (max-width: 760px) { .mlsku { grid-template-columns: 1fr; } .mlimp > div { grid-template-columns: 130px 1fr 40px; } }
+.v-note.g { font-weight: 400; font-size: 12.5px; padding: 3px 7px; } .v-note.g.ok { opacity: .8; }
+.fct tr.brandr td { background: var(--acc2); border-top: 2px solid var(--acc); font-size: 14.5px; }
+.fct tr.brandr td:first-child { color: var(--acc); }
+.fct tr.brandr + tr.fam td:first-child .fl, .fct tr.brandr ~ tr.fam:not(.brandr) td:first-child .fl { padding-left: 14px; }
 .v-note.vital { box-shadow: inset 3px 0 0 var(--acc); background: var(--acc2); color: var(--ink); }
 .v-note .vbtns { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
 .v-note .vbtns button { border: 1px solid var(--acc); background: var(--paper); color: var(--acc); border-radius: 6px; padding: 1px 7px; font-size: 12px; font-weight: 700; cursor: pointer; }
@@ -794,6 +810,15 @@ html[data-theme=dark] .rvchip { color: #1b1206; }
 .succin { display: flex; flex-direction: column; font-size: 12px; color: var(--mut); margin-top: 4px; gap: 2px; } .succin input { width: 150px; }
 .stexp { flex-basis: 100%; margin: 6px 0 0; font-size: 13.5px; color: var(--ink); background: var(--blubg); border-radius: 8px; padding: 7px 10px; line-height: 1.4; }
 /* Proyeksi buffer per bulan */
+#bfHz.bfhz { margin: 4px 0 10px; display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; } #bfHz .hzs { margin: 0 !important; min-width: 0 !important; font-size: 13px; }
+#bfHz .hzs td, #bfHz .hzs th { padding: 3px 10px; } #bfHz .hzrm { font-size: 12.5px; max-width: 320px; }
+.bfleg { margin-top: 8px; } .bfleg summary { cursor: pointer; font-size: 13.5px; }
+.bflg { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 6px; margin-top: 8px; }
+.bflr { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; text-align: left; border: 1px solid var(--line2); background: var(--paper); border-radius: 8px; padding: 6px 9px; cursor: pointer; font: inherit; color: var(--ink); }
+.bflr:hover { border-color: var(--acc); } .bflr.on { border-color: var(--acc); box-shadow: inset 0 0 0 1px var(--acc); background: var(--acc2); } .bflr.none { opacity: .55; }
+.bflr .bfm { font-size: 12.5px; } .bflr .bfa { font-size: 12.5px; color: var(--mut); line-height: 1.35; }
+.clsmx { border-collapse: collapse; margin: 10px 0 4px; font-size: 13px; } .clsmx th, .clsmx td { border: 1px solid var(--line2); padding: 5px 9px; text-align: left; vertical-align: top; }
+.clsmx td small { display: block; color: var(--mut); font-size: 11.5px; } .clsmx thead th { background: var(--panel); }
 #bfHz .hzx { font-size: 13.5px; background: var(--blubg); border-radius: 8px; padding: 7px 10px; margin: 0 0 10px; line-height: 1.4; }
 #bfHz .hzs { width: auto; min-width: 520px; margin-bottom: 12px; } #bfHz .hzs td:first-child { white-space: nowrap; padding-right: 18px; }
 #bfHz td.hzpp { font-weight: 700; } #bfHz td.hzneg.lamp-bad { color: #fff; background: var(--lamp-merah); font-weight: 700; } #bfHz td.hzneg.lamp-warn { background: var(--lamp-kuning); font-weight: 700; }
@@ -941,12 +966,34 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
 .mlt td:nth-child(1) input { width: 150px; } .mlt td:nth-child(2) input { width: 80px; } .mlt td:nth-child(3) input { width: 180px; } .mlt td:nth-child(10) input { width: 160px; }
 .mlt th { white-space: normal; vertical-align: bottom; max-width: 110px; }
 /* Input data: demo banner */
-.demoban { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; border: 2px solid var(--acc); background: var(--acc2); border-radius: 12px; padding: 14px 18px; margin: 6px 0 12px; }
-.demoban .dbi { width: 42px; height: 42px; border-radius: 50%; background: var(--acc); color: var(--paper); display: grid; place-items: center; font-size: 18px; }
-.demoban b { display: block; font-size: 17px; margin-bottom: 2px; } .demoban span { font-size: 14px; color: var(--ink); line-height: 1.4; }
+/* Input data: compact layout (groups side by side, files inside their slot, month coverage always visible) */
+.igrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); column-gap: 18px; }
+.igrid .igrp[data-ig="sales"] { grid-column: 1 / -1; }
+.igrid .igrp[hidden] + .igrp, .igrid .igrp:only-child { grid-column: 1 / -1; }
+@media (max-width: 900px) { .igrid { grid-template-columns: 1fr; } }
+#tabInput .slots { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+.slf ul { list-style: none; margin: 0 0 6px; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.slf li { display: flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 2px 4px; border-radius: 6px; min-width: 0; }
+.slf li:hover, .slf li.on { background: var(--acc2); }
+.slf li b { flex: none; min-width: 44px; } .slf li i { font-style: normal; font-size: 11px; color: var(--mut); flex: none; }
+.slf li .fn { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--mut); }
+.slf li .fa { flex: none; display: flex; gap: 2px; opacity: .35; } .slf li:hover .fa, .slf li.on .fa { opacity: 1; }
+.slf li .fa button { font-size: 11px; padding: 0 6px; min-height: 20px; }
+.slf li .pill { font-size: 10.5px; padding: 0 5px; }
+.cov { border-top: 1px solid var(--line2); padding: 12px 0 8px; }
+.cov .months { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+.cov .legend { margin-top: 6px; }
+.mo .c, .mo .f { display: block; font-size: 10px; margin-top: 1px; }
+.mo.both { background: linear-gradient(var(--ok-soft) 0 62%, var(--accent-soft) 62%); }
+.mo.closing .f { color: var(--accent); font-weight: 700; }
+.bigdrop { padding: 8px 14px !important; font-size: 13.5px !important; margin-bottom: 8px !important; gap: 10px !important; }
+.bigdrop .bd-i { font-size: 18px; }
+.demoban { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; border: 1px solid var(--acc); background: var(--acc2); border-radius: 10px; padding: 6px 10px; margin: 4px 0 8px; }
+.demoban .dbi { width: 26px; height: 26px; font-size: 12px !important; border-radius: 50%; background: var(--acc); color: var(--paper); display: grid; place-items: center; font-size: 18px; }
+.demoban b { display: inline; font-size: 14px; margin-right: 6px; } .demoban span { font-size: 13px; color: var(--ink); line-height: 1.35; }
 .demoban .dbb { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; } .demoban .dbb .sub { font-size: 12.5px; color: var(--mut); }
 .demoban .v-btn.big { font-size: 15.5px; padding: 10px 18px; }
-.demoban.on { border-width: 1px; border-color: var(--mid); background: var(--warnbg); padding: 10px 14px; } .demoban.on .dbi { width: 30px; height: 30px; font-size: 13px; background: var(--mid); } .demoban.on b { font-size: 15px; }
+.demoban.on { border-width: 1px; border-color: var(--mid); background: var(--warnbg); padding: 4px 10px; } .demoban.on .dbi { width: 22px; height: 22px; font-size: 11px !important; background: var(--mid); } .demoban.on b { font-size: 13.5px; }
 .demoban.on .dbb { flex-direction: row; }
 @media (max-width: 900px) { .demoban { grid-template-columns: auto 1fr; } .demoban .dbb { grid-column: 1 / -1; align-items: flex-start; } }
 </style>
@@ -958,6 +1005,7 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
   <div class="v3-cmd" id="d10cmd"><span class="v3-cmd-m" data-mascot="1" title="Tanya Asisten" id="d10cmdM"></span><input class="v3-cmdin" id="d10cmdIn" type="search" autocomplete="off" placeholder="Tanya, cari nomat, atau buka halaman…" aria-label="Tanya, cari nomat, atau buka halaman"><kbd class="v3-kbd">Ctrl K</kbd><div class="v3-cmdl" id="d10cmdL" hidden></div></div>
   <div class="hr">
     <button type="button" class="ib" id="d10hdB" title="Sembunyikan langkah dan pencarian" aria-label="Sembunyikan langkah dan pencarian">⌃</button>
+    <button type="button" class="v-btn" id="d10dash" data-d10go="Brief" title="Gambaran bulan ini: angka utama, grafik dan alert semua halaman">▦ <span data-l="dash">Dashboard</span><b class="dcnt" id="d10dashN" hidden></b></button>
     <button type="button" class="ib" id="undoBtn" disabled title="Urungkan (Ctrl+Z)">↶</button><button type="button" class="ib" id="redoBtn" disabled title="Ulangi (Ctrl+Y)">↷</button>
     <div class="setw"><button type="button" class="v-btn" id="d10exp" aria-haspopup="true">⇩ <span data-l="excel">Excel</span></button><div class="setp expp" id="d10expP"></div></div>
     <div class="setw"><button type="button" class="v-btn" id="d10setB" aria-haspopup="true">⚙ <span data-l="settings">Pengaturan</span></button><div class="setp" id="d10setP"></div></div>
@@ -990,7 +1038,7 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
           <select id="fcLimit" aria-label="Jumlah SKU per famili" style="width:auto"><option value="10">10 SKU teratas per famili</option><option value="all">Semua SKU</option></select>
           <label class="chk"><input type="checkbox" id="fcShowExcl"> Tampilkan SKU diskontinu / diganti</label>
           <label class="chk" title="Hanya SKU yang paling memengaruhi akurasi forecast"><input type="checkbox" id="fcVitalOnly"> Hanya SKU vital ⚑</label>
-          <button type="button" id="fcOpenAll">Buka semua famili</button><button type="button" id="fcCloseAll">Tutup semua</button></div></div>
+          <button type="button" id="fcMlViz" title="Bagaimana Forecast AI dilatih di browser ini: alur, pohon, error per pohon, uji mundur">🧠 Cara Forecast AI belajar</button><button type="button" id="fcOpenAll">Buka semua grup</button><button type="button" id="fcCloseAll">Tutup semua</button></div></div>
       <p class="note edhint">Seperti Excel: klik dua kali atau langsung ketik di sel Stok, Order in, Forecast HQ untuk mengoreksi. Enter/Tab untuk lanjut, Esc batal, Delete mengosongkan, Ctrl+Z / tombol ↶ Urungkan membatalkan (Ctrl+Y mengulangi). Sel yang dikoreksi bertanda kuning; nilai file tetap tersimpan. Klik label status di bawah nama SKU untuk mengubah statusnya. <span id="fcEditMsg" role="status"></span></p>
       <div class="scroll" style="max-height: 680px"><table id="fcTable" class="fct"></table></div>
       <div class="legend"><span><b>Selisih</b> = Forecast HQ − Order in. <b class="pos">Merah</b>: HQ di atas order in.</span><span><b>Forecast AI</b> (prototipe): Holt pada order in + Forecast HQ dikoreksi biasnya per SKU. Arahkan kursor ke angka ML untuk rinciannya.</span><span><b>Sinyal</b> HQ dibanding ML: <span class="sg s-dn2">▼</span> HQ ≥20% di atas, <span class="sg s-dn1">▼</span> 5–20% di atas, <span class="sg s-eq">≈</span> beda &lt;5%, <span class="sg s-up1">▲</span> 5–20% di bawah, <span class="sg s-up2">▲</span> ≥20% di bawah.</span><span><span class="pill p-warn">Tanpa HQ</span> ada order in / ML tapi Forecast HQ kosong.</span></div>
@@ -1017,11 +1065,12 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
     </section>
     <section class="panel bfguide" id="bfGuide" aria-label="Arti strategi buffer"></section>
     <section class="panel" aria-label="Buffer per famili">
-      <div class="ph"><h2>Saran buffer per famili dan SKU</h2>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input type="search" id="bfQ" placeholder="Cari Nomat / nama / kode" aria-label="Cari SKU di Saran Buffer" style="width:210px"><button type="button" id="bfOpenAll">Buka semua famili</button><button type="button" id="bfCloseAll">Tutup semua</button><button type="button" id="bfReset">Hapus perubahan manual</button><button type="button" id="bfRmTg" title="Kolom karton, plastik, jumbo roll dan BOM (masih kosong sampai BOM diisi)">Sembunyikan bahan baku</button></div></div>
+      <div class="ph"><h2>Saran buffer per grup dan SKU</h2>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input type="search" id="bfQ" placeholder="Cari Nomat / nama / kode" aria-label="Cari SKU di Saran Buffer" style="width:210px"><select id="bfBrand" aria-label="Brand" style="width:auto"></select><select id="bfCat" aria-label="Kategori" style="width:auto"></select><select id="bfFree" aria-label="Saring Jenis SKU / kolom bebas" style="width:auto"></select><select id="bfGrp" aria-label="Kelompokkan menurut" style="width:auto"></select><button type="button" id="bfOpenAll">Buka semua grup</button><button type="button" id="bfCloseAll">Tutup semua</button><button type="button" id="bfReset">Hapus perubahan manual</button><button type="button" id="bfRmTg" title="Kolom karton, plastik, jumbo roll dan BOM (masih kosong sampai BOM diisi)">Sembunyikan bahan baku</button><button type="button" class="pri" data-mrp="1" title="Kirim PP M+1–M+3 dan BOM per SKU ke halaman MRP bahan baku (/mrp/): kebutuhan, stok vs buffer, rencana pesan">Buka MRP bahan baku ↗</button></div></div>
+      <div id="bfHz" class="bfhz" aria-label="Total per bulan"></div>
       <p class="note">Buffer = z × sebaran error × forecast × √(lead time ÷ 30) × faktor strategi. z: 90% = 1,28 · 95% = 1,64 · 98% = 2,05. Sebaran error dihitung per famili dari error forecast 6 closing terakhir (×1,4 di level SKU); bila histori kurang dari 2 bulan dipakai 25%. <b>Otomatis</b> memilih strategi per SKU lewat backtest 6 closing terakhir (skor: kurang 2× lebih berat dari lebih); SKU dengan histori sedikit ikut kelas ABC-XYZ-nya. <b>Kuantil (P90)</b> memakai rentang forecast SKU itu (Chronos, regressor kuantil, atau error historis). Klik angka <b>Buffer final</b> untuk mengubah (alasan wajib), pilih <b>Strategi</b> per famili atau SKU, klik <b>Status</b> untuk rincian hitungan. SKU diskontinu/diganti tidak dihitung.</p>
       <div class="scroll" style="max-height: 680px"><table id="bfTable" class="fct bft"></table></div>
-      <div class="legend"><span class="bst b-low">Stok &lt; buffer</span><span class="bst b-noprod">Stok cukup, tanpa produksi</span><span class="bst b-up">Buffer naik</span><span class="bst b-down">Buffer turun</span><span class="bst b-new">Buffer baru</span><span class="bst b-same">Sesuai</span><span class="bst b-hab">Habiskan stok</span><span>Hari = buffer ÷ (forecast ÷ 30)</span></div>
+      <div id="bfLeg"></div>
     </section>
   </div>
 
@@ -1066,20 +1115,23 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
     <div class="ph"><h2>Masukkan data</h2>
       <label class="field" for="plant" style="flex-direction:row;align-items:center;gap:8px">Kode plant<input type="text" id="plant" value="7079" inputmode="numeric" style="width:90px"></label></div>
     <div id="demoBan"></div>
-    <label class="drop bigdrop" data-kind="auto"><input type="file" multiple accept=".xlsx,.xlsm,.xls,.gz,.ppic,.csv" data-kind="auto"><span class="bd-i" aria-hidden="true">⇩</span><span><b>Tarik file ke sini</b> atau klik untuk memilih: closing, Forecast HQ, Stock Level Check, data mesin, material master, CSV Chronos atau histori (.ppic.gz). Jenis dan bulan dikenali dari nama file.</span></label>
+    <label class="drop bigdrop" data-kind="auto"><input type="file" multiple accept=".xlsx,.xlsm,.xls,.gz,.ppic,.csv" data-kind="auto"><span class="bd-i" aria-hidden="true">⇩</span><span><b>Tarik file ke sini</b> atau klik untuk memilih <span class="sub">· jenis dan bulan dikenali dari nama file</span></span></label>
     <div class="igtabs" id="igTabs" aria-label="Grup data"><button type="button" data-ig="" class="on" aria-pressed="true">Semua grup</button><button type="button" data-ig="sales">Penjualan &amp; forecast <span class="igc" id="igc_sales"></span></button><button type="button" data-ig="stock">Stok &amp; kelas SKU <span class="igc" id="igc_stock"></span></button><button type="button" data-ig="master">Master data <span class="igc" id="igc_master"></span></button></div>
+    <div class="igrid">
     <div class="igrp" data-ig="sales">
       <div class="igrp-h"><h3>Penjualan &amp; forecast</h3><span class="sub">Closing bulanan (order in, stok, forecast lama) dan Forecast HQ ke depan. Dasar semua langkah berikutnya.</span></div>
       <div class="slots">
         <div class="slot" id="slClosing">
           <div class="slot-h"><b>Histori closing</b><span class="pill p-acc">wajib</span></div>
           <span class="slot-s" id="ssClosing">belum ada</span>
+          <div class="slf" id="sfClosing"></div>
           <p class="note">Daily Report Prod &amp; Sales Closing, satu file per bulan. Bisa pilih banyak file sekaligus, ditambah file <i>Histori_Serang</i> hasil unduhan sebelumnya untuk dilanjutkan.</p>
           <label class="drop" data-kind="closing"><input type="file" multiple accept=".xlsx,.xlsm,.xls,.gz,.ppic" data-kind="closing"><b>Pilih atau tarik file closing</b><span class="hint">atau lepas file di mana saja di halaman</span><span class="sub">Bulan dibaca dari nama file (mis. AUG26)</span></label>
         </div>
         <div class="slot" id="slFc">
           <div class="slot-h"><b>Forecast HQ M+1 – M+3</b><span class="pill p-acc">wajib</span></div>
           <span class="slot-s" id="ssFc">belum ada</span>
+          <div class="slf" id="sfFc"></div>
           <p class="note">Format Summary Forecast per bulan (mis. <i>Sales Forecast Nov26 adj - TUB</i>): Qty (ctn), W1–W4 dan per zona. Versi <i>adj</i> dibaca dari nama file.</p>
           <label class="drop" data-kind="forecast"><input type="file" multiple accept=".xlsx,.xlsm,.xls" data-kind="forecast"><b>Pilih atau tarik file forecast</b><span class="sub">Satu file per bulan forecast</span></label>
         </div>
@@ -1121,14 +1173,20 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
         </div>
       </div>
     </div>
-    <div class="scroll"><table id="files"></table></div>
+    </div>
+    <div class="cov" id="covBox">
+      <div class="igrp-h"><h3>Cakupan data per bulan</h3><span class="sub" id="histNote2"></span></div>
+      <div class="months" id="months"></div>
+      <div class="legend"><span><i class="sw s-closing"></i>Closing (order in, stok)</span><span><i class="sw s-forecast"></i>Forecast HQ</span><span><i class="sw s-empty"></i>Kosong</span><span>Angka = jumlah SKU di bulan itu. Arahkan kursor untuk nama file.</span></div>
+    </div>
+    <div class="scroll" id="secFiles" hidden><table id="files"></table></div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
       <button type="button" id="useSample">Muat contoh</button>
       <button type="button" id="clearAll">Kosongkan semua</button>
       <span class="sub" id="dropMsg" role="status"></span>
     </div>
     <div class="status" id="status" role="status">Memuat…</div>
-    <div class="secbar" id="secBar"><span class="sub">Tampilkan:</span><button type="button" data-sec="secCheck">Pemeriksaan file</button><button type="button" data-sec="secPrev">Pratinjau</button><button type="button" data-sec="secMap">Data yang diambil</button><button type="button" data-sec="secMesin">Data mesin</button><button type="button" data-sec="secHist">Riwayat data</button></div>
+    <div class="secbar" id="secBar"><span class="sub">Tampilkan:</span><button type="button" data-sec="secFiles" title="Ubah jenis, bulan, versi atau lembar per file">Detail file</button><button type="button" data-sec="secCheck">Pemeriksaan file</button><button type="button" data-sec="secPrev">Pratinjau</button><button type="button" data-sec="secMap">Data yang diambil</button><button type="button" data-sec="secMesin">Data mesin</button><button type="button" data-sec="secHist">Unduh histori</button></div>
   </section>
 
   <section class="panel" aria-label="Material master" id="mmPanel">
@@ -1165,9 +1223,7 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
   </section>
 
   <section class="panel" aria-label="Riwayat data" id="secHist" hidden>
-    <div class="ph"><h2>Riwayat data Serang</h2><span class="sub" id="histNote"></span></div>
-    <div class="months" id="months"></div>
-    <div class="legend"><span><i class="sw s-closing"></i>Closing (histori)</span><span><i class="sw s-forecast"></i>Forecast HQ</span><span><i class="sw s-empty"></i>Kosong</span></div>
+    <div class="ph"><h2>Unduh histori Serang</h2><span class="sub" id="histNote"></span></div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
       <button type="button" id="dlXlsx" class="pri" hidden>Unduh Histori_Serang.xlsx</button>
       <button type="button" id="dlPack" hidden title="Semua data gabungan (closing, forecast HQ, kelas, koreksi, status, material master, jadwal) dalam satu file terkompresi. Unggah lagi lewat Histori closing atau tarik ke halaman.">Unduh histori ringkas (.ppic.gz)</button>
@@ -2145,6 +2201,16 @@ function renderFiles() {
   });
   if (!state.items.length && !state.history) h += '<tr><td colspan="7" class="sub">Belum ada file.</td></tr>';
   $('files').innerHTML = h + '</tbody>';
+  // the same files, listed inside the slot of their input type (one line each), so the list needs no scrolling down
+  var line = function (it) {
+    var st = it.error ? '<span class="pill p-bad" title="' + esc(it.error) + '">!</span>' : !it.month ? '<span class="pill p-warn">isi bulan</span>' : '';
+    return '<li' + (it.id === state.view ? ' class="on"' : '') + ' title="' + esc(it.name + (it.error ? ' · ' + it.error : '')) + '"><b>' + (it.month ? esc(monthLabel(it.month)) : '?') + '</b>' + (it.kind === 'forecast' && it.version ? '<i>' + esc(it.version) + '</i>' : '') + '<span class="fn">' + esc(it.name) + '</span>' + st +
+      '<span class="fa"><button type="button" data-act="view" data-id="' + it.id + '" title="Lihat pratinjau file ini">Lihat</button><button type="button" data-act="rm" data-id="' + it.id + '" title="Hapus file ini" aria-label="Hapus">✕</button></span></li>';
+  };
+  var byM = function (a, b) { return String(a.month || '').localeCompare(String(b.month || '')); };
+  var cl = state.items.filter(function (x) { return x.kind === 'closing'; }).sort(byM), fc = state.items.filter(function (x) { return x.kind === 'forecast'; }).sort(byM);
+  $('sfClosing').innerHTML = (state.history ? '<ul><li title="' + esc(state.history.name) + '"><b>Histori</b><span class="fn">' + esc(histRange(state.history.monthly)) + '</span><span class="fa"><button type="button" data-act="rmhist" aria-label="Hapus">✕</button></span></li></ul>' : '') + (cl.length ? '<ul>' + cl.map(line).join('') + '</ul>' : '');
+  $('sfFc').innerHTML = fc.length ? '<ul>' + fc.map(line).join('') + '</ul>' : '';
 }
 function histRange(rows) {
   var ms = rows.map(function (r) { return r.closing_month; }).filter(Boolean).sort();
@@ -2157,13 +2223,17 @@ function renderHistory(c) {
   var all = Object.keys(cm).concat(Object.keys(fm)).sort();
   var end = all.length ? all[all.length - 1] : new Date().toISOString().slice(0, 7);
   var cells = '';
+  var fileOf = {}; state.items.forEach(function (it) { if (it.month) (fileOf[it.kind + it.month] = fileOf[it.kind + it.month] || []).push(it.name); });
+  var hm = state.history ? state.history.monthly.reduce(function (o, r) { o[r.closing_month] = 1; return o; }, {}) : {};
   for (var k = 23; k >= 0; k--) {
-    var m = addMonths(end, -k), cls = cm[m] ? 'closing' : fm[m] ? 'forecast' : '';
-    cells += '<div class="mo ' + cls + '"><b>' + monthLabel(m) + '</b><span>' + (cm[m] ? n(cm[m]) + ' SKU' : fm[m] ? 'FC ' + n(fm[m]) : 'kosong') + '</span></div>';
+    var m = addMonths(end, -k), cls = cm[m] && fm[m] ? 'closing both' : cm[m] ? 'closing' : fm[m] ? 'forecast' : '';
+    var tip = monthLabel(m) + ': ' + (cm[m] ? 'closing ' + n(cm[m]) + ' SKU (' + ((fileOf['closing' + m] || []).join(', ') || (hm[m] ? 'dari file histori' : 'histori')) + ')' : 'tanpa closing') + (fm[m] ? ' · Forecast HQ ' + n(fm[m]) + ' SKU (' + ((fileOf['forecast' + m] || []).join(', ') || 'histori') + ')' : '');
+    cells += '<div class="mo ' + cls + '" title="' + esc(tip) + '"><b>' + monthLabel(m) + '</b>' + (cm[m] ? '<span class="c">' + n(cm[m]) + ' SKU</span>' : '') + (fm[m] ? '<span class="f">HQ ' + n(fm[m]) + '</span>' : '') + (!cm[m] && !fm[m] ? '<span>kosong</span>' : '') + '</div>';
   }
   $('months').innerHTML = cells;
   var nc = Object.keys(cm).length;
   $('histNote').textContent = nc + ' bulan closing · ' + Object.keys(fm).length + ' bulan forecast · minimal 12 bulan closing untuk keluar dari mode bayangan';
+  $('histNote2').textContent = nc + ' bulan closing, ' + Object.keys(fm).length + ' bulan Forecast HQ' + (nc < 12 ? ' · model makin akurat setelah 12 bulan closing (kurang ' + (12 - nc) + ')' : '');
 }
 
 /* ---------- Forecast screen (lembar Forecast) ---------- */
@@ -2690,7 +2760,10 @@ function renderBuffer(m) {
   var clsRows = bm.rows.filter(function (s) { return s.cls; }).sort(function (a, b) { return (b.cls.mis ? 1 : 0) - (a.cls.mis ? 1 : 0) || b.cls.vol - a.cls.vol; });
   var cc = {}; clsRows.forEach(function (s) { var c = s.cls.code === 'NPD' ? 'NPD' : s.cls.abc; cc[c] = (cc[c] || 0) + 1; });
   var mis = clsRows.filter(function (s) { return s.cls.mis; });
-  CH.lists.bfCls = { title: 'Kelas ABC-XYZ dari order in · ' + (m.clsWin.length ? monthLabel(m.clsWin[0]) + '–' + monthLabel(m.clsWin[m.clsWin.length - 1]) : '–'), tab: 'Buffer', note: '<b>ABC</b> menurut volume order in ' + m.clsWin.length + ' closing terakhir: A = SKU yang membentuk 80% pertama, B = 15% berikutnya, C = sisanya. <b>XYZ</b> menurut kestabilan (CV order in bulanan): X &lt; 0,5 stabil, Y 0,5–1 berubah-ubah, Z &gt; 1 tidak menentu. <b>NPD</b> = order in kurang dari 3 bulan. Dihitung ulang tiap closing. Kelas HQ tetap ditampilkan sebagai referensi; <span class="mtag">beda</span> = HQ A tetapi volume C, atau HQ bukan A tetapi volume A. Kelas dipakai untuk SKU dengan histori sedikit (strategi, P90) dan sebagai fitur Regressor.', head: [['SKU'], ['ABC-XYZ'], ['Kelas HQ'], ['Order in ' + m.clsWin.length + ' bln', 1], ['CV', 1], ['Strategi']],
+  var mx = {}; clsRows.forEach(function (s) { if (s.cls.code !== 'NPD') mx[s.cls.code] = (mx[s.cls.code] || 0) + 1; });
+  var MXT = { AX: 'buffer tipis cukup', AY: 'buffer sedang, pantau', AZ: 'buffer tebal, tinjau manual', BX: 'buffer tipis', BY: 'buffer sedang', BZ: 'buffer tebal', CX: 'buffer tipis', CY: 'buffer kecil', CZ: 'buat sesuai pesanan' };
+  var mxH = '<table class="clsmx"><thead><tr><th></th><th>X · stabil</th><th>Y · naik-turun</th><th>Z · tidak menentu</th></tr></thead><tbody>' + ['A', 'B', 'C'].map(function (a) { return '<tr><th>' + a + ' · ' + { A: 'besar', B: 'sedang', C: 'kecil' }[a] + '</th>' + ['X', 'Y', 'Z'].map(function (x) { var k = a + x; return '<td><b>' + (mx[k] || 0) + '</b> SKU<small>' + MXT[k] + '</small></td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>';
+  CH.lists.bfCls = { title: 'Kelas SKU: seberapa besar × seberapa stabil · ' + (m.clsWin.length ? monthLabel(m.clsWin[0]) + '–' + monthLabel(m.clsWin[m.clsWin.length - 1]) : '–'), tab: 'Buffer', note: 'Setiap SKU dapat dua huruf. <b>Huruf pertama = seberapa besar</b> order in-nya (' + m.clsWin.length + ' closing terakhir): A = SKU terlaris yang bersama-sama membentuk 80% order in, B = 15% berikutnya, C = sisanya. <b>Huruf kedua = seberapa stabil</b> dari bulan ke bulan: X stabil, Y naik-turun, Z tidak menentu. Contoh: <b>AX</b> besar dan stabil, cukup buffer tipis; <b>CZ</b> kecil dan tidak menentu, lebih baik dibuat sesuai pesanan. <b>NPD</b> = SKU baru (order in kurang dari 3 bulan). Dipakai untuk SKU dengan histori sedikit (memilih strategi buffer) dan sebagai salah satu fitur Regressor. <span class="mtag">beda</span> = kelas HQ jauh dari volume order in (HQ A tetapi volume C, atau sebaliknya).' + mxH, head: [['SKU'], ['ABC-XYZ'], ['Kelas HQ'], ['Order in ' + m.clsWin.length + ' bln', 1], ['CV', 1], ['Strategi']],
     rows: clsRows.map(function (s) { var c = s.cls; return [sk(s), '<b>' + c.code + '</b>', esc(s.hqCls || '–') + (c.mis ? ' <span class="mtag">beda</span>' : ''), n(Math.round(c.vol)), c.cv === null ? '–' : fmt.format(Math.round(c.cv * 100) / 100), STRATS[s.bf.st][0]]; }), keys: keys(clsRows) };
   CH.lists.bfNoP = { title: 'SKU tanpa produksi · ' + monthLabel(mo), tab: 'Buffer', note: 'Stok bebas sudah menutup forecast + buffer. Kelebihan = stok bebas − forecast − buffer.', head: [['SKU'], ['Stok bebas', 1], ['Forecast', 1], ['Buffer', 1], ['Kelebihan', 1]],
     rows: noP.map(function (s) { var b = s.bf; return [sk(s), n(b.fs), n(Math.round(b.F)), n(b.fin), n(Math.round(b.fs - b.F - b.fin))]; }), keys: keys(noP) };
@@ -2704,7 +2777,7 @@ function renderBuffer(m) {
     (bm.cmp ? (function () { var A = bfAgg(bm.rows), B = { fin: 0, prod: 0 }; bm.rows.forEach(function (x) { if (x.bf2) { B.fin += x.bf2.fin; B.prod += x.bf2.prod; } }); var sa = bbAcc(bm.bt.glob.kuantil || bm.bt.auto.auto), sb = bbAcc(bm.cmp.bt.glob.kuantil || bm.cmp.bt.auto.auto);
       return fcCard('Bandingkan: ' + basisName + ' vs ' + BASIS_NAME[cfg.cmp], n(A.prod) + ' vs ' + n(B.prod), 'Rencana produksi ' + monthLabel(mo) + ' (karton). Buffer ' + n(A.fin) + ' vs ' + n(B.fin) + '. Skor buffer backtest ' + pct0(sa) + ' vs ' + pct0(sb) + '. Kolom biru di tabel = ' + BASIS_NAME[cfg.cmp] + '.', sa !== null && sb !== null ? (sb > sa ? BASIS_NAME[cfg.cmp] + ' lebih baik' : sa > sb ? basisName + ' lebih baik' : 'Sama') : '', ''); })() : '') +
     listCard('bfAcc', 'Skor buffer · backtest ' + BT.months.length + ' bln', pct0(bbAcc(auto)), (auto ? 'Kurang dihitung ' + BUFBT.shortW + '×. Kuantil P90 (SKU baru otomatis): tertutup ' + fmt.format(Math.round(auto.cov / auto.n * 100)) + '% SKU-bulan, lebih ' + n(Math.round(auto.exc)) + ' karton, kurang ' + n(Math.round(auto.short)) + '. Standar untuk semua: skor ' + pct0(bbAcc(stdG)) + ', tertutup ' + fmt.format(Math.round(stdG.cov / stdG.n * 100)) + '%.' : 'Perlu minimal 3 closing untuk backtest strategi.') + (auto && BT.months.length < 3 ? ' Backtest baru ' + BT.months.length + ' bulan: belum bisa diandalkan.' : ''), btPill[0], auto && BT.months.length >= 3 && lampu(bbAcc(auto), LAMPU.buffer.skorBuffer, true) !== 'ok' ? lampu(bbAcc(auto), LAMPU.buffer.skorBuffer, true) : btPill[1], auto ? 'skor ' + lampuBatas(LAMPU.buffer.skorBuffer, true) : '') +
-    listCard('bfCls', 'Kelas ABC-XYZ', ['A', 'B', 'C', 'NPD'].filter(function (c) { return cc[c]; }).map(function (c) { return c + ' ' + cc[c]; }).join(' · ') || '–', 'Dari volume dan kestabilan order in, dihitung ulang tiap closing.' + (mis.length ? ' ' + mis.length + ' SKU beda jauh dengan kelas HQ.' : ''), mis.length ? mis.length + ' beda HQ' : '', mis.length ? 'warn' : '') +
+    listCard('bfCls', 'Kelas SKU (besar × stabil)', ['A', 'B', 'C', 'NPD'].filter(function (c) { return cc[c]; }).map(function (c) { return c + ' ' + cc[c]; }).join(' · ') || '–', 'A/B/C = besar order in, X/Y/Z = stabil. AX: buffer tipis cukup; CZ: buat sesuai pesanan.' + (mis.length ? ' ' + mis.length + ' SKU beda jauh dengan kelas HQ.' : ''), mis.length ? mis.length + ' beda HQ' : '', mis.length ? 'warn' : '') +
     listCard('bfNoP', 'SKU tanpa produksi ' + monthLabel(mo), n(noP.length) + ' SKU', noP.length ? 'Stok bebas ' + n(noP.reduce(function (a, s) { return a + s.bf.fs; }, 0)) + ' karton sudah menutup forecast + buffer.' : 'Semua SKU perlu produksi.', noP.length ? 'Stok berlebih' : '', noP.length ? lampu(noP.length, LAMPU.buffer.tanpaProduksi) : '', lampuBatas(LAMPU.buffer.tanpaProduksi, false, ' SKU'));
   var RH = !!state.rmHide, C = bm.cmp, cN = C ? BASIS_NAME[cfg.cmp] : '', MOS = m.future.slice(0, 3), NC = (C ? 16 : 13) + 5 * Math.max(0, MOS.length - 1) + (RH ? 0 : 3 * MOS.length + 1);
   // months M+1..M+3 in the main table: stok akhir = stok awal + PP − forecast becomes next month's stok awal (may be negative)
@@ -2729,33 +2802,48 @@ function renderBuffer(m) {
       Object.keys(STRATS).map(function (k) { return '<option value="' + k + '"' + (cur === k ? ' selected' : '') + '>' + STRATS[k][0] + '</option>'; }).join('') + '</select>';
   };
   var qSum = function (list) { var a = 0, b = 0, k = 0; list.forEach(function (x) { var q = x.bf && x.bf.q; if (q) { a += q.p50; b += q.p90; k++; } }); return k ? '<td class="num">' + n(Math.round(a)) + '</td><td class="num">' + n(Math.round(b)) + '</td>' : '<td class="num">–</td><td class="num">–</td>'; };
-  var lim = state.fcAll ? Infinity : 10, bq = normName(state.bfQ), bHit = 0;
-  m.fams.forEach(function (f) {
-    if (!f.skus.length) return;
-    var fsk = bq ? f.skus.filter(function (x) { return skuMatch(x, bq); }) : f.skus;
-    if (bq && !fsk.length) return;
-    bHit += bq ? fsk.length : 0;
-    var a = bfAgg(f.skus), nRv = f.skus.filter(function (x) { return RV[x.key]; }).length, open = bq ? true : state.bfOpen[f.key] === undefined ? nRv > 0 : !!state.bfOpen[f.key], fst = state.bufStrat['fam:' + f.key] || state.bufStrat['fam:' + f.base] || '';
-    h += '<tr class="fam"><td><div class="fl"><button type="button" class="exp" data-bfam="' + esc(f.key) + '" aria-expanded="' + open + '">' + (open ? '▼' : '▶') + '</button><div>' + esc(f.name) + '<span class="code">' + f.skus.length + ' SKU' + (nRv ? ' · <b class="rvf">⚑ ' + nRv + ' ditinjau</b>' : '') + ' · sebaran error ' + fmt.format(Math.round(f.buf.spread.v * 100)) + '%' + (f.buf.spread.dflt ? ' (bawaan)' : ' (' + f.buf.spread.n + ' bln)') + '</span></div></div></td>' +
-      '<td class="num sep">' + n(a.fs) + '</td><td class="num">' + n(Math.round(a.F)) + '</td>' + (C ? cF(a2(f.skus)) : '') + qSum(f.skus) + '<td class="num sep">' + n(a.old) + '</td><td class="num bsug">' + n(a.sug) + '</td><td class="num">' + n(a.fin) + '</td>' + (C ? cB(a2(f.skus)) : '') + '<td class="num">' + (a.days === null ? '–' : fmt.format(Math.round(a.days * 10) / 10)) + '</td><td>' + stratSel('fam:' + f.key, fst, null, true) + '</td>' +
-      '<td class="num sep' + (a.prod === 0 ? ' zero' : '') + '">' + n(a.prod) + '</td>' + (C ? cP(a2(f.skus), a.prod) : '') + (function (xs) { return endC(xs[0], true) + '<td></td>' + futC(xs, true) + rmC(xs, ''); })(hzA(f.skus)) + '</tr>';
+  var lim = state.fcAll ? Infinity : 10, bq = normName(state.bfQ), bHit = 0, inBm = {}; bm.rows.forEach(function (x) { inBm[x.key] = 1; });
+  // same filters and grouping as Forecast (Brand › Kategori with Brand rows, Brand, Kategori, Jenis SKU, free columns)
+  var GF = grpFilterUI('bf', m), bst = state.bfSt || '', bcol = state.bfGrp || '', BH = !bcol, lastB = null, OB = state.bfOpenB || (state.bfOpenB = {});
+  var flt = !!(bq || GF.on || bst), keep = function (x) { return inBm[x.key] && GF.pass(x) && (!bst || x.bf.status[1] === bst) && (!bq || skuMatch(x, bq)); };
+  var grpRow = function (f, list, cls, lbl, sub, strat) {
+    var a = bfAgg(list);
+    return '<tr class="fam' + cls + '"><td><div class="fl">' + lbl + '<div>' + sub + '</div></div></td>' +
+      '<td class="num sep">' + n(a.fs) + '</td><td class="num">' + n(Math.round(a.F)) + '</td>' + (C ? cF(a2(list)) : '') + qSum(list) + '<td class="num sep">' + n(a.old) + '</td><td class="num bsug">' + n(a.sug) + '</td><td class="num">' + n(a.fin) + '</td>' + (C ? cB(a2(list)) : '') + '<td class="num">' + (a.days === null ? '–' : fmt.format(Math.round(a.days * 10) / 10)) + '</td><td>' + strat + '</td>' +
+      '<td class="num sep' + (a.prod === 0 ? ' zero' : '') + '">' + n(a.prod) + '</td>' + (C ? cP(a2(list), a.prod) : '') + (function (xs) { return endC(xs[0], true) + '<td></td>' + futC(xs, true) + rmC(xs, ''); })(hzA(list)) + '</tr>';
+  };
+  var VG = fcGroups(m, bcol).map(function (f) { return { f: f, skus: f.skus.filter(function (x) { return inBm[x.key]; }) }; }).filter(function (g) { return g.skus.length; });
+  VG.forEach(function (g) {
+    var f = g.f, fsk = flt ? g.skus.filter(keep) : g.skus;
+    if (flt && !fsk.length) return;
+    bHit += flt ? fsk.length : 0;
+    if (BH && f.brand !== lastB) {
+      lastB = f.brand; var bs = []; VG.forEach(function (g2) { if (g2.f.brand === f.brand) bs = bs.concat(flt ? g2.skus.filter(keep) : g2.skus); });
+      var bo = OB[f.brand] !== false;
+      h += grpRow(f, bs, ' brandr', '<button type="button" class="exp" data-bbrand="' + esc(f.brand) + '" aria-expanded="' + bo + '">' + (bo ? '▼' : '▶') + '</button>', esc(brandOf(f)) + '<span class="code">Brand · ' + bs.length + ' SKU</span>', '');
+    }
+    if (BH && OB[f.brand] === false) return;
+    var nRv = fsk.filter(function (x) { return RV[x.key]; }).length, open = flt ? true : state.bfOpen[f.key] === undefined ? nRv > 0 : !!state.bfOpen[f.key], fst = state.bufStrat['fam:' + f.key] || state.bufStrat['fam:' + f.base] || '';
+    h += grpRow(f, flt ? fsk : g.skus, '', '<button type="button" class="exp" data-bfam="' + esc(f.key) + '" aria-expanded="' + open + '"' + (flt ? ' disabled' : '') + '>' + (open ? '▼' : '▶') + '</button>',
+      esc(f.name) + '<span class="code">' + (flt ? fsk.length + ' cocok dari ' + g.skus.length : g.skus.length) + ' SKU' + (nRv ? ' · <b class="rvf">⚑ ' + nRv + ' ditinjau</b>' : '') + (f.buf ? ' · sebaran error ' + fmt.format(Math.round(f.buf.spread.v * 100)) + '%' + (f.buf.spread.dflt ? ' (bawaan)' : ' (' + f.buf.spread.n + ' bln)') : '') + '</span>',
+      f.view ? '<span class="sub" title="Strategi grup hanya untuk kelompok Brand › Kategori / Famili">–</span>' : stratSel('fam:' + f.key, fst, null, true));
     if (open) {
-      fsk.slice(0, bq ? Infinity : lim).forEach(function (s) {
+      fsk.slice(0, flt ? Infinity : lim).forEach(function (s) {
         var b = s.bf;
-        h += '<tr class="sku' + (RV[s.key] ? ' rv' : '') + '" data-bsk="' + esc(s.key) + '"><td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + (RV[s.key] ? '<button type="button" class="rvchip" data-unrv="' + esc(s.key) + '" title="Ditandai dari Forecast: ' + esc(RV[s.key].why || '') + '. Klik untuk hapus tanda.">⚑ tinjau ✕</button>' : '') + esc(s.nomat || s.art || '') + (s.cls ? ' · <span title="Kelas ABC-XYZ dari order in">' + s.cls.code + '</span>' : '') + (b.src !== 'HQ' && b.src !== 'ML' && b.src !== 'Rata-rata' ? ' · ' + esc(b.src) : '') + '</span></td>' +
+        h += '<tr class="sku' + (RV[s.key] ? ' rv' : '') + '" data-bsk="' + esc(s.key) + '"><td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + (RV[s.key] ? '<button type="button" class="rvchip" data-unrv="' + esc(s.key) + '" title="Ditandai dari Forecast: ' + esc(RV[s.key].why || '') + '. Klik untuk hapus tanda.">⚑ tinjau ✕</button>' : '') + esc(s.nomat || s.art || '') + (s.cls ? ' · <span title="' + esc(clsPlain(s.cls.code)) + '">' + s.cls.code + '</span>' : '') + (b.src !== 'HQ' && b.src !== 'ML' && b.src !== 'Rata-rata' ? ' · ' + esc(b.src) : '') + '</span></td>' +
           '<td class="num sep">' + n(b.fs) + '</td><td class="num">' + n(Math.round(b.F)) + '</td>' + cF(s.bf2) + (b.q ? '<td class="num" title="' + esc(b.q.src) + '">' + n(Math.round(b.q.p50)) + '</td><td class="num" title="' + esc(b.q.src) + '">' + n(Math.round(b.q.p90)) + '</td>' : '<td class="num">–</td><td class="num">–</td>') + '<td class="num sep">' + n(b.old) + '</td><td class="num bsug">' + n(b.sug) + '</td>' +
           '<td class="num bfin' + (b.ed ? ' edited' : '') + '" tabindex="0" data-bfin="' + esc(s.key) + '" title="' + (b.ed ? 'Manual: ' + esc(b.ed.reason || '') + ' (saran ' + n(b.sug) + ')' : 'Klik untuk mengubah; alasan wajib') + '">' + n(b.fin) + (b.ed ? ' <span class="mtag">manual</span>' : '') + '</td>' + cB(s.bf2) +
           '<td class="num">' + (b.days === null ? '–' : fmt.format(Math.round(b.days * 10) / 10)) + '</td><td>' + stratSel(s.key, state.bufStrat[s.key] || '', b.auto[0], false) + (state.bufStrat[s.key] ? '' : '<span class="code" style="display:block;max-width:220px;white-space:normal">' + esc(b.auto[1]) + '</span>') + (bfWinTxt(BT, s.key) ? '<button type="button" class="bwin" data-bwin="' + esc(s.key) + '" title="Tanya asisten kenapa">🏆 ' + esc(bfWinTxt(BT, s.key)) + '</button>' : '') + '</td>' +
           '<td class="num sep' + (b.prod === 0 ? ' zero' : '') + '">' + n(b.prod) + '</td>' + cP(s.bf2, b.prod) +
           endC(b.hz && b.hz[0]) + '<td><button type="button" class="bst b-' + b.status[1] + '" data-bwhy="' + esc(s.key) + '">' + b.status[0] + '</button></td>' + futC(b.hz) + rmC(b.hz, (bomOf(s) || {}).desc || '', b.need ? '' : 'BOM SKU ini belum diisi. Isi di Material master.') + '</tr>';
       });
-      if (!bq && f.skus.length > lim) h += '<tr class="more"><td colspan="' + NC + '">+' + (f.skus.length - lim) + ' SKU lainnya sudah termasuk di baris famili.</td></tr>';
+      if (!flt && fsk.length > lim) h += '<tr class="more"><td colspan="' + NC + '">+' + (fsk.length - lim) + ' SKU lainnya sudah termasuk di baris grup.</td></tr>';
     }
   });
-  if (bq && !bHit) h += '<tr class="more"><td colspan="' + NC + '">Tidak ada SKU yang cocok dengan "' + esc(state.bfQ) + '".</td></tr>';
-  h += '<tr class="tot"><td>Total Serang<span class="code">' + bm.rows.length + ' SKU aktif' + (bq ? ' · ' + bHit + ' cocok dengan pencarian' : '') + '</span></td><td class="num sep">' + n(tot.fs) + '</td><td class="num">' + n(Math.round(tot.F)) + '</td>' + (C ? cF(a2(bm.rows)) : '') + qSum(bm.rows) + '<td class="num sep">' + n(tot.old) + '</td><td class="num bsug">' + n(tot.sug) + '</td><td class="num">' + n(tot.fin) + '</td>' + (C ? cB(a2(bm.rows)) : '') + '<td class="num">' + (tot.days === null ? '–' : fmt.format(Math.round(tot.days * 10) / 10)) + '</td><td></td><td class="num sep">' + n(tot.prod) + '</td>' + (C ? cP(a2(bm.rows), tot.prod) : '') + (function (xs) { return endC(xs[0], true) + '<td></td>' + futC(xs, true) + rmC(xs, ''); })(hzA(bm.rows)) + '</tr>';
+  if (flt && !bHit) h += '<tr class="more"><td colspan="' + NC + '">Tidak ada SKU yang cocok dengan pencarian / saringan.</td></tr>';
+  h += '<tr class="tot"><td>Total Serang<span class="code">' + bm.rows.length + ' SKU aktif' + (flt ? ' · ' + bHit + ' cocok dengan saringan' : '') + '</span></td><td class="num sep">' + n(tot.fs) + '</td><td class="num">' + n(Math.round(tot.F)) + '</td>' + (C ? cF(a2(bm.rows)) : '') + qSum(bm.rows) + '<td class="num sep">' + n(tot.old) + '</td><td class="num bsug">' + n(tot.sug) + '</td><td class="num">' + n(tot.fin) + '</td>' + (C ? cB(a2(bm.rows)) : '') + '<td class="num">' + (tot.days === null ? '–' : fmt.format(Math.round(tot.days * 10) / 10)) + '</td><td></td><td class="num sep">' + n(tot.prod) + '</td>' + (C ? cP(a2(bm.rows), tot.prod) : '') + (function (xs) { return endC(xs[0], true) + '<td></td>' + futC(xs, true) + rmC(xs, ''); })(hzA(bm.rows)) + '</tr>';
   $('bfTable').innerHTML = h + '</tbody>';
-  renderBfHz(m, bm);
+  renderBfHz(m, bm); renderBfLegend(bm);
   CH.bm = bm;
   renderBfGuide(bm, cnt, wT);
   // where P50/P90 come from (answers "dari model mana?")
@@ -2763,6 +2851,27 @@ function renderBuffer(m) {
   $('bfQsrc').innerHTML = '<b>P50/P90 bukan dari Ensemble.</b> Ensemble hanya memberi satu angka; rentangnya diambil dari: ' +
     [['chronos', 'Chronos (P10/P50/P90 dari CSV-nya)'], ['gbr', 'Regressor kuantil (pohon yang sama dengan Regressor, dilatih ke P50 dan P90)'], ['err', 'error historis ' + BASIS_NAME[cfg.basis] + ' (sebaran order in ÷ forecast 6 bulan, dikali forecast)'], ['none', 'tidak ada, memakai rumus Standar']]
       .filter(function (x) { return qc[x[0]]; }).map(function (x) { return '<span><b>' + qc[x[0]] + ' SKU</b> ' + x[1] + '</span>'; }).join(' · ') + '. ' + (cfg.qsrc === 'auto' ? 'Otomatis = yang pertama tersedia, urut seperti itu.' : 'Dipaksa: ' + QSRC_NAME[cfg.qsrc] + '.');
+}
+// Status per SKU: what it means and what to do. The legend doubles as a filter (click a status to show only those SKUs).
+var BF_STATUS = [
+  ['low', 'Stok < buffer', 'Stok bebas lebih kecil dari buffer final.', 'Produksi di awal bulan; sudah masuk rencana produksi. Bila mesin penuh, dahulukan SKU ini. Buffer tidak perlu dinaikkan.'],
+  ['noprod', 'Stok cukup, tanpa produksi', 'Stok bebas sudah menutup forecast + buffer.', 'Tidak produksi bulan ini. Bila hari stok sangat tinggi, cek forecast atau pilih Habiskan stok.'],
+  ['up', 'Buffer naik', 'Buffer final lebih dari 10% di atas buffer saat ini.', 'Cek alasannya (klik status). Setuju: biarkan. Tidak: pilih strategi lain atau isi buffer manual.'],
+  ['down', 'Buffer turun', 'Buffer final lebih dari 10% di bawah buffer saat ini.', 'Stok bisa lebih ramping. Untuk SKU kelas A atau ⚑ vital, pastikan risiko kurang stok bisa diterima.'],
+  ['new', 'Buffer baru', 'Belum ada buffer di aturan lama.', 'Biasanya SKU baru atau aktif lagi: setujui, atau isi buffer manual.'],
+  ['same', 'Sesuai', 'Dalam ±10% dari buffer saat ini.', 'Tidak perlu tindakan.'],
+  ['hab', 'Habiskan stok', 'Sengaja tanpa buffer dan tanpa produksi.', 'Pastikan SKU memang akan berhenti atau diganti.']];
+function renderBfLegend(bm) {
+  var c = {}, cur = state.bfSt || ''; bm.rows.forEach(function (s) { var k = s.bf.status[1]; c[k] = (c[k] || 0) + 1; });
+  $('bfLeg').innerHTML = '<details class="bfleg"' + (localStorage.getItem('ppic_bfleg') === '0' ? '' : ' open') + '><summary><b>Arti status</b> <span class="sub">· status membandingkan buffer final dengan stok bebas dan dengan buffer saat ini, supaya terlihat baris mana yang perlu keputusan. Klik status untuk menyaring tabel.</span></summary><div class="bflg">' +
+    BF_STATUS.map(function (x) { return '<button type="button" class="bflr' + (cur === x[0] ? ' on' : '') + (c[x[0]] ? '' : ' none') + '" data-bfst="' + x[0] + '" aria-pressed="' + (cur === x[0]) + '"><span class="bst b-' + x[0] + '">' + esc(x[1]) + ' · ' + (c[x[0]] || 0) + '</span><span class="bfm">' + esc(x[2]) + '</span><span class="bfa"><b>Tindakan:</b> ' + esc(x[3]) + '</span></button>'; }).join('') +
+    '</div><p class="sub" style="margin:6px 2px 0">Hari = buffer ÷ (forecast ÷ 30): berapa hari penjualan yang ditutup buffer.' + (cur ? ' <button type="button" class="v-btn sm" data-bfst="' + cur + '">Tampilkan semua status</button>' : '') + '</p></details>';
+}
+// ABC-XYZ in plain words: first letter = how big, second = how steady
+function clsPlain(code) {
+  if (!code) return ''; if (code === 'NPD') return 'NPD: SKU baru, order in kurang dari 3 bulan';
+  var A = { A: 'besar (SKU terlaris, 80% order in)', B: 'sedang (15% berikutnya)', C: 'kecil (5% sisanya)' }, X = { X: 'stabil', Y: 'naik-turun', Z: 'tidak menentu' };
+  return code + ': ' + (A[code[0]] || code[0]) + ', ' + (X[code[1]] || code[1] || '');
 }
 // Proyeksi buffer per bulan (M+1..M+3): stok akhir bulan ini = stok awal + PP − forecast = stok awal bulan berikutnya,
 // which gets its own buffer (same strategy) and PP. Used to estimate raw material orders.
@@ -2779,20 +2888,17 @@ function renderBfHz(m, bm) {
       return '<td class="num sep" title="Stok awal ' + monthLabel(mo) + (i ? ' = stok akhir ' + monthLabel(mos[i - 1]) : ' = stok bebas akhir ' + monthLabel(m.latest)) + '">' + n(Math.round(x.beg)) + '</td>' + num(x.F) + num(x.buf, 'bsug') + num(x.pp, 'hzpp' + (x.pp === 0 ? ' zero' : '')); }).join('') +
       (function () { var x = xs[mos.length - 1] || xs[xs.length - 1]; if (!x || (isAgg && !x.n)) return '<td class="num sep">–</td>'; var neg = isAgg ? x.neg : x.end < 0; return '<td class="num sep' + (neg ? ' hzneg lamp-' + cls0 : '') + '"' + (neg ? ' title="Stok akhir di bawah nol: forecast tidak tertutup"' : '') + '>' + n(Math.round(x.end)) + '</td>'; })();
   };
-  var h = '<div class="ph"><h2>Ringkasan proyeksi per bulan · ' + mos.map(monthLabel).join(', ') + '</h2><div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" data-hzall="1">Buka semua famili</button><button type="button" data-hzall="0">Tutup semua</button><button type="button" class="pri" data-mrp="1" title="Kirim PP M+1–M+3 dan BOM per SKU ke halaman MRP bahan baku (/mrp/): kebutuhan, stok vs buffer, rencana pesan">Buka MRP bahan baku ↗</button></div></div>' +
-    '<p class="hzx"><b>Cara hitung:</b> stok akhir ' + monthLabel(mos[0]) + ' = stok awal + rencana produksi (PP) − forecast, lalu menjadi <b>stok awal ' + (mos[1] ? monthLabel(mos[1]) : 'bulan berikutnya') + '</b>. Bulan itu dihitung buffer-nya sendiri (strategi yang sama, forecast bulan itu) dan PP = forecast + buffer − stok awal. ' +
-    'Stok akhir boleh negatif (forecast tidak tertutup) dan tetap dibawa ke bulan berikutnya. Buffer manual hanya berlaku untuk ' + monthLabel(mos[0]) + '. Dipakai untuk memperkirakan pesanan bahan baku.</p>';
-  // bahan baku per bulan (summary first: this is what the order is based on)
+  // compact strip inside the Saran buffer panel (was a separate "Ringkasan proyeksi per bulan" section): totals per month;
+  // the per-group and per-SKU numbers for M+2 and M+3 are the columns at the right of the table below
   var all = agg(bm.rows), nP = mos.map(function (mo, i) { return bm.rows.filter(function (s) { return s.bf.hz[i] && s.bf.hz[i].pp > 0; }).length; });
-  h += '<table class="fct hzs"><thead><tr><th class="l">Total Serang</th>' + mos.map(function (mo, i) { return '<th class="num">' + monthLabel(mo) + ' <span class="sub">M+' + (i + 1) + '</span></th>'; }).join('') + '</tr></thead><tbody>' +
-    '<tr><td>Rencana produksi (karton)</td>' + all.map(function (a) { return num(a.n ? a.pp : null, 'hzpp'); }).join('') + '</tr>' +
-    '<tr><td>Rencana produksi (ton)</td>' + all.map(function (a) { return '<td class="num">' + (a.n ? fmt.format(Math.round(a.t * 10) / 10) : '–') + '</td>'; }).join('') + '</tr>' +
-    '<tr><td>Buffer (karton)</td>' + all.map(function (a) { return num(a.n ? a.buf : null); }).join('') + '</tr>' +
-    (RH ? '' : RM.map(function (r) { return '<tr class="rmr"><td>' + r[1] + ' (' + r[2] + ')</td>' + all.map(function (a) { return '<td class="num' + (a.rmN ? '' : ' dummy') + '">' + (a.rmN ? rmFmt(r[0], a.rm[r[0]]) : '–') + '</td>'; }).join('') + '</tr>'; }).join('') +
-      '<tr class="rmr"><td>SKU diproduksi tanpa BOM</td>' + all.map(function (a, i) { var k = bm.rows.filter(function (s) { var x = s.bf.hz[i]; return x && x.pp > 0 && !x.rm; }).length; return '<td class="num' + (k ? ' dummy' : '') + '">' + n(k) + ' dari ' + n(nP[i]) + '</td>'; }).join('') + '</tr>') +
-    '</tbody></table>';
-  if (!RH && !all.some(function (a) { return a.rmN; })) h += '<p class="sub" style="margin:4px 2px 10px">Bahan baku masih kosong: isi BOM (karton pcs, plastik kg, jumbo roll kg per karton) di <a href="#" data-goto="Master">Material master</a>. Kolom ini bisa disembunyikan dengan tombol <b>Sembunyikan bahan baku</b> di atas.</p>';
-  h += '<p class="sub" style="margin:4px 2px 10px">Rincian per famili dan SKU untuk ' + mos.map(monthLabel).join(', ') + ' ada di tabel Saran buffer di atas (kolom M+2, M+3 dan bahan baku di ujung kanan).</p>';
+  var how = 'Stok akhir ' + monthLabel(mos[0]) + ' = stok awal + rencana produksi (PP) − forecast, lalu menjadi stok awal ' + (mos[1] ? monthLabel(mos[1]) : 'bulan berikutnya') + '. Bulan itu dihitung buffer-nya sendiri (strategi yang sama) dan PP = forecast + buffer − stok awal. Stok akhir boleh negatif (forecast tidak tertutup). Buffer manual hanya berlaku untuk ' + monthLabel(mos[0]) + '.';
+  var hasRm = !RH && all.some(function (a) { return a.rmN; });
+  var h = '<table class="fct hzs"><thead><tr><th class="l">Total Serang per bulan <span class="v10-q" title="' + esc(how) + '" tabindex="0">?</span></th>' + mos.map(function (mo, i) { return '<th class="num">' + monthLabel(mo) + ' <span class="sub">M+' + (i + 1) + '</span></th>'; }).join('') + '</tr></thead><tbody>' +
+    '<tr><td>Rencana produksi</td>' + all.map(function (a, i) { return '<td class="num hzpp">' + (a.n ? n(Math.round(a.pp)) + ' <span class="sub">ctn · ' + fmt.format(Math.round(a.t * 10) / 10) + ' t · ' + nP[i] + ' SKU</span>' : '–') + '</td>'; }).join('') + '</tr>' +
+    '<tr><td>Buffer</td>' + all.map(function (a) { return '<td class="num">' + (a.n ? n(Math.round(a.buf)) + ' <span class="sub">ctn</span>' : '–') + '</td>'; }).join('') + '</tr>' +
+    '<tr><td>Stok akhir</td>' + all.map(function (a) { return '<td class="num' + (a.neg ? ' hzneg lamp-' + cls0 : '') + '"' + (a.neg ? ' title="' + a.neg + ' SKU stok akhirnya di bawah nol"' : '') + '>' + (a.n ? n(Math.round(a.end)) + (a.neg ? ' <span class="sub">' + a.neg + ' SKU &lt; 0</span>' : '') : '–') + '</td>'; }).join('') + '</tr>' +
+    (hasRm ? RM.map(function (r) { return '<tr class="rmr"><td>' + r[1] + ' (' + r[2] + ')</td>' + all.map(function (a) { return '<td class="num' + (a.rmN ? '' : ' dummy') + '">' + (a.rmN ? rmFmt(r[0], a.rm[r[0]]) : '–') + '</td>'; }).join('') + '</tr>'; }).join('') : '') +
+    '</tbody></table>' + (!RH && !hasRm ? '<span class="sub hzrm">Bahan baku belum dihitung: isi BOM di <a href="#" data-goto="Master">Material &amp; status</a>, atau sembunyikan kolomnya.</span>' : '');
   el.innerHTML = h;
 }
 // "Arti strategi": what each strategy means in plain words, with its backtest numbers next to it
@@ -3637,10 +3743,25 @@ function gbrCompute(job) {
     return { X: X, y: y };
   };
   var res = { bt: {}, fut: {}, n: {}, imp: null, qbt: {}, qfut: {} }; // q*: P90 from a quantile model (buffer)
+  var t0 = Date.now();
+  // error after 0..80 trees, in cartons (WAPE), on the rows the model learns from and on a month it has not seen
+  var curve = function (mdl, X, y) {
+    var p = new Float64Array(X.length).fill(mdl.base), out = [], sumY = 0, i;
+    for (i = 0; i < y.length; i++) sumY += Math.expm1(y[i]);
+    var err = function () { var a = 0; for (var j = 0; j < y.length; j++) a += Math.abs(Math.max(0, Math.expm1(p[j])) - Math.expm1(y[j])); return sumY ? a / sumY * 100 : null; };
+    out.push(err());
+    mdl.trees.forEach(function (tr) { for (var j = 0; j < X.length; j++) p[j] += GBR.lr * gbmLeaf(tr, X[j]); out.push(err()); });
+    return out;
+  };
   // walk-forward backtest, one month ahead
   for (var b = Math.max(1, K - GBR.btMonths); b < K; b++) {
     var d = rows(1, b); if (d.X.length < GBR.minRows) continue;
     var mdl = gbmFit(d.X, d.y), mq = gbmFit(d.X, d.y, GBR.tau), mo = cms[b];
+    if (b === K - 1) { // last backtest month: learning curve on training rows vs the unseen month
+      var tX = [], tY = [];
+      skus.forEach(function (s) { var yy = s.oi[mo]; if (yy === undefined || yy === null || (s.off && s.off[mo]) || !hasHist(s, b)) return; tX.push(gbrFeat(s, cms, b, mo, s.hq[mo], Rs, catMean)); tY.push(lg(yy)); });
+      res.viz = res.viz || {}; res.viz.lc = { month: mo, nTrain: d.X.length, nTest: tX.length, train: curve(mdl, d.X, d.y), test: tX.length ? curve(mdl, tX, tY) : null };
+    }
     skus.forEach(function (s) {
       if (!hasHist(s, b)) return; var x = gbrFeat(s, cms, b, mo, s.hq[mo], Rs, catMean);
       (res.bt[s.key] = res.bt[s.key] || {})[mo] = Math.max(0, Math.expm1(gbmPredict(mdl, x)));
@@ -3651,15 +3772,17 @@ function gbrCompute(job) {
   var last = null;
   job.future.forEach(function (fm, i) {
     var h = i + 1, d = rows(h, K), mdl = d.X.length >= GBR.minRows ? gbmFit(d.X, d.y) : null;
-    if (mdl) { last = mdl; res.n[fm] = d.X.length; if (h === 1) res.imp = gbrImportance(mdl); } else { mdl = last; res.n[fm] = last ? 'dari horizon lebih pendek' : 0; }
+    if (mdl) { last = mdl; res.n[fm] = d.X.length; if (h === 1) { res.imp = gbrImportance(mdl); res.viz = res.viz || {}; res.viz.base = mdl.base; res.viz.trees = mdl.trees; res.viz.nRows = d.X.length; res.viz.month = fm; res.viz.x = {}; if (!res.viz.lc) res.viz.lc = { month: null, nTrain: d.X.length, nTest: 0, train: curve(mdl, d.X, d.y), test: null }; } } else { mdl = last; res.n[fm] = last ? 'dari horizon lebih pendek' : 0; }
     if (!mdl) return;
     var mq = h === 1 && d.X.length >= GBR.minRows ? gbmFit(d.X, d.y, GBR.tau) : null; // buffer month only
     skus.forEach(function (s) {
       if (!hasHist(s, K)) return; var x = gbrFeat(s, cms, K, fm, s.fhq[fm], Rs, catMean);
       (res.fut[s.key] = res.fut[s.key] || {})[fm] = Math.max(0, Math.expm1(gbmPredict(mdl, x)));
+      if (h === 1 && res.viz && res.viz.x) res.viz.x[s.key] = x; // feature values of each SKU, to walk it through the trees
       if (mq) (res.qfut[s.key] = res.qfut[s.key] || {})[fm] = Math.max(0, Math.expm1(gbmPredict(mq, x)));
     });
   });
+  if (res.viz) { res.viz.ms = Date.now() - t0; res.viz.btMonths = Object.keys(res.bt).length ? Object.keys(res.bt[Object.keys(res.bt)[0]] || {}).length : 0; res.viz.K = K; res.viz.nSku = skus.length; }
   return res;
 }
 // ---- regressor training off the main thread ----
@@ -3874,6 +3997,32 @@ function aiNotes(s, m) {
   if (s.cls && s.cls.mis) out.push(['', 'Kelas HQ ' + s.cls.mis + ', tetapi volume order in ' + n(Math.round(s.cls.vol)) + ' masuk kelas ' + s.cls.abc + '.']);
   return out;
 }
+// 👁 Sugesti for a group row (brand, category, family or any grouping): the group's M+1 HQ vs AI, then which SKUs
+// inside it carry the warnings, so the planner sees where to look without opening every group. Returns HTML notes.
+function grpNotes(f, a, m) {
+  var out = [], f1 = m.future[0], L = m.latest, sk = f.skus || [], loaded = f1 && m.fms.indexOf(f1) >= 0;
+  var hq = a.both[f1] ? a.both[f1].hq : null, ml = a.both[f1] ? a.both[f1].ml : null;
+  if (loaded && hq !== null && ml > 0) {
+    var g = (hq - ml) / ml * 100, ab = Math.abs(g);
+    var o3 = m.past.slice(-3).map(function (mo) { return a.oi[mo]; }).filter(function (v) { return typeof v === 'number'; });
+    var up = o3.length > 1 ? o3[o3.length - 1] - o3[0] : 0;
+    if (ab >= 10) out.push([ab >= 20 ? 'warn' : '', esc((g > 0 ? '▼ ' : '▲ ') + monthLabel(f1) + ': HQ grup ' + n(Math.round(hq)) + ' vs AI ' + n(Math.round(ml)) + ' (HQ ' + pctS(g) + ').' + (o3.length > 1 ? ' Order in ' + o3.map(n).join(' → ') + '.' : '') + ' Sugesti: ' +
+      (g > 0 ? (up < 0 ? 'order in turun, HQ grup ini kemungkinan terlalu tinggi; cek SKU di bawah sebelum menambah buffer.' : 'HQ di atas AI; tahan buffer grup ini dan pantau minggu 1.') : (up > 0 ? 'order in naik, HQ grup ini kemungkinan terlalu rendah; pertimbangkan buffer lebih.' : 'HQ di bawah AI; pantau SKU yang paling jauh di bawah.')))]);
+    else out.push(['ok', esc('≈ ' + monthLabel(f1) + ': HQ dan AI sejalan (' + pctS(g) + ').')]);
+  }
+  var far = sk.filter(function (s) { var q = loaded ? s.fhq[f1] : undefined, v = s.ml && s.ml[f1]; return typeof q === 'number' && v > 0 && Math.abs(q - v) / v >= 0.2; })
+    .sort(function (x, y) { return Math.abs(y.fhq[f1] - y.ml[f1]) - Math.abs(x.fhq[f1] - x.ml[f1]); });
+  var vit = sk.filter(function (s) { return s.vital; }), noHq = loaded && L ? sk.filter(function (s) { return typeof s.fhq[f1] !== 'number' && (s.oi[L] || 0) > 0; }) : [], cek = sk.filter(function (s) { return s.status === 'cek'; });
+  // one line of counts; the SKU names are in the tooltip (open the group to see them in their rows)
+  var nm = function (l) { return l.slice(0, 6).map(function (s) { return s.name || s.nomat || s.key; }).join(', ') + (l.length > 6 ? ', +' + (l.length - 6) : ''); };
+  var bits = [];
+  if (vit.length) bits.push('<span title="' + esc(nm(vit)) + '">⚑ ' + vit.length + ' vital</span>');
+  if (far.length) bits.push('<span title="' + esc(nm(far)) + '">' + far.length + ' HQ vs AI ≥ 20%</span>');
+  if (noHq.length) bits.push('<span title="' + esc(nm(noHq)) + '">' + noHq.length + ' tanpa HQ</span>');
+  if (cek.length) bits.push('<span title="' + esc(nm(cek)) + '">' + cek.length + ' perlu cek</span>');
+  if (bits.length) out.push([noHq.length ? 'bad' : vit.length ? 'warn' : '', 'SKU di grup ini: ' + bits.join(' · ') + (f.brandRow ? '' : '. Buka grup untuk rinciannya.')]);
+  return out;
+}
 // ⚑ Vital SKUs: the few SKUs that drive forecast accuracy. Ranked by their share of the total |Forecast HQ − order in|
 // over the last 3 closings (top SKUs up to 60% of it, each ≥ 5%), plus large SKUs whose M+1 HQ and AI differ ≥ 20%
 // or that have no HQ. Advice: mark for review in Saran buffer, or study the history first when the history itself
@@ -3978,14 +4127,46 @@ function openSku(key) {
 // regroups the view only (buffer, regressor and ensemble keep the model groups).
 function skuJenis(s) { return jenisOf(matKey(s), s, s.status === 'diganti' ? 1 : null); }
 function attrOf(s, col) { return col === '@jenis' ? JENIS[skuJenis(s)] : (s.free || {})[col]; }
-function fcGroups(m) {
-  var col = state.fcGrp; if (!col || (col !== '@jenis' && fcols().indexOf(col) < 0)) return m.fams;
-  var g = {}, out = [], add = function (s, ex) { var v = attrOf(s, col) || '(kosong)', k = 'free:' + col + ':' + v; if (!g[k]) { g[k] = { key: k, name: (col === '@jenis' ? 'Jenis SKU' : col) + ': ' + v, brand: '', base: v, skus: [], excl: [], weight: 0 }; out.push(g[k]); } if (ex) g[k].excl.push(s); else { g[k].skus.push(s); g[k].weight += s.weight || 0; } };
+// View grouping, shared by Forecast and Saran buffer (state.fcGrp / state.bfGrp):
+//   ''      = Brand › Kategori (the model's groups, under a Brand header row) · '@family' = Brand › Famili closing (same, by family)
+//   '@brand' = Brand only · '@cat' = Kategori only · '@jenis' = Jenis SKU · any free column of Material master.
+// Only '' and '@family' are the model's groups (buffer error spread, regressor category mean); the others regroup the view.
+function grpCols() { return ['@brand', '@cat', '@jenis'].concat(fcols()); }
+function grpName(c) { return { '@brand': 'Brand', '@cat': 'Kategori', '@jenis': 'Jenis SKU' }[c] || c; }
+function grpAttr(s, col) { return col === '@brand' ? (s.brand ? titleCase(String(s.brand)) : '') : col === '@cat' ? (s.category ? titleCase(String(s.category)) : '') : attrOf(s, col); }
+function grpOptions(cur) {
+  return '<option value=""' + (!cur && state.grpMode !== 'family' ? ' selected' : '') + '>Kelompok: Brand › Kategori</option><option value="@family"' + (!cur && state.grpMode === 'family' ? ' selected' : '') + '>Kelompok: Brand › Famili closing</option>' +
+    grpCols().map(function (c) { return '<option value="' + esc(c) + '"' + (cur === c ? ' selected' : '') + '>Kelompok: ' + esc(grpName(c)) + '</option>'; }).join('');
+}
+function fcGroups(m, colIn) {
+  var col = colIn === undefined ? state.fcGrp : colIn; if (!col || grpCols().indexOf(col) < 0) return m.fams;
+  var g = {}, out = [], add = function (s, ex) { var v = grpAttr(s, col) || '(kosong)', k = 'free:' + col + ':' + v; if (!g[k]) { g[k] = { key: k, name: (col === '@brand' || col === '@cat' ? '' : grpName(col) + ': ') + v, brand: '', base: v, skus: [], excl: [], weight: 0, view: true }; out.push(g[k]); } if (ex) g[k].excl.push(s); else { g[k].skus.push(s); g[k].weight += s.weight || 0; } };
   m.skus.forEach(function (s) { add(s, false); }); (m.excl || []).forEach(function (s) { add(s, true); });
   out.sort(function (a, b) { return (a.base === '(kosong)') - (b.base === '(kosong)') || b.weight - a.weight; });
   out.forEach(function (f) { f.skus.sort(function (a, b) { return b.weight - a.weight; }); });
   return out;
 }
+// Filters shared by Forecast and Saran buffer: Brand, Kategori, Jenis SKU / free column (one select), grouping.
+// p = id prefix ('fc' or 'bf'); returns pass(sku) and whether any filter is on.
+function grpFilterUI(p, m) {
+  var optB = {}, optC = {}; m.all.forEach(function (x) { if (x.brand) optB[x.brand] = 1; if (x.category) optC[x.category] = 1; });
+  var fillSel = function (id, o, cur, all) { var el = $(id), keys = Object.keys(o).sort(); if (cur && !o[cur]) cur = ''; el.innerHTML = '<option value="">' + all + '</option>' + keys.map(function (k) { return '<option' + (k === cur ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join(''); return cur; };
+  var fb = fillSel(p + 'Brand', optB, state[p + 'Brand'] || '', 'Semua brand'), fc2 = fillSel(p + 'Cat', optC, state[p + 'Cat'] || '', 'Semua kategori'); state[p + 'Brand'] = fb; state[p + 'Cat'] = fc2;
+  var FC = ['@jenis'].concat(fcols()), fv = state[p + 'Free'] || '', fvc = fv ? fv.split('\u0001') : null;
+  if (fvc && FC.indexOf(fvc[0]) < 0) { fv = ''; fvc = null; }
+  $(p + 'Free').hidden = false;
+  $(p + 'Free').innerHTML = '<option value="">Semua ' + FC.map(grpName).join(' / ') + '</option>' + FC.map(function (c) {
+    var vals = uniq(m.all.map(function (x) { return attrOf(x, c); }));
+    return '<optgroup label="' + esc(grpName(c)) + '">' + vals.concat(c === '@jenis' ? [] : ['\u0002']).map(function (v) { var k = c + '\u0001' + v; return '<option value="' + esc(k) + '"' + (k === fv ? ' selected' : '') + '>' + esc(grpName(c) + ': ' + (v === '\u0002' ? '(kosong)' : v)) + '</option>'; }).join('') + '</optgroup>';
+  }).join('');
+  state[p + 'Free'] = fv;
+  if (state[p + 'Grp'] && grpCols().indexOf(state[p + 'Grp']) < 0) state[p + 'Grp'] = '';
+  $(p + 'Grp').innerHTML = grpOptions(state[p + 'Grp'] || '');
+  var passFree = function (x) { if (!fvc) return true; var v = attrOf(x, fvc[0]); return fvc[1] === '\u0002' ? !v : v === fvc[1]; };
+  return { pass: function (x) { return (!fb || x.brand === fb) && (!fc2 || x.category === fc2) && passFree(x); }, on: !!(fb || fc2 || fvc) };
+}
+// Brand header rows over the model's groups (Brand › Kategori / Brand › Famili): one row per brand with its total.
+function brandOf(f) { return f.brand ? titleCase(f.brand) : 'Tanpa brand'; }
 function skuTags(s, m) {
   var t = [];
   if (s.refFrom && !s.refFrom.missing) t.push('<span class="pill p-acc" title="Order in Nomat ' + esc(s.refFrom.s.nomat || s.refFrom.s.key) + ' × ' + s.refFrom.pct + '% dipakai model untuk ' + s.refFrom.n + ' bulan sebelum order in SKU ini sendiri">histori dari ' + esc(s.refFrom.s.nomat || s.refFrom.s.key) + (s.refFrom.pct !== 100 ? ' × ' + s.refFrom.pct + '%' : '') + '</span>');
@@ -4084,7 +4265,7 @@ function renderForecastScreen(c) {
       t += (isSku ? edCell(s, 'fhq', mo, q, ' sep') : '<td class="num sep">' + (loaded ? n(q) : '<span class="sub">belum ada</span>') + '</td>') + '<td class="num ml"' + tip + '>' + n(mlv) + '</td><td' + (isSku ? ' class="sgc" data-sku="' + esc(s.key) + '"' : '') + '>' + sig + '</td>';
     });
     return t + '<td class="v-ai"' + (isSku ? ' data-sku="' + esc(s.key) + '" title="Klik untuk rincian SKU"' : '') + '>' + (isSku && s.vital ? '<div class="v-note vital"><b>⚑ Vital #' + s.vital.rank + '</b> ' + esc(s.vital.why.join('; ')) + '. <b>Sugesti AI:</b> ' + esc(vitalAdvice(s)) +
-      '<span class="vbtns"><button type="button" data-rv="' + esc(s.key) + '">' + ((state.bufReview || {})[s.key] ? '✓ Ditandai' : '⚑ Tandai tinjau') + '</button><button type="button" data-vhist="' + esc(s.key) + '">Pelajari histori</button></span></div>' : '') + (isSku ? aiNotes(s, m).map(function (x) { return '<div class="v-note ' + x[0] + '">' + esc(x[1]) + '</div>'; }).join('') : '') + '</td>';
+      '<span class="vbtns"><button type="button" data-rv="' + esc(s.key) + '">' + ((state.bufReview || {})[s.key] ? '✓ Ditandai' : '⚑ Tandai tinjau') + '</button><button type="button" data-vhist="' + esc(s.key) + '">Pelajari histori</button></span></div>' : '') + (isSku ? aiNotes(s, m).map(function (x) { return '<div class="v-note ' + x[0] + '">' + esc(x[1]) + '</div>'; }).join('') : s && s.skus ? grpNotes(s, a, m).map(function (x) { return '<div class="v-note g ' + x[0] + '">' + x[1] + '</div>'; }).join('') : '') + '</td>';
   };
   var skuRow = function (s, ex) {
     var st = STATUS[s.status], why = s.hits.map(function (x) { return x.why; }).join('; ');
@@ -4092,37 +4273,29 @@ function renderForecastScreen(c) {
     var rv = (state.bufReview || {})[s.key];
     return '<tr class="sku' + (ex ? ' excl' : '') + (s.vital ? ' vital' : '') + '"><td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + (rv ? '<button type="button" class="rvchip" data-rv="' + esc(s.key) + '" title="Ditandai untuk ditinjau di Saran buffer. Klik untuk hapus tanda.">⚑ tinjau ✕</button>' : '') + esc(s.nomat || 'tanpa Nomat') + (s.art ? ' · ' + esc(s.art) : '') + pill + skuTags(s, m) + '</span></td>' + cells(null, true, s) + '</tr>';
   };
-  var optB = {}, optC = {}; m.all.forEach(function (x) { if (x.brand) optB[x.brand] = 1; if (x.category) optC[x.category] = 1; });
-  var fillSel = function (id, o, cur, all) { var el = $(id), keys = Object.keys(o).sort(); if (cur && !o[cur]) cur = ''; el.innerHTML = '<option value="">' + all + '</option>' + keys.map(function (k) { return '<option' + (k === cur ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join(''); return cur; };
-  var fb = fillSel('fcBrand', optB, state.fcBrand || '', 'Semua brand'), fc2 = fillSel('fcCat', optC, state.fcCat || '', 'Semua kategori'); state.fcBrand = fb; state.fcCat = fc2;
   var vo = !!state.fcVitalOnly; $('fcVitalOnly').checked = vo;
-  // free columns (Material master): one filter (column: value) and a grouping choice
-  var FC = ['@jenis'].concat(fcols()), fv = state.fcFree || '', fvc = fv ? fv.split('\u0001') : null, cname = function (c) { return c === '@jenis' ? 'Jenis SKU' : c; };
-  if (fvc && FC.indexOf(fvc[0]) < 0) { fv = ''; fvc = null; }
-  $('fcFree').hidden = false;
-  $('fcFree').innerHTML = '<option value="">Semua ' + FC.map(cname).join(' / ') + '</option>' + FC.map(function (c) {
-    var vals = uniq(m.all.map(function (x) { return attrOf(x, c); }));
-    return '<optgroup label="' + esc(cname(c)) + '">' + vals.concat(c === '@jenis' ? [] : ['\u0002']).map(function (v) { var k = c + '\u0001' + v; return '<option value="' + esc(k) + '"' + (k === fv ? ' selected' : '') + '>' + esc(cname(c) + ': ' + (v === '\u0002' ? '(kosong)' : v)) + '</option>'; }).join('') + '</optgroup>';
-  }).join('');
-  state.fcFree = fv;
-  if (state.fcGrp && FC.indexOf(state.fcGrp) < 0) state.fcGrp = '';
-  $('fcGrp').innerHTML = '<option value="">Kelompok: Brand · Kategori</option><option value="@family"' + (!state.fcGrp && state.grpMode === 'family' ? ' selected' : '') + '>Kelompok: Brand · Famili closing</option>' + FC.map(function (c) { return '<option value="' + esc(c) + '"' + (state.fcGrp === c ? ' selected' : '') + '>Kelompok: ' + esc(cname(c)) + '</option>'; }).join('');
-  var passFree = function (x) { if (!fvc) return true; var v = attrOf(x, fvc[0]); return fvc[1] === '\u0002' ? !v : v === fvc[1]; };
-  var pass = function (x) { return (!fb || x.brand === fb) && (!fc2 || x.category === fc2) && (!vo || x.vital) && passFree(x); };
-  var lim = state.fcAll ? Infinity : 10, fq = normName(state.fcQ), nHit = 0, flt = !!(fq || fb || fc2 || vo || fvc);
+  var GF = grpFilterUI('fc', m), fvc = GF.on;
+  var pass = function (x) { return GF.pass(x) && (!vo || x.vital); };
+  var lim = state.fcAll ? Infinity : 10, fq = normName(state.fcQ), nHit = 0, flt = !!(fq || vo || fvc), BH = !state.fcGrp, lastB = null, OB = state.fcOpenB || (state.fcOpenB = {});
   fcGroups(m).forEach(function (f) {
     var hitS = flt ? f.skus.filter(function (x) { return pass(x) && skuMatch(x, fq); }) : null, hitE = flt ? f.excl.filter(function (x) { return pass(x) && skuMatch(x, fq); }) : null;
     if (flt) {
       if (!hitS.length && !hitE.length) return;
       nHit += hitS.length + hitE.length;
-      h += '<tr class="fam"><td><div class="fl"><button type="button" class="exp" disabled aria-expanded="true">▼</button><div>' + esc(f.name) + '<span class="code">' + (hitS.length + hitE.length) + ' cocok dari ' + (f.skus.length + f.excl.length) + ' SKU</span></div></div></td>' + cells(aggr(f.skus, m), false) + '</tr>';
+      h += '<tr class="fam"><td><div class="fl"><button type="button" class="exp" disabled aria-expanded="true">▼</button><div>' + esc(f.name) + '<span class="code">' + (hitS.length + hitE.length) + ' cocok dari ' + (f.skus.length + f.excl.length) + ' SKU</span></div></div></td>' + cells(aggr(f.skus, m), false, f) + '</tr>';
       hitS.forEach(function (s) { h += skuRow(s, false); }); hitE.forEach(function (s) { h += skuRow(s, true); });
       return;
     }
     if (!f.skus.length && !(state.fcShowExcl && f.excl.length)) return;
+    if (BH && f.brand !== lastB) {
+      lastB = f.brand; var bs = []; fcGroups(m).forEach(function (g) { if (g.brand === f.brand) bs = bs.concat(g.skus); });
+      var bo = OB[f.brand] !== false;
+      h += '<tr class="fam brandr"><td><div class="fl"><button type="button" class="exp" data-fbrand="' + esc(f.brand) + '" aria-expanded="' + bo + '">' + (bo ? '▼' : '▶') + '</button><div>' + esc(brandOf(f)) + '<span class="code">Brand · ' + bs.length + ' SKU</span></div></div></td>' + cells(aggr(bs, m), false, { skus: bs, brandRow: true }) + '</tr>';
+    }
+    if (BH && OB[f.brand] === false) return;
     var open = !!state.fcOpen[f.key], top = f.skus.slice(0, lim), nCek = f.skus.filter(function (x) { return x.status === 'cek'; }).length;
     h += '<tr class="fam"><td><div class="fl"><button type="button" class="exp" data-fam="' + esc(f.key) + '" aria-expanded="' + open + '" aria-label="' + (open ? 'Tutup ' : 'Buka ') + esc(f.name) + '">' + (open ? '▼' : '▶') + '</button><div>' + esc(f.name) +
-      '<span class="code">' + (f.skus.length > lim ? lim + ' SKU teratas dari ' + f.skus.length : f.skus.length + ' SKU') + (nCek ? ' · ' + nCek + ' perlu cek' : '') + (f.excl.length ? ' · ' + f.excl.length + ' dikecualikan' : '') + '</span></div></div></td>' + cells(aggr(f.skus, m), false) + '</tr>';
+      '<span class="code">' + (f.skus.length > lim ? lim + ' SKU teratas dari ' + f.skus.length : f.skus.length + ' SKU') + (nCek ? ' · ' + nCek + ' perlu cek' : '') + (f.excl.length ? ' · ' + f.excl.length + ' dikecualikan' : '') + '</span></div></div></td>' + cells(aggr(f.skus, m), false, f) + '</tr>';
     if (open) {
       top.forEach(function (s) { h += skuRow(s, false); });
       if (f.skus.length > lim) h += '<tr class="more"><td colspan="' + (5 + np * 3 + nf * 3) + '">+' + (f.skus.length - lim) + ' SKU lainnya sudah termasuk di baris famili. Pilih "Semua SKU" untuk melihatnya.</td></tr>';
@@ -4360,8 +4533,9 @@ function openChart(kind) {
       '. Bobot per SKU = 1 ÷ (error uji mundur model itu + 0,05)², ditarik ke error kategori dan ke bobot sama rata bila bulan masih sedikit. Regressor: gradient-boosted trees, satu model untuk semua SKU' + (imp ? ' (fitur terpenting: ' + imp + ')' : ' (belum cukup data untuk dilatih: minimal ' + GBR.minRows + ' baris SKU-bulan)') + '. ' +
       (m.chr && m.chr.model ? 'Chronos: ' + m.chr.model + (m.chr.origin ? ' dari closing ' + monthLabel(m.chr.origin) : '') + (m.chr.stale ? ' (ada hasil dari closing lama, tidak dipakai)' : '') + '. ' : 'Chronos: belum ada hasil (jalankan ingest/forecast_chronos.py, lalu tarik CSV-nya ke halaman). ') +
       (m.bt.length < 3 ? 'Baru ' + m.bt.length + ' bulan uji, jadi anggap ini indikasi awal.' : '');
+    below = '<p><button type="button" class="v-btn sm" data-mlviz="1">🧠 Lihat cara Forecast AI belajar →</button></p>';
     var wcol = function (k) { return function (r) { var i = r.s.mlInfo[f1c]; return i[k] === null || i[k] === undefined ? '<span class="sub">–</span>' : n(Math.round(i[k])) + ' <span class="sub">' + Math.round((i.wts[k] || 0) * 100) + '%</span>'; }; };
-    below = contribTable(rows6, [['Forecast HQ ' + monthLabel(f1c), function (r) { return r.s.fhq[f1c]; }], ['Ensemble AI', function (r) { return r.s.ml[f1c]; }]].concat(MODEL_KEYS.map(function (k) { return [MODELS[k] + ' (bobot)', wcol(k), 'html']; }))
+    below += contribTable(rows6, [['Forecast HQ ' + monthLabel(f1c), function (r) { return r.s.fhq[f1c]; }], ['Ensemble AI', function (r) { return r.s.ml[f1c]; }]].concat(MODEL_KEYS.map(function (k) { return [MODELS[k] + ' (bobot)', wcol(k), 'html']; }))
       .concat([['HQ − AI', function (r) { return r.v; }, 1]]), 'Beda HQ vs AI, terbesar dulu · ' + monthLabel(f1c), { f: 'fhq', m: f1c });
   } else return;
   spec.title = title;
@@ -4376,6 +4550,134 @@ function openChart(kind) {
   bindChart();
   var dlg = $('chDlg');
   if (dlg.showModal) { if (!dlg.open) dlg.showModal(); } else dlg.setAttribute('open', '');
+}
+
+/* ---------- "Cara Forecast AI belajar": the regressor's training, made visible ----------
+   Everything shown comes from the model that was just trained in this browser (Web Worker): its 80 trees, the error
+   after each tree, the feature values of each SKU and the ensemble weights. Nothing here is a mock-up. */
+var MLV = { t: 1, sku: null };
+var GBR_LOGF = { 0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 6: 1, 7: 1 }; // features stored as log(1 + cartons)
+function mlvThr(f, t) {
+  if (GBR_LOGF[f]) return n(Math.round(Math.expm1(t))) + ' ctn';
+  if (f === 5) return '×' + fmt.format(Math.round(t * 100) / 100);
+  if (f === 8) return 'bulan ' + Math.round(t);
+  if (f === 9) return Math.round(t) + ' bln';
+  return fmt.format(Math.round(t * 100) / 100);
+}
+function mlvVal(f, v) { if (v === -1 && f !== 5) return 'kosong'; return mlvThr(f, v); }
+function mlvPct(v) { var p = (Math.exp(GBR.lr * v) - 1) * 100; return (p >= 0 ? '+' : '−') + fmt.format(Math.abs(Math.round(p * 10) / 10)) + '%'; }
+// prediction of one SKU after the first k trees (cartons)
+function mlvPath(V, x) { var p = V.base, out = [Math.max(0, Math.expm1(p))]; V.trees.forEach(function (tr) { p += GBR.lr * gbmLeaf(tr, x); out.push(Math.max(0, Math.expm1(p))); }); return out; }
+function mlvLine(series, opt) {
+  var W = 760, H = opt.h || 210, L = 52, Rr = 14, T = 14, B = 30, pw = W - L - Rr, ph = H - T - B, all = [];
+  series.forEach(function (s) { s.v.forEach(function (v) { if (typeof v === 'number' && isFinite(v)) all.push(v); }); });
+  if (!all.length) return '';
+  var hi = Math.max.apply(null, all), lo = opt.zero ? 0 : Math.min.apply(null, all); if (hi === lo) hi = lo + 1;
+  var ticks = niceTicks(lo, hi); lo = ticks[0]; hi = ticks[ticks.length - 1];
+  var nX = series[0].v.length, x = function (i) { return L + i / Math.max(1, nX - 1) * pw; }, y = function (v) { return T + ph - (v - lo) / (hi - lo) * ph; };
+  var mut = cssVar('--muted'), grid = cssVar('--line-soft');
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block" role="img" aria-label="' + esc(opt.title || '') + '">';
+  ticks.forEach(function (t) { s += '<line x1="' + L + '" x2="' + (L + pw) + '" y1="' + y(t) + '" y2="' + y(t) + '" stroke="' + grid + '"/><text x="' + (L - 6) + '" y="' + (y(t) + 4) + '" text-anchor="end" font-size="11" fill="' + mut + '">' + esc(opt.tick ? opt.tick(t) : shortN(t)) + '</text>'; });
+  (opt.xt || []).forEach(function (i) { s += '<text x="' + x(i) + '" y="' + (H - 10) + '" text-anchor="middle" font-size="11" fill="' + mut + '">' + esc(opt.xl ? opt.xl(i) : i) + '</text>'; });
+  if (opt.mark !== undefined) s += '<line x1="' + x(opt.mark) + '" x2="' + x(opt.mark) + '" y1="' + T + '" y2="' + (T + ph) + '" stroke="' + cssVar('--acc') + '" stroke-width="1.5" stroke-dasharray="4 3"/>';
+  series.forEach(function (sr, si) {
+    var d = '', pen = false; sr.v.forEach(function (v, i) { if (typeof v !== 'number' || !isFinite(v)) { pen = false; return; } d += (pen ? 'L' : 'M') + x(i).toFixed(1) + ',' + y(v).toFixed(1); pen = true; });
+    s += '<path d="' + d + '" fill="none" stroke="' + sr.c + '" stroke-width="2.2"' + (sr.dash ? ' stroke-dasharray="6 4"' : '') + '/>';
+    var li = sr.v.length - 1; if (typeof sr.v[li] === 'number') s += '<text x="' + (x(li) - 4) + '" y="' + (y(sr.v[li]) + (si ? 16 : -7)) + '" text-anchor="end" font-size="11.5" font-weight="700" fill="' + sr.c + '">' + esc(sr.name + ' ' + (opt.tick ? opt.tick(sr.v[li]) : n(Math.round(sr.v[li])))) + '</text>';
+    if (opt.mark !== undefined && typeof sr.v[opt.mark] === 'number') s += '<circle cx="' + x(opt.mark) + '" cy="' + y(sr.v[opt.mark]) + '" r="4.5" fill="' + sr.c + '" stroke="' + cssVar('--panel') + '" stroke-width="2"/>';
+  });
+  return s + '</svg>';
+}
+// one tree (depth ≤ 3) as a diagram; the path of the chosen SKU is highlighted
+function mlvTree(tr, x) {
+  var W = 760, lvH = 62, nodes = [], edges = [];
+  var walk = function (t, d, lo, hi, on) {
+    var cx = (lo + hi) / 2, cy = 24 + d * lvH, id = nodes.length; nodes.push({ t: t, x: cx, y: cy, on: on, d: d });
+    if (t.v !== undefined) return id;
+    var goL = x ? x[t.f] <= t.t : false;
+    var a = walk(t.l, d + 1, lo, cx, on && goL), b = walk(t.r, d + 1, cx, hi, on && !goL);
+    edges.push([id, a, on && goL, 'ya']); edges.push([id, b, on && !goL, 'tidak']);
+    return id;
+  };
+  walk(tr, 0, 0, W, !!x);
+  var depth = Math.max.apply(null, nodes.map(function (q) { return q.d; })), H = 24 + depth * lvH + 40;
+  var acc = cssVar('--acc'), line = cssVar('--line'), mut = cssVar('--muted'), ink = cssVar('--fg'), pan = cssVar('--panel'), soft = cssVar('--acc2') || cssVar('--accent-soft');
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block" role="img" aria-label="Pohon keputusan">';
+  edges.forEach(function (e) { var p = nodes[e[0]], c = nodes[e[1]]; s += '<line x1="' + p.x + '" y1="' + (p.y + 13) + '" x2="' + c.x + '" y2="' + (c.y - 13) + '" stroke="' + (e[2] ? acc : line) + '" stroke-width="' + (e[2] ? 3 : 1.5) + '"/><text x="' + ((p.x + c.x) / 2 + (c.x < p.x ? -6 : 6)) + '" y="' + ((p.y + c.y) / 2 + 2) + '" font-size="10" text-anchor="' + (c.x < p.x ? 'end' : 'start') + '" fill="' + mut + '">' + e[3] + '</text>'; });
+  nodes.forEach(function (q) {
+    var leaf = q.t.v !== undefined, txt = leaf ? mlvPct(q.t.v) : GBR_FEATS[q.t.f] + ' ≤ ' + mlvThr(q.t.f, q.t.t), w = Math.min(leaf ? 70 : 220, Math.max(60, txt.length * 6.2 + 16));
+    var max = W / Math.pow(2, q.d) - 8; if (!leaf && w > max) { w = max; }
+    s += '<rect x="' + (q.x - w / 2) + '" y="' + (q.y - 13) + '" width="' + w + '" height="26" rx="7" fill="' + (q.on ? soft : pan) + '" stroke="' + (q.on ? acc : line) + '" stroke-width="' + (q.on ? 2 : 1) + '"/>' +
+      '<text x="' + q.x + '" y="' + (q.y + 4) + '" font-size="' + (leaf ? 12 : 10.5) + '" text-anchor="middle" fill="' + (leaf ? (q.t.v >= 0 ? cssVar('--ok') : cssVar('--bad')) : ink) + '" font-weight="' + (leaf || q.on ? 700 : 400) + '">' + esc(leaf || txt.length * 6.2 + 16 <= w ? txt : txt.slice(0, Math.floor((w - 16) / 6.2) - 1) + '…') + '<title>' + esc(txt) + '</title></text>';
+  });
+  return s + '</svg>';
+}
+function openMlViz() {
+  var m = CH.model; if (!m) return;
+  var G = m.gbr || {}, V = G.viz, dlg = $('chDlg');
+  $('chTitle').textContent = 'Cara Forecast AI belajar';
+  if (!V || !V.trees) {
+    $('chBody').innerHTML = '<p class="note">' + (GBRW.busy ? 'Regressor sedang dilatih di latar. Tampilan ini terbuka sendiri setelah selesai.' : 'Regressor belum dilatih: butuh minimal ' + GBR.minRows + ' baris SKU-bulan (biasanya 2 closing atau lebih).') + '</p>' + mlvHonest();
+    if (GBRW.busy) gbrReady(openMlViz);
+  } else {
+    var f1 = V.month, skus = m.skus.filter(function (s) { return V.x[s.key]; }).sort(function (a, b) { return (b.weight || 0) - (a.weight || 0); });
+    if (!MLV.sku || !V.x[MLV.sku]) MLV.sku = skus.length ? skus[0].key : null;
+    MLV.t = Math.min(Math.max(1, MLV.t), V.trees.length);
+    var s1 = cssVar('--s1'), s2 = cssVar('--s2'), s3 = cssVar('--s3');
+    // 1. pipeline
+    var wt = {}, wn = 0; m.skus.forEach(function (s) { var i = s.mlInfo && s.mlInfo[f1]; if (!i || !i.wts) return; wn++; Object.keys(i.wts).forEach(function (k) { wt[k] = (wt[k] || 0) + (i.wts[k] || 0); }); });
+    var box = function (t, b, sub) { return '<div class="mlb"><b>' + t + '</b><span>' + b + '</span>' + (sub ? '<small>' + sub + '</small>' : '') + '</div>'; };
+    var h = '<p class="note">Semua di bawah ini diambil dari model yang baru saja dilatih <b>di browser ini</b> (di latar, Web Worker' + (V.ms >= 100 ? ', ' + fmt.format(Math.round(V.ms / 100) / 10) + ' detik' : ', kurang dari 0,1 detik') + '), bukan gambar contoh. Datanya tidak dikirim ke server.</p>' +
+      '<h3 class="mlh">1 · Alurnya</h3><div class="mlflow">' +
+      box('Data', n(V.nSku) + ' SKU × ' + V.K + ' closing', 'order in, Forecast HQ, stok') + '<i>→</i>' +
+      box('Fitur', GBR_FEATS.length + ' angka per SKU-bulan', 'order in 3 bln terakhir, Forecast HQ, bias HQ, bulan, …') + '<i>→</i>' +
+      box('Baris latih', n(V.nRows) + ' contoh', 'target: log(1 + order in) bulan berikutnya') + '<i>→</i>' +
+      box('Regressor', GBR.trees + ' pohon, kedalaman ' + GBR.depth, 'satu model per horizon (M+1, M+2, M+3) + model P90 untuk buffer') + '<i>→</i>' +
+      box('Ensemble', 'Holt, HQ terkoreksi, Regressor' + (m.chr && m.chr.model ? ', Chronos' : ''), wn ? 'bobot rata-rata ' + monthLabel(f1) + ': ' + MODEL_KEYS.filter(function (k) { return wt[k]; }).map(function (k) { return MODELS[k] + ' ' + Math.round(wt[k] / wn * 100) + '%'; }).join(' · ') : 'bobot dari uji mundur per SKU') + '<i>→</i>' +
+      box('Forecast AI', monthLabel(f1) + ' – ' + monthLabel(m.future[m.future.length - 1]), 'kolom Forecast AI di tabel') + '</div>';
+    // 2. learning curve
+    var lc = V.lc, step = function (i) { return i % 20 === 0 || i === V.trees.length; }, xt = []; for (var i = 0; i <= V.trees.length; i++) if (step(i)) xt.push(i);
+    h += '<h3 class="mlh">2 · Belajar pohon demi pohon</h3><p class="note">Model mulai dari rata-rata semua SKU, lalu setiap pohon kecil memperbaiki sebagian kesalahan pohon-pohon sebelumnya (setiap koreksi dikali ' + fmt.format(GBR.lr) + ' supaya tidak berlebihan). Garis menunjukkan error (selisih absolut ÷ order in) setelah 0 sampai ' + GBR.trees + ' pohon: <b style="color:' + s1 + '">pada data latih</b>' + (lc && lc.test ? ' dan <b style="color:' + s2 + '">pada ' + monthLabel(lc.month) + '</b>, bulan yang tidak dilihat model saat belajar (' + lc.nTest + ' SKU). Bila garis bulan uji berhenti turun sementara garis latih terus turun, model mulai menghafal; 80 pohon dangkal dipilih supaya itu tidak terjadi.' : '. Uji pada bulan yang belum dilihat muncul setelah ada lebih banyak closing.') + '</p>' +
+      '<div class="mlcv" id="mlvCurve">' + mlvLine([{ name: 'Latih', c: s1, v: lc.train }].concat(lc.test ? [{ name: 'Uji ' + monthLabel(lc.month), c: s2, v: lc.test }] : []), { zero: true, tick: function (v) { return fmt.format(Math.round(v)) + '%'; }, xt: xt, xl: function (i) { return i + ' pohon'; }, mark: MLV.t, title: 'Error per jumlah pohon' }) + '</div>';
+    // 3. one tree + one SKU walked through it
+    h += '<h3 class="mlh">3 · Lihat satu pohon dan satu SKU</h3><p class="note">Setiap pohon menanyakan paling banyak ' + GBR.depth + ' pertanyaan ya/tidak tentang fitur SKU, lalu memberi koreksi kecil (daun hijau = naikkan, merah = turunkan). Pilih SKU untuk melihat jalurnya; geser untuk melihat pohon lain.</p>' +
+      '<div class="mlctl"><label>Pohon ke- <input type="range" id="mlvT" min="1" max="' + V.trees.length + '" value="' + MLV.t + '"> <b id="mlvTn">' + MLV.t + '</b> dari ' + V.trees.length + '</label><select id="mlvSku" aria-label="SKU">' + skus.map(function (s) { return '<option value="' + esc(s.key) + '"' + (s.key === MLV.sku ? ' selected' : '') + '>' + esc((s.nomat || s.key) + ' · ' + (s.name || '')) + '</option>'; }).join('') + '</select></div>' +
+      '<div id="mlvTreeBox"></div>';
+    // 4. importance
+    if (G.imp) h += '<h3 class="mlh">4 · Fitur yang paling sering dipakai</h3><p class="note">Berapa kali tiap fitur dipakai sebagai pertanyaan di ' + GBR.trees + ' pohon model ' + monthLabel(f1) + '.</p><div class="mlimp">' + G.imp.filter(function (x) { return x[1] > 0; }).map(function (x) { return '<div><span>' + esc(x[0]) + '</span><i style="width:' + Math.round(x[1] / G.imp[0][1] * 100) + '%"></i><b>' + Math.round(x[1] * 100) + '%</b></div>'; }).join('') + '</div>';
+    // 5. walk-forward backtest
+    var cms = m.closingMonths, bt = m.bt || [];
+    if (bt.length) h += '<h3 class="mlh">5 · Uji mundur (walk-forward)</h3><p class="note">Untuk menilai model dengan jujur, setiap bulan closing diprediksi ulang hanya dari bulan-bulan sebelumnya, lalu dibandingkan dengan order in sebenarnya. Hasilnya menentukan bobot ensemble per SKU.</p><table class="mlwf"><thead><tr><th></th>' + cms.map(function (mo) { return '<th>' + monthLabel(mo) + '</th>'; }).join('') + '<th class="num">Akurasi AI</th><th class="num">HQ</th></tr></thead><tbody>' +
+      bt.map(function (t) { var k = cms.indexOf(t.m); return '<tr><td>Prediksi ' + monthLabel(t.m) + '</td>' + cms.map(function (mo, j) { return '<td class="' + (j < k ? 'tr' : j === k ? 'te' : '') + '">' + (j < k ? 'latih' : j === k ? 'uji' : '') + '</td>'; }).join('') + '<td class="num"><b>' + (t.mlAcc === null || t.mlAcc === undefined ? '–' : fmt.format(Math.round(t.mlAcc)) + '%') + '</b></td><td class="num">' + (t.hqAcc === null || t.hqAcc === undefined ? '–' : fmt.format(Math.round(t.hqAcc)) + '%') + '</td></tr>'; }).join('') + '</tbody></table>';
+    h += mlvHonest();
+    $('chBody').innerHTML = (state.sample ? '<span class="pill p-warn">CONTOH SIMULASI</span> ' : '') + h;
+    mlvDraw();
+  }
+  if (dlg.showModal) { if (!dlg.open) dlg.showModal(); } else dlg.setAttribute('open', '');
+}
+function mlvDraw() {
+  var m = CH.model, V = m && m.gbr && m.gbr.viz; if (!V || !$('mlvTreeBox')) return;
+  var tr = V.trees[MLV.t - 1], x = V.x[MLV.sku], s = skuOf(MLV.sku) || {}, path = x ? mlvPath(V, x) : null;
+  var leafV = x ? gbmLeaf(tr, x) : null;
+  var steps = []; if (x) { var t0 = tr; while (t0.v === undefined) { var yes = x[t0.f] <= t0.t; steps.push(GBR_FEATS[t0.f] + ' = ' + mlvVal(t0.f, x[t0.f]) + (yes ? ' ≤ ' : ' > ') + mlvThr(t0.f, t0.t)); t0 = yes ? t0.l : t0.r; } }
+  var hq = s.fhq ? s.fhq[V.month] : undefined, ml = s.mlInfo && s.mlInfo[V.month];
+  $('mlvTreeBox').innerHTML = mlvTree(tr, x) +
+    (x ? '<div class="mlsku"><div><p><b>' + esc(s.name || MLV.sku) + '</b> di pohon ke-' + MLV.t + ': ' + steps.map(esc).join(' → ') + ' → koreksi <b>' + mlvPct(leafV) + '</b>.</p>' +
+      '<p>Mulai dari rata-rata <b>' + n(Math.round(path[0])) + '</b> karton; setelah ' + MLV.t + ' pohon <b>' + n(Math.round(path[MLV.t])) + '</b>; setelah semua ' + V.trees.length + ' pohon <b>' + n(Math.round(path[path.length - 1])) + '</b> karton (Regressor ' + monthLabel(V.month) + ').' +
+      (typeof hq === 'number' ? ' Forecast HQ ' + n(hq) + '.' : '') + (ml && typeof ml.ml === 'number' ? ' Setelah digabung dengan model lain (ensemble): <b>' + n(Math.round(ml.ml)) + '</b>.' : '') + '</p>' +
+      '<details><summary>Nilai fitur SKU ini</summary><table class="mlft">' + GBR_FEATS.map(function (f, i) { return '<tr><td>' + esc(f) + '</td><td class="num">' + esc(mlvVal(i, x[i])) + '</td></tr>'; }).join('') + '</table></details></div>' +
+      '<div class="mlsp">' + mlvLine([{ name: 'Prediksi', c: cssVar('--s3'), v: path }], { h: 170, zero: true, xt: [0, 20, 40, 60, 80].filter(function (i) { return i <= V.trees.length; }), xl: function (i) { return i + ''; }, mark: MLV.t, title: 'Prediksi SKU per jumlah pohon' }) + '<small>Prediksi SKU ini setelah 0…' + V.trees.length + ' pohon (karton)</small></div></div>' : '');
+  var cv = $('mlvCurve'); if (cv) { var lc = V.lc, s1 = cssVar('--s1'), s2 = cssVar('--s2'), xt = []; for (var i = 0; i <= V.trees.length; i++) if (i % 20 === 0 || i === V.trees.length) xt.push(i);
+    cv.innerHTML = mlvLine([{ name: 'Latih', c: s1, v: lc.train }].concat(lc.test ? [{ name: 'Uji ' + monthLabel(lc.month), c: s2, v: lc.test }] : []), { zero: true, tick: function (v) { return fmt.format(Math.round(v)) + '%'; }, xt: xt, xl: function (i) { return i + ' pohon'; }, mark: MLV.t, title: 'Error per jumlah pohon' }); }
+}
+// the honest answer to "can it run LSTM / Prophet?"
+function mlvHonest() {
+  return '<h3 class="mlh">Bisakah memakai LSTM, Prophet atau model lain?</h3><div class="mlhon">' +
+    '<p><b>Yang berjalan sekarang di browser</b> adalah model sungguhan, bukan rumus sederhana: <i>gradient-boosted trees</i>, keluarga yang sama dengan XGBoost / LightGBM yang biasa memenangkan lomba forecast penjualan, ditulis dalam JavaScript (± 60 baris, lihat <code>gbmFit</code>). Untuk data bulanan ratusan SKU, pelatihannya hanya beberapa detik.</p>' +
+    '<ul><li><b>LSTM / jaringan saraf</b>: bisa dijalankan di browser dengan TensorFlow.js (memakai GPU lewat WebGL/WebGPU). Kendalanya bukan tempat menjalankan, tetapi data: satu SKU baru punya belasan sampai puluhan bulan closing, terlalu sedikit untuk LSTM. Dengan histori sependek ini LSTM biasanya kalah dari pohon dan Chronos. Layak dicoba setelah ada data mingguan atau 3+ tahun histori.</li>' +
+    '<li><b>Prophet</b> (Meta): hanya tersedia untuk Python dan R, tidak ada versi browser. Jalankan di komputer sendiri atau di server, lalu hasilnya masuk lewat CSV, persis seperti Chronos sekarang.</li>' +
+    '<li><b>Chronos</b> (model fondasi deret waktu dari Amazon) sudah dipakai lewat <code>ingest/forecast_chronos.py</code> di komputer sendiri. Versi kecil (Chronos-Bolt) bisa juga diekspor ke ONNX dan dijalankan di browser dengan onnxruntime-web, dengan unduhan model ± 30–200 MB sekali.</li></ul>' +
+    '<p><b>Saran:</b> pohon tetap di browser (cepat, tanpa server, data tetap di komputer ini). Model berat (Prophet, LSTM, Chronos besar) dijalankan di komputer atau server lalu dimasukkan ke ensemble lewat CSV. Ensemble otomatis memberi bobot kecil pada model yang uji mundurnya buruk, jadi menambah model tidak merusak hasil.</p></div>';
 }
 
 var CLOSING_CHECKS = ['no_nomat', 'no_hq_class', 'no_hq_forecast', 'gap_check_failed', 'weekly_sum_mismatch', 'bad_value', 'duplicate_code', 'kg_row'];
@@ -4683,12 +4985,17 @@ function showTab(name) {
 }
 document.querySelectorAll('.tab[data-tab]').forEach(function (b) { b.addEventListener('click', function () { showTab(b.getAttribute('data-tab')); }); });
 $('fcTable').addEventListener('click', function (e) {
+  var bb = e.target.closest('button[data-fbrand]'); if (bb) { var OB = state.fcOpenB || (state.fcOpenB = {}), k0 = bb.getAttribute('data-fbrand'); OB[k0] = OB[k0] === false; renderForecastScreen(combined()); return; }
   var b = e.target.closest('button[data-fam]'); if (!b) return;
   var k = b.getAttribute('data-fam'); state.fcOpen[k] = !state.fcOpen[k]; renderForecastScreen(combined());
 });
-$('fcOpenAll').addEventListener('click', function () { forecastModel(combined()).fams.forEach(function (f) { state.fcOpen[f.key] = true; }); renderForecastScreen(combined()); });
+$('fcOpenAll').addEventListener('click', function () { fcGroups(forecastModel(combined())).forEach(function (f) { state.fcOpen[f.key] = true; }); state.fcOpenB = {}; renderForecastScreen(combined()); });
 $('fcCards').addEventListener('click', function (e) { var c = e.target.closest('[data-chart]'); if (c) openChart(c.getAttribute('data-chart')); });
 $('fcCards').addEventListener('keydown', function (e) { var c = e.target.closest('[data-chart]'); if (c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openChart(c.getAttribute('data-chart')); } });
+$('chBody').addEventListener('input', function (e) { if (e.target.id === 'mlvT') { MLV.t = +e.target.value; $('mlvTn').textContent = MLV.t; mlvDraw(); } });
+$('chBody').addEventListener('change', function (e) { if (e.target.id === 'mlvSku') { MLV.sku = e.target.value; mlvDraw(); } });
+$('chBody').addEventListener('click', function (e) { if (e.target.closest('[data-mlviz]')) { e.preventDefault(); openMlViz(); } });
+$('fcMlViz').addEventListener('click', function () { openMlViz(); });
 $('chClose').addEventListener('click', function () { var d = $('chDlg'); if (d.close) d.close(); else d.removeAttribute('open'); });
 $('chDlg').addEventListener('click', function (e) { if (e.target === $('chDlg') && $('chDlg').close) $('chDlg').close(); });
 $('fcModel').addEventListener('change', function () {
@@ -4853,7 +5160,7 @@ function schAutoRun(scratch, only) {
 // placed go back to the live schedule; bars placed by hand stay.
 function schSetMode(mode) {
   if (!CH.pm || !CH.sm) return; var sc = schedFor(CH.pm.P), cur = sc.mode === 'manual' ? 'manual' : 'auto'; if (cur === mode) return;
-  if (mode === 'manual') { Object.keys(CH.sm.byKey).forEach(function (k) { var pcs = CH.sm.byKey[k]; if (!sc.place[k] || !sc.place[k].length) sc.place[k] = pcs.map(function (pc) { return { m: pc.mc.name, s: pc.s, l: pc.l, a: pc.man ? undefined : 1 }; }); }); sc.mode = 'manual'; }
+  if (mode === 'manual') { Object.keys(CH.sm.byKey).forEach(function (k) { var pcs = CH.sm.byKey[k]; if (!sc.place[k] || !sc.place[k].length) sc.place[k] = pcs.map(function (pc) { return { m: pc.mc.name, s: pc.s, l: pc.l, a: pc.man ? undefined : 1 }; }); }); sc.mode = 'manual'; if (window.innerWidth > 1100) D10.open = true; }
   else { Object.keys(sc.place).forEach(function (k) { var a = sc.place[k]; if (a.length && a.every(function (p) { return p.a; })) delete sc.place[k]; }); delete sc.mode; }
   savePP(); renderAll(); toast(mode === 'manual' ? 'Mode Manual: hanya bar yang ada di jadwal, tanpa saran otomatis. Tarik SKU dari panel kiri ke baris mesin.' : 'Mode Otomatis: SKU tanpa bar manual dijadwalkan model.');
 }
@@ -5522,7 +5829,7 @@ $('bfCtl').addEventListener('click', function (e) {
   if (t0 && CH.bm) { var t1 = bfAgg(CH.bm.rows), lbl = b.closest('.seg').querySelector('span').textContent.replace('?', '').trim() + ' ' + b.textContent.trim();
     aiSpeak(lbl + ': buffer total ' + n(t0.fin) + ' → ' + n(t1.fin) + (t0.fin ? ' (' + pctS((t1.fin / t0.fin - 1) * 100) + ')' : '') + ', rencana produksi ' + n(t0.prod) + ' → ' + n(t1.prod) + '.' + (k === 'sw' ? ' Skor buffer dan pemilihan strategi dihitung ulang dengan kekurangan ×' + v + '.' : '')); }
 });
-$('bfOpenAll').addEventListener('click', function () { forecastModel(combined()).fams.forEach(function (f) { state.bfOpen[f.key] = true; }); renderAll(); });
+$('bfOpenAll').addEventListener('click', function () { var m0 = forecastModel(combined()); fcGroups(m0, state.bfGrp || '').forEach(function (f) { state.bfOpen[f.key] = true; }); state.bfOpenB = {}; renderAll(); });
 $('bfCloseAll').addEventListener('click', function () { state.bfOpen = {}; renderAll(); });
 $('bfReset').addEventListener('click', function () {
   var n0 = Object.keys(state.bufEdits).length + Object.keys(state.bufStrat).length;
@@ -6529,7 +6836,7 @@ $('fcQ').addEventListener('input', function () { var v = this.value; clearTimeou
 $('bfQ').addEventListener('input', function () { var v = this.value; clearTimeout(qT); qT = setTimeout(function () { state.bfQ = v; renderForecastScreen(combined()); }, 150); });
 $('fcBrand').addEventListener('change', function () { state.fcBrand = this.value; renderForecastScreen(combined()); });
 $('fcFree').addEventListener('change', function () { state.fcFree = this.value; renderForecastScreen(combined()); });
-$('fcGrp').addEventListener('change', function () { var v = this.value; state.fcGrp = v === '@family' || !v ? '' : v; state.grpMode = v === '@family' ? 'family' : 'auto'; saveMat(); renderAll(); });
+$('fcGrp').addEventListener('change', function () { var v = this.value; state.fcGrp = v === '@family' || !v ? '' : v; if (v === '@family' || !v) state.grpMode = v === '@family' ? 'family' : 'auto'; saveMat(); renderAll(); });
 $('fcCat').addEventListener('change', function () { state.fcCat = this.value; renderForecastScreen(combined()); });
 
 loadRuleState(); loadBuf(); loadPP(); loadMat(); loadChronos();
@@ -6538,8 +6845,8 @@ loadRuleState(); loadBuf(); loadPP(); loadMat(); loadChronos();
 // The pages' own content (cards, tables, controls) is unchanged; this layer arranges it the Design 10 way and reads
 // alerts from the cards each page already computes (red = bad, amber = warn).
 var D10 = { acc: {}, cur: 'Input', lang: 'id', big: false, side: 'alerts', open: window.innerWidth > 1100, right: false, rib: {}, talkUntil: 0, lastA: '' };
-try { var d10s = JSON.parse(localStorage.getItem('ppic_ui') || '{}') || {}; if (d10s.lang) D10.lang = d10s.lang; D10.big = !!d10s.big; D10.right = d10s.v >= 2 && !!d10s.right; D10.apw = d10s.w || 0; D10.dimOn = d10s.dim !== false; D10.talkOn = d10s.talk !== false; D10.head = d10s.head || 'auto'; D10.headPrev = d10s.headPrev || 'auto'; if (d10s.theme) document.documentElement.setAttribute('data-theme', d10s.theme); } catch (e) {}
-function d10Save() { try { localStorage.setItem('ppic_ui', JSON.stringify({ v: 2, w: D10.apw || 0, lang: D10.lang, big: D10.big, right: D10.right, dim: D10.dimOn !== false, talk: D10.talkOn !== false, head: D10.head || 'auto', headPrev: D10.headPrev || 'auto', theme: document.documentElement.getAttribute('data-theme') })); } catch (e) {} }
+try { var d10s = JSON.parse(localStorage.getItem('ppic_ui') || '{}') || {}; if (d10s.lang) D10.lang = d10s.lang; D10.big = !!d10s.big; D10.right = d10s.v >= 2 && !!d10s.right; D10.apw = d10s.w || 0; D10.dimOn = d10s.dim !== false; D10.talkOn = d10s.talk !== false; D10.autoA = d10s.autoA === true; D10.open = d10s.apOpen === true && window.innerWidth > 1100; D10.head = d10s.head || 'auto'; D10.headPrev = d10s.headPrev || 'auto'; if (d10s.theme) document.documentElement.setAttribute('data-theme', d10s.theme); } catch (e) {}
+function d10Save() { try { localStorage.setItem('ppic_ui', JSON.stringify({ v: 2, w: D10.apw || 0, lang: D10.lang, big: D10.big, right: D10.right, dim: D10.dimOn !== false, talk: D10.talkOn !== false, autoA: D10.autoA === true, apOpen: !!D10.open, head: D10.head || 'auto', headPrev: D10.headPrev || 'auto', theme: document.documentElement.getAttribute('data-theme') })); } catch (e) {} }
 // Input data is the first screen (a group of data inputs, not a numbered step), Dashboard sits next to it;
 // the numbered steps 1-5 follow. D10_NEXT says where "Terima dan lanjut" goes from the two unnumbered pages.
 var D10_TABS = ['Input', 'Brief', 'Master', 'Forecast', 'Buffer', 'Plan'];
@@ -6552,6 +6859,7 @@ var D10_NSTEP = D10_TABS.filter(function (t) { return !D10_FREE[t]; }).length;
 function d10No(t) { return D10_FREE[t] ? 0 : D10_TABS.filter(function (x) { return !D10_FREE[x]; }).indexOf(t) + 1; }
 function d10Nx(t) { return t in D10_NEXT ? D10_NEXT[t] : D10_TABS[D10_TABS.indexOf(t) + 1]; }
 var D10_L = {
+  dash: ['Dashboard', 'Dashboard', '仪表板'], autoA: ['Tunjukkan alert pertama saat pindah halaman', 'Show the first alert when changing pages', '切换页面时显示第一条提醒'],
   head: ['Bagian atas (langkah + pencarian)', 'Top bar (steps + search)', '顶部栏（步骤 + 搜索）'], hdAuto: ['Otomatis', 'Auto', '自动'], hdFull: ['Penuh', 'Full', '完整'], hdCompact: ['Ringkas', 'Compact', '紧凑'], hdHide: ['Sembunyi', 'Hidden', '隐藏'],
   hdNote: ['Otomatis = ringkas bila layar pendek (laptop kecil). Pilihan disimpan di browser ini.', 'Auto = compact on short screens (small laptops). Saved in this browser.', '自动 = 屏幕较矮时（小笔记本）使用紧凑模式。保存在此浏览器。'],
   hdHidden: ['Langkah dan pencarian disembunyikan. Tampilkan lagi lewat bar tipis di atas, atau tekan Ctrl K untuk mencari.', 'Steps and search are hidden. Bring them back from the thin bar at the top, or press Ctrl K to search.', '步骤和搜索已隐藏。点击顶部细条可恢复，或按 Ctrl K 搜索。'],
@@ -6683,7 +6991,7 @@ function d10Step(tab, A) {
   if (!has) return ['empty', tl('noData')];
   return [r ? 'bad' : w ? 'warn' : 'ok', r ? r + ' ' + tl('perluTindakan') : w ? w + ' ' + tl('lihatDulu') : tl('aman')];
 }
-function d10Go(tab) { if (d10Locked(tab)) { toast(tl('lockMsg')); return; } if (window.innerWidth <= 1100) D10.open = false; showTab(tab); $('d10main').scrollTop = 0; }
+function d10Go(tab) { if (d10Locked(tab)) { toast(tl('lockMsg')); return; } if (window.innerWidth <= 1100) D10.open = false; else if (tab === 'Plan' && ppManual()) D10.open = true; showTab(tab); $('d10main').scrollTop = 0; }
 // ---------- render ----------
 function d10Render() {
   if (!D10ON) return;
@@ -6700,7 +7008,10 @@ function d10Render() {
   $('d10cmdM').innerHTML = d10Lens(30);
   document.querySelectorAll('[data-l]').forEach(function (e) { e.textContent = tl(e.getAttribute('data-l')); });
   // step flow
-  $('d10flow').innerHTML = D10_TABS.map(function (t, k) {
+  // Dashboard is not a step: it sits in the header (▦ Dashboard) so the flow reads Input → 1..5 without a detour
+  var dn = has ? A.filter(function (a) { return a.lvl === 'red' || a.lvl === 'amb'; }).length : 0;
+  $('d10dash').classList.toggle('on', cur === 'Brief'); $('d10dashN').hidden = !dn; $('d10dashN').textContent = dn;
+  $('d10flow').innerHTML = D10_TABS.filter(function (t) { return t !== 'Brief'; }).map(function (t, k) {
     var st = d10Step(t, A);
     return '<button type="button" class="v3-step s-' + st[0] + (t === cur ? ' on' : '') + '" data-d10go="' + t + '" title="' + esc(d10sn(t)) + '"' + (t === cur ? ' aria-current="page"' : '') + '><span class="v3-sn">' + (st[0] === 'lock' ? '🔒' : D10_FREE[t] || d10No(t)) + '</span><span class="v3-st"><b>' + esc(d10sn(t)) + '</b><small>' + esc(st[1]) + '</small></span></button>';
   }).join('');
@@ -6952,10 +7263,10 @@ $('igTabs').addEventListener('click', function (e) {
 function d10DemoBan() {
   var el = $('demoBan'); if (!el) return; var has = d10HasData();
   if (has && !state.sample) { el.innerHTML = ''; el.className = ''; return; }
-  if (state.sample) { el.className = 'demoban on'; el.innerHTML = '<span class="dbi" aria-hidden="true">▶</span><div><b>Mode demo aktif</b><span>Yang tampil adalah data contoh, bukan data pabrik. Coba semua langkah; unggah file sendiri kapan saja untuk menggantinya.</span></div><div class="dbb"><button type="button" class="v-btn pri" data-d10go="Brief">Lihat Dashboard →</button><button type="button" class="v-btn" data-demo="exit">Keluar dari demo</button></div>'; return; }
+  if (state.sample) { el.className = 'demoban on'; el.innerHTML = '<span class="dbi" aria-hidden="true">▶</span><div><b>Mode demo</b><span>data contoh, bukan data pabrik. Unggah file sendiri untuk menggantinya.</span></div><div class="dbb"><button type="button" class="v-btn sm" data-demo="exit">Keluar dari demo</button></div>'; return; }
   el.className = 'demoban';
-  el.innerHTML = '<span class="dbi" aria-hidden="true">▶</span><div><b>Baru pertama kali? Coba dulu dengan data contoh</b><span>Satu klik memuat contoh lengkap: 3 bulan closing, Forecast HQ 3 bulan dan kelas SKU. Semua langkah (forecast, buffer, rencana produksi) bisa dicoba tanpa file sendiri, dan data contoh bisa dihapus kapan saja.</span></div>' +
-    '<div class="dbb"><button type="button" class="v-btn pri big" data-demo="go">▶ Coba data contoh (demo)</button><span class="sub">atau unggah file sendiri di bawah ↓</span></div>';
+  el.innerHTML = '<span class="dbi" aria-hidden="true">▶</span><div><b>Baru pertama kali?</b><span>Coba semua langkah dengan data contoh (3 bulan closing, Forecast HQ, kelas SKU, data mesin). Bisa dihapus kapan saja.</span></div>' +
+    '<div class="dbb"><button type="button" class="v-btn pri sm" data-demo="go">▶ Coba data contoh</button></div>';
 }
 $('demoBan').addEventListener('click', function (e) {
   var b = e.target.closest('[data-demo]'); if (!b) return;
@@ -7088,6 +7399,7 @@ function d10Settings() {
     '<div class="sh">' + tl('lang') + '</div>' + seg('lang', D10.lang, [['en', 'English'], ['zh', '中文'], ['id', 'Indonesia']]) + (D10.lang !== 'id' ? '<div class="note">' + tl('langNote') + '</div>' : '') +
     '<div class="sh">' + tl('asst') + '</div><div class="note" style="margin:0 0 4px">' + tl('dimL') + '</div>' + seg('dim', D10.dimOn === false ? 'off' : 'on', [['on', tl('on')], ['off', tl('off')]]) +
     '<div class="note" style="margin:6px 0 4px">' + tl('talkL') + '</div>' + seg('talk', D10.talkOn === false ? 'off' : 'on', [['on', tl('on')], ['off', tl('off')]]) +
+    '<div class="note" style="margin:6px 0 4px">' + tl('autoA') + '</div>' + seg('autoa', D10.autoA ? 'on' : 'off', [['on', tl('on')], ['off', tl('off')]]) +
     '<div class="sh">' + tl('help') + '</div><button type="button" class="v-btn" disabled title="' + tl('soon') + '">' + tl('guide') + ' · ' + tl('soon') + '</button><a class="v-btn" href="/riwayat/" style="text-decoration:none;justify-content:center;margin-top:4px">' + tl('verH') + '</a>' +
     '<div class="sh">' + tl('data') + '</div><button type="button" class="v-btn" data-sact="save">' + tl('save') + '</button>' + (state.sample ? '<button type="button" class="v-btn" data-sact="exit">' + tl('exitDemo') + '</button>' : '');
 }
@@ -7108,6 +7420,7 @@ $('d10setP').addEventListener('click', function (e) {
   if (b.hasAttribute('data-head')) d10SetHead(b.getAttribute('data-head'));
   if (b.hasAttribute('data-dim')) { D10.dimOn = b.getAttribute('data-dim') === 'on'; if (!D10.dimOn) aiFocusClose(); }
   if (b.hasAttribute('data-talk')) D10.talkOn = b.getAttribute('data-talk') === 'on';
+  if (b.hasAttribute('data-autoa')) D10.autoA = b.getAttribute('data-autoa') === 'on';
   if (b.getAttribute('data-sact') === 'save') { if (!canDownload) toast(tl('expBlocked')); else $('dlPack').click(); }
   if (b.getAttribute('data-sact') === 'exit') { d10Pop(null); $('clearAll').click(); showTab('Input'); return; }
   d10Save(); d10Settings(); d10Render();
@@ -7120,8 +7433,8 @@ document.addEventListener('click', function (e) {
   var aa = e.target.closest('[data-aa]'); if (aa && D10.A) { var a = D10.A[+aa.getAttribute('data-ai')]; if (a) d10Act(a, 0, aa.getAttribute('data-aa')); return; }
   var r = e.target.closest('[data-rib]'); if (r) { D10.rib[D10.cur] = (D10.rib[D10.cur] || 0) + +r.getAttribute('data-rib'); var mine = D10.A.filter(function (a) { return (D10.cur === 'Brief' || a.tab === D10.cur) && (a.lvl === 'red' || a.lvl === 'amb'); }); D10.rib[D10.cur] = (D10.rib[D10.cur] + mine.length) % (mine.length || 1); d10Ribbon(D10.A); return; }
   if (e.target.closest('[data-mascot]')) { D10.open = true; D10.side = 'ask'; d10Panel(D10.A || []); d10AskOpen(); return; }
-  if (e.target.closest('[data-aopen]')) { D10.open = true; d10Panel(D10.A || []); return; }
-  if (e.target.closest('[data-aclose]')) { D10.open = false; d10Panel(D10.A || []); return; }
+  if (e.target.closest('[data-aopen]')) { D10.open = true; d10Save(); d10Panel(D10.A || []); return; }
+  if (e.target.closest('[data-aclose]')) { D10.open = false; d10Save(); d10Panel(D10.A || []); return; }
   if (e.target.closest('[data-aside]')) { D10.right = !D10.right; d10Save(); d10Panel(D10.A || []); return; }
   var s2 = e.target.closest('[data-aside2]'); if (s2) { D10.side = s2.getAttribute('data-aside2'); d10Panel(D10.A || []); if (D10.side === 'ask') d10AskOpen(); return; }
   var ac = e.target.closest('[data-d10acc]'); if (ac) { var nx2 = d10Nx(D10.cur), cur0 = D10.cur; D10.acc[D10.cur] = true;
@@ -7346,7 +7659,7 @@ function d10Ack(a, on) {
 try { state.ack = JSON.parse(localStorage.getItem('ppic_ack') || '{}') || {}; } catch (e) { state.ack = {}; }
 // first visit of a page (per data load): the assistant points at the top alert by itself
 function d10AutoShow() {
-  if (D10.dimOn === false || !d10HasData()) return;
+  if (!D10.autoA || D10.dimOn === false || !d10HasData()) return; // off by default: alerts wait in the panel until 👁 Tunjukkan
   var cur = D10.cur; if (cur === 'Brief' || d10Locked(cur)) return;
   var sig = cur + '|' + (CH.model ? CH.model.latest + CH.model.skus.length : ''); if (AIX.seen[sig]) return; AIX.seen[sig] = 1;
   var a = (D10.A || []).filter(function (x) { return x.tab === cur && (x.lvl === 'red' || x.lvl === 'amb'); })[0]; if (!a) return;
@@ -7469,7 +7782,8 @@ function d10BufAuto() {
   if (D10.cur !== 'Buffer' || !CH.bm || !d10HasData() || d10Locked('Buffer')) return;
   var sig = CH.bm.month + '|' + (CH.bm.recs || []).length + '|' + CH.model.skus.length; if (AIX.bufSig === sig) return; AIX.bufSig = sig;
   if (!(CH.bm.recs || []).length) return;
-  setTimeout(function () { if (D10.cur !== 'Buffer') return; D10.open = true; D10.side = 'ask'; aiOpen(true); d10Panel(D10.A || []); aiSay('bot', aiBufThread()); }, AIX.seen['Buffer|' + CH.model.latest + CH.model.skus.length] ? 200 : 2600);
+  // the recommendation waits in the Tanya tab; the side panel is not switched away from Alerts (no pop-up on page change)
+  setTimeout(function () { if (D10.cur !== 'Buffer') return; aiSay('bot', aiBufThread()); if (D10.autoA) { D10.open = true; D10.side = 'ask'; aiOpen(true); d10Panel(D10.A || []); } }, 200);
 }
 // ---------- guidebook: rules that answer "why" questions (see docs/panduan-asisten.md) ----------
 var AI_GUIDE = [
@@ -7537,15 +7851,19 @@ $('bfTable').addEventListener('click', function (e) {
   var u = e.target.closest('[data-unrv]'); if (u) { e.stopPropagation(); toggleReview(u.getAttribute('data-unrv'), false); }
 }, true);
 $('bfGuide').addEventListener('click', function (e) { var b = e.target.closest('[data-askstrat]'); if (b) { e.preventDefault(); var st = b.getAttribute('data-askstrat'); d10Ask('Apa arti strategi ' + STRATS[st][0] + '?', aiGuide('strategi ' + STRATS[st][0].toLowerCase(), 'strategi ' + STRATS[st][0].toLowerCase(), aiCtx())); } });
+$('tabBuffer').addEventListener('toggle', function (e) { if (e.target.classList && e.target.classList.contains('bfleg')) try { localStorage.setItem('ppic_bfleg', e.target.open ? '1' : '0'); } catch (x) {} }, true);
 $('bfGuide').addEventListener('toggle', function (e) { if (e.target.id === 'bfGuideD') try { localStorage.setItem('ppic_bfguide', e.target.open ? '1' : '0'); } catch (x) {} }, true);
 // ---------- start ----------
 $('tabMaster').appendChild($('mmPanel'));
-$('tabBuffer').insertAdjacentHTML('beforeend', '<section class="panel" id="bfHz" aria-label="Proyeksi buffer per bulan"></section>');
 $('bfRmTg').addEventListener('click', function () { state.rmHide = !state.rmHide; saveMat(); renderAll(); });
+['bfBrand', 'bfCat', 'bfFree'].forEach(function (id) { $(id).addEventListener('change', function () { state[id] = this.value; renderAll(); }); });
+$('bfGrp').addEventListener('change', function () { var v = this.value; state.bfGrp = v === '@family' || !v ? '' : v; if (v === '@family' || !v) { state.grpMode = v === '@family' ? 'family' : 'auto'; saveMat(); } renderAll(); });
 $('tabBuffer').addEventListener('click', function (e) {
   var g = e.target.closest('#bfHz [data-goto]'); if (g) { e.preventDefault(); d10Go(g.getAttribute('data-goto')); return; }
   var b = e.target.closest('[data-hzf]'); if (b) { state.hzOpen = state.hzOpen || {}; var k = b.getAttribute('data-hzf'); state.hzOpen[k] = !state.hzOpen[k]; if (CH.model && CH.bm) renderBfHz(CH.model, CH.bm); return; }
-  if (e.target.closest('#bfHz [data-mrp]')) { mrpSendDo(true); return; }
+  if (e.target.closest('[data-mrp]')) { mrpSendDo(true); return; }
+  var sf = e.target.closest('[data-bfst]'); if (sf) { var v = sf.getAttribute('data-bfst'); state.bfSt = state.bfSt === v ? '' : v; renderAll(); return; }
+  var bb = e.target.closest('button[data-bbrand]'); if (bb) { var OB = state.bfOpenB || (state.bfOpenB = {}), k0 = bb.getAttribute('data-bbrand'); OB[k0] = OB[k0] === false; renderAll(); return; }
   if (e.target.closest('[data-hzall]')) { state.hzOpen = state.hzOpen || {}; var on = e.target.closest('[data-hzall]').getAttribute('data-hzall') === '1'; (CH.model ? CH.model.fams : []).forEach(function (f) { state.hzOpen[f.key] = on; }); if (CH.model && CH.bm) renderBfHz(CH.model, CH.bm); }
 });
 $('useSample').addEventListener('click', function (e) { e.stopImmediatePropagation(); state.ppMade = {}; D10.acc = {}; d10SavePP(); busyRun(tl('busyLoad'), loadSample); }, true); // same as the demo button on the Dashboard

@@ -13,7 +13,7 @@ after **Terima dan lanjut** on the previous one:
 - **Input data** (first screen, a group rather than a step): inputs in three groups, *Penjualan & forecast* (closings,
   Forecast HQ, Chronos CSV), *Stok & kelas SKU* (Stock Level Check) and *Master data* (material master, **Master mesin**).
   See *Input tab* below.
-- **Dashboard** (was Ringkasan): key numbers, order in vs Forecast HQ / Forecast AI per month (hover for values, table
+- **Dashboard** (was Ringkasan; a header button ▦ Dashboard, not a step): key numbers, order in vs Forecast HQ / Forecast AI per month (hover for values, table
   view), the biggest brand · category groups for M+1, stock vs buffer, plan vs machine capacity, SKU status, open alerts.
 
 1. **Material master**: active / inactive SKUs and Nomat changes.

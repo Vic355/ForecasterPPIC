@@ -53,6 +53,14 @@ html[data-theme=dark] .rel h3 .cur { color: #1b1206; }
 // Newest first. v = pull request number (null for changes before pull requests). Keep in step with CHANGELOG.md.
 var REPO = 'https://github.com/Vic355/ForecasterPPIC/pull/';
 var R = [
+  { v: 0, d: '2026-11-25', t: 'Input, Forecast dan Saran buffer lebih ringkas; cara Forecast AI belajar', a: ['Forecast Desk'], p: [
+    '<b>Dashboard</b> pindah ke tombol di bagian atas (▦ Dashboard), tidak lagi di tengah alur langkah. Alur sekarang Input data → Material &amp; status → Forecast → Saran buffer → Rencana produksi.',
+    '<b>Alert tidak muncul sendiri</b> saat pindah halaman: panel Alerts mulai dalam keadaan kecil dan sorotan otomatis dimatikan. Bisa dinyalakan lagi di Pengaturan → Asisten.',
+    '<b>Input data lebih ringkas</b>: kotak demo dan area tarik file jadi satu baris, file tampil di kotak jenisnya (closing, Forecast HQ) dengan tombol Lihat / Hapus, grup Stok dan Master data berdampingan, dan <b>Cakupan data per bulan</b> (bulan mana yang punya closing dan Forecast HQ) selalu terlihat. Tabel file lengkap ada di <i>Detail file</i>.',
+    '<b>Forecast dan Saran buffer dikelompokkan per Brand dulu</b>: baris Brand dengan totalnya, lalu Kategori di bawahnya. Pilihan lain: Brand saja, Kategori saja, Brand › Famili closing, Jenis SKU atau kolom bebas Material master. Saran buffer kini punya saringan Brand, Kategori dan Jenis SKU / kolom bebas yang sama.',
+    '<b>Sugesti untuk baris grup</b>: HQ vs AI grup itu untuk M+1 dan berapa SKU di dalamnya yang vital, beda jauh, tanpa HQ atau perlu cek.',
+    '<b>Saran buffer</b>: ringkasan proyeksi per bulan masuk ke panel tabel (tidak lagi bagian terpisah), <b>Arti status</b> menjelaskan arti dan tindakan tiap status dan bisa diklik untuk menyaring, kelas ABC-XYZ dijelaskan sebagai <i>besar × stabil</i> dengan tabel 3×3.',
+    '<b>🧠 Cara Forecast AI belajar</b> (tombol di Forecast): alur data → fitur → pohon → ensemble, error per jumlah pohon, satu pohon dengan jalur SKU pilihan, fitur terpenting, uji mundur, dan jawaban jujur soal LSTM / Prophet.'] },
   { v: 20, d: '2026-11-25', t: 'Kolom seperti Excel, Material & status jadi satu langkah, riwayat versi, peringatan Jenis SKU', a: ['Forecast Desk', 'Produksi', 'MRP'], p: [
     '<b>Kunci kolom</b> di semua tabel lebar (Forecast, Saran buffer, Material master, Cek data SKU, Pratinjau, Master mesin, Produksi, MRP): tombol <b>Kolom ▾</b> di atas tabel atau klik kanan judul kolom → <i>Kunci sampai kolom ini</i>. Kolom di kiri tetap terlihat saat tabel digulir ke samping, seperti <i>Freeze Panes</i> di Excel.',
     '<b>Sembunyikan kolom</b> di semua tabel tersebut lewat menu yang sama (centang = tampilkan). Pilihan disimpan per tabel di browser; <i>Kembalikan bawaan</i> mengembalikannya. Menu Kolom di Material master kini memakai cara yang sama dan Status, Nomat, SKU terkunci dari awal.',
