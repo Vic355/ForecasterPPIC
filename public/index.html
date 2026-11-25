@@ -769,8 +769,12 @@ html[data-theme=dark] .rvchip { color: #1b1206; }
 .mmadd .mmf { display: flex; flex-wrap: wrap; gap: 8px 12px; margin: 8px 0; } .mmadd .field { flex: 1 1 170px; } .mmadd .field input { width: 100%; }
 .mmt input.bomin { width: 70px; text-align: right; } .mmt input.bomin.w { width: 190px; text-align: left; }
 .mmt input.refin { width: 92px; } .mmt input.pctin { width: 44px; text-align: right; margin-left: 3px; } .mmt input.seain { width: 96px; } .mmt input.seain.bad { border-color: var(--bad); } .mmt input.freein { width: 100px; }
-.mmt th.attrh, .mmt th.freeh { background: var(--acc2); } .mmt th.freeh .ib { font-size: 11px; padding: 0 3px; }
-.filebtn { cursor: pointer; } .mmadd textarea { width: 100%; min-height: 90px; font: 12px/1.4 ui-monospace, monospace; }
+.mmt th.attrh, .mmt th.freeh { background: var(--acc2); } .mmt th.freeh .ib, .mmt th.addh .ib { font-size: 11px; padding: 0 5px; min-height: 0; min-width: 0; width: auto; height: 22px; line-height: 1; vertical-align: middle; margin-left: 4px; }
+.filebtn { cursor: pointer; }
+.mmview { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 4px 0 8px; } .mmview .seg { margin: 0; }
+.mmcols { position: relative; } .mmcols > summary { list-style: none; } .mmcols > summary::-webkit-details-marker { display: none; }
+.mmcolp { position: absolute; right: 0; top: 110%; z-index: 30; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; box-shadow: 0 6px 18px var(--shadow); display: flex; flex-direction: column; gap: 4px; min-width: 190px; }
+.mmt th.addh { white-space: nowrap; background: var(--panel2); } .mmt th.addh input { width: 120px; font-weight: 400; } .mmt td.addc { background: var(--panel2); } .mmadd textarea { width: 100%; min-height: 90px; font: 12px/1.4 ui-monospace, monospace; }
 .fct .code .atag { font-weight: 400; color: var(--mut); }
 .mmt th.bomh { background: var(--note, #fff6d6); } .mmt th.bomh small { font-weight: 400; color: var(--mut); }
 /* Rencana produksi: manual / automatic, red rows for SKUs not on the schedule (colours: LAMPU.rencana) */
@@ -1036,15 +1040,16 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
     <div class="ph"><h2>Material master <span class="sub" id="mmSrc" style="font-weight:400"></span></h2>
       <div class="mmbar">
         <input type="search" id="mmQ" placeholder="Cari Nomat, nama, kode artikel, brand" aria-label="Cari material" style="width:260px">
-        <select id="mmFlt" aria-label="Saring material" style="width:auto"><option value="all">Semua material</option><option value="aktif">Aktif</option><option value="nonaktif">Nonaktif</option><option value="beda">Berubah / perlu dicek</option><option value="baru">Ada di data, tidak di master</option><option value="hilang">Di master, tidak di data</option><option value="manual">Diubah manual</option><option value="npd">SKU baru dengan histori Nomat lama</option><option value="musim">Musiman</option></select>
+        <select id="mmFlt" aria-label="Saring material" style="width:auto"><option value="all">Semua material</option><option value="aktif">Aktif</option><option value="nonaktif">Nonaktif</option><option value="beda">Berubah / perlu dicek</option><option value="baru">Ada di data, tidak di master</option><option value="hilang">Di master, tidak di data</option><option value="manual">Diubah manual</option><option value="npdcand">SKU baru (NPD / ditambah / &lt; 3 bulan)</option><option value="npd">SKU baru dengan histori Nomat lama</option><option value="succ">Punya Nomat pengganti</option><option value="musim">Musiman</option></select>
         <button type="button" id="mmAddB" class="pri">+ Tambah SKU</button>
-        <button type="button" id="mmFreeB" title="Kolom sendiri per Nomat (mis. Saluran MT / GT, Slow moving) untuk saringan dan kelompok di lembar Forecast">+ Kolom bebas</button>
-        <label class="v-btn filebtn" title="Excel / CSV: kolom Nomat, lalu Histori dari (Nomat lama), Persen, Musim aktif, dan kolom bebas apa saja">Unggah atribut SKU<input type="file" id="mmAttrF" accept=".xlsx,.xlsm,.xls,.csv" hidden></label>
+        <details class="mmcols"><summary class="v-btn">Kolom ▾</summary><div class="mmcolp" id="mmColList"></div></details>
+        <input type="file" id="mmAttrF" accept=".xlsx,.xlsm,.xls,.csv" hidden>
         <button type="button" id="mmDl">Unduh material master (Excel)</button>
         <button type="button" id="mmClear">Hapus material master</button>
       </div></div>
     <p class="note">Gabungan material master (bila diunggah) dan SKU di Forecast HQ dan closing. <b>Status</b>: dari kolom status master; tanpa master, <i>aktif</i> bila ada Forecast HQ M+1–M+3 atau order in 3 bulan terakhir. Ubah status atau isi <b>Nomat pengganti</b> langsung di tabel (masuk ke status SKU: nonaktif = Diskontinu, dengan pengganti = Diganti). <b>Brand</b> dan <b>Kategori</b> master dipakai untuk kelompok di lembar Forecast. Kolom <b>Perubahan</b> menandai Nomat yang berganti untuk kode artikel yang sama, nama yang berbeda, dan SKU yang belum ada di master.<br>
       <b>Histori dari Nomat</b>: untuk SKU baru (NPD) yang biasanya hanya beda kemasan. SKU baru memakai order in Nomat lama × persen untuk bulan sebelum order in-nya sendiri, jadi semua model punya histori; Nomat lama tetap aktif. Bila Nomat lama berhenti, isi <b>Nomat pengganti</b> di baris Nomat lama (histori pindah penuh). <b>Musim aktif</b>: bulan SKU dijual (mis. <i>Feb-Apr</i>, <i>11-1</i>, <i>2027-02..2027-04</i>); di luar musim forecast, buffer dan PP 0 dan status nonaktif. <b>Kolom bebas</b>: isi sendiri per Nomat (mis. MT / GT, slow moving) untuk saringan dan kelompok di lembar Forecast; tidak dipakai model.</p>
+    <div class="mmview"><span class="sub">Tampilan:</span><div class="seg" id="mmViewSeg"></div><span class="sub" id="mmViewHint"></span></div>
     <div class="cekstats" id="mmStats"></div>
     <div class="scroll" style="max-height: 560px"><table id="mmTable" class="cekt mmt"></table></div>
     <div id="mmFv" hidden></div>
@@ -5528,8 +5533,8 @@ function matStatus(s) {
   if (mr) return { status: mr.status, succ: mr.succ || '', from: 'master' };
   return null;
 }
-function saveMat() { try { localStorage.setItem('ppic_mat', JSON.stringify({ mat: state.mat, edits: state.matEdits || {}, grp: state.grpMode, added: state.matNew || [], bom: state.bom || {}, rmHide: !!state.rmHide, ref: state.skuRef || {}, season: state.season || {}, free: state.freeCols || { cols: [], v: {} }, fcGrp: state.fcGrp || '' })); } catch (e) { toast('Penyimpanan browser penuh: material master hanya tersimpan sampai halaman ditutup. Unduh histori untuk menyimpannya.'); } }
-function loadMat() { try { var o = JSON.parse(localStorage.getItem('ppic_mat') || '{}') || {}; state.mat = o.mat || null; state.matEdits = o.edits || {}; state.grpMode = 'auto'; state.matNew = o.added || []; state.bom = o.bom || {}; state.rmHide = !!o.rmHide; state.skuRef = o.ref || {}; state.season = o.season || {}; state.freeCols = o.free || { cols: [], v: {} }; state.fcGrp = o.fcGrp || ''; } catch (e) { state.mat = null; state.matEdits = {}; state.matNew = []; state.bom = {}; state.skuRef = {}; state.season = {}; state.freeCols = { cols: [], v: {} }; } }
+function saveMat() { try { localStorage.setItem('ppic_mat', JSON.stringify({ mat: state.mat, edits: state.matEdits || {}, grp: state.grpMode, added: state.matNew || [], bom: state.bom || {}, rmHide: !!state.rmHide, ref: state.skuRef || {}, season: state.season || {}, free: state.freeCols || { cols: [], v: {} }, fcGrp: state.fcGrp || '', mmView: state.mmView || 'semua', mmHide: state.mmHide || null })); } catch (e) { toast('Penyimpanan browser penuh: material master hanya tersimpan sampai halaman ditutup. Unduh histori untuk menyimpannya.'); } }
+function loadMat() { try { var o = JSON.parse(localStorage.getItem('ppic_mat') || '{}') || {}; state.mat = o.mat || null; state.matEdits = o.edits || {}; state.grpMode = 'auto'; state.matNew = o.added || []; state.bom = o.bom || {}; state.rmHide = !!o.rmHide; state.skuRef = o.ref || {}; state.season = o.season || {}; state.freeCols = o.free || { cols: [], v: {} }; state.fcGrp = o.fcGrp || ''; state.mmView = o.mmView || 'semua'; state.mmHide = o.mmHide || null; } catch (e) { state.mat = null; state.matEdits = {}; state.matNew = []; state.bom = {}; state.skuRef = {}; state.season = {}; state.freeCols = { cols: [], v: {} }; } }
 function matStatusOf(v) {
   var t = norm(v); if (!t) return 'aktif';
   return /non|inakt|inact|tidak|^n$|^no$|^0$|false|disc|obsol|block|stop|delist|^old$|lama|mati|^off$|^x$/.test(t) ? 'nonaktif' : 'aktif';
@@ -5717,6 +5722,24 @@ function attrFromRows(rows) {
   return attrFromAoa([keys].concat(rows.map(function (r) { return keys.map(function (k) { return r[k]; }); })));
 }
 function attrMsg(res) { return res ? res.n + ' Nomat' + (res.ref ? ', histori NPD' : '') + (res.sea ? ', musim' : '') + (res.free.length ? ', kolom ' + res.free.join(', ') : '') : 'tidak ada kolom Nomat'; }
+// Material master views: one per use case, each with only the columns it needs. Hideable columns via the Kolom menu.
+var MM_VIEWS = {
+  semua: { name: 'Semua', cols: ['status', 'nomat', 'sku', 'chg', 'brand', 'cat', 'fam', 'fhq', 'oi', 'succ', 'ref', 'sea', 'free', 'bom', 'act', 'add'], flt: 'all', hint: 'Semua kolom. Sembunyikan kolom lewat Kolom ▾.' },
+  npd: { name: 'SKU baru (NPD)', cols: ['status', 'nomat', 'sku', 'chg', 'fhq', 'oi', 'ref', 'act'], flt: 'npdcand', hint: 'SKU baru yang belum punya histori: isi Nomat lama dan % agar model bisa meramal dari order in Nomat itu.' },
+  musim: { name: 'Musiman', cols: ['status', 'nomat', 'sku', 'chg', 'fhq', 'oi', 'sea', 'act'], flt: 'all', hint: 'Isi bulan aktif SKU musiman (mis. Feb-Apr). Saring "Musiman" untuk melihat yang sudah diisi.' },
+  ganti: { name: 'Pengganti', cols: ['status', 'nomat', 'sku', 'chg', 'fhq', 'oi', 'succ', 'act'], flt: 'all', hint: 'Nomat lama berhenti dan diganti Nomat baru: isi Nomat baru di baris Nomat lama. Histori pindah penuh.' },
+  bebas: { name: 'Kolom bebas', cols: ['nomat', 'sku', 'brand', 'cat', 'free', 'add'], flt: 'all', hint: 'Kolom sendiri per Nomat seperti di Excel: ketik nama di + Kolom baru, isi per sel, atau tempel satu kolom dari Excel ke sel pertama.' }
+};
+var MM_HIDEABLE = [['chg', 'Perubahan'], ['brand', 'Brand'], ['cat', 'Kategori'], ['fam', 'Famili closing'], ['fhq', 'Forecast HQ'], ['oi', 'Order in'], ['bom', 'BOM bahan baku']];
+function mmView() { return MM_VIEWS[state.mmView] ? state.mmView : 'semua'; }
+function mmHidden() { return state.mmHide || { brand: 1, cat: 1, fam: 1, bom: 1 }; }
+function mmAddCol(name) {
+  name = String(name || '').trim(); if (!name) return false;
+  if (/^(nomat|histori_dari|histori_persen|musim_aktif)$/i.test(name)) { toast('Nama itu dipakai sistem. Pilih nama lain.'); return false; }
+  if (fcols().indexOf(name) >= 0) { toast('Kolom ' + name + ' sudah ada.'); return false; }
+  var F = state.freeCols = state.freeCols || { cols: [], v: {} }; F.cols = (F.cols || []).concat([name]); F.v = F.v || {};
+  saveMat(); renderAll(); return true;
+}
 function renderMat(m) {
   var L = m.latest, fut = m.future, recent = m.closingMonths.slice(-3), ix = state.mat ? matIdx() : null, ed = state.matEdits || {}, used = {};
   var rows = m.all.map(function (s) {
@@ -5759,38 +5782,48 @@ function renderMat(m) {
     else if (flt === 'hilang') { if (r.inData) return false; }
     else if (flt === 'manual') { if (!r.e) return false; }
     else if (flt === 'npd') { if (!(state.skuRef || {})[r.key]) return false; }
+    else if (flt === 'npdcand') { if (!((state.skuRef || {})[r.key] || (r.s && (r.s.added || (r.s.cls && r.s.cls.code === 'NPD'))))) return false; }
+    else if (flt === 'succ') { if (!r.succ) return false; }
     else if (flt === 'musim') { if (!(state.season || {})[r.key]) return false; }
     if (!q) return true;
     var t = normName([r.nomat, r.art, r.name, r.brand, r.category, r.family, r.succ].concat(freeVals(freeOf(r.key))).concat(r.s ? Object.keys(r.s.nomatHist || {}) : []).join(' '));
     return q.split(' ').every(function (w) { return t.indexOf(w) >= 0; });
   });
   list.sort(function (a, b) { var fa = a.flags.some(function (f) { return f[0] === 'bad'; }) ? 0 : 1, fb = b.flags.some(function (f) { return f[0] === 'bad'; }) ? 0 : 1; return fa - fb || String(a.brand || '').localeCompare(String(b.brand || '')) || String(a.category || a.family || '').localeCompare(String(b.category || b.family || '')) || String(a.name || '').localeCompare(String(b.name || '')); });
-  var FC = fcols(), RF = state.skuRef || {}, SE = state.season || {}, RH = !!state.rmHide, B = state.bom || {}, NCm = (RH ? 11 : 15) + 2 + FC.length;
+  var FC = fcols(), RF = state.skuRef || {}, SE = state.season || {}, B = state.bom || {}, V = mmView(), HID = mmHidden();
   var fvOpt = FC.map(function (c, i) { return '<datalist id="mmfv' + i + '">' + uniq(Object.keys((state.freeCols || {}).v || {}).map(function (k) { return state.freeCols.v[k][c]; })).map(function (v) { return '<option value="' + esc(v) + '">'; }).join('') + '</datalist>'; }).join('');
   var bomIn = function (k, f, ph, wide) { var b = B[k] || {}, v = b[f]; return '<td' + (wide ? '' : ' class="num"') + '><input type="text" class="bomin' + (wide ? ' w' : '') + '" data-bom="' + esc(k) + '" data-bf="' + f + '" value="' + esc(v === undefined || v === null ? '' : wide ? v : String(v).replace('.', ',')) + '" placeholder="' + ph + '"' + (wide ? '' : ' inputmode="decimal"') + ' aria-label="BOM ' + f + ' ' + esc(k) + '"></td>'; };
-  var t = '<thead><tr><th>Status</th><th>Nomat</th><th>SKU</th><th>Perubahan</th><th>Brand</th><th>Kategori</th><th>Famili closing</th><th class="num">Forecast HQ ' + (fut[0] ? monthLabel(fut[0]) : 'M+1') + '</th><th class="num">Order in ' + (L ? monthLabel(L) : '') + '</th><th>Nomat pengganti</th>' +
-    '<th class="attrh" title="SKU baru (NPD), mis. ganti kemasan: ambil histori order in Nomat lama × persen untuk bulan sebelum order in-nya sendiri. Nomat lama tetap aktif.">Histori dari Nomat<br><small>Nomat lama · %</small></th>' +
-    '<th class="attrh" title="Bulan SKU dijual, mis. Feb-Apr, 11-1, 2027-02..2027-04. Di luar musim: forecast, buffer dan PP 0, bulan itu tidak dipakai model, status nonaktif.">Musim aktif<br><small>kosong = sepanjang tahun</small></th>' +
-    FC.map(function (c, i) { return '<th class="freeh">' + esc(c) + ' <button type="button" class="ib" data-fcdel="' + i + '" title="Hapus kolom ' + esc(c) + '" aria-label="Hapus kolom ' + esc(c) + '">✕</button></th>'; }).join('') +
-    (RH ? '' : '<th class="num bomh" title="Berapa pcs karton kemasan untuk 1 karton produk (biasanya 1)">BOM karton<br><small>pcs / ctn</small></th><th class="num bomh" title="Kg plastik untuk 1 karton produk">BOM plastik<br><small>kg / ctn</small></th><th class="num bomh" title="Kg jumbo roll (kertas tisu) untuk 1 karton produk">BOM jumbo roll<br><small>kg / ctn</small></th><th class="bomh">Deskripsi BOM</th>') + '<th></th></tr></thead><tbody>';
-  list.slice(0, 500).forEach(function (r) {
-    var auto = r.auto || 'aktif';
-    t += '<tr class="st-' + r.st + '"><td style="white-space:nowrap"><select data-mms="' + esc(r.key) + '" aria-label="Status ' + esc(r.nomat || r.key) + '"><option value="">' + (r.mst ? 'Master' : 'Dari data') + ' (' + (auto === 'aktif' ? 'Aktif' : 'Nonaktif') + ')</option><option value="aktif"' + (r.e && r.e.status === 'aktif' ? ' selected' : '') + '>Aktif</option><option value="nonaktif"' + (r.e && r.e.status === 'nonaktif' ? ' selected' : '') + '>Nonaktif</option></select>' + (r.e && r.e.status ? ' <span class="sub">manual</span>' : '') + '</td>' +
-      '<td class="col">' + esc(r.nomat || '–') + (r.art ? '<span class="code" style="display:block">' + esc(r.art) + '</span>' : '') + '</td>' +
-      '<td><span class="nm" title="' + esc(r.name || '') + '">' + esc(r.name || '(tanpa nama)') + '</span></td>' +
-      '<td class="wr">' + (r.flags.length ? r.flags.map(function (f) { return '<span class="pill p-' + f[0] + ' flag">' + esc(f[1]) + '</span>'; }).join('') : '<span class="sub">–</span>') + '</td><td>' + esc(r.brand || '–') + '</td><td>' + esc(r.category || '–') + '</td><td>' + esc(r.family ? titleCase(r.family) : '–') + '</td>' +
-      '<td class="num">' + n(r.fhq) + '</td><td class="num">' + n(r.oi) + '</td>' +
-      '<td><input type="text" list="cekCodes" data-mmsucc="' + esc(r.key) + '" value="' + esc(r.succ || '') + '" placeholder="Nomat baru" aria-label="Nomat pengganti untuk ' + esc(r.nomat || r.key) + '"></td>' +
-      '<td style="white-space:nowrap"><input type="text" class="refin" list="cekCodes" data-mmref="' + esc(r.key) + '" value="' + esc(RF[r.key] ? RF[r.key].from : '') + '" placeholder="Nomat lama" aria-label="Histori dari Nomat untuk ' + esc(r.nomat || r.key) + '"><input type="text" class="pctin" data-mmpct="' + esc(r.key) + '" value="' + (RF[r.key] ? RF[r.key].pct : '') + '" placeholder="100" inputmode="decimal" aria-label="Persen histori untuk ' + esc(r.nomat || r.key) + '">%</td>' +
-      (function () { var sp = SE[r.key] ? seasonParse(SE[r.key].spec) : null; return '<td><input type="text" class="seain' + (sp && !sp.ok ? ' bad' : '') + '" data-mmsea="' + esc(r.key) + '" value="' + esc(SE[r.key] ? SE[r.key].spec : '') + '" placeholder="mis. Feb-Apr" title="' + esc(sp ? (sp.ok ? 'Aktif: ' + sp.label : 'Tidak terbaca: ' + (sp.bad.join(', ') || 'semua bulan')) : 'Kosong = sepanjang tahun') + '" aria-label="Musim aktif ' + esc(r.nomat || r.key) + '"></td>'; })() +
-      FC.map(function (c, i) { return '<td><input type="text" class="freein" list="mmfv' + i + '" data-mmfree="' + esc(r.key) + '" data-fc="' + i + '" value="' + esc(freeOf(r.key)[c] || '') + '" aria-label="' + esc(c) + ' ' + esc(r.nomat || r.key) + '"></td>'; }).join('') +
-      (RH ? '' : bomIn(r.key, 'ct', 'pcs') + bomIn(r.key, 'pl', 'kg') + bomIn(r.key, 'jr', 'kg') + bomIn(r.key, 'desc', 'mis. karton 5 ply, plastik PE 40 mic', true)) +
-      '<td style="white-space:nowrap">' + (r.inData ? '<a href="#" class="go" data-mmgo="' + esc(r.s.key) + '">Forecast ›</a>' : '') + (r.s && r.s.added ? ' <button type="button" class="v-btn sm" data-mmdel="' + esc(r.s.added.key) + '" title="Hapus SKU yang ditambah manual">Hapus</button>' : '') + '</td></tr>';
-  });
-  if (!list.length) t += '<tr><td colspan="' + NCm + '" class="sub">Tidak ada material untuk saringan ini.</td></tr>';
+  var lab = function (r) { return esc(r.nomat || r.key); };
+  // columns: [id, header html, cell(r)]; the view picks the ids, the Kolom menu hides the hideable ones
+  var C = {
+    status: ['<th>Status</th>', function (r) { var auto = r.auto || 'aktif'; return '<td style="white-space:nowrap"><select data-mms="' + esc(r.key) + '" aria-label="Status ' + lab(r) + '"><option value="">' + (r.mst ? 'Master' : 'Dari data') + ' (' + (auto === 'aktif' ? 'Aktif' : 'Nonaktif') + ')</option><option value="aktif"' + (r.e && r.e.status === 'aktif' ? ' selected' : '') + '>Aktif</option><option value="nonaktif"' + (r.e && r.e.status === 'nonaktif' ? ' selected' : '') + '>Nonaktif</option></select>' + (r.e && r.e.status ? ' <span class="sub">manual</span>' : '') + '</td>'; }],
+    nomat: ['<th>Nomat</th>', function (r) { return '<td class="col">' + esc(r.nomat || '–') + (r.art ? '<span class="code" style="display:block">' + esc(r.art) + '</span>' : '') + '</td>'; }],
+    sku: ['<th>SKU</th>', function (r) { return '<td><span class="nm" title="' + esc(r.name || '') + '">' + esc(r.name || '(tanpa nama)') + '</span></td>'; }],
+    chg: ['<th>Perubahan</th>', function (r) { return '<td class="wr">' + (r.flags.length ? r.flags.map(function (f) { return '<span class="pill p-' + f[0] + ' flag">' + esc(f[1]) + '</span>'; }).join('') : '<span class="sub">–</span>') + '</td>'; }],
+    brand: ['<th>Brand</th>', function (r) { return '<td>' + esc(r.brand || '–') + '</td>'; }],
+    cat: ['<th>Kategori</th>', function (r) { return '<td>' + esc(r.category || '–') + '</td>'; }],
+    fam: ['<th>Famili closing</th>', function (r) { return '<td>' + esc(r.family ? titleCase(r.family) : '–') + '</td>'; }],
+    fhq: ['<th class="num">Forecast HQ ' + (fut[0] ? monthLabel(fut[0]) : 'M+1') + '</th>', function (r) { return '<td class="num">' + n(r.fhq) + '</td>'; }],
+    oi: ['<th class="num">Order in ' + (L ? monthLabel(L) : '') + '</th>', function (r) { return '<td class="num">' + n(r.oi) + '</td>'; }],
+    succ: ['<th title="Nomat lama berhenti dan diganti: isi Nomat baru di baris Nomat lama. Histori pindah penuh, Nomat lama keluar dari total.">Nomat pengganti</th>', function (r) { return '<td><input type="text" list="cekCodes" data-mmsucc="' + esc(r.key) + '" value="' + esc(r.succ || '') + '" placeholder="Nomat baru" aria-label="Nomat pengganti untuk ' + lab(r) + '"></td>'; }],
+    ref: ['<th class="attrh" title="SKU baru (NPD), mis. ganti kemasan: ambil histori order in Nomat lama × persen untuk bulan sebelum order in-nya sendiri. 100% = sama persis, 60% = 60% dari order in Nomat lama. Nomat lama tetap aktif.">Histori dari Nomat<br><small>Nomat lama · % (kosong = 100)</small></th>', function (r) { return '<td style="white-space:nowrap"><input type="text" class="refin" list="cekCodes" data-mmref="' + esc(r.key) + '" value="' + esc(RF[r.key] ? RF[r.key].from : '') + '" placeholder="Nomat lama" aria-label="Histori dari Nomat untuk ' + lab(r) + '"><input type="text" class="pctin" data-mmpct="' + esc(r.key) + '" value="' + (RF[r.key] ? RF[r.key].pct : '') + '" placeholder="100" inputmode="decimal" aria-label="Persen histori untuk ' + lab(r) + '">%</td>'; }],
+    sea: ['<th class="attrh" title="Bulan SKU dijual, mis. Feb-Apr, 11-1, 2027-02..2027-04. Di luar musim: forecast, buffer dan PP 0, bulan itu tidak dipakai model, status nonaktif.">Musim aktif<br><small>kosong = sepanjang tahun</small></th>', function (r) { var sp = SE[r.key] ? seasonParse(SE[r.key].spec) : null; return '<td><input type="text" class="seain' + (sp && !sp.ok ? ' bad' : '') + '" data-mmsea="' + esc(r.key) + '" value="' + esc(SE[r.key] ? SE[r.key].spec : '') + '" placeholder="mis. Feb-Apr" title="' + esc(sp ? (sp.ok ? 'Aktif: ' + sp.label : 'Tidak terbaca: ' + (sp.bad.join(', ') || 'semua bulan')) : 'Kosong = sepanjang tahun') + '" aria-label="Musim aktif ' + lab(r) + '"></td>'; }],
+    bom: ['<th class="num bomh" title="Berapa pcs karton kemasan untuk 1 karton produk (biasanya 1)">BOM karton<br><small>pcs / ctn</small></th><th class="num bomh" title="Kg plastik untuk 1 karton produk">BOM plastik<br><small>kg / ctn</small></th><th class="num bomh" title="Kg jumbo roll (kertas tisu) untuk 1 karton produk">BOM jumbo roll<br><small>kg / ctn</small></th><th class="bomh">Deskripsi BOM</th>', function (r) { return bomIn(r.key, 'ct', 'pcs') + bomIn(r.key, 'pl', 'kg') + bomIn(r.key, 'jr', 'kg') + bomIn(r.key, 'desc', 'mis. karton 5 ply, plastik PE 40 mic', true); }, 4],
+    free: [FC.map(function (c, i) { return '<th class="freeh">' + esc(c) + ' <button type="button" class="ib" data-fcdel="' + i + '" title="Hapus kolom ' + esc(c) + '" aria-label="Hapus kolom ' + esc(c) + '">✕</button></th>'; }).join(''), function (r) { return FC.map(function (c, i) { return '<td><input type="text" class="freein" list="mmfv' + i + '" data-mmfree="' + esc(r.key) + '" data-fc="' + i + '" value="' + esc(freeOf(r.key)[c] || '') + '" aria-label="' + esc(c) + ' ' + lab(r) + '"></td>'; }).join(''); }, FC.length],
+    act: ['<th></th>', function (r) { return '<td style="white-space:nowrap">' + (r.inData ? '<a href="#" class="go" data-mmgo="' + esc(r.s.key) + '">Forecast ›</a>' : '') + (r.s && r.s.added ? ' <button type="button" class="v-btn sm" data-mmdel="' + esc(r.s.added.key) + '" title="Hapus SKU yang ditambah manual">Hapus</button>' : '') + '</td>'; }],
+    add: ['<th class="addh"><input type="text" id="mmNewCol" placeholder="+ Kolom baru" aria-label="Nama kolom bebas baru, tekan Enter" title="Ketik nama kolom lalu Enter. Isi per baris, atau tempel satu kolom dari Excel ke sel pertama."><button type="button" class="ib" id="mmMoreCol" title="Tempel atau unggah beberapa kolom dari Excel" aria-label="Tempel atau unggah kolom">⋯</button></th>', function () { return '<td class="addc"></td>'; }]
+  };
+  var ids = MM_VIEWS[V].cols.filter(function (id) { return !HID[id] && (id !== 'free' || FC.length); });
+  var NCm = ids.reduce(function (a, id) { return a + (C[id][2] === undefined ? 1 : C[id][2]); }, 0);
+  var t = '<thead><tr>' + ids.map(function (id) { return C[id][0]; }).join('') + '</tr></thead><tbody>';
+  list.slice(0, 500).forEach(function (r) { t += '<tr class="st-' + r.st + '" data-mmrow="' + esc(r.key) + '">' + ids.map(function (id) { return C[id][1](r); }).join('') + '</tr>'; });
+  if (!list.length) t += '<tr><td colspan="' + NCm + '" class="sub">Tidak ada material untuk saringan ini.' + (V === 'npd' ? ' Belum ada SKU baru: tambahkan lewat <b>+ Tambah SKU</b>, atau pilih <i>Semua material</i> di saringan untuk mengisi Nomat lain.' : '') + '</td></tr>';
   if (list.length > 500) t += '<tr><td colspan="' + NCm + '" class="sub">' + (list.length - 500) + ' material lagi. Persempit dengan pencarian.</td></tr>';
   $('mmTable').innerHTML = t + '</tbody>';
   $('mmFv').innerHTML = fvOpt;
+  $('mmViewSeg').innerHTML = Object.keys(MM_VIEWS).map(function (k) { return '<button type="button" data-mmv="' + k + '" class="' + (k === V ? 'on' : '') + '" title="' + esc(MM_VIEWS[k].hint) + '">' + MM_VIEWS[k].name + '</button>'; }).join('');
+  $('mmViewHint').textContent = MM_VIEWS[V].hint;
+  $('mmColList').innerHTML = MM_HIDEABLE.filter(function (x) { return MM_VIEWS[V].cols.indexOf(x[0]) >= 0; }).map(function (x) { return '<label class="chk"><input type="checkbox" data-mmcol="' + x[0] + '"' + (HID[x[0]] ? '' : ' checked') + '> ' + x[1] + '</label>'; }).join('') || '<span class="sub">Tidak ada kolom yang bisa disembunyikan di tampilan ini.</span>';
 }
 function mmSet(key, patch) {
   var ed = state.matEdits = state.matEdits || {}, e = ed[key] || {}, mr = state.mat ? matIdx().nomat[key] : null;
@@ -5832,7 +5865,7 @@ function mmAddForm(on) {
     '<div class="seg" id="mmAddK"><span>Jenis</span><button type="button" class="on" data-npd="1">SKU baru (NPD, belum ada histori)</button><button type="button" data-npd="0">SKU yang sudah ada tapi belum di data</button></div>' +
     '<div class="mmf">' + f('mmaNomat', 'Nomat *', 'mis. 69921999', ' inputmode="numeric"') + f('mmaArt', 'Kode artikel', 'opsional') + f('mmaName', 'Nama SKU *', 'mis. Paseo Facial 250s Travel') + f('mmaBrand', 'Brand', 'mis. PASEO', ' list="mmaBrands"') + f('mmaCat', 'Kategori', 'mis. FACIAL', ' list="mmaCats"') + f('mmaFam', 'Famili closing', 'opsional') + f('mmaNw', 'Berat bersih (kg / ctn)', 'untuk ton & jadwal mesin', ' inputmode="decimal"') + '</div>' +
     '<div class="mmf">' + f('mmaRef', 'Histori dari Nomat (lama)', 'mis. Nomat kemasan lama', ' list="cekCodes" inputmode="numeric"') + f('mmaPct', 'Persen histori', '100', ' inputmode="decimal"') + f('mmaSea', 'Musim aktif', 'kosong = sepanjang tahun, mis. Feb-Apr') + '</div>' +
-    (state.rmHide ? '' : '<div class="mmf"><span class="sub" style="flex-basis:100%">BOM per karton produk (boleh kosong dulu)</span>' + f('mmaCt', 'Karton (pcs / ctn)', 'mis. 1', ' inputmode="decimal"') + f('mmaPl', 'Plastik (kg / ctn)', 'mis. 0,12', ' inputmode="decimal"') + f('mmaJr', 'Jumbo roll (kg / ctn)', 'mis. 3,6', ' inputmode="decimal"') + f('mmaDesc', 'Deskripsi BOM', 'mis. karton 5 ply, PE 40 mic') + '</div>') +
+    (state.rmHide || mmHidden().bom ? '' : '<div class="mmf"><span class="sub" style="flex-basis:100%">BOM per karton produk (boleh kosong dulu)</span>' + f('mmaCt', 'Karton (pcs / ctn)', 'mis. 1', ' inputmode="decimal"') + f('mmaPl', 'Plastik (kg / ctn)', 'mis. 0,12', ' inputmode="decimal"') + f('mmaJr', 'Jumbo roll (kg / ctn)', 'mis. 3,6', ' inputmode="decimal"') + f('mmaDesc', 'Deskripsi BOM', 'mis. karton 5 ply, PE 40 mic') + '</div>') +
     '<p class="sub" style="margin:2px 0 8px">SKU ini ikut ke Forecast, Saran buffer dan Rencana produksi. SKU baru belum punya histori: isi <b>Histori dari Nomat</b> (mis. Nomat kemasan lama) agar model AI bisa meramal dari order in Nomat itu, dan/atau isi Forecast HQ-nya langsung di lembar Forecast (ketik di sel).</p>' +
     '<div style="display:flex;gap:6px"><button type="button" class="pri" id="mmAddSave">Simpan SKU</button><button type="button" id="mmAddCancel">Batal</button><span class="sub" id="mmAddMsg" role="status"></span></div>' +
     '<datalist id="mmaBrands">' + uniq((CH.mm || []).map(function (r) { return r.brand; })).map(function (b) { return '<option value="' + esc(b) + '">'; }).join('') + '</datalist>' +
@@ -5869,14 +5902,48 @@ $('mmPanel').addEventListener('click', function (e) {
 function mmFreeForm(on) {
   var el = $('mmFree'); if (!el) { $('mmStats').insertAdjacentHTML('beforebegin', '<div class="mmadd" id="mmFree" hidden></div>'); el = $('mmFree'); }
   if (!on) { el.hidden = true; el.innerHTML = ''; return; }
-  el.innerHTML = '<div class="ph"><h3>Kolom bebas</h3><button type="button" class="ib" id="mmFreeX" aria-label="Tutup">✕</button></div>' +
+  el.innerHTML = '<div class="ph"><h3>Tempel atau unggah kolom</h3><button type="button" class="ib" id="mmFreeX" aria-label="Tutup">✕</button></div>' +
     '<p class="sub" style="margin:0 0 6px">Kolom sendiri per Nomat, seperti tabel lookup di Excel: mis. <i>Saluran</i> (MT / GT), <i>Pergerakan</i> (slow moving / fast moving), <i>Promo</i>. Dipakai untuk saringan dan kelompok di lembar Forecast dan ikut tersimpan di file histori (lembar atribut_sku). Tidak mengubah angka forecast.</p>' +
     '<div class="mmf"><label class="field">Nama kolom baru (kosong)<input type="text" id="mmFreeName" placeholder="mis. Saluran"></label></div>' +
     '<label class="field" style="display:block">atau tempel dari Excel (baris pertama = judul: Nomat lalu kolom-kolomnya)<textarea id="mmFreePaste" placeholder="Nomat&#9;Saluran&#9;Pergerakan&#10;69920852&#9;MT&#9;Slow moving&#10;69920853&#9;GT&#9;Fast moving"></textarea></label>' +
-    '<div style="display:flex;gap:6px;margin-top:6px"><button type="button" class="pri" id="mmFreeSave">Simpan</button><button type="button" id="mmFreeCancel">Batal</button><span class="sub" id="mmFreeMsg" role="status"></span></div>';
+    '<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><button type="button" class="pri" id="mmFreeSave">Simpan</button><button type="button" id="mmFreeCancel">Batal</button><button type="button" id="mmFreeUp" title="Excel / CSV: kolom Nomat, lalu kolom apa saja (juga Histori dari, Persen, Musim aktif)">atau unggah Excel / CSV…</button><span class="sub" id="mmFreeMsg" role="status"></span></div>';
   el.hidden = false; $('mmFreeName').focus();
 }
-$('mmFreeB').addEventListener('click', function () { mmFreeForm(!$('mmFree') || $('mmFree').hidden); });
+// views, column menu, + Kolom baru (Enter), ⋯ (paste / upload form)
+$('mmPanel').addEventListener('click', function (e) {
+  var v = e.target.closest('[data-mmv]'); if (v) { state.mmView = v.getAttribute('data-mmv'); $('mmFlt').value = MM_VIEWS[state.mmView].flt; if (state.mmView === 'musim' && Object.keys(state.season || {}).length) $('mmFlt').value = 'musim'; saveMat(); renderMat(CH.model); return; }
+  if (e.target.id === 'mmMoreCol') { mmFreeForm(!$('mmFree') || $('mmFree').hidden); return; }
+  if (e.target.id === 'mmFreeUp') { $('mmAttrF').click(); }
+});
+$('mmPanel').addEventListener('change', function (e) {
+  var c = e.target.getAttribute('data-mmcol'); if (c === null) return;
+  var H = state.mmHide = JSON.parse(JSON.stringify(mmHidden())); if (e.target.checked) delete H[c]; else H[c] = 1;
+  saveMat(); renderMat(CH.model);
+});
+$('mmPanel').addEventListener('keydown', function (e) { if (e.target.id === 'mmNewCol' && e.key === 'Enter') { e.preventDefault(); var nm = e.target.value; if (mmAddCol(nm)) toast('Kolom ' + nm.trim() + ' ditambahkan. Isi per sel atau tempel satu kolom dari Excel ke sel pertama.'); } });
+document.addEventListener('click', function (e) { var d = document.querySelector('.mmcols[open]'); if (d && !d.contains(e.target)) d.open = false; });
+// Excel-style paste into Histori dari / % / Musim / free-column cells: lines go down the visible rows, tabs go right across free columns
+$('mmTable').addEventListener('paste', function (e) {
+  var el = e.target, txt = (e.clipboardData || window.clipboardData).getData('text');
+  if (!txt || !/[\n\t]/.test(txt.replace(/\s+$/, ''))) return;
+  var attr = ['data-mmfree', 'data-mmref', 'data-mmpct', 'data-mmsea'].filter(function (a) { return el.hasAttribute(a); })[0]; if (!attr) return;
+  e.preventDefault();
+  var lines = txt.replace(/\r/g, '').replace(/\n+$/, '').split('\n').map(function (l) { return l.split('\t'); });
+  var rows = Array.prototype.slice.call($('mmTable').querySelectorAll('tbody tr[data-mmrow]')), i0 = rows.indexOf(el.closest('tr')), FCn = fcols(), fc0 = +el.getAttribute('data-fc'), nSet = 0, bad = 0;
+  lines.forEach(function (cells, j) {
+    var tr = rows[i0 + j]; if (!tr) return; var k = tr.getAttribute('data-mmrow');
+    cells.forEach(function (v, ci) {
+      v = v.trim();
+      if (attr === 'data-mmfree') { var col = FCn[fc0 + ci]; if (col) { freeSet(k, col, v); nSet++; } }
+      else if (ci === 0) {
+        if (attr === 'data-mmref') { if (v && cleanCode(v) === k) { bad++; return; } refSet(k, v, null); nSet++; }
+        else if (attr === 'data-mmpct') { var pv = v === '' ? 100 : parseNumber(v.replace('%', ''))[0]; if (!(pv > 0) || !(state.skuRef || {})[k]) { bad++; return; } state.skuRef[k].pct = pv; nSet++; }
+        else { var sp = seasonParse(v); if (v && !sp.ok) { bad++; return; } seasonSet(k, v); nSet++; }
+      }
+    });
+  });
+  saveMat(); renderAll(); toast(nSet + ' sel diisi dari tempelan' + (bad ? ', ' + bad + ' dilewati (tidak terbaca)' : '') + '. Tekan ↶ Urungkan bila keliru.');
+});
 $('mmPanel').addEventListener('click', function (e) {
   var t = e.target;
   if (t.id === 'mmFreeX' || t.id === 'mmFreeCancel') { mmFreeForm(false); return; }
@@ -5889,10 +5956,8 @@ $('mmPanel').addEventListener('click', function (e) {
     saveMat(); mmFreeForm(false); renderAll(); toast('Atribut SKU diisi: ' + attrMsg(res) + '.'); return;
   }
   if (!name) { msg.textContent = 'Isi nama kolom, atau tempel data dari Excel.'; return; }
-  if (/^(nomat|histori_dari|histori_persen|musim_aktif)$/i.test(name)) { msg.textContent = 'Nama itu dipakai sistem. Pilih nama lain.'; return; }
-  if (fcols().indexOf(name) >= 0) { msg.textContent = 'Kolom ' + name + ' sudah ada.'; return; }
-  var F = state.freeCols = state.freeCols || { cols: [], v: {} }; F.cols = (F.cols || []).concat([name]); F.v = F.v || {};
-  saveMat(); mmFreeForm(false); renderAll(); toast('Kolom ' + name + ' ditambahkan di tabel Material master. Isi per Nomat, atau salin dari Excel lewat + Kolom bebas.');
+  if (!mmAddCol(name)) return;
+  mmFreeForm(false); toast('Kolom ' + name + ' ditambahkan di tabel Material master. Isi per Nomat, atau salin dari Excel lewat + Kolom bebas.');
 });
 $('mmAttrF').addEventListener('change', function (e) { if (e.target.files.length) readFiles(e.target.files, 'attr'); e.target.value = ''; });
 $('mmDl').addEventListener('click', function () {

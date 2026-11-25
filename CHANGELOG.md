@@ -5,6 +5,10 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
 
 ## 2026-11-25
 
+- **Material master shorter.** *Tampilan* per use case: Semua, SKU baru (NPD), Musiman, Pengganti, Kolom bebas, each with
+  only its columns (and a matching row filter). *Kolom ▾* hides columns; Brand, Kategori, Famili closing and BOM are hidden
+  by default. Free columns are added from the last column (*+ Kolom baru*, Enter) like Excel, with ⋯ for pasting or uploading
+  several columns; pasting a column from Excel into a cell fills it down (Histori dari, %, Musim aktif, free columns).
 - **Brand and Kategori from the closing sheet.** The closing parser never read the closing's *Brand* / *Category* columns
   (only Forecast HQ and the material master were used), and the combined history dropped them. Both are now read, kept in
   the history file (sheet `bulanan`) and in `ingest_closing.py` (existing SQLite stores get the two columns added). Priority:
