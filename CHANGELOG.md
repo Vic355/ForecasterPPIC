@@ -5,6 +5,10 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
 
 ## 2026-11-25
 
+- **Rencana produksi, less clutter.** The SKU panel in Mode Manual is a compact list (one row per SKU: status dot, name,
+  Nomat, PP, shortfall; click for details), so dozens of SKUs fit without scrolling. **Sembunyikan ringkasan** hides the
+  summary cards and alert ribbon above the grid while arranging (on by default in Mode Manual). The demo now loads sample
+  machines, including Pop Up, and removes them again when the demo is left.
 - **Manual production planning, machine output and Balance Production.** Rencana produksi in *Manual* mode no longer makes
   suggestions: the grid shows only the machines (or *Tidak ada data mesin* when there is no machine list, instead of sample
   machines), *Jalankan jadwal otomatis* is hidden, and the left panel lists the SKUs to schedule (PP, area mesin, stock cover,
