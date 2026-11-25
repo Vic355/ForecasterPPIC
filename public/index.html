@@ -904,6 +904,15 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
 .mlt td { vertical-align: middle; } .mlt input { min-width: 0; } .mlt input.num { width: 88px; }
 .mlt td:nth-child(1) input { width: 150px; } .mlt td:nth-child(2) input { width: 80px; } .mlt td:nth-child(3) input { width: 180px; } .mlt td:nth-child(10) input { width: 160px; }
 .mlt th { white-space: normal; vertical-align: bottom; max-width: 110px; }
+/* Input data: demo banner */
+.demoban { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; border: 2px solid var(--acc); background: var(--acc2); border-radius: 12px; padding: 14px 18px; margin: 6px 0 12px; }
+.demoban .dbi { width: 42px; height: 42px; border-radius: 50%; background: var(--acc); color: var(--paper); display: grid; place-items: center; font-size: 18px; }
+.demoban b { display: block; font-size: 17px; margin-bottom: 2px; } .demoban span { font-size: 14px; color: var(--ink); line-height: 1.4; }
+.demoban .dbb { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; } .demoban .dbb .sub { font-size: 12.5px; color: var(--mut); }
+.demoban .v-btn.big { font-size: 15.5px; padding: 10px 18px; }
+.demoban.on { border-width: 1px; border-color: var(--mid); background: var(--warnbg); padding: 10px 14px; } .demoban.on .dbi { width: 30px; height: 30px; font-size: 13px; background: var(--mid); } .demoban.on b { font-size: 15px; }
+.demoban.on .dbb { flex-direction: row; }
+@media (max-width: 900px) { .demoban { grid-template-columns: auto 1fr; } .demoban .dbb { grid-column: 1 / -1; align-items: flex-start; } }
 </style>
 </head>
 <body>
@@ -1038,6 +1047,7 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
   <section class="panel" aria-label="Masukkan data">
     <div class="ph"><h2>Masukkan data</h2>
       <label class="field" for="plant" style="flex-direction:row;align-items:center;gap:8px">Kode plant<input type="text" id="plant" value="7079" inputmode="numeric" style="width:90px"></label></div>
+    <div id="demoBan"></div>
     <label class="drop bigdrop" data-kind="auto"><input type="file" multiple accept=".xlsx,.xlsm,.xls,.gz,.ppic,.csv" data-kind="auto"><span class="bd-i" aria-hidden="true">⇩</span><span><b>Tarik file ke sini</b> atau klik untuk memilih: closing, Forecast HQ, Stock Level Check, data mesin, material master, CSV Chronos atau histori (.ppic.gz). Jenis dan bulan dikenali dari nama file.</span></label>
     <div class="igtabs" id="igTabs" aria-label="Grup data"><button type="button" data-ig="" class="on" aria-pressed="true">Semua grup</button><button type="button" data-ig="sales">Penjualan &amp; forecast <span class="igc" id="igc_sales"></span></button><button type="button" data-ig="stock">Stok &amp; kelas SKU <span class="igc" id="igc_stock"></span></button><button type="button" data-ig="master">Master data <span class="igc" id="igc_master"></span></button></div>
     <div class="igrp" data-ig="sales">
@@ -6724,7 +6734,7 @@ function d10Slots() {
   set('Mesin', nM ? nM + ' mesin, ' + master().length + ' area' + (state.skuMach ? ' · ' + Object.keys(state.skuMach).length + ' SKU → mesin' : '') : '');
   set('Mm', state.mat ? n(state.mat.rows.length) + ' material' : '');
   d10Groups();
-  $('useSample').hidden = d10HasData() && !state.sample; $('useSample').textContent = state.sample ? 'Muat ulang contoh' : 'Muat contoh (demo)';
+  $('useSample').hidden = true; d10DemoBan();
   set('Ch', state.chronos ? (state.chronos.model || 'Chronos') + ' · ' + n(state.chronos.rows.length) + ' baris' : '');
 }
 // Input data groups: count of filled inputs per group, and the group filter (Semua / Penjualan / Stok / Master)
@@ -6740,6 +6750,20 @@ $('igTabs').addEventListener('click', function (e) {
   var b = e.target.closest('[data-ig]'); if (!b) return; D10.ig = b.getAttribute('data-ig');
   if (D10.ig === 'master') { $('secMesin').hidden = false; d10SecBtns(); }
   d10Groups();
+});
+// Demo banner at the top of Input data: big and obvious for a new user (no data yet), a slim strip while the demo runs
+function d10DemoBan() {
+  var el = $('demoBan'); if (!el) return; var has = d10HasData();
+  if (has && !state.sample) { el.innerHTML = ''; el.className = ''; return; }
+  if (state.sample) { el.className = 'demoban on'; el.innerHTML = '<span class="dbi" aria-hidden="true">▶</span><div><b>Mode demo aktif</b><span>Yang tampil adalah data contoh, bukan data pabrik. Coba semua langkah; unggah file sendiri kapan saja untuk menggantinya.</span></div><div class="dbb"><button type="button" class="v-btn pri" data-d10go="Brief">Lihat Dashboard →</button><button type="button" class="v-btn" data-demo="exit">Keluar dari demo</button></div>'; return; }
+  el.className = 'demoban';
+  el.innerHTML = '<span class="dbi" aria-hidden="true">▶</span><div><b>Baru pertama kali? Coba dulu dengan data contoh</b><span>Satu klik memuat contoh lengkap: 3 bulan closing, Forecast HQ 3 bulan dan kelas SKU. Semua langkah (forecast, buffer, rencana produksi) bisa dicoba tanpa file sendiri, dan data contoh bisa dihapus kapan saja.</span></div>' +
+    '<div class="dbb"><button type="button" class="v-btn pri big" data-demo="go">▶ Coba data contoh (demo)</button><span class="sub">atau unggah file sendiri di bawah ↓</span></div>';
+}
+$('demoBan').addEventListener('click', function (e) {
+  var b = e.target.closest('[data-demo]'); if (!b) return;
+  if (b.getAttribute('data-demo') === 'go') $('useSample').click();
+  else { $('clearAll').click(); showTab('Input'); }
 });
 function d10SecBtns() { document.querySelectorAll('[data-sec]').forEach(function (b) { var s = $(b.getAttribute('data-sec')); if (s && b.closest('#secBar')) { b.classList.toggle('on', !s.hidden); b.setAttribute('aria-pressed', !s.hidden); } }); }
 function d10PlanStart() {
