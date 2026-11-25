@@ -106,7 +106,8 @@ and PP. Free columns are not model inputs either.
 - **Histori dari Nomat** (`state.skuRef`): new Nomat ← old Nomat × %, months before the new Nomat's first order in.
 - **Musim aktif** (`state.season`): months the SKU sells; outside them Forecast AI / buffer / PP = 0 and the months are gaps.
 - **Kolom bebas** (`state.freeCols`): user columns per Nomat for filter and grouping on the Forecast sheet.
-- Material master has views per use case (Semua, SKU baru, Musiman, Pengganti, Kolom bebas) and a Kolom menu; free columns
+- **Jenis SKU** (`state.skuClass`): Reguler, SKU baru, Musiman, Musiman + histori, Diganti; picks which inputs the Detail
+  column shows. Without a choice it follows the data. Material master has a Kolom menu; free columns
   are added in the table's last column and can be pasted from Excel down a column.
 - Saved in `ppic_mat` and in the history sheet `atribut_sku` (nomat, histori_dari, histori_persen, musim_aktif, free columns);
   the same layout can be uploaded with *Unggah atribut SKU*.
