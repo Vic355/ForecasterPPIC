@@ -5,6 +5,11 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
 
 ## 2026-11-25
 
+- **Material master: Jenis SKU.** Each Nomat gets a *Jenis SKU* (Reguler, SKU baru (NPD), Musiman, Musiman + histori,
+  Diganti), chosen or taken from its data; *Detail jenis* shows only that type's inputs (Histori dari + %, Musim aktif,
+  Nomat pengganti). Filter by Jenis in Material master, filter and group by Jenis on the Forecast sheet; saved in
+  `atribut_sku` (`jenis_sku`). *Kolom ▾* hides columns; Brand, Kategori, Famili closing and BOM are hidden by default. Free columns are added from the last column (*+ Kolom baru*, Enter) like Excel, with ⋯ for pasting or uploading
+  several columns; pasting a column from Excel into a cell fills it down (Histori dari, %, Musim aktif, free columns).
 - **Brand and Kategori from the closing sheet.** The closing parser never read the closing's *Brand* / *Category* columns
   (only Forecast HQ and the material master were used), and the combined history dropped them. Both are now read, kept in
   the history file (sheet `bulanan`) and in `ingest_closing.py` (existing SQLite stores get the two columns added). Priority:
