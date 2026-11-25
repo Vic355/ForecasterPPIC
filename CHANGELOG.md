@@ -14,6 +14,26 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
   real names are stored only encrypted (AES-GCM, passphrase key never stored) behind random code names, with an optional
   copy in Workers KV (`/api/mesin`) and dummy demo machines.
 
+- **Material master: Jenis SKU.** Each Nomat gets a *Jenis SKU* (Reguler, SKU baru (NPD), Musiman, Musiman + histori,
+  Diganti), chosen or taken from its data; *Detail jenis* shows only that type's inputs (Histori dari + %, Musim aktif,
+  Nomat pengganti). Filter by Jenis in Material master, filter and group by Jenis on the Forecast sheet; saved in
+  `atribut_sku` (`jenis_sku`). *Kolom ▾* hides columns; Brand, Kategori, Famili closing and BOM are hidden by default. Free columns are added from the last column (*+ Kolom baru*, Enter) like Excel, with ⋯ for pasting or uploading
+  several columns; pasting a column from Excel into a cell fills it down (Histori dari, %, Musim aktif, free columns).
+- **Brand and Kategori from the closing sheet.** The closing parser never read the closing's *Brand* / *Category* columns
+  (only Forecast HQ and the material master were used), and the combined history dropped them. Both are now read, kept in
+  the history file (sheet `bulanan`) and in `ingest_closing.py` (existing SQLite stores get the two columns added). Priority:
+  material master > Forecast HQ > closing.
+- **New Nomat (NPD) from an old Nomat.** Material master column *Histori dari Nomat* (+ %): a new Nomat, usually a packaging
+  change, borrows the old Nomat's order in × % for the months before its own first order in, so Holt, HQ terkoreksi, the
+  Regressor and Chronos all have a history. The old Nomat stays active. Moving the history fully (old Nomat stops) is still
+  *Nomat pengganti* on the old row. Also in *+ Tambah SKU*.
+- **Seasonal Nomat.** Column *Musim aktif* (`Feb-Apr`, `11-1`, `Jan,Mar`, `2027-02..2027-04`). Outside the season: Forecast AI,
+  buffer and PP are 0, those closing months are left out of the models' training and backtest, and the SKU shows as
+  nonaktif (musiman) in Material master. Back in season it forecasts from earlier in-season months.
+- **Free columns per Nomat.** *+ Kolom bebas* (empty column, or paste Nomat + columns from Excel) and *Unggah atribut SKU*
+  (Excel / CSV with Nomat and any columns). Used as a filter and as *Kelompok* on the Forecast sheet (view only; the models
+  keep Brand · Kategori). Saved in the browser and in the history file, sheet `atribut_sku`.
+
 ## 2026-11-24
 
 - **Lighter on small laptops and large histories.** Header and step bar can be compact or hidden (*Pengaturan → Bagian atas*;

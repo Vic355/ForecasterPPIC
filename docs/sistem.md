@@ -60,7 +60,7 @@ Kelas SKU    ─┘                                 └─> Forecast HQ vs order
 
 - **SKU key = Nomat** (nomor material). Article Code is kept alongside, used for the HQ class lookup, and used as the
   key only when Nomat is missing ("Tanpa Nomat").
-- **Groups** = Brand · Category (from Forecast HQ or the material master), falling back to Brand · Family; a switch
+- **Groups** = Brand · Category (from the closing, Forecast HQ or the material master), falling back to Brand · Family; a switch
   goes back to Brand · Family.
 - **Cek data SKU** rules (stock without HQ, red/struck-through codes, keywords, nearby similar SKU, brand mismatch,
   HQ vs order in far apart) give a status. Diskontinu and Diganti SKUs are left out of totals, accuracy and the ML;
@@ -83,6 +83,34 @@ when REV is empty, on the realised side; the Desain 10 Forecast page shows HQ or
 | **Ensemble** (Forecast AI) | browser | Weighted average, weight ∝ 1 / (WAPE + 0.05)², WAPE from each model's walk-forward one-month-ahead backtest, shrunk toward category and global WAPE |
 
 The backtest is walk-forward: each closing month is predicted only from earlier months, weights included.
+
+### 4b. What data each model reads, per SKU
+
+Every model works per **SKU key = Nomat**, from the closing rows (sheet `bulanan`, one row per Nomat per closing month) and
+the Forecast HQ files. The rows of all closings are joined by Nomat (or Article Code when Nomat is missing) into one series
+per SKU: `oi[month]` = closing column **ORDER IN**, `hq[month]` = closing column **SALES FORECAST (ORIG)** for that month,
+`fhq[month]` = Forecast HQ file *Original Sales Forecast Qty (ctn)* for M+1..M+3. Typed corrections are applied on top.
+Diskontinu / Diganti SKUs are left out; a Diganti SKU's order in is added to its successor; *Histori dari Nomat* fills a new
+Nomat's months before its own order in; seasonal months outside the season are gaps.
+
+| Model | Columns used | How |
+| --- | --- | --- |
+| HQ terkoreksi | ORDER IN, SALES FORECAST (ORIG) of the last 3 closings; Forecast HQ for the target month | ratio = Σ order in ÷ Σ HQ over 3 closings (pulled toward the all-SKU ratio when the SKU has few months, 0.3–3); forecast = Forecast HQ × ratio |
+| Regressor | the same two columns, plus the SKU's group (Brand · Kategori) and the calendar month | one model trained on all SKUs together (SKU-month rows), features: order in t-1, t-2, t-3, 3-month mean, Forecast HQ for the target month, HQ bias ratio, HQ terkoreksi, group mean order in t-1, calendar month, months of history, CV; target = order in of the target month |
+
+Other closing columns (stock, GI, outstanding, SC block, waiting, inquiry) are not model inputs; stock is used by the buffer
+and PP. Free columns are not model inputs either.
+
+## 4c. SKU attributes (Material master)
+
+- **Histori dari Nomat** (`state.skuRef`): new Nomat ← old Nomat × %, months before the new Nomat's first order in.
+- **Musim aktif** (`state.season`): months the SKU sells; outside them Forecast AI / buffer / PP = 0 and the months are gaps.
+- **Kolom bebas** (`state.freeCols`): user columns per Nomat for filter and grouping on the Forecast sheet.
+- **Jenis SKU** (`state.skuClass`): Reguler, SKU baru, Musiman, Musiman + histori, Diganti; picks which inputs the Detail
+  column shows. Without a choice it follows the data. Material master has a Kolom menu; free columns
+  are added in the table's last column and can be pasted from Excel down a column.
+- Saved in `ppic_mat` and in the history sheet `atribut_sku` (nomat, histori_dari, histori_persen, musim_aktif, free columns);
+  the same layout can be uploaded with *Unggah atribut SKU*.
 
 ## 5. Buffer (Saran buffer)
 
@@ -177,7 +205,7 @@ target above machine speed). Alert cards show the value in a large coloured badg
 | Where | What |
 | --- | --- |
 | Browser `localStorage` (`ppic_*` keys) | Corrections, SKU statuses, rules, buffer edits and strategies, Chronos rows, material master (with SKUs added by hand and BOM), plan (with *Otomatis/Manual* per month), UI settings (side panel width), Perencanaan Produksi plan and actuals (`ppic_prod`), MRP input (`ppic_mrp`) and raw materials / POs (`ppic_mrp_rm`) |
-| History file `Histori_Serang_*.xlsx` or `.ppic.gz` | Everything above plus the extracted closings. Sheets: `bulanan`, `mingguan`, `forecast_hq`, `kelas_sku`, `log`, `status_sku`, `aturan`, `koreksi`, `saran_buffer`, `forecast_ml`, `forecast_chronos`, `material_master`, `rencana_produksi`, `jadwal_produksi`, `target_harian`, `kalender_produksi`, `sku_mesin`, `kapasitas_mesin`, `kunci_mesin` |
+| History file `Histori_Serang_*.xlsx` or `.ppic.gz` | Everything above plus the extracted closings. Sheets: `bulanan`, `mingguan`, `forecast_hq`, `kelas_sku`, `log`, `status_sku`, `aturan`, `koreksi`, `saran_buffer`, `forecast_ml`, `forecast_chronos`, `material_master`, `atribut_sku`, `rencana_produksi`, `jadwal_produksi`, `target_harian`, `kalender_produksi`, `sku_mesin`, `kapasitas_mesin`, `kunci_mesin` |
 | `.ppic.gz` | Same content as the Excel, columnar JSON gzipped (~13 KB vs ~390 KB on the sample) |
 
 Uploading the history file restores the whole state. The monthly routine is: open the app, drop the last history file
