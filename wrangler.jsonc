@@ -5,6 +5,10 @@
   "compatibility_date": "2026-10-01",
   "assets": { "directory": "./public", "binding": "ASSETS" },
   "ai": { "binding": "AI" },
+  // Optional: copy of the machine master (codes + encrypted names) for /api/mesin. To turn it on run
+  //   npx wrangler kv namespace create MESIN_DB
+  // and uncomment the block below with the id it prints. Without it the app keeps machines in the browser only.
+  // "kv_namespaces": [{ "binding": "MESIN_DB", "id": "<id from the command above>" }],
   // Branch preview builds (`wrangler preview`) need their own bindings
   "previews": { "ai": { "binding": "AI" } }
 }

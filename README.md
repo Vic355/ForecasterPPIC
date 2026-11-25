@@ -7,17 +7,21 @@ PPIC Decision Support System for The Univenus Serang (plan 7079). PPIC Forecast 
 
 ## Web app
 
-`public/index.html` is a guided monthly flow of 8 steps (Desain 10, PR #8). Each step opens after **Terima dan lanjut** on
-the previous one:
+`public/index.html` is a guided monthly flow (Desain 10, PR #8). The app opens on **Input data**; the numbered steps open
+after **Terima dan lanjut** on the previous one:
 
-1. **Ringkasan**: all open alerts, where to start.
-2. **Input data**: closings, Forecast HQ, Kelas SKU, data mesin, material master, Chronos CSV (see *Input tab* below).
-3. **Material master**: active / inactive SKUs and Nomat changes.
-4. **Cek data SKU**: status rules and manual statuses.
-5. **Forecast**: Forecast HQ vs order in, HQ accuracy, bias, and **Forecast AI** (ensemble of four models) for M+1..M+3.
+- **Input data** (first screen, a group rather than a step): inputs in three groups, *Penjualan & forecast* (closings,
+  Forecast HQ, Chronos CSV), *Stok & kelas SKU* (Stock Level Check) and *Master data* (material master, **Master mesin**).
+  See *Input tab* below.
+- **Dashboard** (was Ringkasan): key numbers, order in vs Forecast HQ / Forecast AI per month (hover for values, table
+  view), the biggest brand · category groups for M+1, stock vs buffer, plan vs machine capacity, SKU status, open alerts.
+
+1. **Material master**: active / inactive SKUs and Nomat changes.
+2. **Cek data SKU**: status rules and manual statuses.
+3. **Forecast**: Forecast HQ vs order in, HQ accuracy, bias, and **Forecast AI** (ensemble of four models) for M+1..M+3.
    Clicking a card opens a chart of that measure with the SKUs behind it.
-6. **Saran buffer**: buffer per SKU and PP.
-7. **Rencana produksi**: schedule per machine and day. The flow ends here; the daily plan is the separate
+4. **Saran buffer**: buffer per SKU and PP.
+5. **Rencana produksi**: schedule per machine and day. The flow ends here; the daily plan is the separate
    **Perencanaan Produksi** page (`/produksi/`, see below). Raw material orders are planned on the **MRP Bahan Baku**
    page (`/mrp/`), opened from Saran buffer.
 

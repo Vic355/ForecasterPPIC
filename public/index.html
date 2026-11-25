@@ -572,7 +572,39 @@ html[data-theme=dark] .v3-grn .v3-rib-k, html[data-theme=dark] .v3-red .v3-rib-k
 .v10-q:hover, .v10-q:focus { border-color: var(--acc); color: var(--acc); outline: 0; }
 #d10tip { position: fixed; z-index: 300; max-width: 330px; background: var(--ink); color: var(--paper); border-radius: 10px; padding: 9px 12px; font-size: 14px; line-height: 1.4; box-shadow: 0 10px 26px rgba(0,0,0,.25); display: none; font-weight: 400; text-align: left; text-transform: none; letter-spacing: 0; }
 #d10tip.on { display: block; } #d10tip b { display: block; margin-bottom: 2px; }
-/* Ringkasan */
+/* Dashboard (was Ringkasan) */
+.dash { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr); gap: 14px; align-items: start; }
+.dash .db-kpi, .dash .db-w { grid-column: 1 / -1; }
+.dash .db-kpi { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.db-leg { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--mut); margin-bottom: 6px; } .db-leg span { display: inline-flex; align-items: center; gap: 6px; }
+.db-sw { display: inline-block; width: 14px; height: 3px; border-radius: 2px; background: var(--mut); vertical-align: middle; }
+.db-sw.s1 { background: var(--s1); } .db-sw.s2 { background: var(--s2); } .db-sw.s3 { background: var(--s3); } .db-sw.dash { background: repeating-linear-gradient(90deg, var(--s2) 0 5px, transparent 5px 8px); }
+.db-sw.ok { background: var(--ok); height: 10px; width: 10px; } .db-sw.warn { background: var(--mid); height: 10px; width: 10px; } .db-sw.mut { background: var(--mut); height: 10px; width: 10px; } .db-sw.mut2 { background: var(--line); height: 10px; width: 10px; } .db-sw.s1:not(.db-leg *) { height: 10px; width: 10px; }
+.db-chart { position: relative; } .db-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.db-grid { stroke: var(--line2); stroke-width: 1; } .db-ax { fill: var(--mut); font-size: 11px; font-family: var(--font); }
+.db-fut { fill: var(--panel2); }
+.db-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; } .db-line.dash { stroke-dasharray: 6 4; }
+.db-line.s1 { stroke: var(--s1); } .db-line.s2 { stroke: var(--s2); } .db-line.s3 { stroke: var(--s3); }
+.db-dot { stroke: var(--paper); stroke-width: 2; } .db-dot.s1 { fill: var(--s1); } .db-dot.s2 { fill: var(--s2); } .db-dot.s3 { fill: var(--s3); }
+.db-hit { fill: transparent; cursor: crosshair; } .db-cross { stroke: var(--mut); stroke-width: 1; stroke-dasharray: 3 3; }
+.db-tip { position: absolute; top: 8px; z-index: 5; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 20px var(--shadow); padding: 7px 10px; font-size: 12.5px; display: flex; flex-direction: column; gap: 2px; pointer-events: none; white-space: nowrap; }
+.db-tip span { display: flex; align-items: center; gap: 6px; } .db-tip span b { margin-left: auto; padding-left: 10px; }
+.db-tv { margin-top: 6px; font-size: 13px; } .db-tv summary { cursor: pointer; color: var(--acc); } .db-tv table { margin-top: 6px; }
+.db-gt { width: 100%; border-collapse: collapse; font-size: 13.5px; } .db-gt th { text-align: left; font-size: 12px; color: var(--mut); font-weight: 600; border-bottom: 1px solid var(--line); padding: 4px 6px; }
+.db-gt td { padding: 5px 6px; border-bottom: 1px solid var(--line2); } .db-gt .num { text-align: right; font-variant-numeric: tabular-nums; } .db-gt tr.sub td { color: var(--mut); }
+.db-gt td.db-bc { width: 34%; min-width: 120px; } .db-gt .db-big { color: var(--warn); font-weight: 700; }
+.db-bar { display: block; height: 5px; border-radius: 0 3px 3px 0; margin: 1px 0; min-width: 1px; } .db-bar.s1 { background: var(--s1); } .db-bar.s2 { background: var(--s2); } .db-bar.s3 { background: var(--s3); }
+.db-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.db-tile { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; background: var(--paper); border: 1px solid var(--line); border-left: 5px solid var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; min-height: 0; font: inherit; color: var(--ink); }
+.db-tile:hover { background: var(--hover); } .db-tile[disabled] { cursor: default; }
+.db-tile .k { font-size: 13px; color: var(--mut); font-weight: 600; } .db-tile .v { font-size: 22px; font-weight: 700; font-family: var(--serif); } .db-tile .n { font-size: 12.5px; color: var(--mut); line-height: 1.35; }
+.db-tile.bad { border-left-color: var(--bad); } .db-tile.bad .v { color: var(--bad); } .db-tile.warn { border-left-color: var(--mid); } .db-tile.ok { border-left-color: var(--ok); }
+.db-tile.db-st { grid-column: 1 / -1; } .db-seg { display: flex; gap: 2px; width: 100%; height: 10px; margin: 6px 0 4px; }
+.db-seg i { border-radius: 3px; min-width: 3px; } .db-seg i.ok { background: var(--ok); } .db-seg i.warn { background: var(--mid); } .db-seg i.s1 { background: var(--s1); } .db-seg i.mut { background: var(--mut); } .db-seg i.mut2 { background: var(--line); }
+.db-stl { display: inline-flex; align-items: center; gap: 5px; margin-right: 12px; }
+.dash .bflow.db-flow { flex-direction: row; flex-wrap: wrap; margin: 0; } .dash .db-flow button { flex: 1 1 150px; grid-template-columns: 22px 1fr; align-items: start; gap: 2px 8px; } .dash .db-flow button small { grid-column: 2; }
+@media (max-width: 1100px) { .dash { grid-template-columns: 1fr; } }
+/* Ringkasan (older layout pieces still used by the Dashboard) */
 .brief { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); gap: 14px; align-items: start; }
 .bcard { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; }
 .bk { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--mut); font-weight: 700; margin: 0 0 8px; }
@@ -768,6 +800,15 @@ html[data-theme=dark] .rvchip { color: #1b1206; }
 .mmadd .ph { margin-bottom: 6px; } .mmadd h3 { margin: 0; font-size: 16px; }
 .mmadd .mmf { display: flex; flex-wrap: wrap; gap: 8px 12px; margin: 8px 0; } .mmadd .field { flex: 1 1 170px; } .mmadd .field input { width: 100%; }
 .mmt input.bomin { width: 70px; text-align: right; } .mmt input.bomin.w { width: 190px; text-align: left; }
+.mmt input.refin { width: 92px; } .mmt input.pctin { width: 44px; text-align: right; margin-left: 3px; } .mmt input.seain { width: 96px; } .mmt input.seain.bad { border-color: var(--bad); } .mmt input.freein { width: 100px; }
+.mmt th.attrh, .mmt th.freeh { background: var(--acc2); } .mmt th.freeh .ib, .mmt th.addh .ib { font-size: 11px; padding: 0 5px; min-height: 0; min-width: 0; width: auto; height: 22px; line-height: 1; vertical-align: middle; margin-left: 4px; }
+.filebtn { cursor: pointer; }
+.mmcols { position: relative; } .mmcols > summary { list-style: none; } .mmcols > summary::-webkit-details-marker { display: none; }
+.mmcolp { position: absolute; right: 0; top: 110%; z-index: 30; background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; box-shadow: 0 6px 18px var(--shadow); display: flex; flex-direction: column; gap: 4px; min-width: 190px; }
+.mmt select.jenis { font-weight: 600; } .mmt select.j-npd, .mmt select.j-musimref { color: var(--acc); } .mmt select.j-musim { color: var(--blu); } .mmt select.j-ganti { color: var(--mut); }
+.mmt td.detc { white-space: nowrap; } .mmt td.detc input.refin { width: 100px; } .mmt td.detc input.pctin { width: 52px; } .mmt td.detc input.seain, .mmt td.detc input[data-mmsucc] { width: 110px; } .mmt .dlab { display: inline-block; min-width: 74px; font-size: 11px; color: var(--mut); }
+.mmt th.addh { white-space: nowrap; background: var(--panel2); } .mmt th.addh input { width: 120px; font-weight: 400; } .mmt td.addc { background: var(--panel2); } .mmadd textarea { width: 100%; min-height: 90px; font: 12px/1.4 ui-monospace, monospace; }
+.fct .code .atag { font-weight: 400; color: var(--mut); }
 .mmt th.bomh { background: var(--note, #fff6d6); } .mmt th.bomh small { font-weight: 400; color: var(--mut); }
 /* Rencana produksi: manual / automatic, red rows for SKUs not on the schedule (colours: LAMPU.rencana) */
 .ppways { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin: 10px 0; }
@@ -871,6 +912,35 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
 #appErr b { color: var(--bad); } #appErr small { color: var(--mut); } #appErr span#appErrM { font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
 #appErr .ae-b { display: flex; gap: 6px; justify-content: flex-end; margin-top: 4px; }
 @media (prefers-reduced-motion: reduce) { .busy-s { animation-duration: 2s; } }
+/* Input data: groups of inputs */
+.igtabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0 4px; }
+.igtabs button { border-radius: 999px; font-size: 13.5px; padding: 5px 12px; min-height: 0; }
+.igtabs button.on { background: var(--acc); border-color: var(--acc); color: var(--paper); font-weight: 700; }
+.igtabs .igc { font-size: 12px; opacity: .8; font-weight: 400; }
+.igrp { border-top: 1px solid var(--line2); padding: 12px 0 14px; }
+.igrp[hidden] { display: none; }
+.igrp-h { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.igrp-h h3 { margin: 0; font-family: var(--serif); font-size: 17px; }
+.igrp-h .sub { font-size: 13px; }
+/* Master mesin: lock bar, encrypted names */
+.mklock { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border: 1px solid var(--line); border-left: 5px solid var(--acc); border-radius: 10px; padding: 10px 12px; margin: 4px 0 10px; background: var(--panel2); }
+.mklock.open { border-left-color: var(--ok); } .mklock b { font-size: 14.5px; } .mklock input { width: 200px; } .mklock .sub { flex-basis: 100%; font-size: 12.5px; }
+.mklock .sp { flex: 1; }
+.mlt td.real { min-width: 150px; color: var(--mut); font-size: 13px; white-space: nowrap; }
+.mlt td.ro b { color: var(--ink); } .mlt td.calc input { background: var(--panel2); color: var(--mut); }
+.mlt th.ench { background: var(--acc2); }
+.mlt td { vertical-align: middle; } .mlt input { min-width: 0; } .mlt input.num { width: 88px; }
+.mlt td:nth-child(1) input { width: 150px; } .mlt td:nth-child(2) input { width: 80px; } .mlt td:nth-child(3) input { width: 180px; } .mlt td:nth-child(10) input { width: 160px; }
+.mlt th { white-space: normal; vertical-align: bottom; max-width: 110px; }
+/* Input data: demo banner */
+.demoban { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; border: 2px solid var(--acc); background: var(--acc2); border-radius: 12px; padding: 14px 18px; margin: 6px 0 12px; }
+.demoban .dbi { width: 42px; height: 42px; border-radius: 50%; background: var(--acc); color: var(--paper); display: grid; place-items: center; font-size: 18px; }
+.demoban b { display: block; font-size: 17px; margin-bottom: 2px; } .demoban span { font-size: 14px; color: var(--ink); line-height: 1.4; }
+.demoban .dbb { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; } .demoban .dbb .sub { font-size: 12.5px; color: var(--mut); }
+.demoban .v-btn.big { font-size: 15.5px; padding: 10px 18px; }
+.demoban.on { border-width: 1px; border-color: var(--mid); background: var(--warnbg); padding: 10px 14px; } .demoban.on .dbi { width: 30px; height: 30px; font-size: 13px; background: var(--mid); } .demoban.on b { font-size: 15px; }
+.demoban.on .dbb { flex-direction: row; }
+@media (max-width: 900px) { .demoban { grid-template-columns: auto 1fr; } .demoban .dbb { grid-column: 1 / -1; align-items: flex-start; } }
 </style>
 </head>
 <body>
@@ -906,6 +976,8 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
           <input type="search" id="fcQ" placeholder="Cari Nomat / nama / kode" aria-label="Cari SKU di lembar Forecast" style="width:210px">
           <select id="fcBrand" aria-label="Brand" style="width:auto"></select>
           <select id="fcCat" aria-label="Kategori" style="width:auto"></select>
+          <select id="fcFree" aria-label="Saring kolom bebas" style="width:auto" hidden></select>
+          <select id="fcGrp" aria-label="Kelompokkan menurut" style="width:auto"></select>
           <select id="fcModel" aria-label="Model di kolom Forecast AI" style="width:auto"><option value="">Forecast AI: gabungan</option><option value="holt">Model: Holt</option><option value="hqc">Model: HQ terkoreksi</option><option value="gbr">Model: Regressor</option><option value="chronos">Model: Chronos</option></select>
           <select id="fcLimit" aria-label="Jumlah SKU per famili" style="width:auto"><option value="10">10 SKU teratas per famili</option><option value="all">Semua SKU</option></select>
           <label class="chk"><input type="checkbox" id="fcShowExcl"> Tampilkan SKU diskontinu / diganti</label>
@@ -1003,45 +1075,60 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
   <section class="panel" aria-label="Masukkan data">
     <div class="ph"><h2>Masukkan data</h2>
       <label class="field" for="plant" style="flex-direction:row;align-items:center;gap:8px">Kode plant<input type="text" id="plant" value="7079" inputmode="numeric" style="width:90px"></label></div>
+    <div id="demoBan"></div>
     <label class="drop bigdrop" data-kind="auto"><input type="file" multiple accept=".xlsx,.xlsm,.xls,.gz,.ppic,.csv" data-kind="auto"><span class="bd-i" aria-hidden="true">⇩</span><span><b>Tarik file ke sini</b> atau klik untuk memilih: closing, Forecast HQ, Stock Level Check, data mesin, material master, CSV Chronos atau histori (.ppic.gz). Jenis dan bulan dikenali dari nama file.</span></label>
-    <div class="slots">
-      <div class="slot" id="slClosing">
-        <div class="slot-h"><b>Histori closing</b><span class="pill p-acc">wajib</span></div>
-        <span class="slot-s" id="ssClosing">belum ada</span>
-        <p class="note">Daily Report Prod &amp; Sales Closing, satu file per bulan. Bisa pilih banyak file sekaligus, ditambah file <i>Histori_Serang</i> hasil unduhan sebelumnya untuk dilanjutkan.</p>
-        <label class="drop" data-kind="closing"><input type="file" multiple accept=".xlsx,.xlsm,.xls,.gz,.ppic" data-kind="closing"><b>Pilih atau tarik file closing</b><span class="hint">atau lepas file di mana saja di halaman</span><span class="sub">Bulan dibaca dari nama file (mis. AUG26)</span></label>
+    <div class="igtabs" id="igTabs" aria-label="Grup data"><button type="button" data-ig="" class="on" aria-pressed="true">Semua grup</button><button type="button" data-ig="sales">Penjualan &amp; forecast <span class="igc" id="igc_sales"></span></button><button type="button" data-ig="stock">Stok &amp; kelas SKU <span class="igc" id="igc_stock"></span></button><button type="button" data-ig="master">Master data <span class="igc" id="igc_master"></span></button></div>
+    <div class="igrp" data-ig="sales">
+      <div class="igrp-h"><h3>Penjualan &amp; forecast</h3><span class="sub">Closing bulanan (order in, stok, forecast lama) dan Forecast HQ ke depan. Dasar semua langkah berikutnya.</span></div>
+      <div class="slots">
+        <div class="slot" id="slClosing">
+          <div class="slot-h"><b>Histori closing</b><span class="pill p-acc">wajib</span></div>
+          <span class="slot-s" id="ssClosing">belum ada</span>
+          <p class="note">Daily Report Prod &amp; Sales Closing, satu file per bulan. Bisa pilih banyak file sekaligus, ditambah file <i>Histori_Serang</i> hasil unduhan sebelumnya untuk dilanjutkan.</p>
+          <label class="drop" data-kind="closing"><input type="file" multiple accept=".xlsx,.xlsm,.xls,.gz,.ppic" data-kind="closing"><b>Pilih atau tarik file closing</b><span class="hint">atau lepas file di mana saja di halaman</span><span class="sub">Bulan dibaca dari nama file (mis. AUG26)</span></label>
+        </div>
+        <div class="slot" id="slFc">
+          <div class="slot-h"><b>Forecast HQ M+1 – M+3</b><span class="pill p-acc">wajib</span></div>
+          <span class="slot-s" id="ssFc">belum ada</span>
+          <p class="note">Format Summary Forecast per bulan (mis. <i>Sales Forecast Nov26 adj - TUB</i>): Qty (ctn), W1–W4 dan per zona. Versi <i>adj</i> dibaca dari nama file.</p>
+          <label class="drop" data-kind="forecast"><input type="file" multiple accept=".xlsx,.xlsm,.xls" data-kind="forecast"><b>Pilih atau tarik file forecast</b><span class="sub">Satu file per bulan forecast</span></label>
+        </div>
+        <div class="slot" id="slCh">
+          <div class="slot-h"><b>Forecast Chronos</b><span class="pill p-off">opsional</span></div>
+          <span class="slot-s" id="ssCh">belum ada</span>
+          <p class="note">CSV hasil <i>ingest/forecast_chronos.py</i> yang dijalankan di komputer sendiri dari file histori ringkas (.ppic.gz). Masuk ke ensemble Forecast AI.</p>
+          <label class="drop" data-kind="chronos"><input type="file" accept=".csv,.xlsx" data-kind="chronos"><b>Pilih atau tarik CSV Chronos</b><span class="sub" id="chSlotNote">Belum ada</span></label>
+        </div>
       </div>
-      <div class="slot" id="slFc">
-        <div class="slot-h"><b>Forecast HQ M+1 – M+3</b><span class="pill p-acc">wajib</span></div>
-        <span class="slot-s" id="ssFc">belum ada</span>
-        <p class="note">Format Summary Forecast per bulan (mis. <i>Sales Forecast Nov26 adj - TUB</i>): Qty (ctn), W1–W4 dan per zona. Versi <i>adj</i> dibaca dari nama file.</p>
-        <label class="drop" data-kind="forecast"><input type="file" multiple accept=".xlsx,.xlsm,.xls" data-kind="forecast"><b>Pilih atau tarik file forecast</b><span class="sub">Satu file per bulan forecast</span></label>
+    </div>
+    <div class="igrp" data-ig="stock">
+      <div class="igrp-h"><h3>Stok &amp; kelas SKU</h3><span class="sub">Stock Level Check: kelas A/B/C/NPD dan target DOI per SKU. Stok bebas per SKU dibaca dari closing.</span></div>
+      <div class="slots">
+        <div class="slot" id="slCls">
+          <div class="slot-h"><b>Kelas SKU</b><span class="pill p-off">opsional</span></div>
+          <span class="slot-s" id="ssCls">belum ada</span>
+          <p class="note" id="clsNote"></p>
+          <label class="drop" data-kind="class"><input type="file" accept=".xlsx,.xlsm,.xls" data-kind="class"><b>Ganti dengan Stock Level Check baru</b><span class="sub">Hanya jika ada data kelas yang lebih baru</span></label>
+        </div>
       </div>
-      <div class="slot" id="slCls">
-        <div class="slot-h"><b>Kelas SKU</b><span class="pill p-off">opsional</span></div>
-        <span class="slot-s" id="ssCls">belum ada</span>
-        <p class="note" id="clsNote"></p>
-        <label class="drop" data-kind="class"><input type="file" accept=".xlsx,.xlsm,.xls" data-kind="class"><b>Ganti dengan Stock Level Check baru</b><span class="sub">Hanya jika ada data kelas yang lebih baru</span></label>
-      </div>
-      <div class="slot" id="slMesin">
-        <div class="slot-h"><b>Data mesin</b><span class="pill p-off">untuk jadwal</span></div>
-        <span class="slot-s" id="ssMesin">belum ada</span>
-        <p class="note">Daftar mesin, kapasitas dan SKU → mesin untuk jadwal Rencana produksi. Pakai template (sudah terisi data yang ada sekarang), atau unggah Excel PP (tab summary + kolom Material/Mesin).</p>
-        <label class="drop" data-kind="pp"><input type="file" multiple accept=".xlsx,.xlsm,.xls" data-kind="pp"><b>Pilih atau tarik file data produksi</b><span class="sub">Template atau Excel PP</span></label>
-        <div id="ppData"></div>
-        <div class="slot-a"><button type="button" data-sec="secMesin">Lihat / ubah</button><button type="button" id="ppTpl">Unduh template</button><span class="sub" id="ppTplMsg"></span></div>
-      </div>
-      <div class="slot" id="slMm">
-        <div class="slot-h"><b>Material master</b><span class="pill p-off">opsional</span></div>
-        <span class="slot-s" id="ssMm">belum ada</span>
-        <p class="note">Excel daftar material: Nomat, kode artikel, nama, Brand, Kategori, Status aktif/nonaktif, Nomat pengganti. Tanpa file ini status dibaca dari data forecast dan closing.</p>
-        <label class="drop" data-kind="master"><input type="file" accept=".xlsx,.xlsm,.xls,.csv" data-kind="master"><b>Pilih atau tarik material master</b><span class="sub" id="mmSlotNote">Belum ada</span></label>
-      </div>
-      <div class="slot" id="slCh">
-        <div class="slot-h"><b>Forecast Chronos</b><span class="pill p-off">opsional</span></div>
-        <span class="slot-s" id="ssCh">belum ada</span>
-        <p class="note">CSV hasil <i>ingest/forecast_chronos.py</i> yang dijalankan di komputer sendiri dari file histori ringkas (.ppic.gz). Masuk ke ensemble Forecast AI.</p>
-        <label class="drop" data-kind="chronos"><input type="file" accept=".csv,.xlsx" data-kind="chronos"><b>Pilih atau tarik CSV Chronos</b><span class="sub" id="chSlotNote">Belum ada</span></label>
+    </div>
+    <div class="igrp" data-ig="master">
+      <div class="igrp-h"><h3>Master data</h3><span class="sub">Daftar yang jarang berubah: material (brand, kategori, status, BOM) dan mesin (kapasitas, output).</span></div>
+      <div class="slots">
+        <div class="slot" id="slMm">
+          <div class="slot-h"><b>Material master</b><span class="pill p-off">opsional</span></div>
+          <span class="slot-s" id="ssMm">belum ada</span>
+          <p class="note">Excel daftar material: Nomat, kode artikel, nama, Brand, Kategori, Status aktif/nonaktif, Nomat pengganti. Tanpa file ini status dibaca dari data forecast dan closing.</p>
+          <label class="drop" data-kind="master"><input type="file" accept=".xlsx,.xlsm,.xls,.csv" data-kind="master"><b>Pilih atau tarik material master</b><span class="sub" id="mmSlotNote">Belum ada</span></label>
+        </div>
+        <div class="slot" id="slMesin">
+          <div class="slot-h"><b>Master mesin</b><span class="pill p-off">untuk jadwal</span></div>
+          <span class="slot-s" id="ssMesin">belum ada</span>
+          <p class="note">Daftar mesin dengan kode samaran, kapasitas per hari, berat bersih per karton dan variasi output. Nama asli mesin disimpan terenkripsi. Bisa juga unggah template atau Excel PP.</p>
+          <label class="drop" data-kind="pp"><input type="file" multiple accept=".xlsx,.xlsm,.xls" data-kind="pp"><b>Pilih atau tarik file data produksi</b><span class="sub">Template atau Excel PP</span></label>
+          <div id="ppData"></div>
+          <div class="slot-a"><button type="button" data-sec="secMesin" class="pri">Buka master mesin</button><button type="button" id="ppTpl">Unduh template</button><span class="sub" id="ppTplMsg"></span></div>
+        </div>
       </div>
     </div>
     <div class="scroll"><table id="files"></table></div>
@@ -1058,24 +1145,27 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
     <div class="ph"><h2>Material master <span class="sub" id="mmSrc" style="font-weight:400"></span></h2>
       <div class="mmbar">
         <input type="search" id="mmQ" placeholder="Cari Nomat, nama, kode artikel, brand" aria-label="Cari material" style="width:260px">
-        <select id="mmFlt" aria-label="Saring material" style="width:auto"><option value="all">Semua material</option><option value="aktif">Aktif</option><option value="nonaktif">Nonaktif</option><option value="beda">Berubah / perlu dicek</option><option value="baru">Ada di data, tidak di master</option><option value="hilang">Di master, tidak di data</option><option value="manual">Diubah manual</option></select>
+        <select id="mmFlt" aria-label="Saring material" style="width:auto"><option value="all">Semua material</option><option value="aktif">Aktif</option><option value="nonaktif">Nonaktif</option><option value="beda">Berubah / perlu dicek</option><option value="baru">Ada di data, tidak di master</option><option value="hilang">Di master, tidak di data</option><option value="manual">Diubah manual</option><option value="j:npd">Jenis: SKU baru (NPD)</option><option value="j:musim">Jenis: Musiman</option><option value="j:musimref">Jenis: Musiman + histori</option><option value="j:ganti">Jenis: Diganti</option><option value="j:reguler">Jenis: Reguler</option><option value="npdkosong">SKU baru tanpa histori (perlu diisi)</option></select>
         <button type="button" id="mmAddB" class="pri">+ Tambah SKU</button>
+        <details class="mmcols"><summary class="v-btn">Kolom ▾</summary><div class="mmcolp" id="mmColList"></div></details>
+        <input type="file" id="mmAttrF" accept=".xlsx,.xlsm,.xls,.csv" hidden>
         <button type="button" id="mmDl">Unduh material master (Excel)</button>
         <button type="button" id="mmClear">Hapus material master</button>
       </div></div>
-    <p class="note">Gabungan material master (bila diunggah) dan SKU di Forecast HQ dan closing. <b>Status</b>: dari kolom status master; tanpa master, <i>aktif</i> bila ada Forecast HQ M+1–M+3 atau order in 3 bulan terakhir. Ubah status atau isi <b>Nomat pengganti</b> langsung di tabel (masuk ke status SKU: nonaktif = Diskontinu, dengan pengganti = Diganti). <b>Brand</b> dan <b>Kategori</b> master dipakai untuk kelompok di lembar Forecast. Kolom <b>Perubahan</b> menandai Nomat yang berganti untuk kode artikel yang sama, nama yang berbeda, dan SKU yang belum ada di master.</p>
+    <p class="note">Gabungan material master (bila diunggah) dan SKU di Forecast HQ dan closing. <b>Status</b>: dari kolom status master; tanpa master, <i>aktif</i> bila ada Forecast HQ M+1–M+3 atau order in 3 bulan terakhir. Ubah status atau isi <b>Nomat pengganti</b> langsung di tabel (masuk ke status SKU: nonaktif = Diskontinu, dengan pengganti = Diganti). <b>Brand</b> dan <b>Kategori</b> master dipakai untuk kelompok di lembar Forecast. Kolom <b>Perubahan</b> menandai Nomat yang berganti untuk kode artikel yang sama, nama yang berbeda, dan SKU yang belum ada di master.<br>
+      <b>Jenis SKU</b> mengklasifikasi tiap Nomat (Reguler, SKU baru, Musiman, Musiman + histori, Diganti); kolom <b>Detail jenis</b> hanya menampilkan isian untuk jenis itu. <b>Histori dari Nomat</b>: untuk SKU baru (NPD) yang biasanya hanya beda kemasan. SKU baru memakai order in Nomat lama × persen untuk bulan sebelum order in-nya sendiri, jadi semua model punya histori; Nomat lama tetap aktif. Bila Nomat lama berhenti, isi <b>Nomat pengganti</b> di baris Nomat lama (histori pindah penuh). <b>Musim aktif</b>: bulan SKU dijual (mis. <i>Feb-Apr</i>, <i>11-1</i>, <i>2027-02..2027-04</i>); di luar musim forecast, buffer dan PP 0 dan status nonaktif. <b>Kolom bebas</b>: isi sendiri per Nomat (mis. MT / GT, slow moving) untuk saringan dan kelompok di lembar Forecast; tidak dipakai model.</p>
     <div class="cekstats" id="mmStats"></div>
     <div class="scroll" style="max-height: 560px"><table id="mmTable" class="cekt mmt"></table></div>
+    <div id="mmFv" hidden></div>
   </section>
 
-  <section class="panel" aria-label="Data mesin" id="secMesin" hidden>
-    <div class="ph"><h2>Data mesin</h2><span class="sub">Disimpan di browser ini dan di file Histori_Serang (bukan di kode).</span></div>
-    <p class="note">Ketik langsung di tabel, atau salin blok dari Excel lalu tempel (Ctrl+V) di sel pertama. Baris kosong di bawah untuk menambah. <b>Kelompok SKU</b> memetakan SKU ke area mesin lewat kata di nama SKU (mis. <i>Soft Pack</i>) atau nama famili; bila beberapa cocok, yang paling panjang menang. Kalender: libur nasional dan cuti bersama 2026–2027 sudah bawaan (SKB 3 Menteri), Sabtu masuk, Minggu libur; ubah per tanggal di jadwal.</p>
+  <section class="panel" aria-label="Master mesin" id="secMesin" hidden>
+    <div class="ph"><h2>Master mesin</h2><span class="sub">Disimpan di browser ini dan di file Histori_Serang (bukan di kode). Nama asli hanya tersimpan terenkripsi.</span></div>
+    <div class="mklock" id="mkBar"></div>
+    <p class="note"><b>Output karton/hari</b> = kapasitas kg/hari ÷ berat bersih kg/karton × variasi output %. <b>Kapasitas t/bulan</b> dihitung dari kapasitas kg/hari × variasi output × 26 hari kerja bila kg/hari diisi. Di Rencana produksi berat bersih per SKU dari closing yang dipakai; berat di sini hanya acuan. Ketik langsung, atau tempel blok dari Excel (Ctrl+V) di sel pertama. <b>Kode mesin</b> dipakai di semua jadwal dan file; nama asli hanya tampil setelah kunci dibuka.</p>
     <datalist id="mlTypes"></datalist>
-    <div class="row">
-      <div class="grow edwrap"><div class="ph"><h3>Daftar mesin</h3><button type="button" id="mlAdd">+ Baris</button></div><table id="mlTable" class="cekt edt"></table></div>
-      <div class="grow edwrap"><div class="ph"><h3>Kelompok SKU → area mesin</h3><div style="display:flex;gap:6px"><button type="button" id="sgAdd">+ Baris</button><button type="button" id="sgSeed">Isi contoh kelompok</button></div></div><table id="sgTable" class="cekt edt"></table><p class="sub" id="sgNote"></p></div>
-    </div>
+    <div class="edwrap"><div class="ph"><h3>Daftar mesin <span class="sub" id="mlSum" style="font-weight:400"></span></h3><div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" id="mlAdd">+ Baris</button><button type="button" id="mlDemo">Isi data contoh (dummy)</button></div></div><div class="scroll"><table id="mlTable" class="cekt edt mlt"></table></div></div>
+    <div class="edwrap" style="margin-top:14px"><div class="ph"><h3>Kelompok SKU → area mesin</h3><div style="display:flex;gap:6px"><button type="button" id="sgAdd">+ Baris</button><button type="button" id="sgSeed">Isi contoh kelompok</button></div></div><p class="note"><b>Kelompok SKU</b> memetakan SKU ke area mesin lewat kata di nama SKU (mis. <i>Soft Pack</i>) atau nama famili; bila beberapa cocok, yang paling panjang menang. Kalender: libur nasional dan cuti bersama 2026–2027 sudah bawaan (SKB 3 Menteri), Sabtu masuk, Minggu libur; ubah per tanggal di jadwal.</p><table id="sgTable" class="cekt edt"></table><p class="sub" id="sgNote"></p></div>
   </section>
 
   <section class="panel" aria-label="Riwayat data" id="secHist" hidden>
@@ -1179,6 +1269,8 @@ var FIELDS = [
   ['nomat', 'Nomat (nomor material)', 'Kunci SKU utama', [/\bnomat\b/, /\bno\.?\s*mat\b/, /nomor\s*material/, /material\s*(no|number)/, /sap\s*(no|number|material)/]],
   ['article_code', 'Kode artikel', 'Cocokkan kelas HQ', [/article\s*code/, /kode\s*artikel/, /^article$/]],
   ['description', 'Deskripsi', 'Nama, flag edisi/promo', [/description/, /deskripsi/, /nama\s*barang/]],
+  ['brand', 'Brand', 'Kelompok Brand · Kategori', [/\bbrand\b/, /\bmere?k\b/]],
+  ['category', 'Kategori', 'Kelompok Brand · Kategori', [/categor/, /kategori/]],
   ['uom', 'Satuan', 'Saring baris kg', [/^uom$/, /\bunit\b/, /satuan/]],
   ['net_weight_kg', 'Berat bersih', 'Karton → ton', [/net+\s*weight/, /berat\s*bersih/]],
   ['buffer_suggestion', 'Saran buffer saat ini', 'Buffer', [/buffer/]],
@@ -1200,7 +1292,7 @@ var FIELDS = [
   ['gap_vs_forecast', 'Gap (stok awal + aktual − ORIG)', 'Cek kualitas', [/\bgap\b/, /less\s*\/\s*over/, /over\s*\/\s*less/]]
 ];
 var REQUIRED = ['article_code', 'description', 'forecast_hq_orig', 'forecast_hq_rev', 'order_in'];
-var TEXT_FIELDS = ['article_code', 'nomat', 'description', 'uom'];
+var TEXT_FIELDS = ['article_code', 'nomat', 'description', 'brand', 'category', 'uom'];
 var NUMERIC = FIELDS.map(function (f) { return f[0]; }).filter(function (f) { return TEXT_FIELDS.indexOf(f) < 0; });
 var WEEK_RE = /(?:^|\s|\b)(?:w|wk|week|minggu|mg)\s*\.?\s*([1-5])\b/;
 var WEEK_HEAD = /^(?:w|wk|week|minggu|mg)\s*\.?\s*([1-5])\b/;
@@ -1473,6 +1565,7 @@ function extract(g, lay) {
     var rec = { sku_id: key, nomat: nomat, article_code: art, family: family, source_row: r + 1, description: desc !== null ? String(desc).trim() : null, issues: [] };
     if (g.marks) { var ff = [codeC, nomatC, descC].map(function (cc) { return cc === undefined ? null : g.marks[r + ',' + cc]; }).filter(Boolean); rec.font_flag = ff.indexOf('coret') >= 0 ? 'coret' : ff.length ? 'merah' : null; }
     if (!nomat) { issues.push([key, r, 'no_nomat', 'memakai Article Code sebagai kunci']); rec.issues.push('no_nomat'); }
+    ['brand', 'category'].forEach(function (f) { var x = cols[f] !== undefined ? g.get(r, cols[f]) : null; rec[f] = x === null || String(x).trim() === '' ? null : String(x).trim(); }); // closing sheets with Brand / Category columns
     rec.uom = uomC !== undefined && g.get(r, uomC) !== null ? String(g.get(r, uomC)).trim().toUpperCase() : (lay.unit || null);
     NUMERIC.forEach(function (f) {
       if (cols[f] === undefined) return;
@@ -1820,6 +1913,11 @@ function machMapFromWorkbook(wb) {
 function dropSample() { if (state.sample) { state.items = []; state.history = null; state.sample = false; } } // real closing / forecast / history data replaces the simulated example
 function addWorkbook(file, wb, kind) {
   if (wb.SheetNames.indexOf('bulanan') >= 0) { dropSample(); loadHistory(file.name, wb); return 'histori'; }
+  if (kind === 'attr' || wb.SheetNames.indexOf('atribut_sku') >= 0) { // Nomat + histori dari / musim / free columns
+    var ar = attrFromAoa(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames.indexOf('atribut_sku') >= 0 ? 'atribut_sku' : wb.SheetNames[0]], { defval: null, header: 1, raw: true }));
+    if (ar) { saveMat(); return 'atribut SKU (' + attrMsg(ar) + ')'; }
+    if (kind === 'attr') return 'gagal: tidak ada kolom Nomat';
+  }
   var ch0 = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: null, header: 1 })[0] || [];
   if (ch0.indexOf('p50') >= 0 && ch0.indexOf('forecast_month') >= 0) { // output of ingest/forecast_chronos.py
     var cr = chronosFromRows(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: null, raw: true }), file.name);
@@ -1881,6 +1979,7 @@ function loadHistory(name, wb, rowsBy) {
   // rowsBy: { sheet: [row objects] } from a compact .ppic.gz history instead of a workbook
   var read = rowsBy ? function (sh) { return rowsBy[sh] || []; } : function (sh) { return wb.Sheets[sh] ? XLSX.utils.sheet_to_json(wb.Sheets[sh], { defval: null }) : []; };
   matFromRows(read('material_master'), name);
+  if (read('atribut_sku').length) { state.skuRef = {}; state.season = {}; state.skuClass = {}; state.freeCols = { cols: [], v: {} }; attrFromRows(read('atribut_sku')); saveMat(); }
   var chr = read('forecast_chronos'); if (chr.length) { var cr = chronosFromRows(chr, name); if (cr) { state.chronos = cr; saveChronos(); } }
   // manual statuses and rule settings saved with the history win over this browser's
   read('status_sku').forEach(function (r) { if (r.manual === 'ya' && r.sku_key && STATUS[r.status]) state.overrides[String(r.sku_key)] = { status: r.status, succ: r.replaced_by ? String(r.replaced_by) : '', at: r.manual_date || '' }; });
@@ -1919,7 +2018,10 @@ function loadHistory(name, wb, rowsBy) {
   var kg = read('kelompok_sku'); if (kg.length) state.skuGroups = kg.filter(function (r) { return r.kelompok; }).map(function (r) { return { g: String(r.kelompok), t: r.jenis_mesin ? String(r.jenis_mesin) : '' }; });
   read('sku_mesin').forEach(function (r) { if (r.material === null || r.material === undefined) return; state.skuMach[String(r.material)] = { type: r.jenis_mesin || null, mach: r.mesin_khusus || null, speed: typeof r.kecepatan_ton_hari === 'number' ? r.kecepatan_ton_hari : null }; });
   var km = read('kapasitas_mesin'), mg = {}, mo2 = [];
-  km.forEach(function (r) { if (!r.mesin || !r.jenis_mesin) return; var g = String(r.jenis_mesin); if (!mg[g]) { mg[g] = []; mo2.push(g); } mg[g].push([String(r.mesin), typeof r.kapasitas_excel === 'number' ? r.kapasitas_excel : 0, r.catatan || '']); });
+  km.forEach(function (r) { if (!r.mesin || !r.jenis_mesin) return; var g = String(r.jenis_mesin); if (!mg[g]) { mg[g] = []; mo2.push(g); } var mt = null; if (typeof r.kapasitas_kg_hari === 'number' && r.kapasitas_kg_hari > 0) mt = { capDayT: r.kapasitas_kg_hari / 1000, outPct: typeof r.variasi_output_pct === 'number' ? r.variasi_output_pct : 100, nwCtKg: typeof r.berat_karton_kg === 'number' ? r.berat_karton_kg : null };
+    if (r.nama_terenkripsi) { try { (mt = mt || {}).enc = JSON.parse(r.nama_terenkripsi); } catch (e) {} }
+    mg[g].push(mt ? [String(r.mesin), typeof r.kapasitas_excel === 'number' ? r.kapasitas_excel : 0, r.catatan || '', mt] : [String(r.mesin), typeof r.kapasitas_excel === 'number' ? r.kapasitas_excel : 0, r.catatan || '']); });
+  var kk = read('kunci_mesin')[0]; if (kk && kk.salt && kk.cek) { try { state.mkey = { alg: kk.alg, kdf: kk.kdf, iter: +kk.iter || 250000, salt: String(kk.salt), chk: JSON.parse(kk.cek) }; if (typeof mkLock === 'function') mkLock(); } catch (e) {} }
   if (mo2.length) { state.machMaster = mo2.map(function (g) { return [g, mg[g]]; }); state.machMasterSrc = name; }
   km.forEach(function (r) {
     if (r.mesin && r.manual === 'ya' && typeof r.kapasitas_ton_bulan === 'number') state.capEdits[String(r.mesin)] = { v: r.kapasitas_ton_bulan, at: r.tanggal_manual || '' };
@@ -2009,7 +2111,7 @@ function toCsv(rows) {
   return [cols.join(',')].concat(rows.map(function (r) { return cols.map(function (c) { return csvCell(r[c]); }).join(','); })).join('\n');
 }
 function csvCell(v) { if (v === null || v === undefined) return ''; var s = String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
-var SNAP_COLS = ['nomat', 'article_code', 'description', 'family', 'source_row', 'font_flag', 'uom', 'hq_class', 'doi_target_days', 'net_weight_kg'].concat(NUMERIC.filter(function (f) { return f !== 'net_weight_kg'; }))
+var SNAP_COLS = ['nomat', 'article_code', 'description', 'brand', 'category', 'family', 'source_row', 'font_flag', 'uom', 'hq_class', 'doi_target_days', 'net_weight_kg'].concat(NUMERIC.filter(function (f) { return f !== 'net_weight_kg'; }))
   .concat(['order_in_w1', 'order_in_w2', 'order_in_w3', 'order_in_w4', 'order_in_w5', 'order_in_week_sum', 'order_in_week_total']);
 
 /* ---------- rendering ---------- */
@@ -2323,6 +2425,7 @@ function saveBuf() { try { localStorage.setItem('ppic_buf', JSON.stringify({ cfg
 function loadBuf() { try { var o = JSON.parse(localStorage.getItem('ppic_buf') || '{}') || {}; state.bufCfg = o.cfg || {}; state.bufStrat = o.strat || {}; state.bufEdits = o.edits || {}; state.bufReview = o.review || {}; } catch (e) { state.bufCfg = {}; state.bufStrat = {}; state.bufEdits = {}; state.bufReview = {}; } }
 // basis forecast for a month: HQ, ML or the average of the two that exist
 function basisOf(s, mo, basis, past) {
+  if (past ? s.off && s.off[mo] : s.offF && s.offF[mo]) return past ? null : { v: 0, src: 'Di luar musim' }; // seasonal SKU
   if (MODELS[basis]) { // one model of the ensemble
     var v0 = past ? (s.btm && s.btm[mo] ? s.btm[mo][basis] : undefined) : (s.mlInfo && s.mlInfo[mo] ? s.mlInfo[mo][basis] : undefined), h0 = past ? s.hq[mo] : s.fhq[mo];
     return typeof v0 === 'number' ? { v: v0, src: MODELS[basis] } : typeof h0 === 'number' ? { v: h0, src: 'HQ (' + MODELS[basis] + ' kosong)' } : null;
@@ -2508,6 +2611,7 @@ function bufferModel(m, over, prop) {
       if (st === 'batas' && z0 * spS * F * ltF > F * 10 / 30) note = 'dibatasi 10 hari';
       if (st === 'kuantil') note = q ? 'P50 ' + n(Math.round(q.p50)) + ', P90 ' + n(Math.round(q.p90)) + ' dari ' + q.src : 'belum ada P90 (Chronos, regressor atau error historis), memakai rumus Standar';
       sug = Math.round(sug);
+      if (s.offF && s.offF[mo]) { sug = 0; note = 'di luar musim'; }
       var ed = state.bufEdits[s.key], fin = ed && typeof ed.v === 'number' ? ed.v : sug;
       var fs = s.fs || 0, prod = st === 'habiskan' ? 0 : Math.max(0, Math.round(F + fin - fs));
       // multi-month: stok akhir M+1 = stok awal + PP − forecast → stok awal M+2, which gets its own buffer and PP (for raw material orders)
@@ -2521,7 +2625,7 @@ function bufferModel(m, over, prop) {
           else {
             var b2 = basisOf(s, mo2, cfg.basis, false); if (!b2) { stop = true; return; }
             Fi = Math.max(0, b2.v); qi = quantFut(s, m, mo2, Fi, q, F);
-            bi = Math.round(stratBuf(st, Fi, z0, spS, ltF, tf, st === 'kuantil' ? qi : null));
+            bi = s.offF && s.offF[mo2] ? 0 : Math.round(stratBuf(st, Fi, z0, spS, ltF, tf, st === 'kuantil' ? qi : null));
             ppi = st === 'habiskan' ? 0 : Math.max(0, Math.round(Fi + bi - beg));
           }
           var end = beg + ppi - Fi;
@@ -2823,9 +2927,9 @@ function machineOf(s) {
   var f = state.machFile[s.nomat] || state.machFile[s.key]; if (f) return { v: machType(f), src: 'file', raw: f };
   return { v: guessMachine(s.name), src: 'guess', guess: true };
 }
-function savePP() { try { localStorage.setItem('ppic_pp', JSON.stringify({ machines: state.machines || {}, machFile: state.machFile || {}, master: state.machMaster || null, masterSrc: state.machMasterSrc || null, caps: state.capEdits || {}, unit: state.ppUnit, sched: state.ppSched || {}, skuMach: state.skuMach || {}, skuMachSrc: state.skuMachSrc || null, cal: state.ppCal || [], calSrc: state.ppCalSrc || null, sun2: !!state.ppSunOff, cbOff: !!state.ppCbOff, groups: state.skuGroups || [] })); } catch (e) {} }
+function savePP() { try { localStorage.setItem('ppic_pp', JSON.stringify({ machines: state.machines || {}, machFile: state.machFile || {}, master: state.machMaster || null, masterSrc: state.machMasterSrc || null, caps: state.capEdits || {}, unit: state.ppUnit, sched: state.ppSched || {}, skuMach: state.skuMach || {}, skuMachSrc: state.skuMachSrc || null, cal: state.ppCal || [], calSrc: state.ppCalSrc || null, sun2: !!state.ppSunOff, cbOff: !!state.ppCbOff, groups: state.skuGroups || [], mkey: state.mkey || null })); } catch (e) {} }
 function loadPP() {
-  try { var o = JSON.parse(localStorage.getItem('ppic_pp') || '{}') || {}; state.machines = o.machines || {}; state.machFile = o.machFile || {}; state.machMaster = o.master || null; state.machMasterSrc = o.masterSrc || null; state.capEdits = o.caps || {}; state.ppUnit = o.unit || 'ct'; state.ppSched = o.sched || {}; state.skuMach = o.skuMach || {}; state.skuMachSrc = o.skuMachSrc || null; state.ppCal = o.cal || []; state.ppCalSrc = o.calSrc || null; state.ppSunOff = o.sun2 === undefined ? true : !!o.sun2; state.ppCbOff = !!o.cbOff; state.skuGroups = o.groups || []; }
+  try { var o = JSON.parse(localStorage.getItem('ppic_pp') || '{}') || {}; state.machines = o.machines || {}; state.machFile = o.machFile || {}; state.machMaster = o.master || null; state.machMasterSrc = o.masterSrc || null; state.capEdits = o.caps || {}; state.ppUnit = o.unit || 'ct'; state.ppSched = o.sched || {}; state.skuMach = o.skuMach || {}; state.skuMachSrc = o.skuMachSrc || null; state.ppCal = o.cal || []; state.ppCalSrc = o.calSrc || null; state.ppSunOff = o.sun2 === undefined ? true : !!o.sun2; state.ppCbOff = !!o.cbOff; state.skuGroups = o.groups || []; state.mkey = o.mkey || null; }
   catch (e) { state.machines = {}; state.machFile = {}; state.capEdits = {}; state.ppSched = {}; state.skuMach = {}; state.ppCal = []; }
 }
 // The plan is made at the start of the month, so there is one plan month: closing + 1, the same month as Saran Buffer.
@@ -3191,7 +3295,7 @@ function renderPPData(pm) {
 }
 function capRows() {
   var out = [];
-  master().forEach(function (g) { g[1].forEach(function (mm) { var e = state.capEdits[mm[0]]; out.push({ jenis_mesin: g[0], mesin: mm[0], kapasitas_ton_bulan: capOf(mm[0], mm[1]), kapasitas_excel: mm[1], manual: e ? 'ya' : 'tidak', tanggal_manual: e ? e.at : null, catatan: mm[2] || null }); }); });
+  master().forEach(function (g) { g[1].forEach(function (mm) { var e = state.capEdits[mm[0]]; var mt = mm[3] || {}; out.push({ jenis_mesin: g[0], mesin: mm[0], kapasitas_ton_bulan: capOf(mm[0], mm[1]), kapasitas_excel: mm[1], manual: e ? 'ya' : 'tidak', tanggal_manual: e ? e.at : null, catatan: mm[2] || null, kapasitas_kg_hari: mt.capDayT ? mt.capDayT * 1000 : null, berat_karton_kg: mt.nwCtKg || null, variasi_output_pct: mt.capDayT ? mt.outPct || 100 : null, nama_terenkripsi: mt.enc ? JSON.stringify(mt.enc) : null }); }); });
   Object.keys(state.machFile).forEach(function (k) { out.push({ jenis_mesin: machType(state.machFile[k]), mesin: null, material: k, mesin_file_pp: state.machFile[k] }); });
   return out;
 }
@@ -3298,6 +3402,8 @@ function forecastModel(c) {
     if (r.nomat && !s.nomat) { s.nomat = r.nomat; byNomat[r.nomat] = s; } if (r.article_code && !s.art) { s.art = r.article_code; byArt[r.article_code] = s; }
     if (r.nomat && s.nomat && r.nomat !== s.nomat) { (s.nomatHist = s.nomatHist || {})[r.nomat] = 'closing ' + monthLabel(r.closing_month); byNomat[r.nomat] = s; } // same article code, other Nomat
     s.name = r.description || s.name; if (r.family) s.family = r.family;
+    if (r.brand && String(r.brand).trim()) s.brand = String(r.brand).trim(); // closing Brand / Category columns; Forecast HQ and the material master override below
+    if (r.category && String(r.category).trim()) s.category = String(r.category).trim();
     var m = r.closing_month;
     s.oi[m] = r.order_in === null || r.order_in === undefined ? null : +r.order_in;
     var rev = r.forecast_hq_rev, orig = r.forecast_hq_orig;
@@ -3349,6 +3455,7 @@ function forecastModel(c) {
     var t = s.succ; t.oiM = t.oiM || JSON.parse(JSON.stringify(t.oi)); t.mergedFrom = (t.mergedFrom || []).concat([s]);
     Object.keys(s.oi).forEach(function (mo) { if (s.oi[mo] !== undefined) t.oiM[mo] = (t.oiM[mo] || 0) + (s.oi[mo] || 0); });
   });
+  applySkuAttr(skus, cms, future);
   var fams = {}, famList = [];
   skus.forEach(function (s) {
     s.weight = (latest ? (s.oi[latest] || 0) : 0) + (future[0] ? (s.fhq[future[0]] || 0) : 0);
@@ -3387,7 +3494,7 @@ function holtFc(ys, h) {
 function oiSeries(s, cms, k) {
   var out = [], seen = false;
   var src = s.oiM || s.oi;
-  for (var i = 0; i < k; i++) { var v = src[cms[i]]; if (v !== undefined) seen = true; out.push(v !== undefined ? (v || 0) : seen ? 0 : null); }
+  for (var i = 0; i < k; i++) { if (s.off && s.off[cms[i]]) { out.push(null); continue; } var v = src[cms[i]]; if (v !== undefined) seen = true; out.push(v !== undefined ? (v || 0) : seen ? 0 : null); }
   return out;
 }
 function ratioOf(list, cms, k) {
@@ -3412,7 +3519,7 @@ function mlPredict(s, cms, k, h, q, Rs) {
   // weight from past one-step errors (months 1..k-1 within the history)
   var eH = 0, eQ = 0, nH = 0, scale = 0;
   for (var j = 1; j < k; j++) {
-    var y = s.oi[cms[j]]; if (y === undefined) continue;
+    var y = s.oi[cms[j]]; if (y === undefined || (s.off && s.off[cms[j]])) continue;
     var ph = holtFc(oiSeries(s, cms, j), 1), qj = s.hq[cms[j]], pq = typeof qj === 'number' && qj > 0 ? qj * skuRatio(s, cms, j, Rs[j]) : null;
     if (ph !== null && pq !== null) { eH += Math.abs(ph - y); eQ += Math.abs(pq - y); nH++; scale += y; }
   }
@@ -3537,7 +3644,7 @@ function gbrFeat(s, cms, k, tm, q, Rs, catMean) {
 }
 var _gbrCache = { key: null, mk: null, res: null };
 function gbrKey(m) {
-  return m.closingMonths.join(',') + '|' + m.future.join(',') + '|' + m.skus.map(function (s) { return s.key + ':' + JSON.stringify(s.oiM || s.oi) + JSON.stringify(s.hq) + JSON.stringify(s.fhq) + (s.grp || ''); }).join(';');
+  return m.closingMonths.join(',') + '|' + m.future.join(',') + '|' + m.skus.map(function (s) { return s.key + ':' + JSON.stringify(s.oiM || s.oi) + JSON.stringify(s.hq) + JSON.stringify(s.fhq) + JSON.stringify(s.off || 0) + (s.grp || ''); }).join(';');
 }
 // Trains the regressor. Pure function of the job (no page state), so it can also run inside the Web Worker below.
 function gbrCompute(job) {
@@ -3554,7 +3661,7 @@ function gbrCompute(job) {
     skus.forEach(function (s) {
       for (var k = 1; k + h - 1 < tMax; k++) {
         var t = k + h - 1, tm = cms[t], yy = s.oi[tm];
-        if (yy === undefined || yy === null || !hasHist(s, k)) continue;
+        if (yy === undefined || yy === null || (s.off && s.off[tm]) || !hasHist(s, k)) continue;
         X.push(gbrFeat(s, cms, k, tm, s.hq[tm], Rs, catMean)); y.push(lg(yy));
       }
     });
@@ -3633,7 +3740,7 @@ function gbrReady(f) { if (!GBRW.busy) { f(); return; } GBRW.wait.push(f); toast
 function gbrRun(m, Rs) {
   var key = gbrKey(m), mk = m.closingMonths.join(',') + '|' + m.future.join(',');
   if (_gbrCache.key === key) return _gbrCache.res;
-  var job = { cms: m.closingMonths.slice(), future: m.future.slice(), Rs: Rs.slice(), skus: m.skus.map(function (s) { return { key: s.key, oi: s.oi, oiM: s.oiM, hq: s.hq, fhq: s.fhq, grp: s.grp }; }) };
+  var job = { cms: m.closingMonths.slice(), future: m.future.slice(), Rs: Rs.slice(), skus: m.skus.map(function (s) { return { key: s.key, oi: s.oi, oiM: s.oiM, hq: s.hq, fhq: s.fhq, grp: s.grp, off: s.off }; }) };
   if (!gbrWorker()) { var res = gbrCompute(job); _gbrCache = { key: key, mk: mk, res: res }; return res; }
   if (!GBRW.busy) gbrPost({ key: key, mk: mk, job: job });
   else if (GBRW.busy.key !== key) GBRW.next = { key: key, mk: mk, job: job };
@@ -3705,6 +3812,7 @@ function runML(m) {
     MODEL_KEYS.forEach(function (x) { t.mods[x] = { abs: 0, oi: 0, n: 0 }; });
     m.skus.forEach(function (s) {
       var y = s.oi[mo], q = s.hq[mo]; if (y === undefined && q === undefined) return;
+      if (s.off && s.off[mo]) return; // seasonal SKU outside its season: not a forecast month
       var p = mlPredict(s, cms, k2, 1, q, Rs), pr = {};
       if (p.holt !== null) pr.holt = p.holt; if (p.hqc !== null) pr.hqc = p.hqc;
       if (G.bt[s.key] && typeof G.bt[s.key][mo] === 'number') pr.gbr = G.bt[s.key][mo];
@@ -3727,6 +3835,7 @@ function runML(m) {
   m.skus.forEach(function (s) {
     s.ml = {}; s.mlInfo = {};
     m.future.forEach(function (fm, i) {
+      if (s.offF && s.offF[fm]) { s.ml[fm] = 0; s.mlInfo[fm] = { ml: 0, holt: null, hqc: null, gbr: null, chronos: null, chLo: null, chHi: null, r: null, w: 0, wts: {}, off: true }; return; }
       var p = mlPredict(s, cms, K, i + 1, s.fhq[fm], Rs), pr = {};
       if (p.holt !== null) pr.holt = p.holt; if (p.hqc !== null) pr.hqc = p.hqc;
       if (G.fut[s.key] && typeof G.fut[s.key][fm] === 'number') pr.gbr = G.fut[s.key][fm];
@@ -3740,6 +3849,7 @@ function runML(m) {
 }
 function mlTip(i) {
   if (!i) return '';
+  if (i.off) return 'SKU musiman di luar musimnya: Forecast AI 0.';
   var parts = MODEL_KEYS.filter(function (k) { return i.wts && i.wts[k] !== undefined; }).map(function (k) {
     return MODELS[k] + ' ' + n(Math.round(i[k])) + ' (' + Math.round(i.wts[k] * 100) + '%)' + (k === 'chronos' && i.chLo !== null ? ' [P10–P90 ' + n(Math.round(i.chLo)) + '–' + n(Math.round(i.chHi)) + ']' : '') + (k === 'hqc' ? ' ×' + fmt.format(Math.round(i.r * 100) / 100) : '');
   });
@@ -3895,6 +4005,26 @@ function openSku(key) {
   bindChart();
   var dlg = $('chDlg'); if (dlg.showModal) { if (!dlg.open) dlg.showModal(); } else dlg.setAttribute('open', '');
 }
+// Groups for the Forecast sheet. Default = the model's groups (Brand · Kategori, or Brand · Famili closing); a free column
+// regroups the view only (buffer, regressor and ensemble keep the model groups).
+function skuJenis(s) { return jenisOf(matKey(s), s, s.status === 'diganti' ? 1 : null); }
+function attrOf(s, col) { return col === '@jenis' ? JENIS[skuJenis(s)] : (s.free || {})[col]; }
+function fcGroups(m) {
+  var col = state.fcGrp; if (!col || (col !== '@jenis' && fcols().indexOf(col) < 0)) return m.fams;
+  var g = {}, out = [], add = function (s, ex) { var v = attrOf(s, col) || '(kosong)', k = 'free:' + col + ':' + v; if (!g[k]) { g[k] = { key: k, name: (col === '@jenis' ? 'Jenis SKU' : col) + ': ' + v, brand: '', base: v, skus: [], excl: [], weight: 0 }; out.push(g[k]); } if (ex) g[k].excl.push(s); else { g[k].skus.push(s); g[k].weight += s.weight || 0; } };
+  m.skus.forEach(function (s) { add(s, false); }); (m.excl || []).forEach(function (s) { add(s, true); });
+  out.sort(function (a, b) { return (a.base === '(kosong)') - (b.base === '(kosong)') || b.weight - a.weight; });
+  out.forEach(function (f) { f.skus.sort(function (a, b) { return b.weight - a.weight; }); });
+  return out;
+}
+function skuTags(s, m) {
+  var t = [];
+  if (s.refFrom && !s.refFrom.missing) t.push('<span class="pill p-acc" title="Order in Nomat ' + esc(s.refFrom.s.nomat || s.refFrom.s.key) + ' × ' + s.refFrom.pct + '% dipakai model untuk ' + s.refFrom.n + ' bulan sebelum order in SKU ini sendiri">histori dari ' + esc(s.refFrom.s.nomat || s.refFrom.s.key) + (s.refFrom.pct !== 100 ? ' × ' + s.refFrom.pct + '%' : '') + '</span>');
+  if (s.season) { var offNow = m.future[0] && s.offF[m.future[0]]; t.push('<span class="pill ' + (offNow ? 'p-off' : 'p-acc') + '" title="Musim aktif: ' + esc(s.season.label) + '. Di luar musim: Forecast AI, buffer dan PP 0.">' + (offNow ? 'di luar musim' : 'musiman') + ' · ' + esc(s.season.label) + '</span>'); }
+  var fv = fcols().map(function (c) { return (s.free || {})[c]; }).filter(Boolean);
+  if (fv.length) t.push('<span class="atag">' + esc(fv.join(' · ')) + '</span>');
+  return t.length ? ' ' + t.join(' ') : '';
+}
 function renderForecastScreen(c) {
   var m = forecastModel(c), tot = aggr(m.skus, m), L = m.latest;
   var ctx = [];
@@ -3991,15 +4121,27 @@ function renderForecastScreen(c) {
     var st = STATUS[s.status], why = s.hits.map(function (x) { return x.why; }).join('; ');
     var pill = ' <button type="button" class="stchip p-' + st[1] + (s.status === 'aktif' ? ' quiet' : '') + '" data-st="' + esc(s.key) + '" title="' + esc((s.override ? 'Diubah manual. ' : '') + (why || 'Klik untuk mengubah status')) + '">' + st[0] + (s.status === 'diganti' && s.succ ? ' → ' + esc(s.succ.nomat || s.succ.art) : '') + (s.override ? ' ✎' : '') + ' ▾</button>';
     var rv = (state.bufReview || {})[s.key];
-    return '<tr class="sku' + (ex ? ' excl' : '') + (s.vital ? ' vital' : '') + '"><td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + (rv ? '<button type="button" class="rvchip" data-rv="' + esc(s.key) + '" title="Ditandai untuk ditinjau di Saran buffer. Klik untuk hapus tanda.">⚑ tinjau ✕</button>' : '') + esc(s.nomat || 'tanpa Nomat') + (s.art ? ' · ' + esc(s.art) : '') + pill + '</span></td>' + cells(null, true, s) + '</tr>';
+    return '<tr class="sku' + (ex ? ' excl' : '') + (s.vital ? ' vital' : '') + '"><td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + (rv ? '<button type="button" class="rvchip" data-rv="' + esc(s.key) + '" title="Ditandai untuk ditinjau di Saran buffer. Klik untuk hapus tanda.">⚑ tinjau ✕</button>' : '') + esc(s.nomat || 'tanpa Nomat') + (s.art ? ' · ' + esc(s.art) : '') + pill + skuTags(s, m) + '</span></td>' + cells(null, true, s) + '</tr>';
   };
   var optB = {}, optC = {}; m.all.forEach(function (x) { if (x.brand) optB[x.brand] = 1; if (x.category) optC[x.category] = 1; });
   var fillSel = function (id, o, cur, all) { var el = $(id), keys = Object.keys(o).sort(); if (cur && !o[cur]) cur = ''; el.innerHTML = '<option value="">' + all + '</option>' + keys.map(function (k) { return '<option' + (k === cur ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join(''); return cur; };
   var fb = fillSel('fcBrand', optB, state.fcBrand || '', 'Semua brand'), fc2 = fillSel('fcCat', optC, state.fcCat || '', 'Semua kategori'); state.fcBrand = fb; state.fcCat = fc2;
   var vo = !!state.fcVitalOnly; $('fcVitalOnly').checked = vo;
-  var pass = function (x) { return (!fb || x.brand === fb) && (!fc2 || x.category === fc2) && (!vo || x.vital); };
-  var lim = state.fcAll ? Infinity : 10, fq = normName(state.fcQ), nHit = 0, flt = !!(fq || fb || fc2 || vo);
-  m.fams.forEach(function (f) {
+  // free columns (Material master): one filter (column: value) and a grouping choice
+  var FC = ['@jenis'].concat(fcols()), fv = state.fcFree || '', fvc = fv ? fv.split('\u0001') : null, cname = function (c) { return c === '@jenis' ? 'Jenis SKU' : c; };
+  if (fvc && FC.indexOf(fvc[0]) < 0) { fv = ''; fvc = null; }
+  $('fcFree').hidden = false;
+  $('fcFree').innerHTML = '<option value="">Semua ' + FC.map(cname).join(' / ') + '</option>' + FC.map(function (c) {
+    var vals = uniq(m.all.map(function (x) { return attrOf(x, c); }));
+    return '<optgroup label="' + esc(cname(c)) + '">' + vals.concat(c === '@jenis' ? [] : ['\u0002']).map(function (v) { var k = c + '\u0001' + v; return '<option value="' + esc(k) + '"' + (k === fv ? ' selected' : '') + '>' + esc(cname(c) + ': ' + (v === '\u0002' ? '(kosong)' : v)) + '</option>'; }).join('') + '</optgroup>';
+  }).join('');
+  state.fcFree = fv;
+  if (state.fcGrp && FC.indexOf(state.fcGrp) < 0) state.fcGrp = '';
+  $('fcGrp').innerHTML = '<option value="">Kelompok: Brand · Kategori</option><option value="@family"' + (!state.fcGrp && state.grpMode === 'family' ? ' selected' : '') + '>Kelompok: Brand · Famili closing</option>' + FC.map(function (c) { return '<option value="' + esc(c) + '"' + (state.fcGrp === c ? ' selected' : '') + '>Kelompok: ' + esc(cname(c)) + '</option>'; }).join('');
+  var passFree = function (x) { if (!fvc) return true; var v = attrOf(x, fvc[0]); return fvc[1] === '\u0002' ? !v : v === fvc[1]; };
+  var pass = function (x) { return (!fb || x.brand === fb) && (!fc2 || x.category === fc2) && (!vo || x.vital) && passFree(x); };
+  var lim = state.fcAll ? Infinity : 10, fq = normName(state.fcQ), nHit = 0, flt = !!(fq || fb || fc2 || vo || fvc);
+  fcGroups(m).forEach(function (f) {
     var hitS = flt ? f.skus.filter(function (x) { return pass(x) && skuMatch(x, fq); }) : null, hitE = flt ? f.excl.filter(function (x) { return pass(x) && skuMatch(x, fq); }) : null;
     if (flt) {
       if (!hitS.length && !hitE.length) return;
@@ -4391,9 +4533,9 @@ function renderPreview() {
   var flt = $('filter').value;
   var pq = normName(state.pvQ || '');
   var rows = res.rows.filter(function (r) { return (flt === 'all' || (flt === 'issue' ? r.issues.length > 0 : r.issues.indexOf('no_hq_forecast') >= 0)) && (!pq || normName([r.nomat, r.article_code, r.description, r.family].join(' ')).indexOf(pq) >= 0); });
-  var cols = [['nomat', 'Nomat', 0], ['article_code', 'Kode artikel', 0], ['description', 'Deskripsi', 0], ['family', 'Famili', 0], ['forecast_hq_orig', 'Forecast HQ', 1],
+  var cols = [['nomat', 'Nomat', 0], ['article_code', 'Kode artikel', 0], ['description', 'Deskripsi', 0]].concat(res.rows.some(function (r) { return r.brand || r.category; }) ? [['brand', 'Brand', 0], ['category', 'Kategori', 0]] : []).concat([['family', 'Famili', 0], ['forecast_hq_orig', 'Forecast HQ', 1],
     ['order_in', 'Order in', 1], ['inquiry_sdd', 'Inquiry', 1], ['delivery_gi', 'GI', 1], ['outstanding_delivery', 'Outs.', 1], ['sc_block', 'SC block', 1], ['waiting_prod', 'Waiting', 1],
-    ['hq_class', 'Kelas HQ', 0], ['doi_target_days', 'DOI target', 1], ['free_stock', 'Stok bebas', 1], ['buffer_suggestion', 'Buffer', 1], ['order_in_w1', 'OI W1', 1], ['order_in_w2', 'W2', 1], ['order_in_w3', 'W3', 1], ['order_in_w4', 'W4', 1], ['order_in_w5', 'W5', 1], ['order_in_week_total', 'Total blok OI', 1]];
+    ['hq_class', 'Kelas HQ', 0], ['doi_target_days', 'DOI target', 1], ['free_stock', 'Stok bebas', 1], ['buffer_suggestion', 'Buffer', 1], ['order_in_w1', 'OI W1', 1], ['order_in_w2', 'W2', 1], ['order_in_w3', 'W3', 1], ['order_in_w4', 'W4', 1], ['order_in_w5', 'W5', 1], ['order_in_week_total', 'Total blok OI', 1]]);
   var h = '<thead><tr><th class="num">Baris</th>' + cols.map(function (c) { return '<th' + (c[2] ? ' class="num"' : '') + '>' + c[1] + '</th>'; }).join('') + '<th>Catatan</th></tr></thead><tbody>';
   rows.forEach(function (r) {
     h += '<tr><td class="num col">' + r.source_row + '</td>' + cols.map(function (c) {
@@ -4436,7 +4578,7 @@ function histFileName(c) { var ms = c.monthly.map(function (r) { return r.closin
 function histSheets(c) {
   var fm = forecastModel(c), mlRows = [];
   fm.skus.forEach(function (sk) { Object.keys(sk.ml || {}).forEach(function (mo) { var i = sk.mlInfo[mo], rd = function (v) { return v === null || v === undefined ? null : Math.round(v); }, wt = function (k) { return i.wts && i.wts[k] !== undefined ? Math.round(i.wts[k] * 100) / 100 : null; }; mlRows.push({ forecast_month: mo, after_closing: fm.latest, nomat: sk.nomat, article_code: sk.art, description: sk.name, forecast_ml_ctn: sk.ml[mo], holt_ctn: rd(i.holt), hq_corrected_ctn: rd(i.hqc), regressor_ctn: rd(i.gbr), chronos_p50_ctn: rd(i.chronos), chronos_p10_ctn: rd(i.chLo), chronos_p90_ctn: rd(i.chHi), w_holt: wt('holt'), w_hq_corrected: wt('hqc'), w_regressor: wt('gbr'), w_chronos: wt('chronos'), hq_ratio: Math.round(i.r * 1000) / 1000, forecast_hq_ctn: typeof sk.fhq[mo] === 'number' ? sk.fhq[mo] : null, model: 'ensemble v2 (holt, hq_corrected, gbr, chronos)' }); }); });
-  return [['bulanan', c.monthly], ['mingguan', c.weekly], ['forecast_hq', c.forecast], ['forecast_ml', mlRows], ['kelas_sku', c.kelas], ['status_sku', statusRows(fm)], ['koreksi', Object.keys(state.edits).map(function (id) { var e = state.edits[id], p = id.split('|'); return { sku_key: p[0], description: e.name || null, data: p[1], data_label: EDIT_FIELDS[p[1]], bulan: p[2] || null, nilai_file: e.src, koreksi: e.v, waktu: e.at }; })], ['saran_buffer', bufRows(fm)], ['rencana_produksi', ppRows(fm)], ['jadwal_produksi', schedRows().jadwal], ['target_harian', schedRows().target], ['kalender_produksi', schedRows().kal], ['sku_mesin', skuMachRows()], ['kelompok_sku', (state.skuGroups || []).map(function (g) { return { kelompok: g.g, jenis_mesin: g.t || null }; })], ['kapasitas_mesin', capRows()], ['aturan', RULES.map(function (r) { var cf = ruleCfg(r.id), o = { aturan: r.id, nama: r.label, aktif: cf.on ? 'ya' : 'tidak' }; Object.keys(r.params).forEach(function (k) { o[k] = cf[k]; }); return o; })], ['material_master', matRows()], ['forecast_chronos', (state.chronos && state.chronos.rows) || []], ['log', c.log]];
+  return [['bulanan', c.monthly], ['mingguan', c.weekly], ['forecast_hq', c.forecast], ['forecast_ml', mlRows], ['kelas_sku', c.kelas], ['status_sku', statusRows(fm)], ['koreksi', Object.keys(state.edits).map(function (id) { var e = state.edits[id], p = id.split('|'); return { sku_key: p[0], description: e.name || null, data: p[1], data_label: EDIT_FIELDS[p[1]], bulan: p[2] || null, nilai_file: e.src, koreksi: e.v, waktu: e.at }; })], ['saran_buffer', bufRows(fm)], ['rencana_produksi', ppRows(fm)], ['jadwal_produksi', schedRows().jadwal], ['target_harian', schedRows().target], ['kalender_produksi', schedRows().kal], ['sku_mesin', skuMachRows()], ['kelompok_sku', (state.skuGroups || []).map(function (g) { return { kelompok: g.g, jenis_mesin: g.t || null }; })], ['kapasitas_mesin', capRows()], ['kunci_mesin', state.mkey ? [{ alg: state.mkey.alg, kdf: state.mkey.kdf, iter: state.mkey.iter, salt: state.mkey.salt, cek: JSON.stringify(state.mkey.chk) }] : []], ['aturan', RULES.map(function (r) { var cf = ruleCfg(r.id), o = { aturan: r.id, nama: r.label, aktif: cf.on ? 'ya' : 'tidak' }; Object.keys(r.params).forEach(function (k) { o[k] = cf[k]; }); return o; })], ['material_master', matRows()], ['atribut_sku', attrRows()], ['forecast_chronos', (state.chronos && state.chronos.rows) || []], ['log', c.log]];
 }
 $('dlCsv').hidden = true;
 // export the production plan as shown: machine rows with what runs each day, SKU rows with daily targets
@@ -4561,7 +4703,7 @@ function loadSample() {
   state.items = cl.concat(fc); state.view = cl[2].id;
   renderAll();
 }
-$('useSample').addEventListener('click', loadSample);
+
 function showTab(name) {
   document.querySelectorAll('.tab[data-tab]').forEach(function (b) { var on = b.getAttribute('data-tab') === name; b.classList.toggle('on', on); if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
   $('tabForecast').hidden = name !== 'Forecast'; $('tabInput').hidden = name !== 'Input'; $('tabCek').hidden = name !== 'Cek'; $('tabBuffer').hidden = name !== 'Buffer'; $('tabPlan').hidden = name !== 'Plan'; ['Brief', 'Master'].forEach(function (t) { $('tab' + t).hidden = name !== t; }); document.body.classList.toggle('wide', name === 'Plan'); if (name === 'Plan' && CH.sm && Math.abs(document.documentElement.clientWidth - (state._ppW || 0)) > 40) { state._ppW = document.documentElement.clientWidth; renderAll(); }
@@ -5194,12 +5336,28 @@ $('ppTpl').addEventListener('click', function () {
 });
 // ---------- editable tables in the Input tab (type, paste rows from Excel, add/remove rows) ----------
 var ED_TABLES = {
-  ml: { el: 'mlTable', cols: [['type', 'Area mesin', 'mlTypes'], ['name', 'Mesin'], ['cap', 'Kapasitas t/bulan', null, 'num'], ['rem', 'Catatan']],
-    rows: function () { var o = []; master().forEach(function (g) { g[1].forEach(function (x) { o.push({ type: g[0], name: x[0], cap: x[1], rem: x[2] || '' }); }); }); return o; },
+  ml: { el: 'mlTable', cols: [['type', 'Area mesin', 'mlTypes'], ['name', 'Kode mesin', null, null, 'Kode samaran yang tampil di jadwal dan file, mis. DTY-2'], ['real', 'Nama asli 🔒', null, 'real', 'Disimpan terenkripsi (AES-GCM). Kunci = frasa sandi, tidak pernah disimpan.'],
+      ['kg', 'Kapasitas kg/hari', null, 'num'], ['nw', 'Berat bersih kg/karton (acuan)', null, 'num'], ['pct', 'Variasi output %', null, 'num', 'Persentase kapasitas yang benar-benar keluar (efisiensi). Kosong = 100%.'],
+      ['out', 'Output karton/hari', null, 'ro'], ['cap', 'Kapasitas t/bulan', null, 'num'], ['rem', 'Catatan'], ['enc', '', null, 'hid']],
+    rows: function () { var o = []; master().forEach(function (g) { g[1].forEach(function (x) { var mt = x[3] || {}; o.push({ type: g[0], name: x[0], real: MK.names[x[0]] || '', kg: mt.capDayT ? Math.round(mt.capDayT * 1000 * 100) / 100 : '', nw: mt.nwCtKg || '', pct: mt.outPct || '', cap: x[1], rem: x[2] || '', enc: mt.enc ? JSON.stringify(mt.enc) : '' }); }); }); return o; },
+    ro: function (f, r) { var o = machOutCt(machMetaOf(r)); return o ? '<b>' + n(Math.round(o)) + '</b>' : '<span class="sub">–</span>'; },
+    calc: function (f, r) { return f === 'cap' && cellNum(r.kg) > 0 ? 'Dihitung: kapasitas kg/hari × variasi output × 26 hari kerja' : ''; },
     save: function (rows) {
-      var mg = {}, order = [], pend = [];
-      rows.forEach(function (r) { var ty = String(r.type || '').trim(), nm = String(r.name || '').trim(); if (!nm) { pend.push(r); return; } if (!ty) ty = '(tanpa jenis)'; if (!mg[ty]) { mg[ty] = []; order.push(ty); } var cap = cellNum(r.cap) || 0; if (state.capEdits[nm] && state.capEdits[nm].v !== cap) delete state.capEdits[nm]; mg[ty].push([nm, cap, String(r.rem || '')]); });
+      var mg = {}, order = [], pend = [], used = {};
+      master().forEach(function (g) { g[1].forEach(function (x) { used[x[0]] = 1; }); });
+      rows.forEach(function (r) {
+        var ty = String(r.type || '').trim(), nm = String(r.name || '').trim(), real = r.real === undefined ? undefined : String(r.real).trim();
+        if (!nm && real) { nm = mkAlias(used); used[nm] = 1; } // a real name typed without a code gets a random code
+        if (!nm) { pend.push(r); return; } if (!ty) ty = '(tanpa jenis)'; if (!mg[ty]) { mg[ty] = []; order.push(ty); }
+        var mt = machMetaOf(r), enc = null; try { enc = r.enc ? JSON.parse(r.enc) : null; } catch (e) { enc = null; }
+        if (real !== undefined) { if (real) { if (MK.names[nm] !== real || !enc) { MK.names[nm] = real; MK.dirty[nm] = 1; } } else { delete MK.names[nm]; enc = null; } }
+        if (enc) mt.enc = enc;
+        var cap = mt.capDayT > 0 ? Math.round(mt.capDayT * mt.outPct / 100 * 26 * 10) / 10 : cellNum(r.cap) || 0;
+        var ce = state.capEdits[nm]; if (ce && typeof ce.v === 'number' && ce.v !== cap) delete state.capEdits[nm]; // only the old t/bulan override; per-day edits from Rencana produksi stay
+        mg[ty].push([nm, cap, String(r.rem || ''), mt]);
+      });
       state.machMaster = order.length ? order.map(function (g) { return [g, mg[g]]; }) : null; state.machMasterSrc = order.length ? 'tabel Input' : null;
+      mkFlush();
       return pend;
     } },
   sg: { el: 'sgTable', cols: [['g', 'Kelompok SKU (kata di nama SKU atau famili)'], ['t', 'Area mesin', 'mlTypes'], ['n', 'SKU cocok', null, 'ro']],
@@ -5211,12 +5369,16 @@ function edRender(id, info) {
   var T = ED_TABLES[id], el = $(T.el); if (!el) return;
   var ae = document.activeElement, keep = ae && el.contains(ae) && ae.getAttribute('data-er') !== null ? [ae.getAttribute('data-er'), ae.getAttribute('data-ef')] : null;
   var rows = T.rows(), nDone = rows.length; rows = rows.concat(edPend[id]); rows.push({});
-  var h = '<thead><tr>' + T.cols.map(function (c) { return '<th' + (c[3] === 'num' || c[3] === 'ro' ? ' class="num"' : '') + '>' + esc(c[1]) + '</th>'; }).join('') + '<th></th></tr></thead><tbody>';
+  var h = '<thead><tr>' + T.cols.map(function (c) { return c[3] === 'hid' ? '<th hidden></th>' : '<th' + (c[3] === 'num' || c[3] === 'ro' ? ' class="num"' : c[3] === 'real' ? ' class="ench"' : '') + (c[4] ? ' title="' + esc(c[4]) + '"' : '') + '>' + esc(c[1]) + '</th>'; }).join('') + '<th></th></tr></thead><tbody>';
   rows.forEach(function (r, i) {
     h += '<tr>' + T.cols.map(function (c) {
+      if (c[3] === 'ro' && T.ro) return '<td class="num ro">' + (i < nDone ? T.ro(c[0], r) : '') + '</td>';
       if (c[3] === 'ro') return '<td class="num sub"' + (info && info[i] ? ' title="' + esc(info[i].tip || '') + '"' : '') + '>' + (info && info[i] ? info[i].v : '') + '</td>';
+      if (c[3] === 'hid') return '<td hidden><input type="hidden" data-et="' + id + '" data-er="' + i + '" data-ef="' + c[0] + '" value="' + esc(r[c[0]] || '') + '"></td>';
+      if (c[3] === 'real' && !MK.key) return '<td class="real" title="Nama asli terenkripsi. Buka kunci di atas tabel untuk melihat atau mengubah.">' + (r.enc ? '🔒 terkunci' : '–') + '</td>';
       var v = r[c[0]]; if (c[3] === 'num' && typeof v === 'number') v = v ? fmt.format(v) : '';
-      return '<td><input type="text" data-et="' + id + '" data-er="' + i + '" data-ef="' + c[0] + '"' + (c[2] ? ' list="' + c[2] + '"' : '') + (c[3] === 'num' ? ' inputmode="decimal" class="num"' : '') + ' value="' + esc(v === undefined || v === null ? '' : String(v)) + '" aria-label="' + esc(c[1]) + ' baris ' + (i + 1) + '"></td>';
+      var calc = T.calc && T.calc(c[0], r);
+      return '<td' + (calc ? ' class="calc" title="' + esc(calc) + '"' : '') + '><input type="text" data-et="' + id + '" data-er="' + i + '" data-ef="' + c[0] + '"' + (c[2] ? ' list="' + c[2] + '"' : '') + (c[3] === 'num' ? ' inputmode="decimal" class="num"' : '') + ' value="' + esc(v === undefined || v === null ? '' : String(v)) + '" aria-label="' + esc(c[1]) + ' baris ' + (i + 1) + '"></td>';
     }).join('') + '<td>' + (i < rows.length - 1 ? '<button type="button" class="edx" data-edel="' + id + '" data-er="' + i + '" aria-label="Hapus baris ' + (i + 1) + '">✕</button>' : '') + '</td></tr>';
   });
   el.innerHTML = h + '</tbody>';
@@ -5231,7 +5393,7 @@ function edCommit(id, rows) { edPend[id] = ED_TABLES[id].save(rows) || []; saveP
 function renderPPInputs(pm) {
   if (!$('mlTable')) return;
   $('mlTypes').innerHTML = machTypes().map(function (t) { return '<option value="' + esc(t) + '">'; }).join('');
-  edRender('ml');
+  edRender('ml'); renderMk();
   var skus = pm ? pm.rows.map(function (r) { return r.s; }) : (CH.model ? CH.model.skus : []), info = (state.skuGroups || []).map(function (g) { var hit = skus.filter(function (s) { var b = skuGroupOf(s); return b && b.g === g.g; }); return { v: hit.length, tip: hit.slice(0, 8).map(function (s) { return s.name || s.key; }).join('\n') }; });
   edRender('sg', info);
   var miss = skus.filter(function (s) { return !skuGroupOf(s); });
@@ -5246,7 +5408,7 @@ function renderPPInputs(pm) {
   el.addEventListener('paste', function (e) {
     var inp = e.target.closest('input[data-ef]'), txt = (e.clipboardData || window.clipboardData).getData('text'); if (!inp || !/[\t\n]/.test(txt)) return;
     e.preventDefault();
-    var T = ED_TABLES[id], fields = T.cols.filter(function (c) { return c[3] !== 'ro'; }).map(function (c) { return c[0]; }), r0 = +inp.getAttribute('data-er'), c0 = fields.indexOf(inp.getAttribute('data-ef'));
+    var T = ED_TABLES[id], fields = T.cols.filter(function (c) { return c[3] !== 'ro' && c[3] !== 'hid' && !(c[3] === 'real' && !MK.key); }).map(function (c) { return c[0]; }), r0 = +inp.getAttribute('data-er'), c0 = fields.indexOf(inp.getAttribute('data-ef'));
     var all = []; el.querySelectorAll('tbody tr').forEach(function (tr) { var o = {}; tr.querySelectorAll('input[data-ef]').forEach(function (i) { o[i.getAttribute('data-ef')] = i.value; }); all.push(o); });
     txt.replace(/\r/g, '').replace(/\n$/, '').split('\n').forEach(function (line, i) { var row = all[r0 + i] = all[r0 + i] || {}; line.split('\t').forEach(function (v, j) { if (fields[c0 + j]) row[fields[c0 + j]] = v.trim(); }); });
     edCommit(id, all.filter(function (o) { return fields.some(function (f) { return String(o[f] || '').trim(); }); }));
@@ -5257,6 +5419,131 @@ $('sgAdd').addEventListener('click', function () { edPend.sg.push({}); renderPPI
 $('sgSeed').addEventListener('click', function () {
   var have = (state.skuGroups || []).map(function (g) { return grpKey(g.g); }), add = GROUP_SEED.filter(function (x) { return have.indexOf(grpKey(x[0])) < 0; });
   state.skuGroups = (state.skuGroups || []).concat(add.map(function (x) { return { g: x[0], t: x[1] }; })); savePP(); renderAll();
+});
+/* ---------- Master mesin: output capability, code names, encrypted real names ---------- */
+// Shape read by Rencana produksi: state.machMaster = [[area, [[code, capTonPerMonth, remark, meta], ...]], ...]
+// meta = { capDayT: ton/day, outPct: 0-100, nwCtKg: reference kg/carton (display only), enc: { iv, ct } }.
+// The code (e.g. DTY-2) is the machine's id everywhere (schedules, calendar, files). The real name is encrypted with
+// AES-GCM 256; the key comes from a passphrase (PBKDF2-SHA256, 250k rounds) that is never stored, so localStorage,
+// the history file and the optional server copy only ever hold ciphertext. Decrypted names live in memory (MK.names).
+function machMetaOf(r) { var kg = cellNum(r.kg), pct = cellNum(r.pct), nw = cellNum(r.nw); return { capDayT: kg > 0 ? kg / 1000 : null, outPct: pct > 0 ? Math.min(pct, 200) : 100, nwCtKg: nw > 0 ? nw : null }; }
+// Output capability per machine (cartons/day) = capacity per day / net weight per carton × output variation %
+function machOutCt(mt, nwKg) { var w = nwKg || (mt && mt.nwCtKg); return mt && mt.capDayT > 0 && w > 0 ? mt.capDayT * 1000 / w * (mt.outPct || 100) / 100 : null; }
+function machLabel(code) { return MK.names[code] ? MK.names[code] + ' (' + code + ')' : code; }
+window.machLabel = machLabel; window.machOutCt = machOutCt;
+var MK = { key: null, names: {}, dirty: {}, busy: false, msg: '' };
+var MK_CHK = 'ppic-mesin-ok', MK_ITER = 250000;
+function mkB64(buf) { var b = new Uint8Array(buf), t = ''; for (var i = 0; i < b.length; i++) t += String.fromCharCode(b[i]); return btoa(t); }
+function mkUnb64(s) { var t = atob(s), b = new Uint8Array(t.length); for (var i = 0; i < t.length; i++) b[i] = t.charCodeAt(i); return b; }
+function mkDerive(pass, salt, iter) {
+  var enc = new TextEncoder();
+  return crypto.subtle.importKey('raw', enc.encode(pass), 'PBKDF2', false, ['deriveKey']).then(function (base) {
+    return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: iter, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  });
+}
+function mkEnc(key, text) { var iv = crypto.getRandomValues(new Uint8Array(12)); return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, new TextEncoder().encode(text)).then(function (ct) { return { iv: mkB64(iv), ct: mkB64(ct) }; }); }
+function mkDec(key, e) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: mkUnb64(e.iv) }, key, mkUnb64(e.ct)).then(function (pt) { return new TextDecoder().decode(pt); }); }
+// random code like DTY-2: three letters + digit, not derived from the name (a keyboard shift such as SRT01 -> DTY-2
+// is a substitution cipher and is reversed from one known pair, so it is only a label, never the protection)
+function mkAlias(used) { var L = 'ABCDEFGHJKLMNPQRSTUVWXYZ', a; do { var r = crypto.getRandomValues(new Uint8Array(4)); a = L[r[0] % 24] + L[r[1] % 24] + L[r[2] % 24] + '-' + (1 + r[3] % 9); } while (used && used[a]); return a; }
+function mkEach(fn) { master().forEach(function (g) { g[1].forEach(function (x) { fn(x, x[3] = x[3] || {}); }); }); }
+// encrypt names typed since the last save, then save (names never go to storage in plain text)
+function mkFlush() {
+  if (!MK.key) return; var key = MK.key, jobs = [];
+  if (MK.demo) { Object.keys(MK.demo).forEach(function (a) { MK.names[a] = MK.demo[a]; MK.dirty[a] = 1; }); MK.demo = null; }
+  mkEach(function (x, mt) { if (!MK.dirty[x[0]] || !MK.names[x[0]]) return; jobs.push(mkEnc(key, MK.names[x[0]]).then(function (e) { mt.enc = e; })); });
+  MK.dirty = {}; if (jobs.length) Promise.all(jobs).then(function () { savePP(); renderMk(); });
+}
+function mkSetPass(pass) {
+  var salt = crypto.getRandomValues(new Uint8Array(16));
+  return mkDerive(pass, salt, MK_ITER).then(function (key) {
+    return mkEnc(key, MK_CHK).then(function (chk) {
+      state.mkey = { alg: 'AES-GCM-256', kdf: 'PBKDF2-SHA256', iter: MK_ITER, salt: mkB64(salt), chk: chk }; MK.key = key;
+      var jobs = []; mkEach(function (x, mt) { if (MK.names[x[0]]) jobs.push(mkEnc(key, MK.names[x[0]]).then(function (e) { mt.enc = e; })); else delete mt.enc; });
+      return Promise.all(jobs);
+    });
+  }).then(function () { mkFlush(); savePP(); });
+}
+function mkUnlock(pass) {
+  var k = state.mkey; if (!k) return Promise.reject(new Error('Belum ada kunci.'));
+  return mkDerive(pass, mkUnb64(k.salt), k.iter || MK_ITER).then(function (key) {
+    return mkDec(key, k.chk).then(function (t) { if (t !== MK_CHK) throw new Error('x'); return key; }, function () { throw new Error('Frasa sandi salah.'); });
+  }).then(function (key) {
+    MK.key = key; var jobs = [], bad = 0;
+    mkEach(function (x, mt) { if (mt.enc) jobs.push(mkDec(key, mt.enc).then(function (t) { MK.names[x[0]] = t; }, function () { bad++; })); });
+    return Promise.all(jobs).then(function () { mkFlush(); return bad; });
+  });
+}
+function mkLock() { MK.key = null; MK.names = {}; MK.dirty = {}; }
+// a machine that still carries its real name as its code: move the name into the encrypted field and give it a code,
+// renaming every place that refers to the machine (capacity edits, manual bars, maintenance days, calendar, SKU -> machine)
+function mkRename(o, nw) {
+  if (state.capEdits[o]) { state.capEdits[nw] = state.capEdits[o]; delete state.capEdits[o]; }
+  Object.keys(state.ppSched || {}).forEach(function (P) { var sc = state.ppSched[P];
+    Object.keys(sc.place || {}).forEach(function (k) { (sc.place[k] || []).forEach(function (p) { if (p.m === o) p.m = nw; }); });
+    if (sc.maint && sc.maint[o]) { sc.maint[nw] = sc.maint[o]; delete sc.maint[o]; } });
+  (state.ppCal || []).forEach(function (c) { if (c.mesin === o) c.mesin = nw; });
+  Object.keys(state.skuMach || {}).forEach(function (k) { var t = state.skuMach[k]; if (t && t.mach === o) t.mach = nw; });
+  Object.keys(state.machFile || {}).forEach(function (k) { if (state.machFile[k] === o) state.machFile[k] = nw; });
+}
+function mkHideAll() {
+  var used = {}, n0 = 0; mkEach(function (x) { used[x[0]] = 1; });
+  mkEach(function (x, mt) { if (mt.enc || MK.names[x[0]]) return; var a = mkAlias(used); used[a] = 1; MK.names[a] = x[0]; MK.dirty[a] = 1; mkRename(x[0], a); x[0] = a; n0++; });
+  mkFlush(); return n0;
+}
+function mkPlain() { var c = 0; mkEach(function (x, mt) { if (!mt.enc) c++; }); return c; }
+function renderMk() {
+  var el = $('mkBar'); if (!el) return;
+  var nM = 0, nE = 0; mkEach(function (x, mt) { nM++; if (mt.enc) nE++; }); var plain = nM - nE;
+  var srv = '<button type="button" data-mk="push"' + (MK.srv === false ? ' disabled' : '') + '>Simpan ke server</button><button type="button" data-mk="pull"' + (MK.srv === false ? ' disabled' : '') + '>Ambil dari server</button>';
+  var h;
+  if (!state.mkey) h = '<b>🔓 Nama asli belum dilindungi</b><input type="password" id="mkP1" placeholder="Frasa sandi baru (min. 10 huruf)" autocomplete="new-password"><input type="password" id="mkP2" placeholder="Ulangi frasa sandi" autocomplete="new-password"><button type="button" class="pri" data-mk="set">Atur kunci</button><span class="sp"></span>' + srv +
+    '<span class="sub">Kunci dibuat dari frasa sandi ini dan tidak disimpan di mana pun: simpan di pengelola sandi. Tanpa frasa sandi, nama asli tidak bisa dibuka lagi (kode mesin dan kapasitas tetap ada).</span>';
+  else if (!MK.key) h = '<b>🔒 Nama asli terkunci</b><input type="password" id="mkP1" placeholder="Frasa sandi" autocomplete="current-password"><button type="button" class="pri" data-mk="open">Buka</button><span class="sp"></span>' + srv + '<span class="sub">' + nE + ' dari ' + nM + ' mesin punya nama asli terenkripsi. Jadwal dan file hanya memakai kode mesin.</span>';
+  else h = '<b>🔓 Nama asli terbuka</b><button type="button" data-mk="lock">Kunci lagi</button>' + (plain ? '<button type="button" class="pri" data-mk="hide" title="Pindahkan nama yang sekarang dipakai sebagai kode ke kolom terenkripsi dan beri kode acak">Samarkan ' + plain + ' nama mesin</button>' : '') + '<span class="sp"></span>' + srv +
+    '<span class="sub">Hanya di tab ini, sampai dikunci atau halaman ditutup. ' + nE + ' dari ' + nM + ' mesin terenkripsi' + (plain ? '; ' + plain + ' mesin masih memakai nama sebagai kode (mungkin nama asli dari file PP).' : '.') + '</span>';
+  el.innerHTML = h + (MK.msg ? '<span class="sub" role="status">' + MK.msg + '</span>' : '');
+  el.classList.toggle('open', !!MK.key);
+  var tot = 0, k = 0; mkEach(function (x, mt) { var o = machOutCt(mt); if (o) { tot += o; k++; } });
+  if ($('mlSum')) $('mlSum').textContent = nM ? nM + ' mesin' + (k ? ' · output ' + n(Math.round(tot)) + ' karton/hari pada berat acuan' : '') : '';
+}
+function mkMsg(t) { MK.msg = t; renderMk(); }
+// optional copy outside the browser: Cloudflare KV through /api/mesin. Only codes, numbers and ciphertext are sent.
+function mkServer(dir) {
+  if (dir === 'push') {
+    if (!state.mkey) return mkMsg('Atur kunci dulu, supaya yang dikirim hanya nama terenkripsi.');
+    if (mkPlain()) return mkMsg('Masih ada ' + mkPlain() + ' mesin tanpa nama terenkripsi (kodenya bisa saja nama asli). Buka kunci lalu tekan Samarkan dulu.');
+    var doc = { v: 1, at: new Date().toISOString(), mkey: state.mkey, master: state.machMaster || [] };
+    return fetch('/api/mesin', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(doc) }).then(function (r) { return mkJson(r).then(function () { mkMsg('Tersimpan di server (' + doc.master.reduce(function (a, g) { return a + g[1].length; }, 0) + ' mesin, nama terenkripsi).'); }); }).catch(function (e) { mkSrvErr(e); });
+  }
+  return fetch('/api/mesin').then(mkJson).then(function (j) {
+    if (!j.doc) return mkMsg('Server belum punya master mesin.');
+    state.machMaster = j.doc.master; state.machMasterSrc = 'server ' + String(j.doc.at || '').slice(0, 10); state.mkey = j.doc.mkey; mkLock(); savePP(); renderAll();
+    mkMsg('Master mesin diambil dari server (' + String(j.doc.at || '').slice(0, 10) + '). Buka kunci untuk melihat nama asli.');
+  }).catch(function (e) { mkSrvErr(e); });
+}
+function mkJson(r) { return r.text().then(function (t) { var j; try { j = JSON.parse(t); } catch (e) { throw new Error('belum tersedia di alamat ini (503).'); } if (!r.ok) throw new Error((j && j.error) || r.status); return j; }); }
+function mkSrvErr(e) { var t = String(e && e.message || e); if (/503|belum/i.test(t)) MK.srv = false; mkMsg('Server: ' + esc(t) + (MK.srv === false ? ' Data tetap di browser ini dan di file histori.' : '')); }
+$('mkBar').addEventListener('click', function (e) {
+  var b = e.target.closest('[data-mk]'); if (!b || MK.busy) return; var a = b.getAttribute('data-mk'), p1 = $('mkP1') ? $('mkP1').value : '';
+  var run = function (pr, ok) { MK.busy = true; mkMsg('Memproses…'); pr.then(function (x) { MK.busy = false; MK.msg = typeof ok === 'function' ? ok(x) : ok; renderAll(); }, function (er) { MK.busy = false; mkMsg(esc(er.message || er)); }); };
+  if (a === 'set') { if (p1.length < 10) return mkMsg('Frasa sandi minimal 10 huruf.'); if (p1 !== $('mkP2').value) return mkMsg('Kedua frasa sandi tidak sama.'); run(mkSetPass(p1), 'Kunci diatur. Isi kolom Nama asli; kolom itu disimpan terenkripsi.'); }
+  else if (a === 'open') run(mkUnlock(p1), function (bad) { return bad ? bad + ' nama tidak bisa dibuka (kunci lain).' : ''; });
+  else if (a === 'lock') { mkLock(); MK.msg = ''; renderAll(); }
+  else if (a === 'hide') { var k = mkHideAll(); savePP(); MK.msg = k + ' mesin diberi kode acak; nama aslinya dienkripsi. Jadwal, kalender dan kapasitas manual ikut pindah ke kode baru.'; renderAll(); }
+  else mkServer(a);
+});
+$('mkBar').addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.matches('input')) { var b = $('mkBar').querySelector('button.pri'); if (b) b.click(); } });
+// dummy machine master: invented codes, names and numbers (no real plant data)
+var MK_DEMO = [['SRT', 'Mesin Rewinder A1', 11000, 4.8, 85], ['SRT', 'Mesin Rewinder A2', 10000, 4.8, 80], ['Softpack Besar', 'Mesin Softpack B1', 8000, 3.6, 90], ['Softpack Kecil', 'Mesin Softpack B2', 6500, 2.4, 88],
+  ['Facial Box', 'Mesin Box C1', 6000, 3.2, 82], ['Kitchen Towel', 'Mesin Towel D1', 7000, 4.2, 85], ['Travel Pack', 'Mesin Travel E1', 3000, 1.8, 75], ['Napkin Luncheon', 'Mesin Napkin F1', 4000, 2.6, 80]];
+$('mlDemo').addEventListener('click', function () {
+  var used = {};
+  var mg = {}, order = []; MK.names = MK.key ? MK.names : {};
+  MK_DEMO.forEach(function (d) { var a = mkAlias(used); used[a] = 1; if (!mg[d[0]]) { mg[d[0]] = []; order.push(d[0]); } var mt = { capDayT: d[2] / 1000, outPct: d[4], nwCtKg: d[3] }; mg[d[0]].push([a, Math.round(mt.capDayT * d[4] / 100 * 26 * 10) / 10, 'contoh (dummy)', mt]); if (MK.key) { MK.names[a] = d[1]; MK.dirty[a] = 1; } else (MK.demo = MK.demo || {})[a] = d[1]; });
+  state.machMaster = order.map(function (g) { return [g, mg[g]]; }); state.machMasterSrc = 'contoh (dummy)';
+  MK.msg = MK.key ? 'Data contoh diisi; nama dienkripsi dengan kunci yang terbuka.' : 'Data contoh diisi dengan kode acak. Atur atau buka kunci, lalu nama contoh dienkripsi otomatis.';
+  savePP(); mkFlush(); renderAll();
 });
 /* ---------- buffer sheet ---------- */
 $('bfCtl').addEventListener('click', function (e) {
@@ -5617,7 +5904,7 @@ aiStatus('Memeriksa mesin AI…'); aiDetect();
 /* ---------- search helper (Forecast, Saran Buffer, Material master) ---------- */
 function skuMatch(s, q) {
   if (!q) return true;
-  var t = normName([s.name, s.nomat, s.art, s.key, s.brand, s.category, s.family, s.grp].concat(Object.keys(s.nomatHist || {})).join(' '));
+  var t = normName([s.name, s.nomat, s.art, s.key, s.brand, s.category, s.family, s.grp].concat(Object.keys(s.nomatHist || {}), freeVals(s.free)).join(' '));
   return q.split(' ').every(function (w) { return t.indexOf(w) >= 0; });
 }
 /* ---------- toast (messages when the Input tab is not open) ---------- */
@@ -5673,8 +5960,8 @@ function matStatus(s) {
   if (mr) return { status: mr.status, succ: mr.succ || '', from: 'master' };
   return null;
 }
-function saveMat() { try { localStorage.setItem('ppic_mat', JSON.stringify({ mat: state.mat, edits: state.matEdits || {}, grp: state.grpMode, added: state.matNew || [], bom: state.bom || {}, rmHide: !!state.rmHide })); } catch (e) { toast('Penyimpanan browser penuh: material master hanya tersimpan sampai halaman ditutup. Unduh histori untuk menyimpannya.'); } }
-function loadMat() { try { var o = JSON.parse(localStorage.getItem('ppic_mat') || '{}') || {}; state.mat = o.mat || null; state.matEdits = o.edits || {}; state.grpMode = 'auto'; state.matNew = o.added || []; state.bom = o.bom || {}; state.rmHide = !!o.rmHide; } catch (e) { state.mat = null; state.matEdits = {}; state.matNew = []; state.bom = {}; } }
+function saveMat() { try { localStorage.setItem('ppic_mat', JSON.stringify({ mat: state.mat, edits: state.matEdits || {}, grp: state.grpMode, added: state.matNew || [], bom: state.bom || {}, rmHide: !!state.rmHide, ref: state.skuRef || {}, season: state.season || {}, free: state.freeCols || { cols: [], v: {} }, fcGrp: state.fcGrp || '', skuClass: state.skuClass || {}, mmHide: state.mmHide || null })); } catch (e) { toast('Penyimpanan browser penuh: material master hanya tersimpan sampai halaman ditutup. Unduh histori untuk menyimpannya.'); } }
+function loadMat() { try { var o = JSON.parse(localStorage.getItem('ppic_mat') || '{}') || {}; state.mat = o.mat || null; state.matEdits = o.edits || {}; state.grpMode = 'auto'; state.matNew = o.added || []; state.bom = o.bom || {}; state.rmHide = !!o.rmHide; state.skuRef = o.ref || {}; state.season = o.season || {}; state.freeCols = o.free || { cols: [], v: {} }; state.fcGrp = o.fcGrp || ''; state.skuClass = o.skuClass || {}; state.mmHide = o.mmHide || null; } catch (e) { state.mat = null; state.matEdits = {}; state.matNew = []; state.bom = {}; state.skuRef = {}; state.season = {}; state.freeCols = { cols: [], v: {} }; } }
 function matStatusOf(v) {
   var t = norm(v); if (!t) return 'aktif';
   return /non|inakt|inact|tidak|^n$|^no$|^0$|false|disc|obsol|block|stop|delist|^old$|lama|mati|^off$|^x$/.test(t) ? 'nonaktif' : 'aktif';
@@ -5734,6 +6021,159 @@ function matFromRows(rows, name) {
   });
   saveMat();
 }
+/* ---------- SKU attributes per Nomat: NPD history, seasons, free columns ---------- */
+// state.skuRef[nomat baru] = { from: nomat lama, pct, at }: a new Nomat (NPD, often only a packaging change) takes the order-in history
+//   of an old Nomat × pct % for the months before its own first order in, so every model has a history to forecast from.
+//   The old Nomat stays as it is. To move the history and stop the old Nomat, use Nomat pengganti (status Diganti) instead.
+// state.season[nomat] = { spec, at }: months the SKU sells, e.g. "Feb-Apr", "11-1" or "2027-02..2027-04". Outside them the
+//   forecast, buffer and PP are 0, those months are left out of the models' history and backtest, and the SKU shows as
+//   nonaktif (musiman) in Material master.
+// state.freeCols = { cols: [nama kolom], v: { nomat: { kolom: nilai } } }: user columns (MT / GT, slow moving, ...) for
+//   filters and grouping, like a lookup table keyed by Nomat. Display only: the models do not use them.
+var SEA_MON = { jan: 1, feb: 2, peb: 2, mar: 3, apr: 4, mei: 5, may: 5, jun: 6, jul: 7, agu: 8, agt: 8, aug: 8, sep: 9, okt: 10, oct: 10, nov: 11, nop: 11, des: 12, dec: 12 };
+function monTok(t) { t = String(t).trim().toLowerCase(); if (/^\d{1,2}$/.test(t)) { var v = +t; return v >= 1 && v <= 12 ? v : null; } return SEA_MON[t.slice(0, 3)] || null; }
+var _seaCache = {};
+function seasonParse(spec) {
+  spec = String(spec || '').trim(); if (!spec) return null;
+  if (_seaCache[spec]) return _seaCache[spec];
+  var out = { spec: spec, months: {}, seq: [], ranges: [], bad: [] }, SEP = '\\s*(?:\\.\\.|–|—|-|s\\/?d|sampai|to)\\s*';
+  spec.split(/[,;]+/).forEach(function (tok) {
+    tok = tok.trim(); if (!tok) return;
+    var ym = new RegExp('^(\\d{4})[-/.](\\d{1,2})(?:' + SEP + '(\\d{4})[-/.](\\d{1,2}))?$', 'i').exec(tok);
+    if (ym) { var a = ym[1] + '-' + ('0' + ym[2]).slice(-2), b = ym[3] ? ym[3] + '-' + ('0' + ym[4]).slice(-2) : a; if (b < a) { var t = a; a = b; b = t; } out.ranges.push([a, b]); return; }
+    var mr = new RegExp('^([a-z0-9]+)' + SEP + '([a-z0-9]+)$', 'i').exec(tok);
+    var a1 = mr ? monTok(mr[1]) : monTok(tok), b1 = mr ? monTok(mr[2]) : a1;
+    if (!a1 || !b1) { out.bad.push(tok); return; }
+    for (var k = a1, i = 0; i < 12; i++) { if (!out.months[k]) out.seq.push(k); out.months[k] = 1; if (k === b1) break; k = k % 12 + 1; }
+  });
+  var ms = out.seq;
+  out.ok = !out.bad.length && !!(out.ranges.length || ms.length) && ms.length < 12;
+  out.label = ms.map(function (x) { return MON_ID[x]; }).concat(out.ranges.map(function (r) { return r[0] === r[1] ? monthLabel(r[0]) : monthLabel(r[0]) + '–' + monthLabel(r[1]); })).join(', ');
+  _seaCache[spec] = out; return out;
+}
+function seasonIn(p, mo) {
+  if (!p || !p.ok) return true;
+  for (var i = 0; i < p.ranges.length; i++) if (mo >= p.ranges[i][0] && mo <= p.ranges[i][1]) return true;
+  return !!p.months[+mo.slice(5, 7)];
+}
+function fcols() { return (state.freeCols && state.freeCols.cols) || []; }
+function freeOf(k) { var v = state.freeCols && state.freeCols.v; return (v && v[k]) || {}; }
+function freeVals(f) { return f ? Object.keys(f).map(function (c) { return f[c]; }) : []; }
+function freeSet(k, col, val) {
+  var F = state.freeCols = state.freeCols || { cols: [], v: {} }; F.cols = F.cols || []; F.v = F.v || {};
+  if (F.cols.indexOf(col) < 0) F.cols.push(col);
+  val = val === null || val === undefined ? '' : String(val).trim();
+  var o = F.v[k] = F.v[k] || {};
+  if (val) o[col] = val; else delete o[col];
+  if (!Object.keys(o).length) delete F.v[k];
+}
+function freeDrop(col) { var F = state.freeCols; if (!F) return; F.cols = (F.cols || []).filter(function (c) { return c !== col; }); Object.keys(F.v || {}).forEach(function (k) { delete F.v[k][col]; if (!Object.keys(F.v[k]).length) delete F.v[k]; }); }
+// called by forecastModel after the Diganti merge: s.free, s.refFrom (+ s.oiM), s.season, s.off (closing months), s.offF (future months)
+function applySkuAttr(skus, cms, future) {
+  var by = {}; skus.forEach(function (s) { by[s.key] = s; if (s.nomat) by[s.nomat] = s; if (s.art && !by[s.art]) by[s.art] = s; });
+  skus.forEach(function (s) {
+    var k = matKey(s), ref = (state.skuRef || {})[k];
+    s.free = freeOf(k); s.refFrom = null; s.season = null; s.off = null; s.offF = null;
+    if (ref && ref.from) {
+      var src = by[ref.from];
+      if (!src || src === s) s.refFrom = { missing: ref.from, pct: ref.pct || 100 };
+      else {
+        var pct = ref.pct > 0 ? ref.pct : 100, own = cms.filter(function (mo) { return (s.oi[mo] || 0) > 0; })[0] || null, sOi = src.oiM || src.oi, nM = 0;
+        var tgt = s.oiM || (s.oiM = JSON.parse(JSON.stringify(s.oi)));
+        cms.forEach(function (mo) { if (own && mo >= own) return; var v = sOi[mo]; if (v === undefined || v === null) return; tgt[mo] = Math.round(v * pct) / 100; nM++; });
+        s.refFrom = { s: src, pct: pct, own: own, n: nM };
+      }
+    }
+    var sp = seasonParse(((state.season || {})[k] || {}).spec);
+    if (sp && sp.ok) {
+      s.season = sp; s.off = {}; s.offF = {};
+      cms.forEach(function (mo) { if (!seasonIn(sp, mo)) s.off[mo] = 1; });
+      future.forEach(function (mo) { if (!seasonIn(sp, mo)) s.offF[mo] = 1; });
+    }
+  });
+}
+function refSet(k, from, pct) {
+  var R = state.skuRef = state.skuRef || {};
+  from = from ? cleanCode(from) : '';
+  if (!from) { delete R[k]; return; }
+  R[k] = { from: from, pct: pct > 0 ? pct : (R[k] && R[k].pct) || 100, at: new Date().toISOString().slice(0, 10) };
+}
+function seasonSet(k, spec) { var S = state.season = state.season || {}; spec = String(spec || '').trim(); if (!spec) delete S[k]; else S[k] = { spec: spec, at: new Date().toISOString().slice(0, 10) }; }
+// sheet atribut_sku (history file) and the "Unggah atribut SKU" Excel: Nomat, histori_dari, histori_persen, musim_aktif, then any free columns
+function attrRows() {
+  var keys = {}, R = state.skuRef || {}, S = state.season || {}, F = (state.freeCols && state.freeCols.v) || {}, cols = fcols();
+  var J = state.skuClass || {};
+  [R, S, F, J].forEach(function (o) { Object.keys(o).forEach(function (k) { keys[k] = 1; }); });
+  var out = Object.keys(keys).sort().map(function (k) {
+    var o = { nomat: k, jenis_sku: J[k] ? JENIS[J[k]] : null, histori_dari: R[k] ? R[k].from : null, histori_persen: R[k] ? R[k].pct : null, musim_aktif: S[k] ? S[k].spec : null };
+    cols.forEach(function (c) { o[c] = (F[k] && F[k][c]) || null; });
+    return o;
+  });
+  if (!out.length && cols.length) { var e = { nomat: null, histori_dari: null, histori_persen: null, musim_aktif: null }; cols.forEach(function (c) { e[c] = null; }); out.push(e); } // keeps empty free columns
+  return out;
+}
+// aoa = rows of cells (first row with a Nomat header = headers). Columns: Nomat (key), Nomat lama / histori dari, %, musim; name, article
+// code, brand and category columns are skipped (they come from the data); every other column becomes a free column.
+function attrFromAoa(aoa) {
+  var hr = -1, cols = null;
+  var isRef = function (h) { return /histori|referensi|\bref\b|lama|\bold\b|asal/.test(h); };
+  for (var r = 0; r < Math.min(10, aoa.length) && hr < 0; r++) {
+    var row = aoa[r] || [];
+    for (var c = 0; c < row.length; c++) { var h = norm(row[c]); if (/nomat|^no\.?\s*mat|nomor\s*material|^material$|kode\s*material/.test(h) && !isRef(h)) { hr = r; break; } }
+  }
+  if (hr < 0) return null;
+  var head = aoa[hr], map = { free: [] };
+  head.forEach(function (raw, c) {
+    var h = norm(raw); if (!h) return;
+    if (map.nomat === undefined && /nomat|^no\.?\s*mat|nomor\s*material|^material$|kode\s*material/.test(h) && !isRef(h)) map.nomat = c;
+    else if (map.pct === undefined && /persen|%|\bpct\b|porsi|share/.test(h)) map.pct = c;
+    else if (map.ref === undefined && isRef(h)) map.ref = c;
+    else if (map.jen === undefined && /jenis|klasifikasi|kelas\s*sku|tipe\s*sku/.test(h)) map.jen = c;
+    else if (map.sea === undefined && /musim|season|bulan\s*aktif/.test(h)) map.sea = c;
+    else if (/desc|deskripsi|^nama|name|article|artikel|^brand|merek|merk|categor|kategori|^sku$/.test(h)) return;
+    else map.free.push([c, String(raw).trim()]);
+  });
+  var n = 0;
+  for (var rr = hr + 1; rr < aoa.length; rr++) {
+    var a = aoa[rr] || [], nv = a[map.nomat];
+    if (nv === null || nv === undefined || nv === '' || !looksLikeCode(nv)) continue;
+    var k = cleanCode(nv); n++;
+    if (map.ref !== undefined) { var pv = map.pct !== undefined ? parseNumber(a[map.pct])[0] : null; if (pv !== null && pv > 0 && pv <= 1.5) pv = pv * 100; /* 0,8 = 80% */ refSet(k, a[map.ref] === null || a[map.ref] === undefined ? '' : String(a[map.ref]), pv); }
+    if (map.jen !== undefined) { var jv = jenisParse(a[map.jen]); if (jv) (state.skuClass = state.skuClass || {})[k] = jv; else if (jv === '' && state.skuClass) delete state.skuClass[k]; }
+    if (map.sea !== undefined) seasonSet(k, a[map.sea] === null || a[map.sea] === undefined ? '' : String(a[map.sea]));
+    map.free.forEach(function (fc) { freeSet(k, fc[1], a[fc[0]]); });
+  }
+  map.free.forEach(function (fc) { var F = state.freeCols = state.freeCols || { cols: [], v: {} }; F.cols = F.cols || []; if (F.cols.indexOf(fc[1]) < 0) F.cols.push(fc[1]); });
+  return { n: n, jen: map.jen !== undefined, ref: map.ref !== undefined, sea: map.sea !== undefined, free: map.free.map(function (x) { return x[1]; }) };
+}
+function attrFromRows(rows) {
+  if (!rows.length) return null;
+  var keys = []; rows.forEach(function (r) { Object.keys(r).forEach(function (k) { if (keys.indexOf(k) < 0) keys.push(k); }); });
+  return attrFromAoa([keys].concat(rows.map(function (r) { return keys.map(function (k) { return r[k]; }); })));
+}
+function attrMsg(res) { return res ? res.n + ' Nomat' + (res.jen ? ', jenis SKU' : '') + (res.ref ? ', histori NPD' : '') + (res.sea ? ', musim' : '') + (res.free.length ? ', kolom ' + res.free.join(', ') : '') : 'tidak ada kolom Nomat'; }
+// Jenis SKU: one classification per Nomat. It decides which inputs the Detail column shows:
+//   reguler (none) · npd (Histori dari Nomat + %) · musim (Musim aktif) · musimref (both) · ganti (Nomat pengganti).
+// state.skuClass[nomat] = chosen type; without a choice the type follows the data (pengganti, histori, musim, < 3 months = SKU baru).
+var JENIS = { reguler: 'Reguler', npd: 'SKU baru (NPD)', musim: 'Musiman', musimref: 'Musiman + histori', ganti: 'Diganti (berhenti)' };
+var JENIS_HINT = { reguler: 'Dijual sepanjang tahun, histori sendiri.', npd: 'Nomat baru (mis. ganti kemasan): pakai histori Nomat lama × %.', musim: 'Hanya dijual di bulan tertentu.', musimref: 'Musiman dan baru: histori dari Nomat lain × %, hanya di bulan musim.', ganti: 'Nomat ini berhenti dan diganti Nomat baru: histori pindah penuh.' };
+function jenisAuto(k, s, succ) {
+  var R = (state.skuRef || {})[k], S = (state.season || {})[k];
+  if (succ) return 'ganti'; if (R && S) return 'musimref'; if (R) return 'npd'; if (S) return 'musim';
+  if (s && (s.added && s.added.npd || (s.cls && s.cls.code === 'NPD'))) return 'npd';
+  return 'reguler';
+}
+function jenisOf(k, s, succ) { var c = (state.skuClass || {})[k]; return JENIS[c] ? c : jenisAuto(k, s, succ); }
+function jenisParse(v) { var t = norm(v); if (!t) return ''; if (/ganti|replac|berhenti/.test(t)) return 'ganti'; if (/musim|season/.test(t)) return /histori|npd|baru|\+/.test(t) ? 'musimref' : 'musim'; if (/npd|baru|new/.test(t)) return 'npd'; if (/reg|normal|biasa/.test(t)) return 'reguler'; return null; }
+var MM_HIDEABLE = [['chg', 'Perubahan'], ['brand', 'Brand'], ['cat', 'Kategori'], ['fam', 'Famili closing'], ['fhq', 'Forecast HQ'], ['oi', 'Order in'], ['bom', 'BOM bahan baku']];
+function mmHidden() { return state.mmHide || { brand: 1, cat: 1, fam: 1, bom: 1 }; }
+function mmAddCol(name) {
+  name = String(name || '').trim(); if (!name) return false;
+  if (/^(nomat|jenis_sku|histori_dari|histori_persen|musim_aktif)$/i.test(name)) { toast('Nama itu dipakai sistem. Pilih nama lain.'); return false; }
+  if (fcols().indexOf(name) >= 0) { toast('Kolom ' + name + ' sudah ada.'); return false; }
+  var F = state.freeCols = state.freeCols || { cols: [], v: {} }; F.cols = (F.cols || []).concat([name]); F.v = F.v || {};
+  saveMat(); renderAll(); return true;
+}
 function renderMat(m) {
   var L = m.latest, fut = m.future, recent = m.closingMonths.slice(-3), ix = state.mat ? matIdx() : null, ed = state.matEdits || {}, used = {};
   var rows = m.all.map(function (s) {
@@ -5741,7 +6181,10 @@ function renderMat(m) {
     if (mr) used[mr.key] = 1;
     var hasFc = fut.some(function (mo) { return (s.fhq[mo] || 0) > 0; }), hasOi = recent.some(function (mo) { return (s.oi[mo] || 0) > 0; });
     var derived = (s.status === 'aktif' || s.status === 'cek') && (hasFc || hasOi || s.added) ? 'aktif' : 'nonaktif';
+    if (s.season && fut[0] && s.offF[fut[0]]) derived = 'nonaktif'; // seasonal SKU outside its season
     var st = mi ? mi.status : derived;
+    if (s.season) flags.push(fut[0] && s.offF[fut[0]] ? ['off', 'Musiman: di luar musim ' + monthLabel(fut[0]) + ' (aktif ' + s.season.label + ')'] : ['acc', 'Musiman: aktif ' + s.season.label]);
+    if (s.refFrom) flags.push(s.refFrom.missing ? ['bad', 'Nomat histori ' + s.refFrom.missing + ' tidak ada di data'] : ['acc', 'Histori dari ' + (s.refFrom.s.nomat || s.refFrom.s.key) + ' × ' + s.refFrom.pct + '% (' + s.refFrom.n + ' bulan)']);
     if (s.added) flags.push(['acc', s.added.npd ? 'SKU baru, ditambah manual' : 'Ditambah manual']);
     if (state.mat && !mr && !s.added) flags.push(['warn', 'Belum ada di master']);
     if (mr && mr.nomat && s.nomat && mr.nomat !== s.nomat) flags.push(['bad', 'Nomat berubah: master ' + mr.nomat + ', data ' + s.nomat + ' (kode artikel sama)']);
@@ -5750,12 +6193,12 @@ function renderMat(m) {
     if (st === 'nonaktif' && hasFc) flags.push(['warn', 'Nonaktif tapi ada Forecast HQ']);
     if (s.status === 'diganti' && s.succ) flags.push(['acc', 'Digantikan SKU baru ' + (s.succ.nomat || s.succ.key)]);
     else if (s.status === 'cek') flags.push(['warn', 'Perlu cek: ' + s.hits.map(function (x) { return x.why; }).join('; ')]);
-    return { s: s, key: matKey(s), nomat: s.nomat, art: s.art, name: s.name, brand: s.brand || (mr && mr.brand), category: s.category || (mr && mr.category), family: s.family || (mr && mr.family), st: st, from: mi ? mi.from : 'data', mst: mr ? mr.status : null, e: e, succ: (e && e.succ) || (mr && mr.succ) || '', fhq: s.fhq[fut[0]], oi: L ? s.oi[L] : undefined, flags: flags, inData: true, inMaster: !!mr };
+    return { s: s, key: matKey(s), nomat: s.nomat, art: s.art, name: s.name, brand: s.brand || (mr && mr.brand), category: s.category || (mr && mr.category), family: s.family || (mr && mr.family), st: st, from: mi ? mi.from : 'data', mst: mr ? mr.status : null, e: e, succ: (e && e.succ) || (mr && mr.succ) || '', fhq: s.fhq[fut[0]], oi: L ? s.oi[L] : undefined, flags: flags, inData: true, inMaster: !!mr, auto: mr ? mr.status : derived, jenis: jenisOf(matKey(s), s, (e && e.succ) || (mr && mr.succ)) };
   });
   ((state.mat && state.mat.rows) || []).forEach(function (r) {
     if (used[r.key]) return;
     var e = ed[r.key];
-    rows.push({ s: null, key: r.key, nomat: r.nomat, art: r.art, name: r.name, brand: r.brand, category: r.category, family: r.family, st: e && e.status ? e.status : r.status, from: e && e.status ? 'manual' : 'master', mst: r.status, e: e, succ: (e && e.succ) || r.succ || '', flags: [['off', 'Tidak ada di data closing / forecast']], inData: false, inMaster: true });
+    rows.push({ s: null, key: r.key, nomat: r.nomat, art: r.art, name: r.name, brand: r.brand, category: r.category, family: r.family, st: e && e.status ? e.status : r.status, from: e && e.status ? 'manual' : 'master', mst: r.status, e: e, succ: (e && e.succ) || r.succ || '', flags: [['off', 'Tidak ada di data closing / forecast']], inData: false, inMaster: true, auto: r.status, jenis: jenisOf(r.key, null, (e && e.succ) || r.succ) });
   });
   CH.mm = rows;
   var cnt = { aktif: 0, nonaktif: 0, beda: 0, baru: 0, hilang: 0, manual: 0 };
@@ -5772,29 +6215,52 @@ function renderMat(m) {
     else if (flt === 'baru') { if (!(state.mat && r.inData && !r.inMaster)) return false; }
     else if (flt === 'hilang') { if (r.inData) return false; }
     else if (flt === 'manual') { if (!r.e) return false; }
+    else if (flt.slice(0, 2) === 'j:') { if (r.jenis !== flt.slice(2)) return false; }
+    else if (flt === 'npdkosong') { if (!((r.jenis === 'npd' || r.jenis === 'musimref') && !(state.skuRef || {})[r.key])) return false; }
     if (!q) return true;
-    var t = normName([r.nomat, r.art, r.name, r.brand, r.category, r.family, r.succ].concat(r.s ? Object.keys(r.s.nomatHist || {}) : []).join(' '));
+    var t = normName([r.nomat, r.art, r.name, r.brand, r.category, r.family, r.succ].concat(freeVals(freeOf(r.key))).concat(r.s ? Object.keys(r.s.nomatHist || {}) : []).join(' '));
     return q.split(' ').every(function (w) { return t.indexOf(w) >= 0; });
   });
   list.sort(function (a, b) { var fa = a.flags.some(function (f) { return f[0] === 'bad'; }) ? 0 : 1, fb = b.flags.some(function (f) { return f[0] === 'bad'; }) ? 0 : 1; return fa - fb || String(a.brand || '').localeCompare(String(b.brand || '')) || String(a.category || a.family || '').localeCompare(String(b.category || b.family || '')) || String(a.name || '').localeCompare(String(b.name || '')); });
-  var RH = !!state.rmHide, B = state.bom || {}, NCm = RH ? 11 : 15;
+  var FC = fcols(), RF = state.skuRef || {}, SE = state.season || {}, B = state.bom || {}, HID = mmHidden();
+  var fvOpt = FC.map(function (c, i) { return '<datalist id="mmfv' + i + '">' + uniq(Object.keys((state.freeCols || {}).v || {}).map(function (k) { return state.freeCols.v[k][c]; })).map(function (v) { return '<option value="' + esc(v) + '">'; }).join('') + '</datalist>'; }).join('');
   var bomIn = function (k, f, ph, wide) { var b = B[k] || {}, v = b[f]; return '<td' + (wide ? '' : ' class="num"') + '><input type="text" class="bomin' + (wide ? ' w' : '') + '" data-bom="' + esc(k) + '" data-bf="' + f + '" value="' + esc(v === undefined || v === null ? '' : wide ? v : String(v).replace('.', ',')) + '" placeholder="' + ph + '"' + (wide ? '' : ' inputmode="decimal"') + ' aria-label="BOM ' + f + ' ' + esc(k) + '"></td>'; };
-  var t = '<thead><tr><th>Status</th><th>Nomat</th><th>SKU</th><th>Perubahan</th><th>Brand</th><th>Kategori</th><th>Famili closing</th><th class="num">Forecast HQ ' + (fut[0] ? monthLabel(fut[0]) : 'M+1') + '</th><th class="num">Order in ' + (L ? monthLabel(L) : '') + '</th><th>Nomat pengganti</th>' +
-    (RH ? '' : '<th class="num bomh" title="Berapa pcs karton kemasan untuk 1 karton produk (biasanya 1)">BOM karton<br><small>pcs / ctn</small></th><th class="num bomh" title="Kg plastik untuk 1 karton produk">BOM plastik<br><small>kg / ctn</small></th><th class="num bomh" title="Kg jumbo roll (kertas tisu) untuk 1 karton produk">BOM jumbo roll<br><small>kg / ctn</small></th><th class="bomh">Deskripsi BOM</th>') + '<th></th></tr></thead><tbody>';
-  list.slice(0, 500).forEach(function (r) {
-    var auto = r.mst ? r.mst : r.s ? ((r.s.status === 'aktif' || r.s.status === 'cek') && (r.s.added || fut.some(function (mo) { return (r.s.fhq[mo] || 0) > 0; }) || recent.some(function (mo) { return (r.s.oi[mo] || 0) > 0; })) ? 'aktif' : 'nonaktif') : 'aktif';
-    t += '<tr class="st-' + r.st + '"><td style="white-space:nowrap"><select data-mms="' + esc(r.key) + '" aria-label="Status ' + esc(r.nomat || r.key) + '"><option value="">' + (r.mst ? 'Master' : 'Dari data') + ' (' + (auto === 'aktif' ? 'Aktif' : 'Nonaktif') + ')</option><option value="aktif"' + (r.e && r.e.status === 'aktif' ? ' selected' : '') + '>Aktif</option><option value="nonaktif"' + (r.e && r.e.status === 'nonaktif' ? ' selected' : '') + '>Nonaktif</option></select>' + (r.e && r.e.status ? ' <span class="sub">manual</span>' : '') + '</td>' +
-      '<td class="col">' + esc(r.nomat || '–') + (r.art ? '<span class="code" style="display:block">' + esc(r.art) + '</span>' : '') + '</td>' +
-      '<td><span class="nm" title="' + esc(r.name || '') + '">' + esc(r.name || '(tanpa nama)') + '</span></td>' +
-      '<td class="wr">' + (r.flags.length ? r.flags.map(function (f) { return '<span class="pill p-' + f[0] + ' flag">' + esc(f[1]) + '</span>'; }).join('') : '<span class="sub">–</span>') + '</td><td>' + esc(r.brand || '–') + '</td><td>' + esc(r.category || '–') + '</td><td>' + esc(r.family ? titleCase(r.family) : '–') + '</td>' +
-      '<td class="num">' + n(r.fhq) + '</td><td class="num">' + n(r.oi) + '</td>' +
-      '<td><input type="text" list="cekCodes" data-mmsucc="' + esc(r.key) + '" value="' + esc(r.succ || '') + '" placeholder="Nomat baru" aria-label="Nomat pengganti untuk ' + esc(r.nomat || r.key) + '"></td>' +
-      (RH ? '' : bomIn(r.key, 'ct', 'pcs') + bomIn(r.key, 'pl', 'kg') + bomIn(r.key, 'jr', 'kg') + bomIn(r.key, 'desc', 'mis. karton 5 ply, plastik PE 40 mic', true)) +
-      '<td style="white-space:nowrap">' + (r.inData ? '<a href="#" class="go" data-mmgo="' + esc(r.s.key) + '">Forecast ›</a>' : '') + (r.s && r.s.added ? ' <button type="button" class="v-btn sm" data-mmdel="' + esc(r.s.added.key) + '" title="Hapus SKU yang ditambah manual">Hapus</button>' : '') + '</td></tr>';
-  });
-  if (!list.length) t += '<tr><td colspan="' + NCm + '" class="sub">Tidak ada material untuk saringan ini.</td></tr>';
+  var lab = function (r) { return esc(r.nomat || r.key); };
+  // columns: [id, header html, cell(r)]; the view picks the ids, the Kolom menu hides the hideable ones
+  var C = {
+    status: ['<th>Status</th>', function (r) { var auto = r.auto || 'aktif'; return '<td style="white-space:nowrap"><select data-mms="' + esc(r.key) + '" aria-label="Status ' + lab(r) + '"><option value="">' + (r.mst ? 'Master' : 'Dari data') + ' (' + (auto === 'aktif' ? 'Aktif' : 'Nonaktif') + ')</option><option value="aktif"' + (r.e && r.e.status === 'aktif' ? ' selected' : '') + '>Aktif</option><option value="nonaktif"' + (r.e && r.e.status === 'nonaktif' ? ' selected' : '') + '>Nonaktif</option></select>' + (r.e && r.e.status ? ' <span class="sub">manual</span>' : '') + '</td>'; }],
+    nomat: ['<th>Nomat</th>', function (r) { return '<td class="col">' + esc(r.nomat || '–') + (r.art ? '<span class="code" style="display:block">' + esc(r.art) + '</span>' : '') + '</td>'; }],
+    sku: ['<th>SKU</th>', function (r) { return '<td><span class="nm" title="' + esc(r.name || '') + '">' + esc(r.name || '(tanpa nama)') + '</span></td>'; }],
+    chg: ['<th>Perubahan</th>', function (r) { return '<td class="wr">' + (r.flags.length ? r.flags.map(function (f) { return '<span class="pill p-' + f[0] + ' flag">' + esc(f[1]) + '</span>'; }).join('') : '<span class="sub">–</span>') + '</td>'; }],
+    brand: ['<th>Brand</th>', function (r) { return '<td>' + esc(r.brand || '–') + '</td>'; }],
+    cat: ['<th>Kategori</th>', function (r) { return '<td>' + esc(r.category || '–') + '</td>'; }],
+    fam: ['<th>Famili closing</th>', function (r) { return '<td>' + esc(r.family ? titleCase(r.family) : '–') + '</td>'; }],
+    fhq: ['<th class="num">Forecast HQ ' + (fut[0] ? monthLabel(fut[0]) : 'M+1') + '</th>', function (r) { return '<td class="num">' + n(r.fhq) + '</td>'; }],
+    oi: ['<th class="num">Order in ' + (L ? monthLabel(L) : '') + '</th>', function (r) { return '<td class="num">' + n(r.oi) + '</td>'; }],
+    succ: ['<th title="Nomat lama berhenti dan diganti: isi Nomat baru di baris Nomat lama. Histori pindah penuh, Nomat lama keluar dari total.">Nomat pengganti</th>', function (r) { return '<td><input type="text" list="cekCodes" data-mmsucc="' + esc(r.key) + '" value="' + esc(r.succ || '') + '" placeholder="Nomat baru" aria-label="Nomat pengganti untuk ' + lab(r) + '"></td>'; }],
+    ref: ['<th class="attrh" title="SKU baru (NPD), mis. ganti kemasan: ambil histori order in Nomat lama × persen untuk bulan sebelum order in-nya sendiri. 100% = sama persis, 60% = 60% dari order in Nomat lama. Nomat lama tetap aktif.">Histori dari Nomat<br><small>Nomat lama · % (kosong = 100)</small></th>', function (r) { return '<td style="white-space:nowrap"><input type="text" class="refin" list="cekCodes" data-mmref="' + esc(r.key) + '" value="' + esc(RF[r.key] ? RF[r.key].from : '') + '" placeholder="Nomat lama" aria-label="Histori dari Nomat untuk ' + lab(r) + '"><input type="text" class="pctin" data-mmpct="' + esc(r.key) + '" value="' + (RF[r.key] ? RF[r.key].pct : '') + '" placeholder="100" inputmode="decimal" aria-label="Persen histori untuk ' + lab(r) + '">%</td>'; }],
+    sea: ['<th class="attrh" title="Bulan SKU dijual, mis. Feb-Apr, 11-1, 2027-02..2027-04. Di luar musim: forecast, buffer dan PP 0, bulan itu tidak dipakai model, status nonaktif.">Musim aktif<br><small>kosong = sepanjang tahun</small></th>', function (r) { var sp = SE[r.key] ? seasonParse(SE[r.key].spec) : null; return '<td><input type="text" class="seain' + (sp && !sp.ok ? ' bad' : '') + '" data-mmsea="' + esc(r.key) + '" value="' + esc(SE[r.key] ? SE[r.key].spec : '') + '" placeholder="mis. Feb-Apr" title="' + esc(sp ? (sp.ok ? 'Aktif: ' + sp.label : 'Tidak terbaca: ' + (sp.bad.join(', ') || 'semua bulan')) : 'Kosong = sepanjang tahun') + '" aria-label="Musim aktif ' + lab(r) + '"></td>'; }],
+    jenis: ['<th class="attrh" title="Klasifikasi SKU. Menentukan isian di kolom Detail: SKU baru = histori dari Nomat lama, Musiman = bulan aktif, Diganti = Nomat pengganti.">Jenis SKU</th>', function (r) { var ex = (state.skuClass || {})[r.key]; return '<td><select class="jenis j-' + r.jenis + '" data-mmcls="' + esc(r.key) + '" aria-label="Jenis SKU ' + lab(r) + '" title="' + esc(JENIS_HINT[r.jenis]) + '"><option value="">' + (ex ? 'Otomatis' : JENIS[r.jenis] + ' (otomatis)') + '</option>' + Object.keys(JENIS).map(function (k) { return '<option value="' + k + '"' + (ex === k ? ' selected' : '') + '>' + JENIS[k] + '</option>'; }).join('') + '</select></td>'; }],
+    detail: ['<th class="attrh" title="Isian sesuai Jenis SKU">Detail jenis</th>', function (r) {
+      var j = r.jenis, cell = function (id) { return C[id][1](r).replace(/^<td[^>]*>/, '').replace(/<\/td>$/, ''); }, parts = [];
+      if (j === 'npd' || j === 'musimref') parts.push('<span class="dlab">Histori dari</span>' + cell('ref'));
+      if (j === 'musim' || j === 'musimref') parts.push('<span class="dlab">Musim</span>' + cell('sea'));
+      if (j === 'ganti') parts.push('<span class="dlab">Diganti oleh</span>' + cell('succ'));
+      return '<td class="detc">' + (parts.length ? parts.join('<br>') : '<span class="sub">–</span>') + '</td>'; }],
+    bom: ['<th class="num bomh" title="Berapa pcs karton kemasan untuk 1 karton produk (biasanya 1)">BOM karton<br><small>pcs / ctn</small></th><th class="num bomh" title="Kg plastik untuk 1 karton produk">BOM plastik<br><small>kg / ctn</small></th><th class="num bomh" title="Kg jumbo roll (kertas tisu) untuk 1 karton produk">BOM jumbo roll<br><small>kg / ctn</small></th><th class="bomh">Deskripsi BOM</th>', function (r) { return bomIn(r.key, 'ct', 'pcs') + bomIn(r.key, 'pl', 'kg') + bomIn(r.key, 'jr', 'kg') + bomIn(r.key, 'desc', 'mis. karton 5 ply, plastik PE 40 mic', true); }, 4],
+    free: [FC.map(function (c, i) { return '<th class="freeh">' + esc(c) + ' <button type="button" class="ib" data-fcdel="' + i + '" title="Hapus kolom ' + esc(c) + '" aria-label="Hapus kolom ' + esc(c) + '">✕</button></th>'; }).join(''), function (r) { return FC.map(function (c, i) { return '<td><input type="text" class="freein" list="mmfv' + i + '" data-mmfree="' + esc(r.key) + '" data-fc="' + i + '" value="' + esc(freeOf(r.key)[c] || '') + '" aria-label="' + esc(c) + ' ' + lab(r) + '"></td>'; }).join(''); }, FC.length],
+    act: ['<th></th>', function (r) { return '<td style="white-space:nowrap">' + (r.inData ? '<a href="#" class="go" data-mmgo="' + esc(r.s.key) + '">Forecast ›</a>' : '') + (r.s && r.s.added ? ' <button type="button" class="v-btn sm" data-mmdel="' + esc(r.s.added.key) + '" title="Hapus SKU yang ditambah manual">Hapus</button>' : '') + '</td>'; }],
+    add: ['<th class="addh"><input type="text" id="mmNewCol" placeholder="+ Kolom baru" aria-label="Nama kolom bebas baru, tekan Enter" title="Ketik nama kolom lalu Enter. Isi per baris, atau tempel satu kolom dari Excel ke sel pertama."><button type="button" class="ib" id="mmMoreCol" title="Tempel atau unggah beberapa kolom dari Excel" aria-label="Tempel atau unggah kolom">⋯</button></th>', function () { return '<td class="addc"></td>'; }]
+  };
+  var ids = ['status', 'nomat', 'sku', 'jenis', 'detail', 'chg', 'brand', 'cat', 'fam', 'fhq', 'oi', 'free', 'bom', 'act', 'add'].filter(function (id) { return !HID[id] && (id !== 'free' || FC.length); });
+  var NCm = ids.reduce(function (a, id) { return a + (C[id][2] === undefined ? 1 : C[id][2]); }, 0);
+  var t = '<thead><tr>' + ids.map(function (id) { return C[id][0]; }).join('') + '</tr></thead><tbody>';
+  list.slice(0, 500).forEach(function (r) { t += '<tr class="st-' + r.st + '" data-mmrow="' + esc(r.key) + '">' + ids.map(function (id) { return C[id][1](r); }).join('') + '</tr>'; });
+  if (!list.length) t += '<tr><td colspan="' + NCm + '" class="sub">Tidak ada material untuk saringan ini.' + '</td></tr>';
   if (list.length > 500) t += '<tr><td colspan="' + NCm + '" class="sub">' + (list.length - 500) + ' material lagi. Persempit dengan pencarian.</td></tr>';
   $('mmTable').innerHTML = t + '</tbody>';
+  $('mmFv').innerHTML = fvOpt;
+  $('mmColList').innerHTML = MM_HIDEABLE.map(function (x) { return '<label class="chk"><input type="checkbox" data-mmcol="' + x[0] + '"' + (HID[x[0]] ? '' : ' checked') + '> ' + x[1] + '</label>'; }).join('') ;
 }
 function mmSet(key, patch) {
   var ed = state.matEdits = state.matEdits || {}, e = ed[key] || {}, mr = state.mat ? matIdx().nomat[key] : null;
@@ -5813,10 +6279,26 @@ $('mmTable').addEventListener('change', function (e) {
     saveMat(); renderAll(); return;
   }
   var el = e.target, k = el.getAttribute('data-mms'), ks = el.getAttribute('data-mmsucc');
+  var kc = el.getAttribute('data-mmcls');
+  if (kc !== null) {
+    var jv = el.value, C2 = state.skuClass = state.skuClass || {}, e0 = (state.matEdits || {})[kc];
+    if (jv) C2[kc] = jv; else delete C2[kc];
+    if (jv && jv !== 'npd' && jv !== 'musimref') refSet(kc, '', null);
+    if (jv && jv !== 'musim' && jv !== 'musimref') seasonSet(kc, '');
+    if (jv && jv !== 'ganti' && e0 && e0.succ) { mmSet(kc, { succ: null, status: null }); }
+    else { saveMat(); renderAll(); }
+    if (jv) toast('Jenis ' + kc + ': ' + JENIS[jv] + '. ' + JENIS_HINT[jv] + (jv !== 'reguler' ? ' Isi di kolom Detail jenis.' : ''));
+    return;
+  }
+  var kr = el.getAttribute('data-mmref'), kp = el.getAttribute('data-mmpct'), ka = el.getAttribute('data-mmsea'), kf = el.getAttribute('data-mmfree');
+  if (kr !== null) { var rv = el.value.trim().toUpperCase(); if (rv && cleanCode(rv) === kr) { toast('Nomat histori tidak boleh Nomat itu sendiri.'); el.value = ''; return; } refSet(kr, rv, null); saveMat(); renderAll(); if (rv) toast('Nomat ' + kr + ' memakai histori order in ' + rv + ' untuk bulan sebelum order in-nya sendiri.'); return; }
+  if (kp !== null) { var pr = el.value.trim() === '' ? 100 : parseNumber(el.value.replace('%', ''))[0]; if (!(pr > 0 && pr <= 1000)) { toast('Persen histori harus angka > 0, mis. 100 atau 60.'); return; } if (!(state.skuRef || {})[kp]) { toast('Isi dulu Nomat lama di kolom sebelah kiri.'); el.value = ''; return; } state.skuRef[kp].pct = pr; saveMat(); renderAll(); return; }
+  if (ka !== null) { var sp = seasonParse(el.value); if (el.value.trim() && !sp.ok) { toast('Musim tidak terbaca: ' + (sp.bad.join(', ') || 'semua bulan = tidak musiman') + '. Contoh: Feb-Apr, 11-1, Jan,Mar, 2027-02..2027-04.'); return; } seasonSet(ka, el.value); saveMat(); renderAll(); if (sp) toast('Musim ' + ka + ': aktif ' + sp.label + '. Di luar bulan itu forecast, buffer dan PP 0.'); return; }
+  if (kf !== null) { var col = fcols()[+el.getAttribute('data-fc')]; if (col) { freeSet(kf, col, el.value); saveMat(); renderAll(); } return; }
   if (k !== null) mmSet(k, { status: el.value || null });
   else if (ks !== null) { var v = el.value.trim().toUpperCase(); mmSet(ks, v ? { succ: v, status: 'nonaktif' } : { succ: null }); }
 });
-$('mmTable').addEventListener('click', function (e) { var d = e.target.closest('[data-mmdel]'); if (d) { var dk = d.getAttribute('data-mmdel'); state.matNew = (state.matNew || []).filter(function (x) { return x.key !== dk; }); saveMat(); renderAll(); toast('SKU ' + dk + ' dihapus dari tambahan manual. Tekan ↶ Urungkan bila keliru.'); return; } var a = e.target.closest('a[data-mmgo]'); if (a) { e.preventDefault(); fcGoto(a.getAttribute('data-mmgo'), 'fhq', CH.model ? CH.model.future[0] : ''); } });
+$('mmTable').addEventListener('click', function (e) { var fd = e.target.closest('[data-fcdel]'); if (fd) { var cn = fcols()[+fd.getAttribute('data-fcdel')]; if (cn) { freeDrop(cn); if (state.fcGrp === cn) state.fcGrp = ''; saveMat(); renderAll(); toast('Kolom ' + cn + ' dihapus. Tekan ↶ Urungkan bila keliru.'); } return; } var d = e.target.closest('[data-mmdel]'); if (d) { var dk = d.getAttribute('data-mmdel'); state.matNew = (state.matNew || []).filter(function (x) { return x.key !== dk; }); saveMat(); renderAll(); toast('SKU ' + dk + ' dihapus dari tambahan manual. Tekan ↶ Urungkan bila keliru.'); return; } var a = e.target.closest('a[data-mmgo]'); if (a) { e.preventDefault(); fcGoto(a.getAttribute('data-mmgo'), 'fhq', CH.model ? CH.model.future[0] : ''); } });
 $('mmStats').addEventListener('click', function (e) { var b = e.target.closest('[data-mmf]'); if (b) { $('mmFlt').value = b.getAttribute('data-mmf'); renderMat(CH.model); } });
 $('mmQ').addEventListener('input', function () { if (CH.model) renderMat(CH.model); });
 $('mmFlt').addEventListener('change', function () { if (CH.model) renderMat(CH.model); });
@@ -5830,8 +6312,9 @@ function mmAddForm(on) {
   el.innerHTML = '<div class="ph"><h3>Tambah SKU</h3><button type="button" class="ib" id="mmAddX" aria-label="Tutup">✕</button></div>' +
     '<div class="seg" id="mmAddK"><span>Jenis</span><button type="button" class="on" data-npd="1">SKU baru (NPD, belum ada histori)</button><button type="button" data-npd="0">SKU yang sudah ada tapi belum di data</button></div>' +
     '<div class="mmf">' + f('mmaNomat', 'Nomat *', 'mis. 69921999', ' inputmode="numeric"') + f('mmaArt', 'Kode artikel', 'opsional') + f('mmaName', 'Nama SKU *', 'mis. Paseo Facial 250s Travel') + f('mmaBrand', 'Brand', 'mis. PASEO', ' list="mmaBrands"') + f('mmaCat', 'Kategori', 'mis. FACIAL', ' list="mmaCats"') + f('mmaFam', 'Famili closing', 'opsional') + f('mmaNw', 'Berat bersih (kg / ctn)', 'untuk ton & jadwal mesin', ' inputmode="decimal"') + '</div>' +
-    (state.rmHide ? '' : '<div class="mmf"><span class="sub" style="flex-basis:100%">BOM per karton produk (boleh kosong dulu)</span>' + f('mmaCt', 'Karton (pcs / ctn)', 'mis. 1', ' inputmode="decimal"') + f('mmaPl', 'Plastik (kg / ctn)', 'mis. 0,12', ' inputmode="decimal"') + f('mmaJr', 'Jumbo roll (kg / ctn)', 'mis. 3,6', ' inputmode="decimal"') + f('mmaDesc', 'Deskripsi BOM', 'mis. karton 5 ply, PE 40 mic') + '</div>') +
-    '<p class="sub" style="margin:2px 0 8px">SKU ini ikut ke Forecast, Saran buffer dan Rencana produksi. SKU baru belum punya histori: isi Forecast HQ-nya langsung di lembar Forecast (ketik di sel).</p>' +
+    '<div class="mmf">' + f('mmaRef', 'Histori dari Nomat (lama)', 'mis. Nomat kemasan lama', ' list="cekCodes" inputmode="numeric"') + f('mmaPct', 'Persen histori', '100', ' inputmode="decimal"') + f('mmaSea', 'Musim aktif', 'kosong = sepanjang tahun, mis. Feb-Apr') + '</div>' +
+    (state.rmHide || mmHidden().bom ? '' : '<div class="mmf"><span class="sub" style="flex-basis:100%">BOM per karton produk (boleh kosong dulu)</span>' + f('mmaCt', 'Karton (pcs / ctn)', 'mis. 1', ' inputmode="decimal"') + f('mmaPl', 'Plastik (kg / ctn)', 'mis. 0,12', ' inputmode="decimal"') + f('mmaJr', 'Jumbo roll (kg / ctn)', 'mis. 3,6', ' inputmode="decimal"') + f('mmaDesc', 'Deskripsi BOM', 'mis. karton 5 ply, PE 40 mic') + '</div>') +
+    '<p class="sub" style="margin:2px 0 8px">SKU ini ikut ke Forecast, Saran buffer dan Rencana produksi. SKU baru belum punya histori: isi <b>Histori dari Nomat</b> (mis. Nomat kemasan lama) agar model AI bisa meramal dari order in Nomat itu, dan/atau isi Forecast HQ-nya langsung di lembar Forecast (ketik di sel).</p>' +
     '<div style="display:flex;gap:6px"><button type="button" class="pri" id="mmAddSave">Simpan SKU</button><button type="button" id="mmAddCancel">Batal</button><span class="sub" id="mmAddMsg" role="status"></span></div>' +
     '<datalist id="mmaBrands">' + uniq((CH.mm || []).map(function (r) { return r.brand; })).map(function (b) { return '<option value="' + esc(b) + '">'; }).join('') + '</datalist>' +
     '<datalist id="mmaCats">' + uniq((CH.mm || []).map(function (r) { return r.category; })).map(function (b) { return '<option value="' + esc(b) + '">'; }).join('') + '</datalist>';
@@ -5854,13 +6337,80 @@ $('mmPanel').addEventListener('click', function (e) {
   var nums = { nw: nm('mmaNw'), ct: nm('mmaCt'), pl: nm('mmaPl'), jr: nm('mmaJr') };
   if (Object.keys(nums).some(function (x) { return nums[x] !== undefined && isNaN(nums[x]); })) { msg.textContent = 'Berat dan BOM harus angka ≥ 0.'; return; }
   var npd = !!($('mmAddK').querySelector('.on') || {}).getAttribute && $('mmAddK').querySelector('.on').getAttribute('data-npd') === '1';
+  var refN = v('mmaRef') ? cleanCode(v('mmaRef')) : '', pctN = v('mmaPct') ? parseNumber(v('mmaPct').replace('%', ''))[0] : 100, seaN = v('mmaSea');
+  if (refN && (!looksLikeCode(refN) || refN === nomat)) { msg.textContent = 'Nomat histori harus Nomat lain yang sudah ada.'; return; }
+  if (refN && !(pctN > 0)) { msg.textContent = 'Persen histori harus angka > 0.'; return; }
+  if (seaN && !seasonParse(seaN).ok) { msg.textContent = 'Musim tidak terbaca. Contoh: Feb-Apr, 11-1, 2027-02..2027-04.'; return; }
+  if (refN) refSet(nomat, refN, pctN); if (seaN) seasonSet(nomat, seaN);
   (state.matNew = state.matNew || []).push({ key: nomat, nomat: nomat, art: v('mmaArt') ? cleanCode(v('mmaArt')) : null, name: name, brand: v('mmaBrand').toUpperCase() || null, category: v('mmaCat') || null, family: v('mmaFam') || null, nw: nums.nw || null, npd: npd, at: new Date().toISOString().slice(0, 10) });
   if (nums.ct !== undefined || nums.pl !== undefined || nums.jr !== undefined || v('mmaDesc')) (state.bom = state.bom || {})[nomat] = { ct: nums.ct, pl: nums.pl, jr: nums.jr, desc: v('mmaDesc') };
   saveMat(); mmAddForm(false); $('mmQ').value = nomat; renderAll(); toast('SKU ' + name + ' (' + nomat + ') ditambahkan. Isi forecast-nya di lembar Forecast.');
 });
+// + Kolom bebas: a new empty column, or a block pasted from Excel (first row = headers: Nomat, then one or more columns)
+function mmFreeForm(on) {
+  var el = $('mmFree'); if (!el) { $('mmStats').insertAdjacentHTML('beforebegin', '<div class="mmadd" id="mmFree" hidden></div>'); el = $('mmFree'); }
+  if (!on) { el.hidden = true; el.innerHTML = ''; return; }
+  el.innerHTML = '<div class="ph"><h3>Tempel atau unggah kolom</h3><button type="button" class="ib" id="mmFreeX" aria-label="Tutup">✕</button></div>' +
+    '<p class="sub" style="margin:0 0 6px">Kolom sendiri per Nomat, seperti tabel lookup di Excel: mis. <i>Saluran</i> (MT / GT), <i>Pergerakan</i> (slow moving / fast moving), <i>Promo</i>. Dipakai untuk saringan dan kelompok di lembar Forecast dan ikut tersimpan di file histori (lembar atribut_sku). Tidak mengubah angka forecast.</p>' +
+    '<div class="mmf"><label class="field">Nama kolom baru (kosong)<input type="text" id="mmFreeName" placeholder="mis. Saluran"></label></div>' +
+    '<label class="field" style="display:block">atau tempel dari Excel (baris pertama = judul: Nomat lalu kolom-kolomnya)<textarea id="mmFreePaste" placeholder="Nomat&#9;Saluran&#9;Pergerakan&#10;69920852&#9;MT&#9;Slow moving&#10;69920853&#9;GT&#9;Fast moving"></textarea></label>' +
+    '<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><button type="button" class="pri" id="mmFreeSave">Simpan</button><button type="button" id="mmFreeCancel">Batal</button><button type="button" id="mmFreeUp" title="Excel / CSV: kolom Nomat, lalu kolom apa saja (juga Histori dari, Persen, Musim aktif)">atau unggah Excel / CSV…</button><span class="sub" id="mmFreeMsg" role="status"></span></div>';
+  el.hidden = false; $('mmFreeName').focus();
+}
+// views, column menu, + Kolom baru (Enter), ⋯ (paste / upload form)
+$('mmPanel').addEventListener('click', function (e) {
+  if (e.target.id === 'mmMoreCol') { mmFreeForm(!$('mmFree') || $('mmFree').hidden); return; }
+  if (e.target.id === 'mmFreeUp') { $('mmAttrF').click(); }
+});
+$('mmPanel').addEventListener('change', function (e) {
+  var c = e.target.getAttribute('data-mmcol'); if (c === null) return;
+  var H = state.mmHide = JSON.parse(JSON.stringify(mmHidden())); if (e.target.checked) delete H[c]; else H[c] = 1;
+  saveMat(); renderMat(CH.model);
+});
+$('mmPanel').addEventListener('keydown', function (e) { if (e.target.id === 'mmNewCol' && e.key === 'Enter') { e.preventDefault(); var nm = e.target.value; if (mmAddCol(nm)) toast('Kolom ' + nm.trim() + ' ditambahkan. Isi per sel atau tempel satu kolom dari Excel ke sel pertama.'); } });
+document.addEventListener('click', function (e) { var d = document.querySelector('.mmcols[open]'); if (d && !d.contains(e.target)) d.open = false; });
+// Excel-style paste into Histori dari / % / Musim / free-column cells: lines go down the visible rows, tabs go right across free columns
+$('mmTable').addEventListener('paste', function (e) {
+  var el = e.target, txt = (e.clipboardData || window.clipboardData).getData('text');
+  if (!txt || !/[\n\t]/.test(txt.replace(/\s+$/, ''))) return;
+  var attr = ['data-mmfree', 'data-mmref', 'data-mmpct', 'data-mmsea'].filter(function (a) { return el.hasAttribute(a); })[0]; if (!attr) return;
+  e.preventDefault();
+  var lines = txt.replace(/\r/g, '').replace(/\n+$/, '').split('\n').map(function (l) { return l.split('\t'); });
+  var rows = Array.prototype.slice.call($('mmTable').querySelectorAll('tbody tr[data-mmrow]')), i0 = rows.indexOf(el.closest('tr')), FCn = fcols(), fc0 = +el.getAttribute('data-fc'), nSet = 0, bad = 0;
+  lines.forEach(function (cells, j) {
+    var tr = rows[i0 + j]; if (!tr) return; var k = tr.getAttribute('data-mmrow');
+    cells.forEach(function (v, ci) {
+      v = v.trim();
+      if (attr === 'data-mmfree') { var col = FCn[fc0 + ci]; if (col) { freeSet(k, col, v); nSet++; } }
+      else if (ci === 0) {
+        if (attr === 'data-mmref') { if (v && cleanCode(v) === k) { bad++; return; } refSet(k, v, null); nSet++; }
+        else if (attr === 'data-mmpct') { var pv = v === '' ? 100 : parseNumber(v.replace('%', ''))[0]; if (!(pv > 0) || !(state.skuRef || {})[k]) { bad++; return; } state.skuRef[k].pct = pv; nSet++; }
+        else { var sp = seasonParse(v); if (v && !sp.ok) { bad++; return; } seasonSet(k, v); nSet++; }
+      }
+    });
+  });
+  saveMat(); renderAll(); toast(nSet + ' sel diisi dari tempelan' + (bad ? ', ' + bad + ' dilewati (tidak terbaca)' : '') + '. Tekan ↶ Urungkan bila keliru.');
+});
+$('mmPanel').addEventListener('click', function (e) {
+  var t = e.target;
+  if (t.id === 'mmFreeX' || t.id === 'mmFreeCancel') { mmFreeForm(false); return; }
+  if (t.id !== 'mmFreeSave') return;
+  var name = $('mmFreeName').value.trim(), paste = $('mmFreePaste').value, msg = $('mmFreeMsg');
+  if (paste.trim()) {
+    var aoa = paste.replace(/\r/g, '').split('\n').filter(function (l) { return l.trim(); }).map(function (l) { return l.split('\t'); });
+    var res = attrFromAoa(aoa);
+    if (!res) { msg.textContent = 'Baris pertama harus berisi judul kolom Nomat.'; return; }
+    saveMat(); mmFreeForm(false); renderAll(); toast('Atribut SKU diisi: ' + attrMsg(res) + '.'); return;
+  }
+  if (!name) { msg.textContent = 'Isi nama kolom, atau tempel data dari Excel.'; return; }
+  if (!mmAddCol(name)) return;
+  mmFreeForm(false); toast('Kolom ' + name + ' ditambahkan di tabel Material master. Isi per Nomat, atau salin dari Excel lewat + Kolom bebas.');
+});
+$('mmAttrF').addEventListener('change', function (e) { if (e.target.files.length) readFiles(e.target.files, 'attr'); e.target.value = ''; });
 $('mmDl').addEventListener('click', function () {
   if (!canDownload) { toast('Unduhan diblokir di tampilan ini. Buka situs Cloudflare untuk mengunduh.'); return; }
-  var rows = (CH.mm || []).map(function (r) { return { Nomat: r.nomat || r.key, 'Kode artikel': r.art || null, Deskripsi: r.name || null, Brand: r.brand || null, Kategori: r.category || null, Famili: r.family || null, Status: r.st === 'aktif' ? 'Aktif' : 'Nonaktif', 'Nomat pengganti': r.succ || null, Sumber: r.from === 'manual' ? 'diubah manual' : r.from === 'master' ? 'master' : 'dari data forecast/closing', Perubahan: r.flags.map(function (f) { return f[1]; }).join('; ') || null }; });
+  var rows = (CH.mm || []).map(function (r) { var o = { Nomat: r.nomat || r.key, 'Kode artikel': r.art || null, Deskripsi: r.name || null, Brand: r.brand || null, Kategori: r.category || null, Famili: r.family || null, Status: r.st === 'aktif' ? 'Aktif' : 'Nonaktif', 'Nomat pengganti': r.succ || null, Sumber: r.from === 'manual' ? 'diubah manual' : r.from === 'master' ? 'master' : 'dari data forecast/closing', Perubahan: r.flags.map(function (f) { return f[1]; }).join('; ') || null };
+    var rf = (state.skuRef || {})[r.key], se = (state.season || {})[r.key], fv = freeOf(r.key); o['Jenis SKU'] = JENIS[r.jenis] || null; o['Histori dari'] = rf ? rf.from : null; o['Persen histori'] = rf ? rf.pct : null; o['Musim aktif'] = se ? se.spec : null; fcols().forEach(function (c) { o[c] = fv[c] || null; }); return o; });
   var wb = XLSX.utils.book_new(), ws = XLSX.utils.json_to_sheet(rows.length ? rows : [{ Nomat: null, 'Kode artikel': null, Deskripsi: null, Brand: null, Kategori: null, Famili: null, Status: null, 'Nomat pengganti': null }]);
   ws['!cols'] = [{ wch: 12 }, { wch: 15 }, { wch: 44 }, { wch: 10 }, { wch: 20 }, { wch: 20 }, { wch: 9 }, { wch: 14 }, { wch: 22 }, { wch: 50 }];
   XLSX.utils.book_append_sheet(wb, ws, 'material_master');
@@ -5932,8 +6482,8 @@ $('dlPack').addEventListener('click', function () {
 // After each user action the editable state is compared with the last snapshot; a difference becomes one undo step.
 // File data itself (closing / forecast uploads) is not part of undo; settings and corrections are.
 var UNDO_KEYS = { edits: 'koreksi angka', overrides: 'status SKU', rulesCfg: 'aturan status', bufEdits: 'buffer manual', bufStrat: 'strategi buffer', bufReview: 'tanda tinjau', bufCfg: 'pengaturan buffer', machines: 'mesin per SKU',
-  capEdits: 'kapasitas mesin', ppSched: 'jadwal produksi', machMaster: 'daftar mesin', skuGroups: 'kelompok SKU', skuMach: 'SKU → mesin', ppSunOff: 'kalender', ppCbOff: 'kalender', mat: 'material master', matEdits: 'material master', grpMode: 'pengelompokan', matNew: 'SKU tambahan', bom: 'BOM bahan baku' };
-var UNDO_OBJ = { edits: 1, overrides: 1, rulesCfg: 1, bufEdits: 1, bufStrat: 1, bufReview: 1, bufCfg: 1, machines: 1, capEdits: 1, ppSched: 1, skuMach: 1, matEdits: 1, bom: 1 };
+  capEdits: 'kapasitas mesin', ppSched: 'jadwal produksi', machMaster: 'daftar mesin', skuGroups: 'kelompok SKU', skuMach: 'SKU → mesin', ppSunOff: 'kalender', ppCbOff: 'kalender', mat: 'material master', matEdits: 'material master', grpMode: 'pengelompokan', matNew: 'SKU tambahan', bom: 'BOM bahan baku', skuRef: 'histori SKU baru', season: 'musim SKU', freeCols: 'kolom bebas', skuClass: 'jenis SKU' };
+var UNDO_OBJ = { edits: 1, overrides: 1, rulesCfg: 1, bufEdits: 1, bufStrat: 1, bufReview: 1, bufCfg: 1, machines: 1, capEdits: 1, ppSched: 1, skuMach: 1, matEdits: 1, bom: 1, skuRef: 1, season: 1, freeCols: 1, skuClass: 1 };
 var HIST = { u: [], r: [], cur: null, mute: 0 };
 function deepEmpty(v) { if (v === null || v === undefined) return true; if (typeof v !== 'object') return false; return Array.isArray(v) ? v.every(deepEmpty) : Object.keys(v).every(function (k) { return deepEmpty(v[k]); }); }
 function undoRepl(k, v) { if (k === 'missing' || (k === 'name' && this && 'src' in this)) return undefined; if (k !== '' && v && typeof v === 'object' && deepEmpty(v)) return undefined; return v; }
@@ -5994,6 +6544,8 @@ var qT = null;
 $('fcQ').addEventListener('input', function () { var v = this.value; clearTimeout(qT); qT = setTimeout(function () { state.fcQ = v; renderForecastScreen(combined()); }, 150); });
 $('bfQ').addEventListener('input', function () { var v = this.value; clearTimeout(qT); qT = setTimeout(function () { state.bfQ = v; renderForecastScreen(combined()); }, 150); });
 $('fcBrand').addEventListener('change', function () { state.fcBrand = this.value; renderForecastScreen(combined()); });
+$('fcFree').addEventListener('change', function () { state.fcFree = this.value; renderForecastScreen(combined()); });
+$('fcGrp').addEventListener('change', function () { var v = this.value; state.fcGrp = v === '@family' || !v ? '' : v; state.grpMode = v === '@family' ? 'family' : 'auto'; saveMat(); renderAll(); });
 $('fcCat').addEventListener('change', function () { state.fcCat = this.value; renderForecastScreen(combined()); });
 
 loadRuleState(); loadBuf(); loadPP(); loadMat(); loadChronos();
@@ -6001,14 +6553,20 @@ loadRuleState(); loadBuf(); loadPP(); loadMat(); loadChronos();
 /* ===================== Design 10 shell: header, step flow, Alerts panel, ribbon, Ringkasan, settings, help ===================== */
 // The pages' own content (cards, tables, controls) is unchanged; this layer arranges it the Design 10 way and reads
 // alerts from the cards each page already computes (red = bad, amber = warn).
-var D10 = { acc: {}, cur: 'Brief', lang: 'id', big: false, side: 'alerts', open: window.innerWidth > 1100, right: false, rib: {}, talkUntil: 0, lastA: '' };
+var D10 = { acc: {}, cur: 'Input', lang: 'id', big: false, side: 'alerts', open: window.innerWidth > 1100, right: false, rib: {}, talkUntil: 0, lastA: '' };
 try { var d10s = JSON.parse(localStorage.getItem('ppic_ui') || '{}') || {}; if (d10s.lang) D10.lang = d10s.lang; D10.big = !!d10s.big; D10.right = d10s.v >= 2 && !!d10s.right; D10.apw = d10s.w || 0; D10.dimOn = d10s.dim !== false; D10.talkOn = d10s.talk !== false; D10.head = d10s.head || 'auto'; D10.headPrev = d10s.headPrev || 'auto'; if (d10s.theme) document.documentElement.setAttribute('data-theme', d10s.theme); } catch (e) {}
 function d10Save() { try { localStorage.setItem('ppic_ui', JSON.stringify({ v: 2, w: D10.apw || 0, lang: D10.lang, big: D10.big, right: D10.right, dim: D10.dimOn !== false, talk: D10.talkOn !== false, head: D10.head || 'auto', headPrev: D10.headPrev || 'auto', theme: document.documentElement.getAttribute('data-theme') })); } catch (e) {} }
-var D10_TABS = ['Brief', 'Input', 'Master', 'Cek', 'Forecast', 'Buffer', 'Plan'];
+// Input data is the first screen (a group of data inputs, not a numbered step), Dashboard sits next to it;
+// the numbered steps 1-5 follow. D10_NEXT says where "Terima dan lanjut" goes from the two unnumbered pages.
+var D10_TABS = ['Input', 'Brief', 'Master', 'Cek', 'Forecast', 'Buffer', 'Plan'];
+var D10_FREE = { Input: '⇩', Brief: '▦' }, D10_NEXT = { Input: 'Master', Brief: null };
 var D10_SN = {
-  id: ['Ringkasan', 'Input data', 'Material master', 'Cek data SKU', 'Forecast', 'Saran buffer', 'Rencana produksi'],
-  en: ['Summary', 'Input data', 'Material master', 'SKU check', 'Forecast', 'Buffer', 'Production plan'],
-  zh: ['概览', '数据输入', '物料主数据', 'SKU 检查', '预测', '安全库存', '生产计划'] };
+  id: ['Input data', 'Dashboard', 'Material master', 'Cek data SKU', 'Forecast', 'Saran buffer', 'Rencana produksi'],
+  en: ['Input data', 'Dashboard', 'Material master', 'SKU check', 'Forecast', 'Buffer', 'Production plan'],
+  zh: ['数据输入', '仪表板', '物料主数据', 'SKU 检查', '预测', '安全库存', '生产计划'] };
+var D10_NSTEP = D10_TABS.filter(function (t) { return !D10_FREE[t]; }).length;
+function d10No(t) { return D10_FREE[t] ? 0 : D10_TABS.filter(function (x) { return !D10_FREE[x]; }).indexOf(t) + 1; }
+function d10Nx(t) { return t in D10_NEXT ? D10_NEXT[t] : D10_TABS[D10_TABS.indexOf(t) + 1]; }
 var D10_L = {
   head: ['Bagian atas (langkah + pencarian)', 'Top bar (steps + search)', '顶部栏（步骤 + 搜索）'], hdAuto: ['Otomatis', 'Auto', '自动'], hdFull: ['Penuh', 'Full', '完整'], hdCompact: ['Ringkas', 'Compact', '紧凑'], hdHide: ['Sembunyi', 'Hidden', '隐藏'],
   hdNote: ['Otomatis = ringkas bila layar pendek (laptop kecil). Pilihan disimpan di browser ini.', 'Auto = compact on short screens (small laptops). Saved in this browser.', '自动 = 屏幕较矮时（小笔记本）使用紧凑模式。保存在此浏览器。'],
@@ -6037,7 +6595,7 @@ var D10_L = {
   emptyK: ['Kosong', 'Empty', '空'], emptyP: ['Halaman ini kosong karena belum ada file closing dan Forecast HQ. Formatnya tetap ditampilkan supaya terlihat isinya nanti.', 'This page is empty because the closing and HQ forecast files are not in yet. The layout is shown so you can see what will appear.', '尚未导入结算和总部预测文件，此页为空。保留版式以便预览内容。'],
   briefEmpty: ['Belum ada catatan: data bulan ini belum dimasukkan.', 'No notes yet: this month’s data is not in.', '暂无要点：本月数据尚未导入。'],
   noData: ['belum ada data', 'no data yet', '暂无数据'], startHere: ['mulai di sini', 'start here', '从这里开始'], notes: ['catatan', 'notes', '条要点'], file: ['file', 'files', '个文件'],
-  startMonth: ['Mulai dari sini setiap bulan', 'Start here every month', '每月从这里开始'], next: ['Lanjut', 'Next', '下一步'], step: ['Langkah', 'Step', '步骤'], of: ['dari', 'of', '/'],
+  startMonth: ['Mulai dari sini setiap bulan', 'Start here every month', '每月从这里开始'], dashSub: ['Gambaran bulan ini', 'This month at a glance', '本月概况'], next: ['Lanjut', 'Next', '下一步'], step: ['Langkah', 'Step', '步骤'], of: ['dari', 'of', '/'],
   cmdPh: ['Tanya, cari nomat, atau buka halaman…', 'Ask, find a material no., or open a page…', '提问、搜索物料号或打开页面…'],
   demoChip: ['Mode demo', 'Demo mode', '演示模式'], fileChip: ['Data dari file', 'Data from files', '文件数据'], noChip: ['Belum ada data', 'No data', '无数据'],
   red: ['Perlu tindakan', 'Action needed', '需处理'], amb: ['Perlu perhatian', 'Needs attention', '需关注'], grn: ['Aman', 'OK', '正常'], blu: ['Info', 'Info', '信息'],
@@ -6144,7 +6702,7 @@ function d10Go(tab) { if (d10Locked(tab)) { toast(tl('lockMsg')); return; } if (
 // ---------- render ----------
 function d10Render() {
   if (!D10ON) return;
-  var A = d10Alerts(), cur = D10.cur, i = D10_TABS.indexOf(cur), nx = D10_TABS[i + 1], has = d10HasData(), m = CH.model;
+  var A = d10Alerts(), cur = D10.cur, i = d10No(cur), nx = d10Nx(cur), has = d10HasData(), m = CH.model;
   D10.A = A;
   var sig = A.map(function (a) { return a.lvl + a.title + a.amount; }).join('|'); if (sig !== D10.lastA && A.some(function (a) { return a.lvl === 'red'; })) { D10.lastA = sig; setTimeout(d10Talk, 50); } else D10.lastA = sig;
   document.documentElement.lang = D10.lang === 'zh' ? 'zh-CN' : D10.lang;
@@ -6159,13 +6717,13 @@ function d10Render() {
   // step flow
   $('d10flow').innerHTML = D10_TABS.map(function (t, k) {
     var st = d10Step(t, A);
-    return '<button type="button" class="v3-step s-' + st[0] + (t === cur ? ' on' : '') + '" data-d10go="' + t + '" title="' + esc(d10sn(t)) + '"' + (t === cur ? ' aria-current="page"' : '') + '><span class="v3-sn">' + (st[0] === 'lock' ? '🔒' : k || '✦') + '</span><span class="v3-st"><b>' + esc(d10sn(t)) + '</b><small>' + esc(st[1]) + '</small></span></button>';
+    return '<button type="button" class="v3-step s-' + st[0] + (t === cur ? ' on' : '') + '" data-d10go="' + t + '" title="' + esc(d10sn(t)) + '"' + (t === cur ? ' aria-current="page"' : '') + '><span class="v3-sn">' + (st[0] === 'lock' ? '🔒' : D10_FREE[t] || d10No(t)) + '</span><span class="v3-st"><b>' + esc(d10sn(t)) + '</b><small>' + esc(st[1]) + '</small></span></button>';
   }).join('');
   // page head + next
   var gate = !!D10_PREV[nx], nw = gate ? d10Warn(cur) : 0, nxB = !nx ? '' : gate ?
     '<button type="button" class="v-btn pri" data-d10acc="1"' + (cur === 'Input' && !d10HasCF() ? ' disabled title="' + esc(tl('lockRib')) + '"' : '') + '>' + (nw ? '<span class="warnlight" title="' + nw + '">' + nw + '</span>' : '') + tl('accept') + ' ' + esc(d10sn(nx)) + ' →</button>' :
     '<button type="button" class="v-btn pri" data-d10go="' + nx + '">' + tl('next') + ': ' + esc(d10sn(nx)) + ' →</button>';
-  $('d10mh').innerHTML = '<h2>' + esc(d10sn(cur)) + '</h2><span class="m">' + (cur === 'Brief' ? tl('startMonth') : D10.lang === 'zh' ? '第 ' + i + ' 步，共 ' + (D10_TABS.length - 1) + ' 步' : tl('step') + ' ' + i + ' ' + tl('of') + ' ' + (D10_TABS.length - 1)) + '</span><span class="sp"></span>' + nxB;
+  $('d10mh').innerHTML = '<h2>' + esc(d10sn(cur)) + '</h2><span class="m">' + (cur === 'Input' ? tl('startMonth') : cur === 'Brief' ? tl('dashSub') : D10.lang === 'zh' ? '第 ' + i + ' 步，共 ' + D10_NSTEP + ' 步' : tl('step') + ' ' + i + ' ' + tl('of') + ' ' + D10_NSTEP) + '</span><span class="sp"></span>' + nxB;
   $('d10next').innerHTML = nxB;
   // ribbon
   d10Ribbon(A);
@@ -6290,22 +6848,93 @@ function cardSpark(c) {
 function d10Sparks() {
   ['fcCards', 'bfCards', 'ppCards'].forEach(function (id) { var box = $(id); if (!box) return; box.querySelectorAll('.card').forEach(function (c) { if (c.querySelector('.cspk')) return; var g = ''; try { g = cardSpark(c); } catch (e) { g = ''; } if (!g) return; var sp = document.createElement('span'); sp.className = 'cspk'; sp.innerHTML = g; var nn = c.querySelector('.n'); if (nn) c.insertBefore(sp, nn); else c.appendChild(sp); }); });
 }
-// ---------- Ringkasan ----------
+// ---------- Dashboard (was Ringkasan) ----------
+// One screen to watch the month: key numbers (the cards each page computes), order in vs forecast over time,
+// the groups that move the most, stock vs buffer, SKU status, machine capacity vs plan, and what needs action.
+function dbAgg(list, f) { var t = 0, k = 0; list.forEach(function (s) { var v = f(s); if (typeof v === 'number' && isFinite(v)) { t += v; k++; } }); return k ? t : null; }
+function dbTrend(m) {
+  var cms = m.closingMonths.slice(-12), fut = m.future.slice(0, 3), X = cms.concat(fut), all = m.all, inc = m.skus;
+  var S = [
+    { k: 'oi', name: 'Order in', cls: 's1', v: X.map(function (mo) { return cms.indexOf(mo) >= 0 ? dbAgg(all, function (s) { return s.oi[mo]; }) : null; }) },
+    { k: 'hq', name: 'Forecast HQ', cls: 's2', dash: true, v: X.map(function (mo) { return cms.indexOf(mo) >= 0 ? dbAgg(all, function (s) { return s.hq[mo]; }) : dbAgg(inc, function (s) { return s.fhq[mo]; }); }) },
+    { k: 'ai', name: 'Forecast AI', cls: 's3', v: X.map(function (mo) { return fut.indexOf(mo) >= 0 ? dbAgg(inc, function (s) { return s.ml && s.ml[mo]; }) : null; }) }];
+  S = S.filter(function (x) { return x.v.some(function (v) { return v !== null; }); });
+  var max = 0; S.forEach(function (x) { x.v.forEach(function (v) { if (v > max) max = v; }); });
+  if (!max || X.length < 2) return '<p class="sub">Grafik muncul setelah ada minimal satu closing dan Forecast HQ.</p>';
+  var step = Math.pow(10, Math.floor(Math.log10(max))), top = Math.ceil(max / step) * step; if (top / step > 6) { step *= 2; top = Math.ceil(max / step) * step; }
+  var W = 640, H = 230, L = 58, R = 12, T = 10, B = 28, iw = W - L - R, ih = H - T - B, xs = function (i) { return L + (X.length === 1 ? iw / 2 : i * iw / (X.length - 1)); }, ys = function (v) { return T + ih - v / top * ih; };
+  var g = '';
+  for (var t = 0; t <= top + 1e-9; t += step) g += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + ys(t) + '" y2="' + ys(t) + '" class="db-grid"/><text x="' + (L - 6) + '" y="' + (ys(t) + 4) + '" class="db-ax" text-anchor="end">' + n(Math.round(t / 1000)) + 'rb</text>';
+  var cut = cms.length - 1; if (fut.length) g += '<rect x="' + (xs(cut) + (xs(cut + 1) - xs(cut)) / 2) + '" y="' + T + '" width="' + (W - R - xs(cut) - (xs(cut + 1) - xs(cut)) / 2) + '" height="' + ih + '" class="db-fut"/><text x="' + (W - R - 4) + '" y="' + (T + 12) + '" class="db-ax" text-anchor="end">ke depan</text>';
+  X.forEach(function (mo, i) { g += '<text x="' + xs(i) + '" y="' + (H - 8) + '" class="db-ax" text-anchor="middle">' + esc(monthLabel(mo)) + '</text>'; });
+  S.forEach(function (x) {
+    var seg = [], cur = []; x.v.forEach(function (v, i) { if (v === null) { if (cur.length) seg.push(cur); cur = []; } else cur.push([xs(i), ys(v)]); }); if (cur.length) seg.push(cur);
+    seg.forEach(function (p) { g += '<path d="M' + p.map(function (q) { return q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join(' L') + '" class="db-line ' + x.cls + (x.dash ? ' dash' : '') + '"/>'; });
+    x.v.forEach(function (v, i) { if (v !== null) g += '<circle cx="' + xs(i) + '" cy="' + ys(v) + '" r="4" class="db-dot ' + x.cls + '"/>'; });
+  });
+  var hits = X.map(function (mo, i) { var w = iw / Math.max(1, X.length - 1); return '<rect class="db-hit" data-dbi="' + i + '" x="' + (xs(i) - w / 2) + '" y="' + T + '" width="' + w + '" height="' + ih + '"/>'; }).join('');
+  var tip = X.map(function (mo, i) { return '<b>' + esc(monthLabel(mo)) + (fut.indexOf(mo) >= 0 ? ' · forecast' : ' · closing') + '</b>' + S.map(function (x) { return x.v[i] === null ? '' : '<span><i class="db-sw ' + x.cls + (x.dash ? ' dash' : '') + '"></i>' + x.name + ' <b>' + n(Math.round(x.v[i])) + '</b></span>'; }).join(''); });
+  CH.dbTip = tip; CH.dbX = X.map(function (mo, i) { return xs(i) / W; });
+  var leg = '<div class="db-leg">' + S.map(function (x) { return '<span><i class="db-sw ' + x.cls + (x.dash ? ' dash' : '') + '"></i>' + x.name + '</span>'; }).join('') + '<span class="sub">karton, semua SKU</span></div>';
+  var tbl = '<details class="db-tv"><summary>Lihat sebagai tabel</summary><table class="cekt"><thead><tr><th>Bulan</th>' + S.map(function (x) { return '<th class="num">' + x.name + '</th>'; }).join('') + '</tr></thead><tbody>' + X.map(function (mo, i) { return '<tr><td>' + esc(monthLabel(mo)) + '</td>' + S.map(function (x) { return '<td class="num">' + (x.v[i] === null ? '–' : n(Math.round(x.v[i]))) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></details>';
+  return leg + '<div class="db-chart" id="dbChart"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Order in dan forecast per bulan">' + g + '<line id="dbCross" class="db-cross" y1="' + T + '" y2="' + (T + ih) + '" x1="0" x2="0" visibility="hidden"/>' + hits + '</svg><div class="db-tip" id="dbTip" hidden></div></div>' + tbl;
+}
+function dbGroups(m) {
+  var L = m.latest, f1 = m.future[0], G = {};
+  m.skus.forEach(function (s) { var k = s.grp || 'LAINNYA', g = G[k] || (G[k] = { k: k, n: 0, oi: 0, hq: 0, ai: 0, hasAi: false }); g.n++; g.oi += s.oi[L] || 0; g.hq += s.fhq[f1] || 0; if (s.ml && typeof s.ml[f1] === 'number') { g.ai += s.ml[f1]; g.hasAi = true; } });
+  var rows = Object.keys(G).map(function (k) { return G[k]; }).sort(function (a, b) { return Math.max(b.hq, b.ai) - Math.max(a.hq, a.ai); }), top = rows.slice(0, 8), rest = rows.slice(8);
+  if (rest.length) top.push(rest.reduce(function (a, g) { a.n += g.n; a.oi += g.oi; a.hq += g.hq; a.ai += g.ai; a.hasAi = a.hasAi || g.hasAi; return a; }, { k: rest.length + ' grup lainnya', n: 0, oi: 0, hq: 0, ai: 0, hasAi: false, other: true }));
+  var mx = top.reduce(function (a, g) { return Math.max(a, g.oi, g.hq, g.ai); }, 0) || 1, bar = function (v, c) { return '<span class="db-bar ' + c + '" style="width:' + (v / mx * 100).toFixed(1) + '%"></span>'; };
+  var pc = function (a, b) { if (!b) return '–'; var d = (a - b) / b * 100; return '<span class="' + (Math.abs(d) >= 20 ? 'db-big' : '') + '">' + (d > 0 ? '+' : '') + fmt.format(Math.round(d)) + '%</span>'; };
+  return '<div class="db-leg"><span><i class="db-sw s1"></i>Order in ' + esc(monthLabel(L)) + '</span><span><i class="db-sw s2"></i>Forecast HQ ' + esc(monthLabel(f1)) + '</span><span><i class="db-sw s3"></i>Forecast AI ' + esc(monthLabel(f1)) + '</span></div>' +
+    '<table class="db-gt"><thead><tr><th>Grup (brand · kategori)</th><th class="num">SKU</th><th class="num">Order in</th><th class="num">HQ</th><th class="num">AI</th><th class="num" title="Forecast AI dibanding order in bulan terakhir">AI vs OI</th><th class="db-bc">Perbandingan</th></tr></thead><tbody>' +
+    top.map(function (g) { return '<tr' + (g.other ? ' class="sub"' : '') + '><td>' + esc(g.k) + '</td><td class="num">' + g.n + '</td><td class="num">' + n(Math.round(g.oi)) + '</td><td class="num">' + n(Math.round(g.hq)) + '</td><td class="num">' + (g.hasAi ? n(Math.round(g.ai)) : '–') + '</td><td class="num">' + (g.hasAi ? pc(g.ai, g.oi) : '–') + '</td><td class="db-bc" title="Order in ' + n(Math.round(g.oi)) + ' · HQ ' + n(Math.round(g.hq)) + ' · AI ' + (g.hasAi ? n(Math.round(g.ai)) : '–') + '">' + bar(g.oi, 's1') + bar(g.hq, 's2') + (g.hasAi ? bar(g.ai, 's3') : '') + '</td></tr>'; }).join('') + '</tbody></table>';
+}
+function dbTiles(m) {
+  var bm = CH.bm, h = '', tile = function (k, v, sub, cls, go) { return '<button type="button" class="db-tile' + (cls ? ' ' + cls : '') + '"' + (go ? ' data-d10go="' + go + '"' : ' disabled') + '><span class="k">' + k + '</span><span class="v">' + v + '</span><span class="n">' + sub + '</span></button>'; };
+  if (bm && bm.rows) {
+    var r = bm.rows, low = r.filter(function (s) { return s.bf && s.bf.status && s.bf.status[1] === 'low'; }), fs = dbAgg(r, function (s) { return s.bf && s.bf.fs; }), fin = dbAgg(r, function (s) { return s.bf && s.bf.fin; }), pp = dbAgg(r, function (s) { return s.bf && s.bf.prod; }), ppT = dbAgg(r, function (s) { return s.bf && s.nw ? s.bf.prod * s.nw / 1000 : null; });
+    h += tile('Stok di bawah buffer', n(low.length) + ' SKU', low.length ? 'dari ' + n(r.length) + ' SKU aktif · perlu produksi awal bulan' : 'semua SKU aman', low.length ? 'bad' : 'ok', 'Buffer');
+    h += tile('Stok bebas', n(Math.round(fs || 0)) + ' ct', 'akhir ' + esc(monthLabel(m.latest)) + ' · buffer final ' + n(Math.round(fin || 0)) + ' ct' + (fs < fin ? ' (stok di bawah buffer)' : ''), fs < fin ? 'warn' : '', 'Buffer');
+    h += tile('Rencana produksi ' + esc(monthLabel(m.future[0])), n(Math.round(pp || 0)) + ' ct', (ppT ? n(Math.round(ppT)) + ' ton · ' : '') + 'forecast + buffer − stok bebas', '', 'Plan');
+    var nM = 0, capT = 0, outCt = 0; master().forEach(function (g) { g[1].forEach(function (x) { nM++; capT += capOf(x[0], x[1]) || 0; var o = machOutCt(x[3]); if (o) outCt += o; }); });
+    var load = capT && ppT ? ppT / capT : null;
+    h += nM ? tile('Kapasitas mesin vs rencana', load === null ? n(Math.round(capT)) + ' t' : fmt.format(Math.round(load * 100)) + '%', nM + ' mesin · ' + n(Math.round(capT)) + ' t/bulan' + (outCt ? ' · ' + n(Math.round(outCt)) + ' ct/hari' : '') + (load !== null ? ' · rencana ' + n(Math.round(ppT)) + ' t' : ''), load > 1 ? 'bad' : load > .9 ? 'warn' : '', 'Input')
+      : tile('Kapasitas mesin', '–', 'Master mesin belum diisi (Input data → Master data)', '', 'Input');
+  }
+  var st = {}; m.all.forEach(function (s) { var k = s.status || 'aktif'; st[k] = (st[k] || 0) + 1; });
+  var SC = [['aktif', 'Aktif', 'ok'], ['cek', 'Perlu cek', 'warn'], ['baru', 'Baru', 's1'], ['diganti', 'Diganti', 'mut'], ['diskontinu', 'Diskontinu', 'mut2']], tot = m.all.length || 1;
+  Object.keys(st).forEach(function (k) { if (!SC.some(function (c) { return c[0] === k; })) SC.push([k, k, 'mut']); });
+  var seg = SC.filter(function (c) { return st[c[0]]; });
+  h += '<button type="button" class="db-tile db-st" data-d10go="Cek"><span class="k">Status SKU · ' + n(m.all.length) + ' SKU</span><span class="db-seg">' + seg.map(function (c) { return '<i class="' + c[2] + '" style="flex:' + st[c[0]] + '" title="' + esc(c[1]) + ': ' + st[c[0]] + '"></i>'; }).join('') + '</span><span class="n">' + seg.map(function (c) { return '<span class="db-stl"><i class="db-sw ' + c[2] + '"></i>' + esc(c[1]) + ' <b>' + st[c[0]] + '</b></span>'; }).join('') + '</span></button>';
+  return h;
+}
 function d10Brief(A) {
-  var has = d10HasData(), list = A.filter(function (a) { return a.lvl === 'red' || a.lvl === 'amb'; });
-  var know = has ? (list.length ? '<ol class="blist">' + list.map(function (a) {
+  var has = d10HasData(), m = CH.model, list = A.filter(function (a) { return a.lvl === 'red' || a.lvl === 'amb'; });
+  var know = has ? (list.length ? '<ol class="blist">' + list.slice(0, 6).map(function (a) {
     var ix = A.indexOf(a);
-    return '<li class="' + a.lvl + '"><span class="bt"><b>' + esc(a.title) + (a.amount ? ' · ' + esc(a.amount) : '') + '</b> ' + esc(a.text) + ' <span class="sub">(' + esc(d10sn(a.tab)) + ')</span></span><span class="aa">' +
+    return '<li class="' + a.lvl + '"><span class="bt"><b>' + esc(a.title) + (a.amount ? ' · ' + esc(a.amount) : '') + '</b> <span class="sub">(' + esc(d10sn(a.tab)) + ')</span></span><span class="aa">' +
       ((a.list || a.chart || a.flt || a.mmf) ? '<button type="button" class="v-btn sm" data-aa="see" data-ai="' + ix + '">' + d10SeeL(a) + '</button>' : '') + '<button type="button" class="v10-q" data-ask-i="' + ix + '" title="' + tl('ask') + '">?</button><button type="button" class="v-btn sm" data-aa="open" data-ai="' + ix + '">' + tl('open') + ' ' + esc(d10sn(a.tab)) + ' →</button></span></li>';
-  }).join('') + '</ol>' : '<p>' + tl('okHere') + '</p>')
+  }).join('') + '</ol>' + (list.length > 6 ? '<p class="sub">+' + (list.length - 6) + ' lainnya di panel Alerts.</p>' : '') : '<p>' + tl('okHere') + '</p>')
     : '<ol class="blist ph"><li>' + tl('briefEmpty') + '</li></ol><p style="margin:12px 0 0"><button type="button" class="v-btn pri" id="d10demo">' + tl('tryDemo') + '</button> <button type="button" class="v-btn" data-d10go="Input">' + tl('toInput') + ' →</button></p>';
-  var flow = '<div class="bflow">' + D10_TABS.slice(1).map(function (t, k) { var st = d10Step(t, A); return '<button type="button" class="s-' + st[0] + '" data-d10go="' + t + '"><b>' + (k + 1) + '</b><b>' + esc(d10sn(t)) + '</b><small>' + esc(st[1]) + '</small></button>'; }).join('') + '</div>';
+  var flow = '<div class="bflow db-flow">' + D10_TABS.filter(function (t) { return t !== 'Brief'; }).map(function (t) { var st = d10Step(t, A); return '<button type="button" class="s-' + st[0] + '" data-d10go="' + t + '"><b>' + (D10_FREE[t] || d10No(t)) + '</b><b>' + esc(d10sn(t)) + '</b><small>' + esc(st[1]) + '</small></button>'; }).join('') + '</div>';
   var kc = [];
   if (has) {
     var fc = $('fcCards').querySelectorAll('.card'), bf = $('bfCards').querySelectorAll('.card'), pp = $('ppCards').querySelectorAll('.card');
     [fc[0], fc[1], fc[3], bf[0], d10PPMade() ? pp[0] : bf[1], fc[5]].forEach(function (c) { if (c) kc.push(c.outerHTML.replace(/<span class="more">[^<]*<\/span>/, '')); });
   } else kc = ['Order in vs Forecast HQ', 'Akurasi Forecast HQ', 'Forecast M+1', 'Buffer final'].map(function (k) { return '<div class="card"><span class="k">' + k + '</span><span class="v">–</span><span class="n">' + tl('noData') + '</span></div>'; });
-  $('tabBrief').innerHTML = '<div class="brief' + (has ? '' : ' bempty') + '"><div class="bcard"><div class="bk">' + tl('know') + '</div>' + know + '</div><div><div class="bk">' + tl('flow') + '</div>' + flow + '<div class="bk">' + tl('kpi') + '</div><div class="bkpi">' + kc.join('') + '</div></div></div>';
+  var box = function (t, body, cls) { return '<section class="bcard' + (cls ? ' ' + cls : '') + '"><div class="bk">' + t + '</div>' + body + '</section>'; };
+  $('tabBrief').innerHTML = '<div class="dash' + (has ? '' : ' bempty') + '">' +
+    '<div class="bkpi db-kpi">' + kc.join('') + '</div>' +
+    (has ? box('Order in vs forecast per bulan', dbTrend(m), 'db-a') : '') + box(tl('know'), know, 'db-b') +
+    (has ? box('Grup dengan volume terbesar · ' + esc(monthLabel(m.future[0])), dbGroups(m), 'db-a') + '<div class="db-tiles db-b">' + dbTiles(m) + '</div>' : '') +
+    box(tl('flow'), flow, 'db-w') + '</div>';
+  var ch = $('dbChart'); if (ch) ch.addEventListener('mousemove', dbHover), ch.addEventListener('mouseleave', function () { $('dbTip').hidden = true; $('dbCross').setAttribute('visibility', 'hidden'); });
+}
+function dbHover(e) {
+  var t = e.target.closest('[data-dbi]'); if (!t) return; var i = +t.getAttribute('data-dbi'), ch = $('dbChart'), r = ch.getBoundingClientRect(), x = CH.dbX[i] * r.width, tip = $('dbTip'), svg = ch.querySelector('svg');
+  var vx = CH.dbX[i] * 640; $('dbCross').setAttribute('x1', vx); $('dbCross').setAttribute('x2', vx); $('dbCross').setAttribute('visibility', 'visible');
+  tip.innerHTML = CH.dbTip[i]; tip.hidden = false; var w = tip.offsetWidth; tip.style.left = Math.max(0, Math.min(r.width - w, x + 12 + w > r.width ? x - w - 12 : x + 12)) + 'px';
 }
 // ---------- Input data: status per input card, sections shown on request ----------
 function d10Slots() {
@@ -6316,8 +6945,38 @@ function d10Slots() {
   set('Cls', state.cls ? (state.clsFromFile ? 'dari file' : 'bawaan') + ' · ' + n(state.cls.rows.length) + ' SKU' : '');
   set('Mesin', nM ? nM + ' mesin, ' + master().length + ' area' + (state.skuMach ? ' · ' + Object.keys(state.skuMach).length + ' SKU → mesin' : '') : '');
   set('Mm', state.mat ? n(state.mat.rows.length) + ' material' : '');
+  d10Groups();
+  $('useSample').hidden = true; d10DemoBan();
   set('Ch', state.chronos ? (state.chronos.model || 'Chronos') + ' · ' + n(state.chronos.rows.length) + ' baris' : '');
 }
+// Input data groups: count of filled inputs per group, and the group filter (Semua / Penjualan / Stok / Master)
+function d10Groups() {
+  var g = D10.ig || '';
+  document.querySelectorAll('#tabInput .igrp').forEach(function (el) {
+    var k = el.getAttribute('data-ig'), sl = el.querySelectorAll('.slot'), ok = el.querySelectorAll('.slot.ok').length, c = $('igc_' + k);
+    el.hidden = !!g && g !== k; if (c) c.textContent = ok + '/' + sl.length;
+  });
+  document.querySelectorAll('#igTabs [data-ig]').forEach(function (b) { var on = b.getAttribute('data-ig') === g; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+}
+$('igTabs').addEventListener('click', function (e) {
+  var b = e.target.closest('[data-ig]'); if (!b) return; D10.ig = b.getAttribute('data-ig');
+  if (D10.ig === 'master') { $('secMesin').hidden = false; d10SecBtns(); }
+  d10Groups();
+});
+// Demo banner at the top of Input data: big and obvious for a new user (no data yet), a slim strip while the demo runs
+function d10DemoBan() {
+  var el = $('demoBan'); if (!el) return; var has = d10HasData();
+  if (has && !state.sample) { el.innerHTML = ''; el.className = ''; return; }
+  if (state.sample) { el.className = 'demoban on'; el.innerHTML = '<span class="dbi" aria-hidden="true">▶</span><div><b>Mode demo aktif</b><span>Yang tampil adalah data contoh, bukan data pabrik. Coba semua langkah; unggah file sendiri kapan saja untuk menggantinya.</span></div><div class="dbb"><button type="button" class="v-btn pri" data-d10go="Brief">Lihat Dashboard →</button><button type="button" class="v-btn" data-demo="exit">Keluar dari demo</button></div>'; return; }
+  el.className = 'demoban';
+  el.innerHTML = '<span class="dbi" aria-hidden="true">▶</span><div><b>Baru pertama kali? Coba dulu dengan data contoh</b><span>Satu klik memuat contoh lengkap: 3 bulan closing, Forecast HQ 3 bulan dan kelas SKU. Semua langkah (forecast, buffer, rencana produksi) bisa dicoba tanpa file sendiri, dan data contoh bisa dihapus kapan saja.</span></div>' +
+    '<div class="dbb"><button type="button" class="v-btn pri big" data-demo="go">▶ Coba data contoh (demo)</button><span class="sub">atau unggah file sendiri di bawah ↓</span></div>';
+}
+$('demoBan').addEventListener('click', function (e) {
+  var b = e.target.closest('[data-demo]'); if (!b) return;
+  if (b.getAttribute('data-demo') === 'go') $('useSample').click();
+  else { $('clearAll').click(); showTab('Input'); }
+});
 function d10SecBtns() { document.querySelectorAll('[data-sec]').forEach(function (b) { var s = $(b.getAttribute('data-sec')); if (s && b.closest('#secBar')) { b.classList.toggle('on', !s.hidden); b.setAttribute('aria-pressed', !s.hidden); } }); }
 function d10PlanStart() {
   var made = d10PPMade(), pm = CH.pm, el = $('ppStart'); $('tabPlan').classList.toggle('ppnone', !made); el.hidden = made;
@@ -6465,7 +7124,7 @@ $('d10setP').addEventListener('click', function (e) {
   if (b.hasAttribute('data-dim')) { D10.dimOn = b.getAttribute('data-dim') === 'on'; if (!D10.dimOn) aiFocusClose(); }
   if (b.hasAttribute('data-talk')) D10.talkOn = b.getAttribute('data-talk') === 'on';
   if (b.getAttribute('data-sact') === 'save') { if (!canDownload) toast(tl('expBlocked')); else $('dlPack').click(); }
-  if (b.getAttribute('data-sact') === 'exit') { d10Pop(null); $('clearAll').click(); showTab('Brief'); return; }
+  if (b.getAttribute('data-sact') === 'exit') { d10Pop(null); $('clearAll').click(); showTab('Input'); return; }
   d10Save(); d10Settings(); d10Render();
 });
 $('d10expP').addEventListener('click', function (e) { e.stopPropagation(); var b = e.target.closest('button[data-xact]'); if (!b) return; if (!canDownload) { toast(tl('expBlocked')); return; } d10Pop(null); var t = $(b.getAttribute('data-xact')); if (t) t.click(); });
@@ -6480,8 +7139,8 @@ document.addEventListener('click', function (e) {
   if (e.target.closest('[data-aclose]')) { D10.open = false; d10Panel(D10.A || []); return; }
   if (e.target.closest('[data-aside]')) { D10.right = !D10.right; d10Save(); d10Panel(D10.A || []); return; }
   var s2 = e.target.closest('[data-aside2]'); if (s2) { D10.side = s2.getAttribute('data-aside2'); d10Panel(D10.A || []); if (D10.side === 'ask') d10AskOpen(); return; }
-  var ac = e.target.closest('[data-d10acc]'); if (ac) { var nx2 = D10_TABS[D10_TABS.indexOf(D10.cur) + 1]; D10.acc[D10.cur] = true;
-    if (d10HasData()) { var nA = 0; state.ack = state.ack || {}; (D10.A || []).forEach(function (a) { if (a.tab === D10.cur && (a.lvl === 'red' || a.lvl === 'amb')) { state.ack[d10AckKey(a)] = { at: new Date().toISOString().slice(0, 10), via: 'terima' }; nA++; } }); try { localStorage.setItem('ppic_ack', JSON.stringify(state.ack)); } catch (x) {} if (nA) setTimeout(function () { aiSpeak(nA + ' peringatan di ' + d10sn(D10_TABS[D10_TABS.indexOf(nx2) - 1]) + ' diterima apa adanya (sudah dicek). Bisa dibatalkan di daftar alert halaman itu.'); }, 300); } d10Go(nx2); return; }
+  var ac = e.target.closest('[data-d10acc]'); if (ac) { var nx2 = d10Nx(D10.cur), cur0 = D10.cur; D10.acc[D10.cur] = true;
+    if (d10HasData()) { var nA = 0; state.ack = state.ack || {}; (D10.A || []).forEach(function (a) { if (a.tab === D10.cur && (a.lvl === 'red' || a.lvl === 'amb')) { state.ack[d10AckKey(a)] = { at: new Date().toISOString().slice(0, 10), via: 'terima' }; nA++; } }); try { localStorage.setItem('ppic_ack', JSON.stringify(state.ack)); } catch (x) {} if (nA) setTimeout(function () { aiSpeak(nA + ' peringatan di ' + d10sn(cur0) + ' diterima apa adanya (sudah dicek). Bisa dibatalkan di daftar alert halaman itu.'); }, 300); } d10Go(nx2); return; }
   if (e.target.id === 'd10demo') { state.ppMade = {}; D10.acc = {}; d10SavePP(); busyRun(tl('busyLoad'), loadSample); return; }
   var q = e.target.closest('.v10-q[data-ask-i], .v10-q[data-askc], .v10-q[data-help]'); if (q) { e.preventDefault(); d10AskEl(q); return; }
   if (e.target.closest('.v10-s, #d10fab')) { d10Find(); return; }
@@ -6902,7 +7561,7 @@ $('tabBuffer').addEventListener('click', function (e) {
   if (e.target.closest('#bfHz [data-mrp]')) { mrpSendDo(true); return; }
   if (e.target.closest('[data-hzall]')) { state.hzOpen = state.hzOpen || {}; var on = e.target.closest('[data-hzall]').getAttribute('data-hzall') === '1'; (CH.model ? CH.model.fams : []).forEach(function (f) { state.hzOpen[f.key] = on; }); if (CH.model && CH.bm) renderBfHz(CH.model, CH.bm); }
 });
-$('useSample').hidden = true; // the only demo button is on Ringkasan
+$('useSample').addEventListener('click', function (e) { e.stopImmediatePropagation(); state.ppMade = {}; D10.acc = {}; d10SavePP(); busyRun(tl('busyLoad'), loadSample); }, true); // same as the demo button on the Dashboard
 function d10SavePP() { try { localStorage.setItem('ppic_ppmade', JSON.stringify(state.ppMade || {})); } catch (e) {} }
 try { state.ppMade = JSON.parse(localStorage.getItem('ppic_ppmade') || '{}') || {}; } catch (e) { state.ppMade = {}; }
 $('ppReset').insertAdjacentHTML('afterend', '<button type="button" id="ppUnmake" title="Kembali ke halaman kosong; jadwal manual tetap tersimpan">Kosongkan rencana</button>');
@@ -6922,8 +7581,8 @@ function d10Head() {
   if (m !== 'hide') b.classList.remove('hd-peek');
   $('d10hdB').title = tl('hdHideB'); $('d10hdB').setAttribute('aria-label', tl('hdHideB'));
   if (m === 'hide') {
-    var i = D10_TABS.indexOf(D10.cur);
-    $('d10hbar').innerHTML = '<b>Forecast Desk</b><span>' + (i > 0 ? esc(tl('step')) + ' ' + i + ' ' + esc(tl('of')) + ' ' + (D10_TABS.length - 1) + ' · ' : '') + esc(d10sn(D10.cur)) + '</span><span class="sp"></span><button type="button" data-hdshow="1">' + esc(tl('hdShow')) + '</button>';
+    var i = d10No(D10.cur);
+    $('d10hbar').innerHTML = '<b>Forecast Desk</b><span>' + (i > 0 ? esc(tl('step')) + ' ' + i + ' ' + esc(tl('of')) + ' ' + D10_NSTEP + ' · ' : '') + esc(d10sn(D10.cur)) + '</span><span class="sp"></span><button type="button" data-hdshow="1">' + esc(tl('hdShow')) + '</button>';
   }
 }
 function d10SetHead(m) { if (m !== 'hide') D10.headPrev = m; D10.head = m; d10Save(); d10Head(); }
@@ -6968,9 +7627,9 @@ var D10ON = true;
 var d10Render0 = d10Render; d10Render = function () { d10Render0(); d10Sparks(); }; // every page render also draws the card graphics
 window.addEventListener('resize', function () { if (window.innerWidth <= 1100 && D10.open && !D10._r) { D10._r = true; } });
 
-// open empty on Ringkasan (demo data only via its button), or on the page used last
+// always open on Input data, the first screen (the page used last is no longer restored)
 renderAll();
-showTab(D10_TABS.indexOf(D10_T0) >= 0 && !d10Locked(D10_T0) ? D10_T0 : 'Brief');
+showTab('Input');
 })();
 </script>
 </body>
