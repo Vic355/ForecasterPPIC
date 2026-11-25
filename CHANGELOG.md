@@ -5,6 +5,18 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
 
 ## 2026-11-25
 
+- **Input data first, Ringkasan becomes Dashboard, Master mesin.** The app opens on **Input data**, now grouped into
+  *Penjualan & forecast*, *Stok & kelas SKU* and *Master data* (filter chips with filled/total counts). **Dashboard** (next
+  to Input, unnumbered) shows the key-number cards, order in vs Forecast HQ / Forecast AI per month with hover and a
+  table view, the largest brand · category groups for M+1, stock vs buffer, plan tonnes vs machine capacity, SKU status
+  and the open alerts. The numbered steps are now 1 Material master … 5 Rencana produksi. **Master mesin** adds kapasitas
+  kg/hari, berat bersih kg/karton and variasi output %, with output karton/hari = kg/hari ÷ kg/karton × variasi %; machine
+  real names are stored only encrypted (AES-GCM, passphrase key never stored) behind random code names, with an optional
+  copy in Workers KV (`/api/mesin`) and dummy demo machines.
+- **Demo is easy to find.** Input data shows a large *Baru pertama kali? Coba dulu dengan data contoh* banner with
+  **▶ Coba data contoh (demo)** while no data is loaded; during the demo a slim *Mode demo aktif* strip offers *Lihat
+  Dashboard* and *Keluar dari demo*.
+
 - **Material master: Jenis SKU.** Each Nomat gets a *Jenis SKU* (Reguler, SKU baru (NPD), Musiman, Musiman + histori,
   Diganti), chosen or taken from its data; *Detail jenis* shows only that type's inputs (Histori dari + %, Musim aktif,
   Nomat pengganti). Filter by Jenis in Material master, filter and group by Jenis on the Forecast sheet; saved in
