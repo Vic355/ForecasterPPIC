@@ -3,6 +3,17 @@
 Changes to the PPIC Decision Support System (Forecast Desk), newest first. Built from the git history and pull requests
 of this repository. Dates are when the change reached `main`. How the parts fit together: [docs/sistem.md](docs/sistem.md).
 
+## 2026-11-25
+
+- **Input data first, Ringkasan becomes Dashboard, Master mesin.** The app opens on **Input data**, now grouped into
+  *Penjualan & forecast*, *Stok & kelas SKU* and *Master data* (filter chips with filled/total counts). **Dashboard** (next
+  to Input, unnumbered) shows the key-number cards, order in vs Forecast HQ / Forecast AI per month with hover and a
+  table view, the largest brand · category groups for M+1, stock vs buffer, plan tonnes vs machine capacity, SKU status
+  and the open alerts. The numbered steps are now 1 Material master … 5 Rencana produksi. **Master mesin** adds kapasitas
+  kg/hari, berat bersih kg/karton and variasi output %, with output karton/hari = kg/hari ÷ kg/karton × variasi %; machine
+  real names are stored only encrypted (AES-GCM, passphrase key never stored) behind random code names, with an optional
+  copy in Workers KV (`/api/mesin`) and dummy demo machines.
+
 ## 2026-11-24
 
 - **Lighter on small laptops and large histories.** Header and step bar can be compact or hidden (*Pengaturan → Bagian atas*;

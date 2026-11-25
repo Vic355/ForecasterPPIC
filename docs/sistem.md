@@ -22,15 +22,15 @@ Plant: The Univenus Serang (plant 7079). Unit: cartons (CT), tonnes where noted.
 Nothing is uploaded to a server. Files are read in the browser, and the app's state lives in the browser
 (`localStorage`) and in the history file the user downloads. Machine data is never stored in this repository.
 
-## 2. Monthly flow (the 8 steps)
+## 2. Monthly flow
 
 Since Desain 10 (PR #8) the Forecast Desk is a guided flow. Each step opens only after the previous one is accepted
 with **Terima dan lanjut ke …**; a red count shows open alerts. Accepting a page marks its red/amber alerts as checked.
 
 | # | Step (UI name) | Input | Output |
 | --- | --- | --- | --- |
-| 0 | **Ringkasan** | | All open alerts across pages, where to start this month |
-| 1 | **Input data** | Closing reports (one per month), Forecast HQ M+1..M+3, optional Kelas SKU, data mesin, material master, Chronos CSV, earlier history file | One combined Serang history (`bulanan`, `mingguan`, `forecast_hq`, …) |
+| ⇩ | **Input data** (first screen) | Grouped: *Penjualan & forecast* (closing reports, Forecast HQ M+1..M+3, Chronos CSV, earlier history file), *Stok & kelas SKU* (Stock Level Check), *Master data* (material master, Master mesin) | One combined Serang history (`bulanan`, `mingguan`, `forecast_hq`, …) |
+| ▦ | **Dashboard** (was Ringkasan) | | Key numbers, order in vs forecast per month, top groups M+1, stock vs buffer, plan vs machine capacity, SKU status, open alerts |
 | 2 | **Material master** | Material master Excel (optional) | Active / inactive per Nomat, Nomat changes, successor SKUs |
 | 3 | **Cek data SKU** | Status rules + manual overrides | Status per SKU: Aktif, Perlu cek, Diskontinu, Diganti |
 | 4 | **Forecast** | Clean history | Forecast HQ vs order in, accuracy, Forecast AI (ensemble) M+1..M+3 |
@@ -117,6 +117,31 @@ The backtest is walk-forward: each closing month is predicted only from earlier 
   no date columns = PP list). Steps: Data masuk, Rencana (grid with draggable bars and action cards), Aktual (paste the
   output column, check, lock the day), Skenario (rush order / machine stop, preview, apply). Saved in `ppic_prod`.
 
+### Master mesin (machine master)
+
+Input data → Master data → **Master mesin**. One row per machine: area, **kode mesin** (code name, e.g. `DTY-2`),
+**nama asli** (real name, encrypted), kapasitas kg/hari, berat bersih kg/karton (reference), variasi output %, catatan.
+
+- **Output karton/hari = kapasitas kg/hari ÷ berat bersih kg/karton × variasi output %.** In Rencana produksi the SKU's own
+  net weight (from closing) replaces the reference weight. Kapasitas t/bulan = kg/hari × variasi output × 26 working days
+  when kg/hari is filled, otherwise typed or read from the PP Excel as before.
+- Shape (read by Rencana produksi): `state.machMaster = [[area, [[code, capTonPerMonth, remark, meta], …]], …]`,
+  `meta = { capDayT, outPct, nwCtKg, enc: { iv, ct } }`. `machLabel(code)` gives `Real name (code)` when unlocked, else the
+  code; `machOutCt(meta, nwKg)` gives cartons/day.
+- **Names.** The code is the machine's id everywhere (schedule bars, maintenance days, calendar, capacity edits, files).
+  The real name is encrypted in the browser with AES-GCM 256; the key is derived from a passphrase (PBKDF2-SHA256,
+  250,000 rounds) that is never stored. Storage (`localStorage`, history file sheets `kapasitas_mesin.nama_terenkripsi`
+  and `kunci_mesin`, the server copy) only holds ciphertext, a salt and a check value. Without the passphrase the
+  names cannot be recovered; codes and capacities still work. **Samarkan** moves names that are still used as codes
+  (e.g. from a PP Excel) into the encrypted field, gives random codes and renames every reference.
+- Codes are random (three letters + digit). A keyboard shift such as `SRT01 → DTY-2` is a substitution cipher: one known
+  pair reveals the rule, so it is only a label, never the protection.
+- **Server copy (optional).** *Simpan ke server* / *Ambil dari server* store one JSON document in Workers KV through
+  `/api/mesin` (binding `MESIN_DB`, see §9). The Worker never sees the passphrase and rejects documents where any machine
+  lacks an encrypted name. The endpoint has no login of its own: put the site behind Cloudflare Access so only the team
+  can read or overwrite it.
+- **Isi data contoh (dummy)** fills 8 invented machines.
+
 ## 6b. MRP Bahan Baku
 
 - **Input**: PP M+1..M+3 per SKU from the multi-month projection and the BOM per SKU (Material master), sent with
@@ -152,14 +177,18 @@ target above machine speed). Alert cards show the value in a large coloured badg
 | Where | What |
 | --- | --- |
 | Browser `localStorage` (`ppic_*` keys) | Corrections, SKU statuses, rules, buffer edits and strategies, Chronos rows, material master (with SKUs added by hand and BOM), plan (with *Otomatis/Manual* per month), UI settings (side panel width), Perencanaan Produksi plan and actuals (`ppic_prod`), MRP input (`ppic_mrp`) and raw materials / POs (`ppic_mrp_rm`) |
-| History file `Histori_Serang_*.xlsx` or `.ppic.gz` | Everything above plus the extracted closings. Sheets: `bulanan`, `mingguan`, `forecast_hq`, `kelas_sku`, `log`, `status_sku`, `aturan`, `koreksi`, `saran_buffer`, `forecast_ml`, `forecast_chronos`, `material_master`, `rencana_produksi`, `jadwal_produksi`, `target_harian`, `kalender_produksi`, `sku_mesin`, `kapasitas_mesin` |
+| History file `Histori_Serang_*.xlsx` or `.ppic.gz` | Everything above plus the extracted closings. Sheets: `bulanan`, `mingguan`, `forecast_hq`, `kelas_sku`, `log`, `status_sku`, `aturan`, `koreksi`, `saran_buffer`, `forecast_ml`, `forecast_chronos`, `material_master`, `rencana_produksi`, `jadwal_produksi`, `target_harian`, `kalender_produksi`, `sku_mesin`, `kapasitas_mesin`, `kunci_mesin` |
 | `.ppic.gz` | Same content as the Excel, columnar JSON gzipped (~13 KB vs ~390 KB on the sample) |
 
 Uploading the history file restores the whole state. The monthly routine is: open the app, drop the last history file
-plus the new closing and Forecast HQ, (optionally) run Chronos and drop its CSV, walk the 8 steps, download the history.
+plus the new closing and Forecast HQ, (optionally) run Chronos and drop its CSV, walk the steps, download the history.
 
 ## 9. Deploy
 
 `npx wrangler deploy` (or connect the repo in the Cloudflare dashboard to deploy on every push). Workers AI is bound as
 `AI` in `wrangler.jsonc`; the model can be changed with the `AI_MODEL` variable. The page version in the header confirms
 which build is live.
+
+Optional machine master copy: `npx wrangler kv namespace create MESIN_DB`, then uncomment the `kv_namespaces` line in
+`wrangler.jsonc` with the printed id. Without it `/api/mesin` answers 503 and the app keeps machines in the browser and
+the history file.

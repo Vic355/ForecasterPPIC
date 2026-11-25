@@ -572,7 +572,39 @@ html[data-theme=dark] .v3-grn .v3-rib-k, html[data-theme=dark] .v3-red .v3-rib-k
 .v10-q:hover, .v10-q:focus { border-color: var(--acc); color: var(--acc); outline: 0; }
 #d10tip { position: fixed; z-index: 300; max-width: 330px; background: var(--ink); color: var(--paper); border-radius: 10px; padding: 9px 12px; font-size: 14px; line-height: 1.4; box-shadow: 0 10px 26px rgba(0,0,0,.25); display: none; font-weight: 400; text-align: left; text-transform: none; letter-spacing: 0; }
 #d10tip.on { display: block; } #d10tip b { display: block; margin-bottom: 2px; }
-/* Ringkasan */
+/* Dashboard (was Ringkasan) */
+.dash { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr); gap: 14px; align-items: start; }
+.dash .db-kpi, .dash .db-w { grid-column: 1 / -1; }
+.dash .db-kpi { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.db-leg { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--mut); margin-bottom: 6px; } .db-leg span { display: inline-flex; align-items: center; gap: 6px; }
+.db-sw { display: inline-block; width: 14px; height: 3px; border-radius: 2px; background: var(--mut); vertical-align: middle; }
+.db-sw.s1 { background: var(--s1); } .db-sw.s2 { background: var(--s2); } .db-sw.s3 { background: var(--s3); } .db-sw.dash { background: repeating-linear-gradient(90deg, var(--s2) 0 5px, transparent 5px 8px); }
+.db-sw.ok { background: var(--ok); height: 10px; width: 10px; } .db-sw.warn { background: var(--mid); height: 10px; width: 10px; } .db-sw.mut { background: var(--mut); height: 10px; width: 10px; } .db-sw.mut2 { background: var(--line); height: 10px; width: 10px; } .db-sw.s1:not(.db-leg *) { height: 10px; width: 10px; }
+.db-chart { position: relative; } .db-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.db-grid { stroke: var(--line2); stroke-width: 1; } .db-ax { fill: var(--mut); font-size: 11px; font-family: var(--font); }
+.db-fut { fill: var(--panel2); }
+.db-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; } .db-line.dash { stroke-dasharray: 6 4; }
+.db-line.s1 { stroke: var(--s1); } .db-line.s2 { stroke: var(--s2); } .db-line.s3 { stroke: var(--s3); }
+.db-dot { stroke: var(--paper); stroke-width: 2; } .db-dot.s1 { fill: var(--s1); } .db-dot.s2 { fill: var(--s2); } .db-dot.s3 { fill: var(--s3); }
+.db-hit { fill: transparent; cursor: crosshair; } .db-cross { stroke: var(--mut); stroke-width: 1; stroke-dasharray: 3 3; }
+.db-tip { position: absolute; top: 8px; z-index: 5; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 20px var(--shadow); padding: 7px 10px; font-size: 12.5px; display: flex; flex-direction: column; gap: 2px; pointer-events: none; white-space: nowrap; }
+.db-tip span { display: flex; align-items: center; gap: 6px; } .db-tip span b { margin-left: auto; padding-left: 10px; }
+.db-tv { margin-top: 6px; font-size: 13px; } .db-tv summary { cursor: pointer; color: var(--acc); } .db-tv table { margin-top: 6px; }
+.db-gt { width: 100%; border-collapse: collapse; font-size: 13.5px; } .db-gt th { text-align: left; font-size: 12px; color: var(--mut); font-weight: 600; border-bottom: 1px solid var(--line); padding: 4px 6px; }
+.db-gt td { padding: 5px 6px; border-bottom: 1px solid var(--line2); } .db-gt .num { text-align: right; font-variant-numeric: tabular-nums; } .db-gt tr.sub td { color: var(--mut); }
+.db-gt td.db-bc { width: 34%; min-width: 120px; } .db-gt .db-big { color: var(--warn); font-weight: 700; }
+.db-bar { display: block; height: 5px; border-radius: 0 3px 3px 0; margin: 1px 0; min-width: 1px; } .db-bar.s1 { background: var(--s1); } .db-bar.s2 { background: var(--s2); } .db-bar.s3 { background: var(--s3); }
+.db-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.db-tile { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; background: var(--paper); border: 1px solid var(--line); border-left: 5px solid var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; min-height: 0; font: inherit; color: var(--ink); }
+.db-tile:hover { background: var(--hover); } .db-tile[disabled] { cursor: default; }
+.db-tile .k { font-size: 13px; color: var(--mut); font-weight: 600; } .db-tile .v { font-size: 22px; font-weight: 700; font-family: var(--serif); } .db-tile .n { font-size: 12.5px; color: var(--mut); line-height: 1.35; }
+.db-tile.bad { border-left-color: var(--bad); } .db-tile.bad .v { color: var(--bad); } .db-tile.warn { border-left-color: var(--mid); } .db-tile.ok { border-left-color: var(--ok); }
+.db-tile.db-st { grid-column: 1 / -1; } .db-seg { display: flex; gap: 2px; width: 100%; height: 10px; margin: 6px 0 4px; }
+.db-seg i { border-radius: 3px; min-width: 3px; } .db-seg i.ok { background: var(--ok); } .db-seg i.warn { background: var(--mid); } .db-seg i.s1 { background: var(--s1); } .db-seg i.mut { background: var(--mut); } .db-seg i.mut2 { background: var(--line); }
+.db-stl { display: inline-flex; align-items: center; gap: 5px; margin-right: 12px; }
+.dash .bflow.db-flow { flex-direction: row; flex-wrap: wrap; margin: 0; } .dash .db-flow button { flex: 1 1 150px; grid-template-columns: 22px 1fr; align-items: start; gap: 2px 8px; } .dash .db-flow button small { grid-column: 2; }
+@media (max-width: 1100px) { .dash { grid-template-columns: 1fr; } }
+/* Ringkasan (older layout pieces still used by the Dashboard) */
 .brief { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); gap: 14px; align-items: start; }
 .bcard { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; }
 .bk { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--mut); font-weight: 700; margin: 0 0 8px; }
@@ -843,6 +875,26 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
 #appErr b { color: var(--bad); } #appErr small { color: var(--mut); } #appErr span#appErrM { font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
 #appErr .ae-b { display: flex; gap: 6px; justify-content: flex-end; margin-top: 4px; }
 @media (prefers-reduced-motion: reduce) { .busy-s { animation-duration: 2s; } }
+/* Input data: groups of inputs */
+.igtabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0 4px; }
+.igtabs button { border-radius: 999px; font-size: 13.5px; padding: 5px 12px; min-height: 0; }
+.igtabs button.on { background: var(--acc); border-color: var(--acc); color: var(--paper); font-weight: 700; }
+.igtabs .igc { font-size: 12px; opacity: .8; font-weight: 400; }
+.igrp { border-top: 1px solid var(--line2); padding: 12px 0 14px; }
+.igrp[hidden] { display: none; }
+.igrp-h { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.igrp-h h3 { margin: 0; font-family: var(--serif); font-size: 17px; }
+.igrp-h .sub { font-size: 13px; }
+/* Master mesin: lock bar, encrypted names */
+.mklock { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border: 1px solid var(--line); border-left: 5px solid var(--acc); border-radius: 10px; padding: 10px 12px; margin: 4px 0 10px; background: var(--panel2); }
+.mklock.open { border-left-color: var(--ok); } .mklock b { font-size: 14.5px; } .mklock input { width: 200px; } .mklock .sub { flex-basis: 100%; font-size: 12.5px; }
+.mklock .sp { flex: 1; }
+.mlt td.real { min-width: 150px; color: var(--mut); font-size: 13px; white-space: nowrap; }
+.mlt td.ro b { color: var(--ink); } .mlt td.calc input { background: var(--panel2); color: var(--mut); }
+.mlt th.ench { background: var(--acc2); }
+.mlt td { vertical-align: middle; } .mlt input { min-width: 0; } .mlt input.num { width: 88px; }
+.mlt td:nth-child(1) input { width: 150px; } .mlt td:nth-child(2) input { width: 80px; } .mlt td:nth-child(3) input { width: 180px; } .mlt td:nth-child(10) input { width: 160px; }
+.mlt th { white-space: normal; vertical-align: bottom; max-width: 110px; }
 </style>
 </head>
 <body>
@@ -976,44 +1028,58 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
     <div class="ph"><h2>Masukkan data</h2>
       <label class="field" for="plant" style="flex-direction:row;align-items:center;gap:8px">Kode plant<input type="text" id="plant" value="7079" inputmode="numeric" style="width:90px"></label></div>
     <label class="drop bigdrop" data-kind="auto"><input type="file" multiple accept=".xlsx,.xlsm,.xls,.gz,.ppic,.csv" data-kind="auto"><span class="bd-i" aria-hidden="true">⇩</span><span><b>Tarik file ke sini</b> atau klik untuk memilih: closing, Forecast HQ, Stock Level Check, data mesin, material master, CSV Chronos atau histori (.ppic.gz). Jenis dan bulan dikenali dari nama file.</span></label>
-    <div class="slots">
-      <div class="slot" id="slClosing">
-        <div class="slot-h"><b>Histori closing</b><span class="pill p-acc">wajib</span></div>
-        <span class="slot-s" id="ssClosing">belum ada</span>
-        <p class="note">Daily Report Prod &amp; Sales Closing, satu file per bulan. Bisa pilih banyak file sekaligus, ditambah file <i>Histori_Serang</i> hasil unduhan sebelumnya untuk dilanjutkan.</p>
-        <label class="drop" data-kind="closing"><input type="file" multiple accept=".xlsx,.xlsm,.xls,.gz,.ppic" data-kind="closing"><b>Pilih atau tarik file closing</b><span class="hint">atau lepas file di mana saja di halaman</span><span class="sub">Bulan dibaca dari nama file (mis. AUG26)</span></label>
+    <div class="igtabs" id="igTabs" aria-label="Grup data"><button type="button" data-ig="" class="on" aria-pressed="true">Semua grup</button><button type="button" data-ig="sales">Penjualan &amp; forecast <span class="igc" id="igc_sales"></span></button><button type="button" data-ig="stock">Stok &amp; kelas SKU <span class="igc" id="igc_stock"></span></button><button type="button" data-ig="master">Master data <span class="igc" id="igc_master"></span></button></div>
+    <div class="igrp" data-ig="sales">
+      <div class="igrp-h"><h3>Penjualan &amp; forecast</h3><span class="sub">Closing bulanan (order in, stok, forecast lama) dan Forecast HQ ke depan. Dasar semua langkah berikutnya.</span></div>
+      <div class="slots">
+        <div class="slot" id="slClosing">
+          <div class="slot-h"><b>Histori closing</b><span class="pill p-acc">wajib</span></div>
+          <span class="slot-s" id="ssClosing">belum ada</span>
+          <p class="note">Daily Report Prod &amp; Sales Closing, satu file per bulan. Bisa pilih banyak file sekaligus, ditambah file <i>Histori_Serang</i> hasil unduhan sebelumnya untuk dilanjutkan.</p>
+          <label class="drop" data-kind="closing"><input type="file" multiple accept=".xlsx,.xlsm,.xls,.gz,.ppic" data-kind="closing"><b>Pilih atau tarik file closing</b><span class="hint">atau lepas file di mana saja di halaman</span><span class="sub">Bulan dibaca dari nama file (mis. AUG26)</span></label>
+        </div>
+        <div class="slot" id="slFc">
+          <div class="slot-h"><b>Forecast HQ M+1 – M+3</b><span class="pill p-acc">wajib</span></div>
+          <span class="slot-s" id="ssFc">belum ada</span>
+          <p class="note">Format Summary Forecast per bulan (mis. <i>Sales Forecast Nov26 adj - TUB</i>): Qty (ctn), W1–W4 dan per zona. Versi <i>adj</i> dibaca dari nama file.</p>
+          <label class="drop" data-kind="forecast"><input type="file" multiple accept=".xlsx,.xlsm,.xls" data-kind="forecast"><b>Pilih atau tarik file forecast</b><span class="sub">Satu file per bulan forecast</span></label>
+        </div>
+        <div class="slot" id="slCh">
+          <div class="slot-h"><b>Forecast Chronos</b><span class="pill p-off">opsional</span></div>
+          <span class="slot-s" id="ssCh">belum ada</span>
+          <p class="note">CSV hasil <i>ingest/forecast_chronos.py</i> yang dijalankan di komputer sendiri dari file histori ringkas (.ppic.gz). Masuk ke ensemble Forecast AI.</p>
+          <label class="drop" data-kind="chronos"><input type="file" accept=".csv,.xlsx" data-kind="chronos"><b>Pilih atau tarik CSV Chronos</b><span class="sub" id="chSlotNote">Belum ada</span></label>
+        </div>
       </div>
-      <div class="slot" id="slFc">
-        <div class="slot-h"><b>Forecast HQ M+1 – M+3</b><span class="pill p-acc">wajib</span></div>
-        <span class="slot-s" id="ssFc">belum ada</span>
-        <p class="note">Format Summary Forecast per bulan (mis. <i>Sales Forecast Nov26 adj - TUB</i>): Qty (ctn), W1–W4 dan per zona. Versi <i>adj</i> dibaca dari nama file.</p>
-        <label class="drop" data-kind="forecast"><input type="file" multiple accept=".xlsx,.xlsm,.xls" data-kind="forecast"><b>Pilih atau tarik file forecast</b><span class="sub">Satu file per bulan forecast</span></label>
+    </div>
+    <div class="igrp" data-ig="stock">
+      <div class="igrp-h"><h3>Stok &amp; kelas SKU</h3><span class="sub">Stock Level Check: kelas A/B/C/NPD dan target DOI per SKU. Stok bebas per SKU dibaca dari closing.</span></div>
+      <div class="slots">
+        <div class="slot" id="slCls">
+          <div class="slot-h"><b>Kelas SKU</b><span class="pill p-off">opsional</span></div>
+          <span class="slot-s" id="ssCls">belum ada</span>
+          <p class="note" id="clsNote"></p>
+          <label class="drop" data-kind="class"><input type="file" accept=".xlsx,.xlsm,.xls" data-kind="class"><b>Ganti dengan Stock Level Check baru</b><span class="sub">Hanya jika ada data kelas yang lebih baru</span></label>
+        </div>
       </div>
-      <div class="slot" id="slCls">
-        <div class="slot-h"><b>Kelas SKU</b><span class="pill p-off">opsional</span></div>
-        <span class="slot-s" id="ssCls">belum ada</span>
-        <p class="note" id="clsNote"></p>
-        <label class="drop" data-kind="class"><input type="file" accept=".xlsx,.xlsm,.xls" data-kind="class"><b>Ganti dengan Stock Level Check baru</b><span class="sub">Hanya jika ada data kelas yang lebih baru</span></label>
-      </div>
-      <div class="slot" id="slMesin">
-        <div class="slot-h"><b>Data mesin</b><span class="pill p-off">untuk jadwal</span></div>
-        <span class="slot-s" id="ssMesin">belum ada</span>
-        <p class="note">Daftar mesin, kapasitas dan SKU → mesin untuk jadwal Rencana produksi. Pakai template (sudah terisi data yang ada sekarang), atau unggah Excel PP (tab summary + kolom Material/Mesin).</p>
-        <label class="drop" data-kind="pp"><input type="file" multiple accept=".xlsx,.xlsm,.xls" data-kind="pp"><b>Pilih atau tarik file data produksi</b><span class="sub">Template atau Excel PP</span></label>
-        <div id="ppData"></div>
-        <div class="slot-a"><button type="button" data-sec="secMesin">Lihat / ubah</button><button type="button" id="ppTpl">Unduh template</button><span class="sub" id="ppTplMsg"></span></div>
-      </div>
-      <div class="slot" id="slMm">
-        <div class="slot-h"><b>Material master</b><span class="pill p-off">opsional</span></div>
-        <span class="slot-s" id="ssMm">belum ada</span>
-        <p class="note">Excel daftar material: Nomat, kode artikel, nama, Brand, Kategori, Status aktif/nonaktif, Nomat pengganti. Tanpa file ini status dibaca dari data forecast dan closing.</p>
-        <label class="drop" data-kind="master"><input type="file" accept=".xlsx,.xlsm,.xls,.csv" data-kind="master"><b>Pilih atau tarik material master</b><span class="sub" id="mmSlotNote">Belum ada</span></label>
-      </div>
-      <div class="slot" id="slCh">
-        <div class="slot-h"><b>Forecast Chronos</b><span class="pill p-off">opsional</span></div>
-        <span class="slot-s" id="ssCh">belum ada</span>
-        <p class="note">CSV hasil <i>ingest/forecast_chronos.py</i> yang dijalankan di komputer sendiri dari file histori ringkas (.ppic.gz). Masuk ke ensemble Forecast AI.</p>
-        <label class="drop" data-kind="chronos"><input type="file" accept=".csv,.xlsx" data-kind="chronos"><b>Pilih atau tarik CSV Chronos</b><span class="sub" id="chSlotNote">Belum ada</span></label>
+    </div>
+    <div class="igrp" data-ig="master">
+      <div class="igrp-h"><h3>Master data</h3><span class="sub">Daftar yang jarang berubah: material (brand, kategori, status, BOM) dan mesin (kapasitas, output).</span></div>
+      <div class="slots">
+        <div class="slot" id="slMm">
+          <div class="slot-h"><b>Material master</b><span class="pill p-off">opsional</span></div>
+          <span class="slot-s" id="ssMm">belum ada</span>
+          <p class="note">Excel daftar material: Nomat, kode artikel, nama, Brand, Kategori, Status aktif/nonaktif, Nomat pengganti. Tanpa file ini status dibaca dari data forecast dan closing.</p>
+          <label class="drop" data-kind="master"><input type="file" accept=".xlsx,.xlsm,.xls,.csv" data-kind="master"><b>Pilih atau tarik material master</b><span class="sub" id="mmSlotNote">Belum ada</span></label>
+        </div>
+        <div class="slot" id="slMesin">
+          <div class="slot-h"><b>Master mesin</b><span class="pill p-off">untuk jadwal</span></div>
+          <span class="slot-s" id="ssMesin">belum ada</span>
+          <p class="note">Daftar mesin dengan kode samaran, kapasitas per hari, berat bersih per karton dan variasi output. Nama asli mesin disimpan terenkripsi. Bisa juga unggah template atau Excel PP.</p>
+          <label class="drop" data-kind="pp"><input type="file" multiple accept=".xlsx,.xlsm,.xls" data-kind="pp"><b>Pilih atau tarik file data produksi</b><span class="sub">Template atau Excel PP</span></label>
+          <div id="ppData"></div>
+          <div class="slot-a"><button type="button" data-sec="secMesin" class="pri">Buka master mesin</button><button type="button" id="ppTpl">Unduh template</button><span class="sub" id="ppTplMsg"></span></div>
+        </div>
       </div>
     </div>
     <div class="scroll"><table id="files"></table></div>
@@ -1040,14 +1106,13 @@ body.hd-h #d10hbar { display: flex; align-items: center; gap: 10px; flex: none; 
     <div class="scroll" style="max-height: 560px"><table id="mmTable" class="cekt mmt"></table></div>
   </section>
 
-  <section class="panel" aria-label="Data mesin" id="secMesin" hidden>
-    <div class="ph"><h2>Data mesin</h2><span class="sub">Disimpan di browser ini dan di file Histori_Serang (bukan di kode).</span></div>
-    <p class="note">Ketik langsung di tabel, atau salin blok dari Excel lalu tempel (Ctrl+V) di sel pertama. Baris kosong di bawah untuk menambah. <b>Kelompok SKU</b> memetakan SKU ke area mesin lewat kata di nama SKU (mis. <i>Soft Pack</i>) atau nama famili; bila beberapa cocok, yang paling panjang menang. Kalender: libur nasional dan cuti bersama 2026–2027 sudah bawaan (SKB 3 Menteri), Sabtu masuk, Minggu libur; ubah per tanggal di jadwal.</p>
+  <section class="panel" aria-label="Master mesin" id="secMesin" hidden>
+    <div class="ph"><h2>Master mesin</h2><span class="sub">Disimpan di browser ini dan di file Histori_Serang (bukan di kode). Nama asli hanya tersimpan terenkripsi.</span></div>
+    <div class="mklock" id="mkBar"></div>
+    <p class="note"><b>Output karton/hari</b> = kapasitas kg/hari ÷ berat bersih kg/karton × variasi output %. <b>Kapasitas t/bulan</b> dihitung dari kapasitas kg/hari × variasi output × 26 hari kerja bila kg/hari diisi. Di Rencana produksi berat bersih per SKU dari closing yang dipakai; berat di sini hanya acuan. Ketik langsung, atau tempel blok dari Excel (Ctrl+V) di sel pertama. <b>Kode mesin</b> dipakai di semua jadwal dan file; nama asli hanya tampil setelah kunci dibuka.</p>
     <datalist id="mlTypes"></datalist>
-    <div class="row">
-      <div class="grow edwrap"><div class="ph"><h3>Daftar mesin</h3><button type="button" id="mlAdd">+ Baris</button></div><table id="mlTable" class="cekt edt"></table></div>
-      <div class="grow edwrap"><div class="ph"><h3>Kelompok SKU → area mesin</h3><div style="display:flex;gap:6px"><button type="button" id="sgAdd">+ Baris</button><button type="button" id="sgSeed">Isi contoh kelompok</button></div></div><table id="sgTable" class="cekt edt"></table><p class="sub" id="sgNote"></p></div>
-    </div>
+    <div class="edwrap"><div class="ph"><h3>Daftar mesin <span class="sub" id="mlSum" style="font-weight:400"></span></h3><div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" id="mlAdd">+ Baris</button><button type="button" id="mlDemo">Isi data contoh (dummy)</button></div></div><div class="scroll"><table id="mlTable" class="cekt edt mlt"></table></div></div>
+    <div class="edwrap" style="margin-top:14px"><div class="ph"><h3>Kelompok SKU → area mesin</h3><div style="display:flex;gap:6px"><button type="button" id="sgAdd">+ Baris</button><button type="button" id="sgSeed">Isi contoh kelompok</button></div></div><p class="note"><b>Kelompok SKU</b> memetakan SKU ke area mesin lewat kata di nama SKU (mis. <i>Soft Pack</i>) atau nama famili; bila beberapa cocok, yang paling panjang menang. Kalender: libur nasional dan cuti bersama 2026–2027 sudah bawaan (SKB 3 Menteri), Sabtu masuk, Minggu libur; ubah per tanggal di jadwal.</p><table id="sgTable" class="cekt edt"></table><p class="sub" id="sgNote"></p></div>
   </section>
 
   <section class="panel" aria-label="Riwayat data" id="secHist" hidden>
@@ -1891,7 +1956,10 @@ function loadHistory(name, wb, rowsBy) {
   var kg = read('kelompok_sku'); if (kg.length) state.skuGroups = kg.filter(function (r) { return r.kelompok; }).map(function (r) { return { g: String(r.kelompok), t: r.jenis_mesin ? String(r.jenis_mesin) : '' }; });
   read('sku_mesin').forEach(function (r) { if (r.material === null || r.material === undefined) return; state.skuMach[String(r.material)] = { type: r.jenis_mesin || null, mach: r.mesin_khusus || null, speed: typeof r.kecepatan_ton_hari === 'number' ? r.kecepatan_ton_hari : null }; });
   var km = read('kapasitas_mesin'), mg = {}, mo2 = [];
-  km.forEach(function (r) { if (!r.mesin || !r.jenis_mesin) return; var g = String(r.jenis_mesin); if (!mg[g]) { mg[g] = []; mo2.push(g); } mg[g].push([String(r.mesin), typeof r.kapasitas_excel === 'number' ? r.kapasitas_excel : 0, r.catatan || '']); });
+  km.forEach(function (r) { if (!r.mesin || !r.jenis_mesin) return; var g = String(r.jenis_mesin); if (!mg[g]) { mg[g] = []; mo2.push(g); } var mt = null; if (typeof r.kapasitas_kg_hari === 'number' && r.kapasitas_kg_hari > 0) mt = { capDayT: r.kapasitas_kg_hari / 1000, outPct: typeof r.variasi_output_pct === 'number' ? r.variasi_output_pct : 100, nwCtKg: typeof r.berat_karton_kg === 'number' ? r.berat_karton_kg : null };
+    if (r.nama_terenkripsi) { try { (mt = mt || {}).enc = JSON.parse(r.nama_terenkripsi); } catch (e) {} }
+    mg[g].push(mt ? [String(r.mesin), typeof r.kapasitas_excel === 'number' ? r.kapasitas_excel : 0, r.catatan || '', mt] : [String(r.mesin), typeof r.kapasitas_excel === 'number' ? r.kapasitas_excel : 0, r.catatan || '']); });
+  var kk = read('kunci_mesin')[0]; if (kk && kk.salt && kk.cek) { try { state.mkey = { alg: kk.alg, kdf: kk.kdf, iter: +kk.iter || 250000, salt: String(kk.salt), chk: JSON.parse(kk.cek) }; if (typeof mkLock === 'function') mkLock(); } catch (e) {} }
   if (mo2.length) { state.machMaster = mo2.map(function (g) { return [g, mg[g]]; }); state.machMasterSrc = name; }
   km.forEach(function (r) {
     if (r.mesin && r.manual === 'ya' && typeof r.kapasitas_ton_bulan === 'number') state.capEdits[String(r.mesin)] = { v: r.kapasitas_ton_bulan, at: r.tanggal_manual || '' };
@@ -2782,9 +2850,9 @@ function machineOf(s) {
   var f = state.machFile[s.nomat] || state.machFile[s.key]; if (f) return { v: machType(f), src: 'file', raw: f };
   return { v: guessMachine(s.name), src: 'guess', guess: true };
 }
-function savePP() { try { localStorage.setItem('ppic_pp', JSON.stringify({ machines: state.machines || {}, machFile: state.machFile || {}, master: state.machMaster || null, masterSrc: state.machMasterSrc || null, caps: state.capEdits || {}, unit: state.ppUnit, sched: state.ppSched || {}, skuMach: state.skuMach || {}, skuMachSrc: state.skuMachSrc || null, cal: state.ppCal || [], calSrc: state.ppCalSrc || null, sun2: !!state.ppSunOff, cbOff: !!state.ppCbOff, groups: state.skuGroups || [] })); } catch (e) {} }
+function savePP() { try { localStorage.setItem('ppic_pp', JSON.stringify({ machines: state.machines || {}, machFile: state.machFile || {}, master: state.machMaster || null, masterSrc: state.machMasterSrc || null, caps: state.capEdits || {}, unit: state.ppUnit, sched: state.ppSched || {}, skuMach: state.skuMach || {}, skuMachSrc: state.skuMachSrc || null, cal: state.ppCal || [], calSrc: state.ppCalSrc || null, sun2: !!state.ppSunOff, cbOff: !!state.ppCbOff, groups: state.skuGroups || [], mkey: state.mkey || null })); } catch (e) {} }
 function loadPP() {
-  try { var o = JSON.parse(localStorage.getItem('ppic_pp') || '{}') || {}; state.machines = o.machines || {}; state.machFile = o.machFile || {}; state.machMaster = o.master || null; state.machMasterSrc = o.masterSrc || null; state.capEdits = o.caps || {}; state.ppUnit = o.unit || 'ct'; state.ppSched = o.sched || {}; state.skuMach = o.skuMach || {}; state.skuMachSrc = o.skuMachSrc || null; state.ppCal = o.cal || []; state.ppCalSrc = o.calSrc || null; state.ppSunOff = o.sun2 === undefined ? true : !!o.sun2; state.ppCbOff = !!o.cbOff; state.skuGroups = o.groups || []; }
+  try { var o = JSON.parse(localStorage.getItem('ppic_pp') || '{}') || {}; state.machines = o.machines || {}; state.machFile = o.machFile || {}; state.machMaster = o.master || null; state.machMasterSrc = o.masterSrc || null; state.capEdits = o.caps || {}; state.ppUnit = o.unit || 'ct'; state.ppSched = o.sched || {}; state.skuMach = o.skuMach || {}; state.skuMachSrc = o.skuMachSrc || null; state.ppCal = o.cal || []; state.ppCalSrc = o.calSrc || null; state.ppSunOff = o.sun2 === undefined ? true : !!o.sun2; state.ppCbOff = !!o.cbOff; state.skuGroups = o.groups || []; state.mkey = o.mkey || null; }
   catch (e) { state.machines = {}; state.machFile = {}; state.capEdits = {}; state.ppSched = {}; state.skuMach = {}; state.ppCal = []; }
 }
 // The plan is made at the start of the month, so there is one plan month: closing + 1, the same month as Saran Buffer.
@@ -3141,7 +3209,7 @@ function renderPPData(pm) {
 }
 function capRows() {
   var out = [];
-  master().forEach(function (g) { g[1].forEach(function (mm) { var e = state.capEdits[mm[0]]; out.push({ jenis_mesin: g[0], mesin: mm[0], kapasitas_ton_bulan: capOf(mm[0], mm[1]), kapasitas_excel: mm[1], manual: e ? 'ya' : 'tidak', tanggal_manual: e ? e.at : null, catatan: mm[2] || null }); }); });
+  master().forEach(function (g) { g[1].forEach(function (mm) { var e = state.capEdits[mm[0]]; var mt = mm[3] || {}; out.push({ jenis_mesin: g[0], mesin: mm[0], kapasitas_ton_bulan: capOf(mm[0], mm[1]), kapasitas_excel: mm[1], manual: e ? 'ya' : 'tidak', tanggal_manual: e ? e.at : null, catatan: mm[2] || null, kapasitas_kg_hari: mt.capDayT ? mt.capDayT * 1000 : null, berat_karton_kg: mt.nwCtKg || null, variasi_output_pct: mt.capDayT ? mt.outPct || 100 : null, nama_terenkripsi: mt.enc ? JSON.stringify(mt.enc) : null }); }); });
   Object.keys(state.machFile).forEach(function (k) { out.push({ jenis_mesin: machType(state.machFile[k]), mesin: null, material: k, mesin_file_pp: state.machFile[k] }); });
   return out;
 }
@@ -4386,7 +4454,7 @@ function histFileName(c) { var ms = c.monthly.map(function (r) { return r.closin
 function histSheets(c) {
   var fm = forecastModel(c), mlRows = [];
   fm.skus.forEach(function (sk) { Object.keys(sk.ml || {}).forEach(function (mo) { var i = sk.mlInfo[mo], rd = function (v) { return v === null || v === undefined ? null : Math.round(v); }, wt = function (k) { return i.wts && i.wts[k] !== undefined ? Math.round(i.wts[k] * 100) / 100 : null; }; mlRows.push({ forecast_month: mo, after_closing: fm.latest, nomat: sk.nomat, article_code: sk.art, description: sk.name, forecast_ml_ctn: sk.ml[mo], holt_ctn: rd(i.holt), hq_corrected_ctn: rd(i.hqc), regressor_ctn: rd(i.gbr), chronos_p50_ctn: rd(i.chronos), chronos_p10_ctn: rd(i.chLo), chronos_p90_ctn: rd(i.chHi), w_holt: wt('holt'), w_hq_corrected: wt('hqc'), w_regressor: wt('gbr'), w_chronos: wt('chronos'), hq_ratio: Math.round(i.r * 1000) / 1000, forecast_hq_ctn: typeof sk.fhq[mo] === 'number' ? sk.fhq[mo] : null, model: 'ensemble v2 (holt, hq_corrected, gbr, chronos)' }); }); });
-  return [['bulanan', c.monthly], ['mingguan', c.weekly], ['forecast_hq', c.forecast], ['forecast_ml', mlRows], ['kelas_sku', c.kelas], ['status_sku', statusRows(fm)], ['koreksi', Object.keys(state.edits).map(function (id) { var e = state.edits[id], p = id.split('|'); return { sku_key: p[0], description: e.name || null, data: p[1], data_label: EDIT_FIELDS[p[1]], bulan: p[2] || null, nilai_file: e.src, koreksi: e.v, waktu: e.at }; })], ['saran_buffer', bufRows(fm)], ['rencana_produksi', ppRows(fm)], ['jadwal_produksi', schedRows().jadwal], ['target_harian', schedRows().target], ['kalender_produksi', schedRows().kal], ['sku_mesin', skuMachRows()], ['kelompok_sku', (state.skuGroups || []).map(function (g) { return { kelompok: g.g, jenis_mesin: g.t || null }; })], ['kapasitas_mesin', capRows()], ['aturan', RULES.map(function (r) { var cf = ruleCfg(r.id), o = { aturan: r.id, nama: r.label, aktif: cf.on ? 'ya' : 'tidak' }; Object.keys(r.params).forEach(function (k) { o[k] = cf[k]; }); return o; })], ['material_master', matRows()], ['forecast_chronos', (state.chronos && state.chronos.rows) || []], ['log', c.log]];
+  return [['bulanan', c.monthly], ['mingguan', c.weekly], ['forecast_hq', c.forecast], ['forecast_ml', mlRows], ['kelas_sku', c.kelas], ['status_sku', statusRows(fm)], ['koreksi', Object.keys(state.edits).map(function (id) { var e = state.edits[id], p = id.split('|'); return { sku_key: p[0], description: e.name || null, data: p[1], data_label: EDIT_FIELDS[p[1]], bulan: p[2] || null, nilai_file: e.src, koreksi: e.v, waktu: e.at }; })], ['saran_buffer', bufRows(fm)], ['rencana_produksi', ppRows(fm)], ['jadwal_produksi', schedRows().jadwal], ['target_harian', schedRows().target], ['kalender_produksi', schedRows().kal], ['sku_mesin', skuMachRows()], ['kelompok_sku', (state.skuGroups || []).map(function (g) { return { kelompok: g.g, jenis_mesin: g.t || null }; })], ['kapasitas_mesin', capRows()], ['kunci_mesin', state.mkey ? [{ alg: state.mkey.alg, kdf: state.mkey.kdf, iter: state.mkey.iter, salt: state.mkey.salt, cek: JSON.stringify(state.mkey.chk) }] : []], ['aturan', RULES.map(function (r) { var cf = ruleCfg(r.id), o = { aturan: r.id, nama: r.label, aktif: cf.on ? 'ya' : 'tidak' }; Object.keys(r.params).forEach(function (k) { o[k] = cf[k]; }); return o; })], ['material_master', matRows()], ['forecast_chronos', (state.chronos && state.chronos.rows) || []], ['log', c.log]];
 }
 $('dlCsv').hidden = true;
 // export the production plan as shown: machine rows with what runs each day, SKU rows with daily targets
@@ -4511,7 +4579,7 @@ function loadSample() {
   state.items = cl.concat(fc); state.view = cl[2].id;
   renderAll();
 }
-$('useSample').addEventListener('click', loadSample);
+
 function showTab(name) {
   document.querySelectorAll('.tab[data-tab]').forEach(function (b) { var on = b.getAttribute('data-tab') === name; b.classList.toggle('on', on); if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
   $('tabForecast').hidden = name !== 'Forecast'; $('tabInput').hidden = name !== 'Input'; $('tabCek').hidden = name !== 'Cek'; $('tabBuffer').hidden = name !== 'Buffer'; $('tabPlan').hidden = name !== 'Plan'; ['Brief', 'Master'].forEach(function (t) { $('tab' + t).hidden = name !== t; }); document.body.classList.toggle('wide', name === 'Plan'); if (name === 'Plan' && CH.sm && Math.abs(document.documentElement.clientWidth - (state._ppW || 0)) > 40) { state._ppW = document.documentElement.clientWidth; renderAll(); }
@@ -4992,12 +5060,28 @@ $('ppTpl').addEventListener('click', function () {
 });
 // ---------- editable tables in the Input tab (type, paste rows from Excel, add/remove rows) ----------
 var ED_TABLES = {
-  ml: { el: 'mlTable', cols: [['type', 'Area mesin', 'mlTypes'], ['name', 'Mesin'], ['cap', 'Kapasitas t/bulan', null, 'num'], ['rem', 'Catatan']],
-    rows: function () { var o = []; master().forEach(function (g) { g[1].forEach(function (x) { o.push({ type: g[0], name: x[0], cap: x[1], rem: x[2] || '' }); }); }); return o; },
+  ml: { el: 'mlTable', cols: [['type', 'Area mesin', 'mlTypes'], ['name', 'Kode mesin', null, null, 'Kode samaran yang tampil di jadwal dan file, mis. DTY-2'], ['real', 'Nama asli 🔒', null, 'real', 'Disimpan terenkripsi (AES-GCM). Kunci = frasa sandi, tidak pernah disimpan.'],
+      ['kg', 'Kapasitas kg/hari', null, 'num'], ['nw', 'Berat bersih kg/karton (acuan)', null, 'num'], ['pct', 'Variasi output %', null, 'num', 'Persentase kapasitas yang benar-benar keluar (efisiensi). Kosong = 100%.'],
+      ['out', 'Output karton/hari', null, 'ro'], ['cap', 'Kapasitas t/bulan', null, 'num'], ['rem', 'Catatan'], ['enc', '', null, 'hid']],
+    rows: function () { var o = []; master().forEach(function (g) { g[1].forEach(function (x) { var mt = x[3] || {}; o.push({ type: g[0], name: x[0], real: MK.names[x[0]] || '', kg: mt.capDayT ? Math.round(mt.capDayT * 1000 * 100) / 100 : '', nw: mt.nwCtKg || '', pct: mt.outPct || '', cap: x[1], rem: x[2] || '', enc: mt.enc ? JSON.stringify(mt.enc) : '' }); }); }); return o; },
+    ro: function (f, r) { var o = machOutCt(machMetaOf(r)); return o ? '<b>' + n(Math.round(o)) + '</b>' : '<span class="sub">–</span>'; },
+    calc: function (f, r) { return f === 'cap' && cellNum(r.kg) > 0 ? 'Dihitung: kapasitas kg/hari × variasi output × 26 hari kerja' : ''; },
     save: function (rows) {
-      var mg = {}, order = [], pend = [];
-      rows.forEach(function (r) { var ty = String(r.type || '').trim(), nm = String(r.name || '').trim(); if (!nm) { pend.push(r); return; } if (!ty) ty = '(tanpa jenis)'; if (!mg[ty]) { mg[ty] = []; order.push(ty); } var cap = cellNum(r.cap) || 0; if (state.capEdits[nm] && state.capEdits[nm].v !== cap) delete state.capEdits[nm]; mg[ty].push([nm, cap, String(r.rem || '')]); });
+      var mg = {}, order = [], pend = [], used = {};
+      master().forEach(function (g) { g[1].forEach(function (x) { used[x[0]] = 1; }); });
+      rows.forEach(function (r) {
+        var ty = String(r.type || '').trim(), nm = String(r.name || '').trim(), real = r.real === undefined ? undefined : String(r.real).trim();
+        if (!nm && real) { nm = mkAlias(used); used[nm] = 1; } // a real name typed without a code gets a random code
+        if (!nm) { pend.push(r); return; } if (!ty) ty = '(tanpa jenis)'; if (!mg[ty]) { mg[ty] = []; order.push(ty); }
+        var mt = machMetaOf(r), enc = null; try { enc = r.enc ? JSON.parse(r.enc) : null; } catch (e) { enc = null; }
+        if (real !== undefined) { if (real) { if (MK.names[nm] !== real || !enc) { MK.names[nm] = real; MK.dirty[nm] = 1; } } else { delete MK.names[nm]; enc = null; } }
+        if (enc) mt.enc = enc;
+        var cap = mt.capDayT > 0 ? Math.round(mt.capDayT * mt.outPct / 100 * 26 * 10) / 10 : cellNum(r.cap) || 0;
+        var ce = state.capEdits[nm]; if (ce && typeof ce.v === 'number' && ce.v !== cap) delete state.capEdits[nm]; // only the old t/bulan override; per-day edits from Rencana produksi stay
+        mg[ty].push([nm, cap, String(r.rem || ''), mt]);
+      });
       state.machMaster = order.length ? order.map(function (g) { return [g, mg[g]]; }) : null; state.machMasterSrc = order.length ? 'tabel Input' : null;
+      mkFlush();
       return pend;
     } },
   sg: { el: 'sgTable', cols: [['g', 'Kelompok SKU (kata di nama SKU atau famili)'], ['t', 'Area mesin', 'mlTypes'], ['n', 'SKU cocok', null, 'ro']],
@@ -5009,12 +5093,16 @@ function edRender(id, info) {
   var T = ED_TABLES[id], el = $(T.el); if (!el) return;
   var ae = document.activeElement, keep = ae && el.contains(ae) && ae.getAttribute('data-er') !== null ? [ae.getAttribute('data-er'), ae.getAttribute('data-ef')] : null;
   var rows = T.rows(), nDone = rows.length; rows = rows.concat(edPend[id]); rows.push({});
-  var h = '<thead><tr>' + T.cols.map(function (c) { return '<th' + (c[3] === 'num' || c[3] === 'ro' ? ' class="num"' : '') + '>' + esc(c[1]) + '</th>'; }).join('') + '<th></th></tr></thead><tbody>';
+  var h = '<thead><tr>' + T.cols.map(function (c) { return c[3] === 'hid' ? '<th hidden></th>' : '<th' + (c[3] === 'num' || c[3] === 'ro' ? ' class="num"' : c[3] === 'real' ? ' class="ench"' : '') + (c[4] ? ' title="' + esc(c[4]) + '"' : '') + '>' + esc(c[1]) + '</th>'; }).join('') + '<th></th></tr></thead><tbody>';
   rows.forEach(function (r, i) {
     h += '<tr>' + T.cols.map(function (c) {
+      if (c[3] === 'ro' && T.ro) return '<td class="num ro">' + (i < nDone ? T.ro(c[0], r) : '') + '</td>';
       if (c[3] === 'ro') return '<td class="num sub"' + (info && info[i] ? ' title="' + esc(info[i].tip || '') + '"' : '') + '>' + (info && info[i] ? info[i].v : '') + '</td>';
+      if (c[3] === 'hid') return '<td hidden><input type="hidden" data-et="' + id + '" data-er="' + i + '" data-ef="' + c[0] + '" value="' + esc(r[c[0]] || '') + '"></td>';
+      if (c[3] === 'real' && !MK.key) return '<td class="real" title="Nama asli terenkripsi. Buka kunci di atas tabel untuk melihat atau mengubah.">' + (r.enc ? '🔒 terkunci' : '–') + '</td>';
       var v = r[c[0]]; if (c[3] === 'num' && typeof v === 'number') v = v ? fmt.format(v) : '';
-      return '<td><input type="text" data-et="' + id + '" data-er="' + i + '" data-ef="' + c[0] + '"' + (c[2] ? ' list="' + c[2] + '"' : '') + (c[3] === 'num' ? ' inputmode="decimal" class="num"' : '') + ' value="' + esc(v === undefined || v === null ? '' : String(v)) + '" aria-label="' + esc(c[1]) + ' baris ' + (i + 1) + '"></td>';
+      var calc = T.calc && T.calc(c[0], r);
+      return '<td' + (calc ? ' class="calc" title="' + esc(calc) + '"' : '') + '><input type="text" data-et="' + id + '" data-er="' + i + '" data-ef="' + c[0] + '"' + (c[2] ? ' list="' + c[2] + '"' : '') + (c[3] === 'num' ? ' inputmode="decimal" class="num"' : '') + ' value="' + esc(v === undefined || v === null ? '' : String(v)) + '" aria-label="' + esc(c[1]) + ' baris ' + (i + 1) + '"></td>';
     }).join('') + '<td>' + (i < rows.length - 1 ? '<button type="button" class="edx" data-edel="' + id + '" data-er="' + i + '" aria-label="Hapus baris ' + (i + 1) + '">✕</button>' : '') + '</td></tr>';
   });
   el.innerHTML = h + '</tbody>';
@@ -5029,7 +5117,7 @@ function edCommit(id, rows) { edPend[id] = ED_TABLES[id].save(rows) || []; saveP
 function renderPPInputs(pm) {
   if (!$('mlTable')) return;
   $('mlTypes').innerHTML = machTypes().map(function (t) { return '<option value="' + esc(t) + '">'; }).join('');
-  edRender('ml');
+  edRender('ml'); renderMk();
   var skus = pm ? pm.rows.map(function (r) { return r.s; }) : (CH.model ? CH.model.skus : []), info = (state.skuGroups || []).map(function (g) { var hit = skus.filter(function (s) { var b = skuGroupOf(s); return b && b.g === g.g; }); return { v: hit.length, tip: hit.slice(0, 8).map(function (s) { return s.name || s.key; }).join('\n') }; });
   edRender('sg', info);
   var miss = skus.filter(function (s) { return !skuGroupOf(s); });
@@ -5044,7 +5132,7 @@ function renderPPInputs(pm) {
   el.addEventListener('paste', function (e) {
     var inp = e.target.closest('input[data-ef]'), txt = (e.clipboardData || window.clipboardData).getData('text'); if (!inp || !/[\t\n]/.test(txt)) return;
     e.preventDefault();
-    var T = ED_TABLES[id], fields = T.cols.filter(function (c) { return c[3] !== 'ro'; }).map(function (c) { return c[0]; }), r0 = +inp.getAttribute('data-er'), c0 = fields.indexOf(inp.getAttribute('data-ef'));
+    var T = ED_TABLES[id], fields = T.cols.filter(function (c) { return c[3] !== 'ro' && c[3] !== 'hid' && !(c[3] === 'real' && !MK.key); }).map(function (c) { return c[0]; }), r0 = +inp.getAttribute('data-er'), c0 = fields.indexOf(inp.getAttribute('data-ef'));
     var all = []; el.querySelectorAll('tbody tr').forEach(function (tr) { var o = {}; tr.querySelectorAll('input[data-ef]').forEach(function (i) { o[i.getAttribute('data-ef')] = i.value; }); all.push(o); });
     txt.replace(/\r/g, '').replace(/\n$/, '').split('\n').forEach(function (line, i) { var row = all[r0 + i] = all[r0 + i] || {}; line.split('\t').forEach(function (v, j) { if (fields[c0 + j]) row[fields[c0 + j]] = v.trim(); }); });
     edCommit(id, all.filter(function (o) { return fields.some(function (f) { return String(o[f] || '').trim(); }); }));
@@ -5055,6 +5143,131 @@ $('sgAdd').addEventListener('click', function () { edPend.sg.push({}); renderPPI
 $('sgSeed').addEventListener('click', function () {
   var have = (state.skuGroups || []).map(function (g) { return grpKey(g.g); }), add = GROUP_SEED.filter(function (x) { return have.indexOf(grpKey(x[0])) < 0; });
   state.skuGroups = (state.skuGroups || []).concat(add.map(function (x) { return { g: x[0], t: x[1] }; })); savePP(); renderAll();
+});
+/* ---------- Master mesin: output capability, code names, encrypted real names ---------- */
+// Shape read by Rencana produksi: state.machMaster = [[area, [[code, capTonPerMonth, remark, meta], ...]], ...]
+// meta = { capDayT: ton/day, outPct: 0-100, nwCtKg: reference kg/carton (display only), enc: { iv, ct } }.
+// The code (e.g. DTY-2) is the machine's id everywhere (schedules, calendar, files). The real name is encrypted with
+// AES-GCM 256; the key comes from a passphrase (PBKDF2-SHA256, 250k rounds) that is never stored, so localStorage,
+// the history file and the optional server copy only ever hold ciphertext. Decrypted names live in memory (MK.names).
+function machMetaOf(r) { var kg = cellNum(r.kg), pct = cellNum(r.pct), nw = cellNum(r.nw); return { capDayT: kg > 0 ? kg / 1000 : null, outPct: pct > 0 ? Math.min(pct, 200) : 100, nwCtKg: nw > 0 ? nw : null }; }
+// Output capability per machine (cartons/day) = capacity per day / net weight per carton × output variation %
+function machOutCt(mt, nwKg) { var w = nwKg || (mt && mt.nwCtKg); return mt && mt.capDayT > 0 && w > 0 ? mt.capDayT * 1000 / w * (mt.outPct || 100) / 100 : null; }
+function machLabel(code) { return MK.names[code] ? MK.names[code] + ' (' + code + ')' : code; }
+window.machLabel = machLabel; window.machOutCt = machOutCt;
+var MK = { key: null, names: {}, dirty: {}, busy: false, msg: '' };
+var MK_CHK = 'ppic-mesin-ok', MK_ITER = 250000;
+function mkB64(buf) { var b = new Uint8Array(buf), t = ''; for (var i = 0; i < b.length; i++) t += String.fromCharCode(b[i]); return btoa(t); }
+function mkUnb64(s) { var t = atob(s), b = new Uint8Array(t.length); for (var i = 0; i < t.length; i++) b[i] = t.charCodeAt(i); return b; }
+function mkDerive(pass, salt, iter) {
+  var enc = new TextEncoder();
+  return crypto.subtle.importKey('raw', enc.encode(pass), 'PBKDF2', false, ['deriveKey']).then(function (base) {
+    return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: iter, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  });
+}
+function mkEnc(key, text) { var iv = crypto.getRandomValues(new Uint8Array(12)); return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, new TextEncoder().encode(text)).then(function (ct) { return { iv: mkB64(iv), ct: mkB64(ct) }; }); }
+function mkDec(key, e) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: mkUnb64(e.iv) }, key, mkUnb64(e.ct)).then(function (pt) { return new TextDecoder().decode(pt); }); }
+// random code like DTY-2: three letters + digit, not derived from the name (a keyboard shift such as SRT01 -> DTY-2
+// is a substitution cipher and is reversed from one known pair, so it is only a label, never the protection)
+function mkAlias(used) { var L = 'ABCDEFGHJKLMNPQRSTUVWXYZ', a; do { var r = crypto.getRandomValues(new Uint8Array(4)); a = L[r[0] % 24] + L[r[1] % 24] + L[r[2] % 24] + '-' + (1 + r[3] % 9); } while (used && used[a]); return a; }
+function mkEach(fn) { master().forEach(function (g) { g[1].forEach(function (x) { fn(x, x[3] = x[3] || {}); }); }); }
+// encrypt names typed since the last save, then save (names never go to storage in plain text)
+function mkFlush() {
+  if (!MK.key) return; var key = MK.key, jobs = [];
+  if (MK.demo) { Object.keys(MK.demo).forEach(function (a) { MK.names[a] = MK.demo[a]; MK.dirty[a] = 1; }); MK.demo = null; }
+  mkEach(function (x, mt) { if (!MK.dirty[x[0]] || !MK.names[x[0]]) return; jobs.push(mkEnc(key, MK.names[x[0]]).then(function (e) { mt.enc = e; })); });
+  MK.dirty = {}; if (jobs.length) Promise.all(jobs).then(function () { savePP(); renderMk(); });
+}
+function mkSetPass(pass) {
+  var salt = crypto.getRandomValues(new Uint8Array(16));
+  return mkDerive(pass, salt, MK_ITER).then(function (key) {
+    return mkEnc(key, MK_CHK).then(function (chk) {
+      state.mkey = { alg: 'AES-GCM-256', kdf: 'PBKDF2-SHA256', iter: MK_ITER, salt: mkB64(salt), chk: chk }; MK.key = key;
+      var jobs = []; mkEach(function (x, mt) { if (MK.names[x[0]]) jobs.push(mkEnc(key, MK.names[x[0]]).then(function (e) { mt.enc = e; })); else delete mt.enc; });
+      return Promise.all(jobs);
+    });
+  }).then(function () { mkFlush(); savePP(); });
+}
+function mkUnlock(pass) {
+  var k = state.mkey; if (!k) return Promise.reject(new Error('Belum ada kunci.'));
+  return mkDerive(pass, mkUnb64(k.salt), k.iter || MK_ITER).then(function (key) {
+    return mkDec(key, k.chk).then(function (t) { if (t !== MK_CHK) throw new Error('x'); return key; }, function () { throw new Error('Frasa sandi salah.'); });
+  }).then(function (key) {
+    MK.key = key; var jobs = [], bad = 0;
+    mkEach(function (x, mt) { if (mt.enc) jobs.push(mkDec(key, mt.enc).then(function (t) { MK.names[x[0]] = t; }, function () { bad++; })); });
+    return Promise.all(jobs).then(function () { mkFlush(); return bad; });
+  });
+}
+function mkLock() { MK.key = null; MK.names = {}; MK.dirty = {}; }
+// a machine that still carries its real name as its code: move the name into the encrypted field and give it a code,
+// renaming every place that refers to the machine (capacity edits, manual bars, maintenance days, calendar, SKU -> machine)
+function mkRename(o, nw) {
+  if (state.capEdits[o]) { state.capEdits[nw] = state.capEdits[o]; delete state.capEdits[o]; }
+  Object.keys(state.ppSched || {}).forEach(function (P) { var sc = state.ppSched[P];
+    Object.keys(sc.place || {}).forEach(function (k) { (sc.place[k] || []).forEach(function (p) { if (p.m === o) p.m = nw; }); });
+    if (sc.maint && sc.maint[o]) { sc.maint[nw] = sc.maint[o]; delete sc.maint[o]; } });
+  (state.ppCal || []).forEach(function (c) { if (c.mesin === o) c.mesin = nw; });
+  Object.keys(state.skuMach || {}).forEach(function (k) { var t = state.skuMach[k]; if (t && t.mach === o) t.mach = nw; });
+  Object.keys(state.machFile || {}).forEach(function (k) { if (state.machFile[k] === o) state.machFile[k] = nw; });
+}
+function mkHideAll() {
+  var used = {}, n0 = 0; mkEach(function (x) { used[x[0]] = 1; });
+  mkEach(function (x, mt) { if (mt.enc || MK.names[x[0]]) return; var a = mkAlias(used); used[a] = 1; MK.names[a] = x[0]; MK.dirty[a] = 1; mkRename(x[0], a); x[0] = a; n0++; });
+  mkFlush(); return n0;
+}
+function mkPlain() { var c = 0; mkEach(function (x, mt) { if (!mt.enc) c++; }); return c; }
+function renderMk() {
+  var el = $('mkBar'); if (!el) return;
+  var nM = 0, nE = 0; mkEach(function (x, mt) { nM++; if (mt.enc) nE++; }); var plain = nM - nE;
+  var srv = '<button type="button" data-mk="push"' + (MK.srv === false ? ' disabled' : '') + '>Simpan ke server</button><button type="button" data-mk="pull"' + (MK.srv === false ? ' disabled' : '') + '>Ambil dari server</button>';
+  var h;
+  if (!state.mkey) h = '<b>🔓 Nama asli belum dilindungi</b><input type="password" id="mkP1" placeholder="Frasa sandi baru (min. 10 huruf)" autocomplete="new-password"><input type="password" id="mkP2" placeholder="Ulangi frasa sandi" autocomplete="new-password"><button type="button" class="pri" data-mk="set">Atur kunci</button><span class="sp"></span>' + srv +
+    '<span class="sub">Kunci dibuat dari frasa sandi ini dan tidak disimpan di mana pun: simpan di pengelola sandi. Tanpa frasa sandi, nama asli tidak bisa dibuka lagi (kode mesin dan kapasitas tetap ada).</span>';
+  else if (!MK.key) h = '<b>🔒 Nama asli terkunci</b><input type="password" id="mkP1" placeholder="Frasa sandi" autocomplete="current-password"><button type="button" class="pri" data-mk="open">Buka</button><span class="sp"></span>' + srv + '<span class="sub">' + nE + ' dari ' + nM + ' mesin punya nama asli terenkripsi. Jadwal dan file hanya memakai kode mesin.</span>';
+  else h = '<b>🔓 Nama asli terbuka</b><button type="button" data-mk="lock">Kunci lagi</button>' + (plain ? '<button type="button" class="pri" data-mk="hide" title="Pindahkan nama yang sekarang dipakai sebagai kode ke kolom terenkripsi dan beri kode acak">Samarkan ' + plain + ' nama mesin</button>' : '') + '<span class="sp"></span>' + srv +
+    '<span class="sub">Hanya di tab ini, sampai dikunci atau halaman ditutup. ' + nE + ' dari ' + nM + ' mesin terenkripsi' + (plain ? '; ' + plain + ' mesin masih memakai nama sebagai kode (mungkin nama asli dari file PP).' : '.') + '</span>';
+  el.innerHTML = h + (MK.msg ? '<span class="sub" role="status">' + MK.msg + '</span>' : '');
+  el.classList.toggle('open', !!MK.key);
+  var tot = 0, k = 0; mkEach(function (x, mt) { var o = machOutCt(mt); if (o) { tot += o; k++; } });
+  if ($('mlSum')) $('mlSum').textContent = nM ? nM + ' mesin' + (k ? ' · output ' + n(Math.round(tot)) + ' karton/hari pada berat acuan' : '') : '';
+}
+function mkMsg(t) { MK.msg = t; renderMk(); }
+// optional copy outside the browser: Cloudflare KV through /api/mesin. Only codes, numbers and ciphertext are sent.
+function mkServer(dir) {
+  if (dir === 'push') {
+    if (!state.mkey) return mkMsg('Atur kunci dulu, supaya yang dikirim hanya nama terenkripsi.');
+    if (mkPlain()) return mkMsg('Masih ada ' + mkPlain() + ' mesin tanpa nama terenkripsi (kodenya bisa saja nama asli). Buka kunci lalu tekan Samarkan dulu.');
+    var doc = { v: 1, at: new Date().toISOString(), mkey: state.mkey, master: state.machMaster || [] };
+    return fetch('/api/mesin', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(doc) }).then(function (r) { return mkJson(r).then(function () { mkMsg('Tersimpan di server (' + doc.master.reduce(function (a, g) { return a + g[1].length; }, 0) + ' mesin, nama terenkripsi).'); }); }).catch(function (e) { mkSrvErr(e); });
+  }
+  return fetch('/api/mesin').then(mkJson).then(function (j) {
+    if (!j.doc) return mkMsg('Server belum punya master mesin.');
+    state.machMaster = j.doc.master; state.machMasterSrc = 'server ' + String(j.doc.at || '').slice(0, 10); state.mkey = j.doc.mkey; mkLock(); savePP(); renderAll();
+    mkMsg('Master mesin diambil dari server (' + String(j.doc.at || '').slice(0, 10) + '). Buka kunci untuk melihat nama asli.');
+  }).catch(function (e) { mkSrvErr(e); });
+}
+function mkJson(r) { return r.text().then(function (t) { var j; try { j = JSON.parse(t); } catch (e) { throw new Error('belum tersedia di alamat ini (503).'); } if (!r.ok) throw new Error((j && j.error) || r.status); return j; }); }
+function mkSrvErr(e) { var t = String(e && e.message || e); if (/503|belum/i.test(t)) MK.srv = false; mkMsg('Server: ' + esc(t) + (MK.srv === false ? ' Data tetap di browser ini dan di file histori.' : '')); }
+$('mkBar').addEventListener('click', function (e) {
+  var b = e.target.closest('[data-mk]'); if (!b || MK.busy) return; var a = b.getAttribute('data-mk'), p1 = $('mkP1') ? $('mkP1').value : '';
+  var run = function (pr, ok) { MK.busy = true; mkMsg('Memproses…'); pr.then(function (x) { MK.busy = false; MK.msg = typeof ok === 'function' ? ok(x) : ok; renderAll(); }, function (er) { MK.busy = false; mkMsg(esc(er.message || er)); }); };
+  if (a === 'set') { if (p1.length < 10) return mkMsg('Frasa sandi minimal 10 huruf.'); if (p1 !== $('mkP2').value) return mkMsg('Kedua frasa sandi tidak sama.'); run(mkSetPass(p1), 'Kunci diatur. Isi kolom Nama asli; kolom itu disimpan terenkripsi.'); }
+  else if (a === 'open') run(mkUnlock(p1), function (bad) { return bad ? bad + ' nama tidak bisa dibuka (kunci lain).' : ''; });
+  else if (a === 'lock') { mkLock(); MK.msg = ''; renderAll(); }
+  else if (a === 'hide') { var k = mkHideAll(); savePP(); MK.msg = k + ' mesin diberi kode acak; nama aslinya dienkripsi. Jadwal, kalender dan kapasitas manual ikut pindah ke kode baru.'; renderAll(); }
+  else mkServer(a);
+});
+$('mkBar').addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.matches('input')) { var b = $('mkBar').querySelector('button.pri'); if (b) b.click(); } });
+// dummy machine master: invented codes, names and numbers (no real plant data)
+var MK_DEMO = [['SRT', 'Mesin Rewinder A1', 11000, 4.8, 85], ['SRT', 'Mesin Rewinder A2', 10000, 4.8, 80], ['Softpack Besar', 'Mesin Softpack B1', 8000, 3.6, 90], ['Softpack Kecil', 'Mesin Softpack B2', 6500, 2.4, 88],
+  ['Facial Box', 'Mesin Box C1', 6000, 3.2, 82], ['Kitchen Towel', 'Mesin Towel D1', 7000, 4.2, 85], ['Travel Pack', 'Mesin Travel E1', 3000, 1.8, 75], ['Napkin Luncheon', 'Mesin Napkin F1', 4000, 2.6, 80]];
+$('mlDemo').addEventListener('click', function () {
+  var used = {};
+  var mg = {}, order = []; MK.names = MK.key ? MK.names : {};
+  MK_DEMO.forEach(function (d) { var a = mkAlias(used); used[a] = 1; if (!mg[d[0]]) { mg[d[0]] = []; order.push(d[0]); } var mt = { capDayT: d[2] / 1000, outPct: d[4], nwCtKg: d[3] }; mg[d[0]].push([a, Math.round(mt.capDayT * d[4] / 100 * 26 * 10) / 10, 'contoh (dummy)', mt]); if (MK.key) { MK.names[a] = d[1]; MK.dirty[a] = 1; } else (MK.demo = MK.demo || {})[a] = d[1]; });
+  state.machMaster = order.map(function (g) { return [g, mg[g]]; }); state.machMasterSrc = 'contoh (dummy)';
+  MK.msg = MK.key ? 'Data contoh diisi; nama dienkripsi dengan kunci yang terbuka.' : 'Data contoh diisi dengan kode acak. Atur atau buka kunci, lalu nama contoh dienkripsi otomatis.';
+  savePP(); mkFlush(); renderAll();
 });
 /* ---------- buffer sheet ---------- */
 $('bfCtl').addEventListener('click', function (e) {
@@ -5799,14 +6012,20 @@ loadRuleState(); loadBuf(); loadPP(); loadMat(); loadChronos();
 /* ===================== Design 10 shell: header, step flow, Alerts panel, ribbon, Ringkasan, settings, help ===================== */
 // The pages' own content (cards, tables, controls) is unchanged; this layer arranges it the Design 10 way and reads
 // alerts from the cards each page already computes (red = bad, amber = warn).
-var D10 = { acc: {}, cur: 'Brief', lang: 'id', big: false, side: 'alerts', open: window.innerWidth > 1100, right: false, rib: {}, talkUntil: 0, lastA: '' };
+var D10 = { acc: {}, cur: 'Input', lang: 'id', big: false, side: 'alerts', open: window.innerWidth > 1100, right: false, rib: {}, talkUntil: 0, lastA: '' };
 try { var d10s = JSON.parse(localStorage.getItem('ppic_ui') || '{}') || {}; if (d10s.lang) D10.lang = d10s.lang; D10.big = !!d10s.big; D10.right = d10s.v >= 2 && !!d10s.right; D10.apw = d10s.w || 0; D10.dimOn = d10s.dim !== false; D10.talkOn = d10s.talk !== false; D10.head = d10s.head || 'auto'; D10.headPrev = d10s.headPrev || 'auto'; if (d10s.theme) document.documentElement.setAttribute('data-theme', d10s.theme); } catch (e) {}
 function d10Save() { try { localStorage.setItem('ppic_ui', JSON.stringify({ v: 2, w: D10.apw || 0, lang: D10.lang, big: D10.big, right: D10.right, dim: D10.dimOn !== false, talk: D10.talkOn !== false, head: D10.head || 'auto', headPrev: D10.headPrev || 'auto', theme: document.documentElement.getAttribute('data-theme') })); } catch (e) {} }
-var D10_TABS = ['Brief', 'Input', 'Master', 'Cek', 'Forecast', 'Buffer', 'Plan'];
+// Input data is the first screen (a group of data inputs, not a numbered step), Dashboard sits next to it;
+// the numbered steps 1-5 follow. D10_NEXT says where "Terima dan lanjut" goes from the two unnumbered pages.
+var D10_TABS = ['Input', 'Brief', 'Master', 'Cek', 'Forecast', 'Buffer', 'Plan'];
+var D10_FREE = { Input: '⇩', Brief: '▦' }, D10_NEXT = { Input: 'Master', Brief: null };
 var D10_SN = {
-  id: ['Ringkasan', 'Input data', 'Material master', 'Cek data SKU', 'Forecast', 'Saran buffer', 'Rencana produksi'],
-  en: ['Summary', 'Input data', 'Material master', 'SKU check', 'Forecast', 'Buffer', 'Production plan'],
-  zh: ['概览', '数据输入', '物料主数据', 'SKU 检查', '预测', '安全库存', '生产计划'] };
+  id: ['Input data', 'Dashboard', 'Material master', 'Cek data SKU', 'Forecast', 'Saran buffer', 'Rencana produksi'],
+  en: ['Input data', 'Dashboard', 'Material master', 'SKU check', 'Forecast', 'Buffer', 'Production plan'],
+  zh: ['数据输入', '仪表板', '物料主数据', 'SKU 检查', '预测', '安全库存', '生产计划'] };
+var D10_NSTEP = D10_TABS.filter(function (t) { return !D10_FREE[t]; }).length;
+function d10No(t) { return D10_FREE[t] ? 0 : D10_TABS.filter(function (x) { return !D10_FREE[x]; }).indexOf(t) + 1; }
+function d10Nx(t) { return t in D10_NEXT ? D10_NEXT[t] : D10_TABS[D10_TABS.indexOf(t) + 1]; }
 var D10_L = {
   head: ['Bagian atas (langkah + pencarian)', 'Top bar (steps + search)', '顶部栏（步骤 + 搜索）'], hdAuto: ['Otomatis', 'Auto', '自动'], hdFull: ['Penuh', 'Full', '完整'], hdCompact: ['Ringkas', 'Compact', '紧凑'], hdHide: ['Sembunyi', 'Hidden', '隐藏'],
   hdNote: ['Otomatis = ringkas bila layar pendek (laptop kecil). Pilihan disimpan di browser ini.', 'Auto = compact on short screens (small laptops). Saved in this browser.', '自动 = 屏幕较矮时（小笔记本）使用紧凑模式。保存在此浏览器。'],
@@ -5835,7 +6054,7 @@ var D10_L = {
   emptyK: ['Kosong', 'Empty', '空'], emptyP: ['Halaman ini kosong karena belum ada file closing dan Forecast HQ. Formatnya tetap ditampilkan supaya terlihat isinya nanti.', 'This page is empty because the closing and HQ forecast files are not in yet. The layout is shown so you can see what will appear.', '尚未导入结算和总部预测文件，此页为空。保留版式以便预览内容。'],
   briefEmpty: ['Belum ada catatan: data bulan ini belum dimasukkan.', 'No notes yet: this month’s data is not in.', '暂无要点：本月数据尚未导入。'],
   noData: ['belum ada data', 'no data yet', '暂无数据'], startHere: ['mulai di sini', 'start here', '从这里开始'], notes: ['catatan', 'notes', '条要点'], file: ['file', 'files', '个文件'],
-  startMonth: ['Mulai dari sini setiap bulan', 'Start here every month', '每月从这里开始'], next: ['Lanjut', 'Next', '下一步'], step: ['Langkah', 'Step', '步骤'], of: ['dari', 'of', '/'],
+  startMonth: ['Mulai dari sini setiap bulan', 'Start here every month', '每月从这里开始'], dashSub: ['Gambaran bulan ini', 'This month at a glance', '本月概况'], next: ['Lanjut', 'Next', '下一步'], step: ['Langkah', 'Step', '步骤'], of: ['dari', 'of', '/'],
   cmdPh: ['Tanya, cari nomat, atau buka halaman…', 'Ask, find a material no., or open a page…', '提问、搜索物料号或打开页面…'],
   demoChip: ['Mode demo', 'Demo mode', '演示模式'], fileChip: ['Data dari file', 'Data from files', '文件数据'], noChip: ['Belum ada data', 'No data', '无数据'],
   red: ['Perlu tindakan', 'Action needed', '需处理'], amb: ['Perlu perhatian', 'Needs attention', '需关注'], grn: ['Aman', 'OK', '正常'], blu: ['Info', 'Info', '信息'],
@@ -5942,7 +6161,7 @@ function d10Go(tab) { if (d10Locked(tab)) { toast(tl('lockMsg')); return; } if (
 // ---------- render ----------
 function d10Render() {
   if (!D10ON) return;
-  var A = d10Alerts(), cur = D10.cur, i = D10_TABS.indexOf(cur), nx = D10_TABS[i + 1], has = d10HasData(), m = CH.model;
+  var A = d10Alerts(), cur = D10.cur, i = d10No(cur), nx = d10Nx(cur), has = d10HasData(), m = CH.model;
   D10.A = A;
   var sig = A.map(function (a) { return a.lvl + a.title + a.amount; }).join('|'); if (sig !== D10.lastA && A.some(function (a) { return a.lvl === 'red'; })) { D10.lastA = sig; setTimeout(d10Talk, 50); } else D10.lastA = sig;
   document.documentElement.lang = D10.lang === 'zh' ? 'zh-CN' : D10.lang;
@@ -5957,13 +6176,13 @@ function d10Render() {
   // step flow
   $('d10flow').innerHTML = D10_TABS.map(function (t, k) {
     var st = d10Step(t, A);
-    return '<button type="button" class="v3-step s-' + st[0] + (t === cur ? ' on' : '') + '" data-d10go="' + t + '" title="' + esc(d10sn(t)) + '"' + (t === cur ? ' aria-current="page"' : '') + '><span class="v3-sn">' + (st[0] === 'lock' ? '🔒' : k || '✦') + '</span><span class="v3-st"><b>' + esc(d10sn(t)) + '</b><small>' + esc(st[1]) + '</small></span></button>';
+    return '<button type="button" class="v3-step s-' + st[0] + (t === cur ? ' on' : '') + '" data-d10go="' + t + '" title="' + esc(d10sn(t)) + '"' + (t === cur ? ' aria-current="page"' : '') + '><span class="v3-sn">' + (st[0] === 'lock' ? '🔒' : D10_FREE[t] || d10No(t)) + '</span><span class="v3-st"><b>' + esc(d10sn(t)) + '</b><small>' + esc(st[1]) + '</small></span></button>';
   }).join('');
   // page head + next
   var gate = !!D10_PREV[nx], nw = gate ? d10Warn(cur) : 0, nxB = !nx ? '' : gate ?
     '<button type="button" class="v-btn pri" data-d10acc="1"' + (cur === 'Input' && !d10HasCF() ? ' disabled title="' + esc(tl('lockRib')) + '"' : '') + '>' + (nw ? '<span class="warnlight" title="' + nw + '">' + nw + '</span>' : '') + tl('accept') + ' ' + esc(d10sn(nx)) + ' →</button>' :
     '<button type="button" class="v-btn pri" data-d10go="' + nx + '">' + tl('next') + ': ' + esc(d10sn(nx)) + ' →</button>';
-  $('d10mh').innerHTML = '<h2>' + esc(d10sn(cur)) + '</h2><span class="m">' + (cur === 'Brief' ? tl('startMonth') : D10.lang === 'zh' ? '第 ' + i + ' 步，共 ' + (D10_TABS.length - 1) + ' 步' : tl('step') + ' ' + i + ' ' + tl('of') + ' ' + (D10_TABS.length - 1)) + '</span><span class="sp"></span>' + nxB;
+  $('d10mh').innerHTML = '<h2>' + esc(d10sn(cur)) + '</h2><span class="m">' + (cur === 'Input' ? tl('startMonth') : cur === 'Brief' ? tl('dashSub') : D10.lang === 'zh' ? '第 ' + i + ' 步，共 ' + D10_NSTEP + ' 步' : tl('step') + ' ' + i + ' ' + tl('of') + ' ' + D10_NSTEP) + '</span><span class="sp"></span>' + nxB;
   $('d10next').innerHTML = nxB;
   // ribbon
   d10Ribbon(A);
@@ -6078,22 +6297,93 @@ function cardSpark(c) {
 function d10Sparks() {
   ['fcCards', 'bfCards', 'ppCards'].forEach(function (id) { var box = $(id); if (!box) return; box.querySelectorAll('.card').forEach(function (c) { if (c.querySelector('.cspk')) return; var g = ''; try { g = cardSpark(c); } catch (e) { g = ''; } if (!g) return; var sp = document.createElement('span'); sp.className = 'cspk'; sp.innerHTML = g; var nn = c.querySelector('.n'); if (nn) c.insertBefore(sp, nn); else c.appendChild(sp); }); });
 }
-// ---------- Ringkasan ----------
+// ---------- Dashboard (was Ringkasan) ----------
+// One screen to watch the month: key numbers (the cards each page computes), order in vs forecast over time,
+// the groups that move the most, stock vs buffer, SKU status, machine capacity vs plan, and what needs action.
+function dbAgg(list, f) { var t = 0, k = 0; list.forEach(function (s) { var v = f(s); if (typeof v === 'number' && isFinite(v)) { t += v; k++; } }); return k ? t : null; }
+function dbTrend(m) {
+  var cms = m.closingMonths.slice(-12), fut = m.future.slice(0, 3), X = cms.concat(fut), all = m.all, inc = m.skus;
+  var S = [
+    { k: 'oi', name: 'Order in', cls: 's1', v: X.map(function (mo) { return cms.indexOf(mo) >= 0 ? dbAgg(all, function (s) { return s.oi[mo]; }) : null; }) },
+    { k: 'hq', name: 'Forecast HQ', cls: 's2', dash: true, v: X.map(function (mo) { return cms.indexOf(mo) >= 0 ? dbAgg(all, function (s) { return s.hq[mo]; }) : dbAgg(inc, function (s) { return s.fhq[mo]; }); }) },
+    { k: 'ai', name: 'Forecast AI', cls: 's3', v: X.map(function (mo) { return fut.indexOf(mo) >= 0 ? dbAgg(inc, function (s) { return s.ml && s.ml[mo]; }) : null; }) }];
+  S = S.filter(function (x) { return x.v.some(function (v) { return v !== null; }); });
+  var max = 0; S.forEach(function (x) { x.v.forEach(function (v) { if (v > max) max = v; }); });
+  if (!max || X.length < 2) return '<p class="sub">Grafik muncul setelah ada minimal satu closing dan Forecast HQ.</p>';
+  var step = Math.pow(10, Math.floor(Math.log10(max))), top = Math.ceil(max / step) * step; if (top / step > 6) { step *= 2; top = Math.ceil(max / step) * step; }
+  var W = 640, H = 230, L = 58, R = 12, T = 10, B = 28, iw = W - L - R, ih = H - T - B, xs = function (i) { return L + (X.length === 1 ? iw / 2 : i * iw / (X.length - 1)); }, ys = function (v) { return T + ih - v / top * ih; };
+  var g = '';
+  for (var t = 0; t <= top + 1e-9; t += step) g += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + ys(t) + '" y2="' + ys(t) + '" class="db-grid"/><text x="' + (L - 6) + '" y="' + (ys(t) + 4) + '" class="db-ax" text-anchor="end">' + n(Math.round(t / 1000)) + 'rb</text>';
+  var cut = cms.length - 1; if (fut.length) g += '<rect x="' + (xs(cut) + (xs(cut + 1) - xs(cut)) / 2) + '" y="' + T + '" width="' + (W - R - xs(cut) - (xs(cut + 1) - xs(cut)) / 2) + '" height="' + ih + '" class="db-fut"/><text x="' + (W - R - 4) + '" y="' + (T + 12) + '" class="db-ax" text-anchor="end">ke depan</text>';
+  X.forEach(function (mo, i) { g += '<text x="' + xs(i) + '" y="' + (H - 8) + '" class="db-ax" text-anchor="middle">' + esc(monthLabel(mo)) + '</text>'; });
+  S.forEach(function (x) {
+    var seg = [], cur = []; x.v.forEach(function (v, i) { if (v === null) { if (cur.length) seg.push(cur); cur = []; } else cur.push([xs(i), ys(v)]); }); if (cur.length) seg.push(cur);
+    seg.forEach(function (p) { g += '<path d="M' + p.map(function (q) { return q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join(' L') + '" class="db-line ' + x.cls + (x.dash ? ' dash' : '') + '"/>'; });
+    x.v.forEach(function (v, i) { if (v !== null) g += '<circle cx="' + xs(i) + '" cy="' + ys(v) + '" r="4" class="db-dot ' + x.cls + '"/>'; });
+  });
+  var hits = X.map(function (mo, i) { var w = iw / Math.max(1, X.length - 1); return '<rect class="db-hit" data-dbi="' + i + '" x="' + (xs(i) - w / 2) + '" y="' + T + '" width="' + w + '" height="' + ih + '"/>'; }).join('');
+  var tip = X.map(function (mo, i) { return '<b>' + esc(monthLabel(mo)) + (fut.indexOf(mo) >= 0 ? ' · forecast' : ' · closing') + '</b>' + S.map(function (x) { return x.v[i] === null ? '' : '<span><i class="db-sw ' + x.cls + (x.dash ? ' dash' : '') + '"></i>' + x.name + ' <b>' + n(Math.round(x.v[i])) + '</b></span>'; }).join(''); });
+  CH.dbTip = tip; CH.dbX = X.map(function (mo, i) { return xs(i) / W; });
+  var leg = '<div class="db-leg">' + S.map(function (x) { return '<span><i class="db-sw ' + x.cls + (x.dash ? ' dash' : '') + '"></i>' + x.name + '</span>'; }).join('') + '<span class="sub">karton, semua SKU</span></div>';
+  var tbl = '<details class="db-tv"><summary>Lihat sebagai tabel</summary><table class="cekt"><thead><tr><th>Bulan</th>' + S.map(function (x) { return '<th class="num">' + x.name + '</th>'; }).join('') + '</tr></thead><tbody>' + X.map(function (mo, i) { return '<tr><td>' + esc(monthLabel(mo)) + '</td>' + S.map(function (x) { return '<td class="num">' + (x.v[i] === null ? '–' : n(Math.round(x.v[i]))) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></details>';
+  return leg + '<div class="db-chart" id="dbChart"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Order in dan forecast per bulan">' + g + '<line id="dbCross" class="db-cross" y1="' + T + '" y2="' + (T + ih) + '" x1="0" x2="0" visibility="hidden"/>' + hits + '</svg><div class="db-tip" id="dbTip" hidden></div></div>' + tbl;
+}
+function dbGroups(m) {
+  var L = m.latest, f1 = m.future[0], G = {};
+  m.skus.forEach(function (s) { var k = s.grp || 'LAINNYA', g = G[k] || (G[k] = { k: k, n: 0, oi: 0, hq: 0, ai: 0, hasAi: false }); g.n++; g.oi += s.oi[L] || 0; g.hq += s.fhq[f1] || 0; if (s.ml && typeof s.ml[f1] === 'number') { g.ai += s.ml[f1]; g.hasAi = true; } });
+  var rows = Object.keys(G).map(function (k) { return G[k]; }).sort(function (a, b) { return Math.max(b.hq, b.ai) - Math.max(a.hq, a.ai); }), top = rows.slice(0, 8), rest = rows.slice(8);
+  if (rest.length) top.push(rest.reduce(function (a, g) { a.n += g.n; a.oi += g.oi; a.hq += g.hq; a.ai += g.ai; a.hasAi = a.hasAi || g.hasAi; return a; }, { k: rest.length + ' grup lainnya', n: 0, oi: 0, hq: 0, ai: 0, hasAi: false, other: true }));
+  var mx = top.reduce(function (a, g) { return Math.max(a, g.oi, g.hq, g.ai); }, 0) || 1, bar = function (v, c) { return '<span class="db-bar ' + c + '" style="width:' + (v / mx * 100).toFixed(1) + '%"></span>'; };
+  var pc = function (a, b) { if (!b) return '–'; var d = (a - b) / b * 100; return '<span class="' + (Math.abs(d) >= 20 ? 'db-big' : '') + '">' + (d > 0 ? '+' : '') + fmt.format(Math.round(d)) + '%</span>'; };
+  return '<div class="db-leg"><span><i class="db-sw s1"></i>Order in ' + esc(monthLabel(L)) + '</span><span><i class="db-sw s2"></i>Forecast HQ ' + esc(monthLabel(f1)) + '</span><span><i class="db-sw s3"></i>Forecast AI ' + esc(monthLabel(f1)) + '</span></div>' +
+    '<table class="db-gt"><thead><tr><th>Grup (brand · kategori)</th><th class="num">SKU</th><th class="num">Order in</th><th class="num">HQ</th><th class="num">AI</th><th class="num" title="Forecast AI dibanding order in bulan terakhir">AI vs OI</th><th class="db-bc">Perbandingan</th></tr></thead><tbody>' +
+    top.map(function (g) { return '<tr' + (g.other ? ' class="sub"' : '') + '><td>' + esc(g.k) + '</td><td class="num">' + g.n + '</td><td class="num">' + n(Math.round(g.oi)) + '</td><td class="num">' + n(Math.round(g.hq)) + '</td><td class="num">' + (g.hasAi ? n(Math.round(g.ai)) : '–') + '</td><td class="num">' + (g.hasAi ? pc(g.ai, g.oi) : '–') + '</td><td class="db-bc" title="Order in ' + n(Math.round(g.oi)) + ' · HQ ' + n(Math.round(g.hq)) + ' · AI ' + (g.hasAi ? n(Math.round(g.ai)) : '–') + '">' + bar(g.oi, 's1') + bar(g.hq, 's2') + (g.hasAi ? bar(g.ai, 's3') : '') + '</td></tr>'; }).join('') + '</tbody></table>';
+}
+function dbTiles(m) {
+  var bm = CH.bm, h = '', tile = function (k, v, sub, cls, go) { return '<button type="button" class="db-tile' + (cls ? ' ' + cls : '') + '"' + (go ? ' data-d10go="' + go + '"' : ' disabled') + '><span class="k">' + k + '</span><span class="v">' + v + '</span><span class="n">' + sub + '</span></button>'; };
+  if (bm && bm.rows) {
+    var r = bm.rows, low = r.filter(function (s) { return s.bf && s.bf.status && s.bf.status[1] === 'low'; }), fs = dbAgg(r, function (s) { return s.bf && s.bf.fs; }), fin = dbAgg(r, function (s) { return s.bf && s.bf.fin; }), pp = dbAgg(r, function (s) { return s.bf && s.bf.prod; }), ppT = dbAgg(r, function (s) { return s.bf && s.nw ? s.bf.prod * s.nw / 1000 : null; });
+    h += tile('Stok di bawah buffer', n(low.length) + ' SKU', low.length ? 'dari ' + n(r.length) + ' SKU aktif · perlu produksi awal bulan' : 'semua SKU aman', low.length ? 'bad' : 'ok', 'Buffer');
+    h += tile('Stok bebas', n(Math.round(fs || 0)) + ' ct', 'akhir ' + esc(monthLabel(m.latest)) + ' · buffer final ' + n(Math.round(fin || 0)) + ' ct' + (fs < fin ? ' (stok di bawah buffer)' : ''), fs < fin ? 'warn' : '', 'Buffer');
+    h += tile('Rencana produksi ' + esc(monthLabel(m.future[0])), n(Math.round(pp || 0)) + ' ct', (ppT ? n(Math.round(ppT)) + ' ton · ' : '') + 'forecast + buffer − stok bebas', '', 'Plan');
+    var nM = 0, capT = 0, outCt = 0; master().forEach(function (g) { g[1].forEach(function (x) { nM++; capT += capOf(x[0], x[1]) || 0; var o = machOutCt(x[3]); if (o) outCt += o; }); });
+    var load = capT && ppT ? ppT / capT : null;
+    h += nM ? tile('Kapasitas mesin vs rencana', load === null ? n(Math.round(capT)) + ' t' : fmt.format(Math.round(load * 100)) + '%', nM + ' mesin · ' + n(Math.round(capT)) + ' t/bulan' + (outCt ? ' · ' + n(Math.round(outCt)) + ' ct/hari' : '') + (load !== null ? ' · rencana ' + n(Math.round(ppT)) + ' t' : ''), load > 1 ? 'bad' : load > .9 ? 'warn' : '', 'Input')
+      : tile('Kapasitas mesin', '–', 'Master mesin belum diisi (Input data → Master data)', '', 'Input');
+  }
+  var st = {}; m.all.forEach(function (s) { var k = s.status || 'aktif'; st[k] = (st[k] || 0) + 1; });
+  var SC = [['aktif', 'Aktif', 'ok'], ['cek', 'Perlu cek', 'warn'], ['baru', 'Baru', 's1'], ['diganti', 'Diganti', 'mut'], ['diskontinu', 'Diskontinu', 'mut2']], tot = m.all.length || 1;
+  Object.keys(st).forEach(function (k) { if (!SC.some(function (c) { return c[0] === k; })) SC.push([k, k, 'mut']); });
+  var seg = SC.filter(function (c) { return st[c[0]]; });
+  h += '<button type="button" class="db-tile db-st" data-d10go="Cek"><span class="k">Status SKU · ' + n(m.all.length) + ' SKU</span><span class="db-seg">' + seg.map(function (c) { return '<i class="' + c[2] + '" style="flex:' + st[c[0]] + '" title="' + esc(c[1]) + ': ' + st[c[0]] + '"></i>'; }).join('') + '</span><span class="n">' + seg.map(function (c) { return '<span class="db-stl"><i class="db-sw ' + c[2] + '"></i>' + esc(c[1]) + ' <b>' + st[c[0]] + '</b></span>'; }).join('') + '</span></button>';
+  return h;
+}
 function d10Brief(A) {
-  var has = d10HasData(), list = A.filter(function (a) { return a.lvl === 'red' || a.lvl === 'amb'; });
-  var know = has ? (list.length ? '<ol class="blist">' + list.map(function (a) {
+  var has = d10HasData(), m = CH.model, list = A.filter(function (a) { return a.lvl === 'red' || a.lvl === 'amb'; });
+  var know = has ? (list.length ? '<ol class="blist">' + list.slice(0, 6).map(function (a) {
     var ix = A.indexOf(a);
-    return '<li class="' + a.lvl + '"><span class="bt"><b>' + esc(a.title) + (a.amount ? ' · ' + esc(a.amount) : '') + '</b> ' + esc(a.text) + ' <span class="sub">(' + esc(d10sn(a.tab)) + ')</span></span><span class="aa">' +
+    return '<li class="' + a.lvl + '"><span class="bt"><b>' + esc(a.title) + (a.amount ? ' · ' + esc(a.amount) : '') + '</b> <span class="sub">(' + esc(d10sn(a.tab)) + ')</span></span><span class="aa">' +
       ((a.list || a.chart || a.flt || a.mmf) ? '<button type="button" class="v-btn sm" data-aa="see" data-ai="' + ix + '">' + d10SeeL(a) + '</button>' : '') + '<button type="button" class="v10-q" data-ask-i="' + ix + '" title="' + tl('ask') + '">?</button><button type="button" class="v-btn sm" data-aa="open" data-ai="' + ix + '">' + tl('open') + ' ' + esc(d10sn(a.tab)) + ' →</button></span></li>';
-  }).join('') + '</ol>' : '<p>' + tl('okHere') + '</p>')
+  }).join('') + '</ol>' + (list.length > 6 ? '<p class="sub">+' + (list.length - 6) + ' lainnya di panel Alerts.</p>' : '') : '<p>' + tl('okHere') + '</p>')
     : '<ol class="blist ph"><li>' + tl('briefEmpty') + '</li></ol><p style="margin:12px 0 0"><button type="button" class="v-btn pri" id="d10demo">' + tl('tryDemo') + '</button> <button type="button" class="v-btn" data-d10go="Input">' + tl('toInput') + ' →</button></p>';
-  var flow = '<div class="bflow">' + D10_TABS.slice(1).map(function (t, k) { var st = d10Step(t, A); return '<button type="button" class="s-' + st[0] + '" data-d10go="' + t + '"><b>' + (k + 1) + '</b><b>' + esc(d10sn(t)) + '</b><small>' + esc(st[1]) + '</small></button>'; }).join('') + '</div>';
+  var flow = '<div class="bflow db-flow">' + D10_TABS.filter(function (t) { return t !== 'Brief'; }).map(function (t) { var st = d10Step(t, A); return '<button type="button" class="s-' + st[0] + '" data-d10go="' + t + '"><b>' + (D10_FREE[t] || d10No(t)) + '</b><b>' + esc(d10sn(t)) + '</b><small>' + esc(st[1]) + '</small></button>'; }).join('') + '</div>';
   var kc = [];
   if (has) {
     var fc = $('fcCards').querySelectorAll('.card'), bf = $('bfCards').querySelectorAll('.card'), pp = $('ppCards').querySelectorAll('.card');
     [fc[0], fc[1], fc[3], bf[0], d10PPMade() ? pp[0] : bf[1], fc[5]].forEach(function (c) { if (c) kc.push(c.outerHTML.replace(/<span class="more">[^<]*<\/span>/, '')); });
   } else kc = ['Order in vs Forecast HQ', 'Akurasi Forecast HQ', 'Forecast M+1', 'Buffer final'].map(function (k) { return '<div class="card"><span class="k">' + k + '</span><span class="v">–</span><span class="n">' + tl('noData') + '</span></div>'; });
-  $('tabBrief').innerHTML = '<div class="brief' + (has ? '' : ' bempty') + '"><div class="bcard"><div class="bk">' + tl('know') + '</div>' + know + '</div><div><div class="bk">' + tl('flow') + '</div>' + flow + '<div class="bk">' + tl('kpi') + '</div><div class="bkpi">' + kc.join('') + '</div></div></div>';
+  var box = function (t, body, cls) { return '<section class="bcard' + (cls ? ' ' + cls : '') + '"><div class="bk">' + t + '</div>' + body + '</section>'; };
+  $('tabBrief').innerHTML = '<div class="dash' + (has ? '' : ' bempty') + '">' +
+    '<div class="bkpi db-kpi">' + kc.join('') + '</div>' +
+    (has ? box('Order in vs forecast per bulan', dbTrend(m), 'db-a') : '') + box(tl('know'), know, 'db-b') +
+    (has ? box('Grup dengan volume terbesar · ' + esc(monthLabel(m.future[0])), dbGroups(m), 'db-a') + '<div class="db-tiles db-b">' + dbTiles(m) + '</div>' : '') +
+    box(tl('flow'), flow, 'db-w') + '</div>';
+  var ch = $('dbChart'); if (ch) ch.addEventListener('mousemove', dbHover), ch.addEventListener('mouseleave', function () { $('dbTip').hidden = true; $('dbCross').setAttribute('visibility', 'hidden'); });
+}
+function dbHover(e) {
+  var t = e.target.closest('[data-dbi]'); if (!t) return; var i = +t.getAttribute('data-dbi'), ch = $('dbChart'), r = ch.getBoundingClientRect(), x = CH.dbX[i] * r.width, tip = $('dbTip'), svg = ch.querySelector('svg');
+  var vx = CH.dbX[i] * 640; $('dbCross').setAttribute('x1', vx); $('dbCross').setAttribute('x2', vx); $('dbCross').setAttribute('visibility', 'visible');
+  tip.innerHTML = CH.dbTip[i]; tip.hidden = false; var w = tip.offsetWidth; tip.style.left = Math.max(0, Math.min(r.width - w, x + 12 + w > r.width ? x - w - 12 : x + 12)) + 'px';
 }
 // ---------- Input data: status per input card, sections shown on request ----------
 function d10Slots() {
@@ -6104,8 +6394,24 @@ function d10Slots() {
   set('Cls', state.cls ? (state.clsFromFile ? 'dari file' : 'bawaan') + ' · ' + n(state.cls.rows.length) + ' SKU' : '');
   set('Mesin', nM ? nM + ' mesin, ' + master().length + ' area' + (state.skuMach ? ' · ' + Object.keys(state.skuMach).length + ' SKU → mesin' : '') : '');
   set('Mm', state.mat ? n(state.mat.rows.length) + ' material' : '');
+  d10Groups();
+  $('useSample').hidden = d10HasData() && !state.sample; $('useSample').textContent = state.sample ? 'Muat ulang contoh' : 'Muat contoh (demo)';
   set('Ch', state.chronos ? (state.chronos.model || 'Chronos') + ' · ' + n(state.chronos.rows.length) + ' baris' : '');
 }
+// Input data groups: count of filled inputs per group, and the group filter (Semua / Penjualan / Stok / Master)
+function d10Groups() {
+  var g = D10.ig || '';
+  document.querySelectorAll('#tabInput .igrp').forEach(function (el) {
+    var k = el.getAttribute('data-ig'), sl = el.querySelectorAll('.slot'), ok = el.querySelectorAll('.slot.ok').length, c = $('igc_' + k);
+    el.hidden = !!g && g !== k; if (c) c.textContent = ok + '/' + sl.length;
+  });
+  document.querySelectorAll('#igTabs [data-ig]').forEach(function (b) { var on = b.getAttribute('data-ig') === g; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+}
+$('igTabs').addEventListener('click', function (e) {
+  var b = e.target.closest('[data-ig]'); if (!b) return; D10.ig = b.getAttribute('data-ig');
+  if (D10.ig === 'master') { $('secMesin').hidden = false; d10SecBtns(); }
+  d10Groups();
+});
 function d10SecBtns() { document.querySelectorAll('[data-sec]').forEach(function (b) { var s = $(b.getAttribute('data-sec')); if (s && b.closest('#secBar')) { b.classList.toggle('on', !s.hidden); b.setAttribute('aria-pressed', !s.hidden); } }); }
 function d10PlanStart() {
   var made = d10PPMade(), pm = CH.pm, el = $('ppStart'); $('tabPlan').classList.toggle('ppnone', !made); el.hidden = made;
@@ -6253,7 +6559,7 @@ $('d10setP').addEventListener('click', function (e) {
   if (b.hasAttribute('data-dim')) { D10.dimOn = b.getAttribute('data-dim') === 'on'; if (!D10.dimOn) aiFocusClose(); }
   if (b.hasAttribute('data-talk')) D10.talkOn = b.getAttribute('data-talk') === 'on';
   if (b.getAttribute('data-sact') === 'save') { if (!canDownload) toast(tl('expBlocked')); else $('dlPack').click(); }
-  if (b.getAttribute('data-sact') === 'exit') { d10Pop(null); $('clearAll').click(); showTab('Brief'); return; }
+  if (b.getAttribute('data-sact') === 'exit') { d10Pop(null); $('clearAll').click(); showTab('Input'); return; }
   d10Save(); d10Settings(); d10Render();
 });
 $('d10expP').addEventListener('click', function (e) { e.stopPropagation(); var b = e.target.closest('button[data-xact]'); if (!b) return; if (!canDownload) { toast(tl('expBlocked')); return; } d10Pop(null); var t = $(b.getAttribute('data-xact')); if (t) t.click(); });
@@ -6268,8 +6574,8 @@ document.addEventListener('click', function (e) {
   if (e.target.closest('[data-aclose]')) { D10.open = false; d10Panel(D10.A || []); return; }
   if (e.target.closest('[data-aside]')) { D10.right = !D10.right; d10Save(); d10Panel(D10.A || []); return; }
   var s2 = e.target.closest('[data-aside2]'); if (s2) { D10.side = s2.getAttribute('data-aside2'); d10Panel(D10.A || []); if (D10.side === 'ask') d10AskOpen(); return; }
-  var ac = e.target.closest('[data-d10acc]'); if (ac) { var nx2 = D10_TABS[D10_TABS.indexOf(D10.cur) + 1]; D10.acc[D10.cur] = true;
-    if (d10HasData()) { var nA = 0; state.ack = state.ack || {}; (D10.A || []).forEach(function (a) { if (a.tab === D10.cur && (a.lvl === 'red' || a.lvl === 'amb')) { state.ack[d10AckKey(a)] = { at: new Date().toISOString().slice(0, 10), via: 'terima' }; nA++; } }); try { localStorage.setItem('ppic_ack', JSON.stringify(state.ack)); } catch (x) {} if (nA) setTimeout(function () { aiSpeak(nA + ' peringatan di ' + d10sn(D10_TABS[D10_TABS.indexOf(nx2) - 1]) + ' diterima apa adanya (sudah dicek). Bisa dibatalkan di daftar alert halaman itu.'); }, 300); } d10Go(nx2); return; }
+  var ac = e.target.closest('[data-d10acc]'); if (ac) { var nx2 = d10Nx(D10.cur), cur0 = D10.cur; D10.acc[D10.cur] = true;
+    if (d10HasData()) { var nA = 0; state.ack = state.ack || {}; (D10.A || []).forEach(function (a) { if (a.tab === D10.cur && (a.lvl === 'red' || a.lvl === 'amb')) { state.ack[d10AckKey(a)] = { at: new Date().toISOString().slice(0, 10), via: 'terima' }; nA++; } }); try { localStorage.setItem('ppic_ack', JSON.stringify(state.ack)); } catch (x) {} if (nA) setTimeout(function () { aiSpeak(nA + ' peringatan di ' + d10sn(cur0) + ' diterima apa adanya (sudah dicek). Bisa dibatalkan di daftar alert halaman itu.'); }, 300); } d10Go(nx2); return; }
   if (e.target.id === 'd10demo') { state.ppMade = {}; D10.acc = {}; d10SavePP(); busyRun(tl('busyLoad'), loadSample); return; }
   var q = e.target.closest('.v10-q[data-ask-i], .v10-q[data-askc], .v10-q[data-help]'); if (q) { e.preventDefault(); d10AskEl(q); return; }
   if (e.target.closest('.v10-s, #d10fab')) { d10Find(); return; }
@@ -6690,7 +6996,7 @@ $('tabBuffer').addEventListener('click', function (e) {
   if (e.target.closest('#bfHz [data-mrp]')) { mrpSendDo(true); return; }
   if (e.target.closest('[data-hzall]')) { state.hzOpen = state.hzOpen || {}; var on = e.target.closest('[data-hzall]').getAttribute('data-hzall') === '1'; (CH.model ? CH.model.fams : []).forEach(function (f) { state.hzOpen[f.key] = on; }); if (CH.model && CH.bm) renderBfHz(CH.model, CH.bm); }
 });
-$('useSample').hidden = true; // the only demo button is on Ringkasan
+$('useSample').addEventListener('click', function (e) { e.stopImmediatePropagation(); state.ppMade = {}; D10.acc = {}; d10SavePP(); busyRun(tl('busyLoad'), loadSample); }, true); // same as the demo button on the Dashboard
 function d10SavePP() { try { localStorage.setItem('ppic_ppmade', JSON.stringify(state.ppMade || {})); } catch (e) {} }
 try { state.ppMade = JSON.parse(localStorage.getItem('ppic_ppmade') || '{}') || {}; } catch (e) { state.ppMade = {}; }
 $('ppReset').insertAdjacentHTML('afterend', '<button type="button" id="ppUnmake" title="Kembali ke halaman kosong; jadwal manual tetap tersimpan">Kosongkan rencana</button>');
@@ -6710,8 +7016,8 @@ function d10Head() {
   if (m !== 'hide') b.classList.remove('hd-peek');
   $('d10hdB').title = tl('hdHideB'); $('d10hdB').setAttribute('aria-label', tl('hdHideB'));
   if (m === 'hide') {
-    var i = D10_TABS.indexOf(D10.cur);
-    $('d10hbar').innerHTML = '<b>Forecast Desk</b><span>' + (i > 0 ? esc(tl('step')) + ' ' + i + ' ' + esc(tl('of')) + ' ' + (D10_TABS.length - 1) + ' · ' : '') + esc(d10sn(D10.cur)) + '</span><span class="sp"></span><button type="button" data-hdshow="1">' + esc(tl('hdShow')) + '</button>';
+    var i = d10No(D10.cur);
+    $('d10hbar').innerHTML = '<b>Forecast Desk</b><span>' + (i > 0 ? esc(tl('step')) + ' ' + i + ' ' + esc(tl('of')) + ' ' + D10_NSTEP + ' · ' : '') + esc(d10sn(D10.cur)) + '</span><span class="sp"></span><button type="button" data-hdshow="1">' + esc(tl('hdShow')) + '</button>';
   }
 }
 function d10SetHead(m) { if (m !== 'hide') D10.headPrev = m; D10.head = m; d10Save(); d10Head(); }
@@ -6756,9 +7062,9 @@ var D10ON = true;
 var d10Render0 = d10Render; d10Render = function () { d10Render0(); d10Sparks(); }; // every page render also draws the card graphics
 window.addEventListener('resize', function () { if (window.innerWidth <= 1100 && D10.open && !D10._r) { D10._r = true; } });
 
-// open empty on Ringkasan (demo data only via its button), or on the page used last
+// always open on Input data, the first screen (the page used last is no longer restored)
 renderAll();
-showTab(D10_TABS.indexOf(D10_T0) >= 0 && !d10Locked(D10_T0) ? D10_T0 : 'Brief');
+showTab('Input');
 })();
 </script>
 </body>
