@@ -42,6 +42,7 @@
   document.head.appendChild(css);
 
   // ---------- columns of a table ----------
+  var MONTH_RE = /\b(Jan|Feb|Mar|Apr|Mei|May|Jun|Jul|Agu|Aug|Ags|Sep|Okt|Oct|Nov|Des|Dec)[a-z]*\.?\s?'?\d{2}(\d{2})?\b/g;
   function cleanText(c) {
     var x = c.cloneNode(true);
     x.querySelectorAll('br').forEach(function (b) { b.replaceWith(' '); });
@@ -80,6 +81,10 @@
       }
     });
     cols.forEach(function (c, j) { c.label = (c.group ? c.group + ' · ' : '') + (c.own || '(kolom ' + (j + 1) + ')'); });
+    // hidden columns are remembered by a key that survives a new month: a month in the label ("Order in Jun 26") becomes its
+    // place among the columns of that kind ("Order in {bulan} #1" = the oldest), so next month the same slot stays hidden
+    var seen = {};
+    cols.forEach(function (c) { var g = c.label.replace(MONTH_RE, '{bulan}'); if (g === c.label) { c.key = c.label; return; } seen[g] = (seen[g] || 0) + 1; c.key = g + ' #' + seen[g]; });
     return { cols: cols, head: cells };
   }
 
@@ -112,7 +117,7 @@
   function hiddenSet(t, cols) {
     var p = P[tkey(t)], H = {};
     if (p && p.h) p.h.forEach(function (l) { H[l] = 1; });
-    else { var d = def(t); if (d.hide) cols.forEach(function (c) { if (d.hide(c.label, c)) H[c.label] = 1; }); }
+    else { var d = def(t); if (d.hide) cols.forEach(function (c) { if (d.hide(c.label, c)) H[c.key] = 1; }); }
     return H;
   }
   function setP(t, patch, cols) {
@@ -136,7 +141,7 @@
     if (!ok) { if (bar && bar.parentNode) bar.remove(); t._ttbar = null; return; }
     var C = columns(t); if (!C) return;
     var cols = C.cols, H = hiddenSet(t, cols), all = C.head.concat(bodyCells(t));
-    var vis = cols.map(function (c) { return !H[c.label]; });
+    var vis = cols.map(function (c) { return !H[c.key]; });
     if (!vis.some(Boolean)) vis = cols.map(function () { return true; });
     // hide: cells fully inside hidden columns disappear, wider cells lose the hidden part of their colspan
     all.forEach(function (x) {
@@ -229,12 +234,12 @@
       else if (act === 'unlock') setP(t, { f: 0 }, cols);
       else if (act === 'reset') { delete P[tkey(t)]; save(); apply(t, true); }
       else if (act === 'lockhere' && col !== undefined) { setP(t, { f: col + 1 }, cols); hide(); }
-      else if (act === 'hidehere' && col !== undefined) { var H = hiddenSet(t, cols); H[cols[col].label] = 1; setP(t, { h: Object.keys(H) }, cols); hide(); }
+      else if (act === 'hidehere' && col !== undefined) { var H = hiddenSet(t, cols); H[cols[col].key] = 1; setP(t, { h: Object.keys(H) }, cols); hide(); }
       else if (act === 'more') { menu._col = undefined; drawMenu(t); }
     });
     menu.addEventListener('change', function (e) {
       var t = menu._t, c = e.target.getAttribute('data-ttv'); if (!t || c === null) return;
-      var cols = t._ttcols || [], H = hiddenSet(t, cols), lab = cols[+c].label;
+      var cols = t._ttcols || [], H = hiddenSet(t, cols), lab = cols[+c].key;
       if (e.target.checked) delete H[lab]; else H[lab] = 1;
       if (Object.keys(H).length >= cols.length) { e.target.checked = true; return; }
       setP(t, { h: Object.keys(H) }, cols);
@@ -251,7 +256,7 @@
     cols.forEach(function (c, j) {
       if ((c.group || '') !== lastG) { lastG = c.group || ''; if (lastG) h += '<div class="ttg">' + esc(lastG) + '</div>'; }
       h += '<div class="ttr"><button type="button" class="ttk' + (j < f ? ' on' : '') + '" data-ttk="' + j + '" title="' + (f === j + 1 ? 'Buka kunci' : 'Kunci sampai kolom ini') + '" aria-label="Kunci sampai ' + esc(c.own || c.label) + '">🔒</button>' +
-        '<label><input type="checkbox" data-ttv="' + j + '"' + (H[c.label] ? '' : ' checked') + '><span title="' + esc(c.label) + '">' + esc(c.own || c.label) + '</span></label></div>';
+        '<label><input type="checkbox" data-ttv="' + j + '"' + (H[c.key] ? '' : ' checked') + '><span title="' + esc(c.label) + '">' + esc(c.own || c.label) + '</span></label></div>';
     });
     menu.innerHTML = '<div class="tth"><span>Kolom · ' + esc(tname(t)) + '</span><button type="button" class="ttk on" data-tta="close" aria-label="Tutup" style="opacity:.7">✕</button></div>' +
       '<div class="ttn">🔒 kunci: kolom sampai yang dipilih tetap terlihat saat tabel digulir ke samping, seperti <i>Freeze Panes</i> di Excel. Centang = tampilkan. Klik kanan judul kolom untuk cara cepat.</div>' +

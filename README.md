@@ -5,6 +5,36 @@ PPIC Decision Support System for The Univenus Serang (plan 7079). PPIC Forecast 
 **Documentation:** [docs/sistem.md](docs/sistem.md) explains how the parts fit together (flow, models, buffer, storage);
 [CHANGELOG.md](CHANGELOG.md) lists the changes over time. The sections below describe each screen in detail.
 
+## Where things are (folder tree)
+
+Everything the browser runs is in `public/`. Each screen is one HTML file with its own CSS and JavaScript inside it; there
+is no build step. The screens of the monthly flow all live in `public/index.html`, as `<div class="tabpage">` blocks drawn
+by one `render…` function each (search the file for the names below).
+
+```
+ForecasterPPIC/
+├── public/                      what the browser loads (served by the Cloudflare Worker)
+│   ├── index.html               Forecast Desk: the monthly flow, all in one file
+│   │     header + step tabs       d10Render, d10Ico (step icons), D10_SN (step names)
+│   │     side panel               d10Panel: Alerts / Tanya, and the Planner on Rencana produksi (ppSkuPanel, ppBalCard)
+│   │     Input data               #tabInput (+ #mmPanel, #secMesin inside it)
+│   │     Material master          #mmPanel, renderMat; OI / Forecast history dialog: mmHist; status filter: MMSF
+│   │     Forecast                 #tabForecast, renderForecastScreen; models: forecastModel, runML; run bar: FCRUN
+│   │     Saran buffer             #tabBuffer, renderBuffer; monthly totals strip: renderBfHz
+│   │     Rencana produksi         #tabPlan, renderPlan; calendar grid: renderPlanGrid; Tampilan Excel: ppXlDraw;
+│   │                              schedule model (bars, daily targets, skipped days): schedModel
+│   │     Dashboard                d10Brief (header button ▦ Dashboard)
+│   ├── tabel.js                 Kolom ▾ menu shared by all wide tables: lock (freeze) and hide columns
+│   ├── produksi/index.html      Perencanaan Produksi: daily plan, actual (GR gudang), Monitoring = Balance produksi
+│   ├── mrp/index.html           MRP Bahan Baku: raw material orders from Saran buffer
+│   └── riwayat/index.html       Riwayat versi: what changed, in Indonesian
+├── src/index.js                 Cloudflare Worker: serves public/ and /api/ask (assistant)
+├── ingest/                      Python: batch loader for closing files, Chronos forecast
+├── docs/sistem.md               how the parts fit together
+├── CHANGELOG.md                 changes over time
+└── wrangler.jsonc               Worker config
+```
+
 ## Web app
 
 `public/index.html` is a guided monthly flow (Desain 10, PR #8). The app opens on **Input data**; the numbered steps open
@@ -16,12 +46,12 @@ after **Terima dan lanjut** on the previous one:
 - **Dashboard** (was Ringkasan; a header button ▦ Dashboard, not a step): key numbers, order in vs Forecast HQ / Forecast AI per month (hover for values, table
   view), the biggest brand · category groups for M+1, stock vs buffer, plan vs machine capacity, SKU status, open alerts.
 
-1. **Material master**: active / inactive SKUs and Nomat changes.
-2. **Cek data SKU**: status rules and manual statuses.
-3. **Forecast**: Forecast HQ vs order in, HQ accuracy, bias, and **Forecast AI** (ensemble of four models) for M+1..M+3.
+1. **Material master** (with the status rules that were *Cek data SKU*): status per SKU, Jenis SKU, Nomat changes,
+   order in and HQ history.
+2. **Forecast**: Forecast HQ vs order in, HQ accuracy, bias, and **Forecast AI** (ensemble of four models) for M+1..M+3.
    Clicking a card opens a chart of that measure with the SKUs behind it.
-4. **Saran buffer**: buffer per SKU and PP.
-5. **Rencana produksi**: schedule per machine and day. The flow ends here; the daily plan is the separate
+3. **Saran buffer**: buffer per SKU and PP.
+4. **Rencana produksi**: schedule per machine and day. The flow ends here; the daily plan is the separate
    **Perencanaan Produksi** page (`/produksi/`, see below). Raw material orders are planned on the **MRP Bahan Baku**
    page (`/mrp/`), opened from Saran buffer.
 

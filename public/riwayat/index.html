@@ -53,6 +53,15 @@ html[data-theme=dark] .rel h3 .cur { color: #1b1206; }
 // Newest first. v = pull request number (null for changes before pull requests). Keep in step with CHANGELOG.md.
 var REPO = 'https://github.com/Vic355/ForecasterPPIC/pull/';
 var R = [
+  { v: 24, d: '2026-11-26', t: 'Material master, Forecast, Saran buffer dan Rencana produksi lebih rapi', a: ['Forecast Desk'], p: [
+    '<b>Material master</b> (nama langkah kembali): kolom <b>No</b>, urutan tetap sehingga baris tidak pindah saat status diubah, dan <b>Status ▾</b> di judul kolom untuk menyaring seperti filter Excel.',
+    '<b>OI / Forecast ▸</b> menggantikan tautan Forecast: histori order in, Forecast HQ ORIG dan REV, selisih dan baris sumber per bulan closing. Kolom baru (bisa disembunyikan): <b>Order in</b> dan <b>HQ</b> 3 bulan terakhir.',
+    '<b>Langkah di atas memakai ikon</b>, tanpa nomor. <b>Forecast</b>: menu Kolom di toolbar, Brand dan Kategori tersembunyi dari awal, nama grup lebih rapi, Sugesti diringkas dua baris.',
+    '<b>Jalankan forecast</b>: koreksi angka tidak langsung menghitung ulang Forecast AI. Muncul bar berisi jumlah perubahan dan tombol <b>▶ Jalankan forecast</b>.',
+    '<b>Saran buffer</b>: total per bulan kini terbaca stok awal + rencana produksi − forecast = stok akhir, lalu buffer dan stok akhir − buffer.',
+    '<b>Rencana produksi</b>: panel kiri jadi <b>Planner</b> dengan kartu <b>Plan balance</b> (planned production vs terjadwal) dan terbuka sendiri bila ada SKU yang belum terjadwal. Target harian <b>0 = lewati hari itu</b> (mesin bebas untuk SKU lain). <b>▦ Tampilan Excel</b>: hanya mesin × SKU × tanggal, target harian bisa diketik.',
+    'Perbaikan: bar jadwal dan judul tanggal tidak lagi menutupi kolom kiri yang dikunci saat kalender digulir.',
+    '<b>Kolom bulan yang disembunyikan tetap tersembunyi</b> saat data bulan baru masuk: menu Kolom mengingat posisinya (mis. Order in bulan tertua), bukan nama bulannya.'] },
   { v: 22, d: '2026-11-25', t: 'Input, Forecast dan Saran buffer lebih ringkas; cara Forecast AI belajar', a: ['Forecast Desk'], p: [
     '<b>Dashboard</b> pindah ke tombol di bagian atas (▦ Dashboard), tidak lagi di tengah alur langkah. Alur sekarang Input data → Material &amp; status → Forecast → Saran buffer → Rencana produksi.',
     '<b>Alert tidak muncul sendiri</b> saat pindah halaman: panel Alerts mulai dalam keadaan kecil dan sorotan otomatis dimatikan. Bisa dinyalakan lagi di Pengaturan → Asisten.',
