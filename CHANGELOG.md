@@ -5,6 +5,10 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
 
 ## 2026-11-26
 
+- **Rencana produksi Excel in the planner's TUB Planning layout.** *Ekspor Excel* in Rencana produksi and *Excel rencana* in
+  Perencanaan Produksi now write the same sheets as the planner's file: TUB (summary per SKU), Hasil, Machine (subtotals per
+  area, W1–W5), JR, MT, SKU (daily plan), Capacity and BOM, with the planner's headers, colours, frozen panes, filters and live
+  formulas. Columns the app has no data for stay empty and are listed on the Info sheet.
 - **Material master, Forecast, Saran buffer and Rencana produksi, round of fixes.** The step *Material & status* is
   called **Material master** again. Its table has a **No** column and a fixed order (brand, category, name), so a row no
   longer moves when its status changes; **Status ▾** in the header filters by status like an Excel AutoFilter, and rows
