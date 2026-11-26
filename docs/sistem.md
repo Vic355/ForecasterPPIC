@@ -138,6 +138,14 @@ after a resize. Tables with `data-tt="off"` and the day grids (`.ppg`, `.pg`) ar
   (< 0.5 / 0.5–1 / > 1), < 3 months = NPD. Disagreement with the HQ class is flagged.
 - **PP** (production need) = forecast + buffer final − stok bebas; stok bebas = stock on hand − outstanding DN − SC block.
 - Manual buffer edits need a reason and are kept.
+- **Plan AI (minimum / standar / maksimum)**: *AI hitung dasar* takes the chosen basis, Forecast HQ, Ensemble AI and P50 as
+  candidate bases. Minimum = lowest base + Batas atas buffer at 90% (≤ 10 days); Standar = chosen basis + strategy buffer;
+  Maksimum = highest base + max(Defensif 98% ×1,15, Kuantil P90 at 98%). Always min ≤ standar ≤ maks; PP = base + buffer −
+  stok bebas. Compared with the **old rule** (Forecast HQ + closing `buffer_suggestion` − stok bebas; HQ's formula for that
+  buffer is not in the file) and backtested on the last 6 closings. *Plan dipakai* (`bufCfg.plan`, default `std`) decides
+  which plan feeds buffer final, PP, M+2/M+3 and Rencana produksi; manual buffer edits still win.
+- Clicking a SKU name in the Buffer table opens the SKU dialog: forecast history, *Dasar + buffer* per backtest month
+  (covered or short, best strategy) and the three plans.
 - **Multi-month projection (M+1..M+3)**: stok akhir M+1 = stok awal + PP − forecast becomes stok awal M+2 (negative allowed, carried as is); M+2 gets its own
   buffer (same strategy, that month's forecast; P50/P90 from Chronos / Regressor kuantil for that month, else the M+1 range
   scaled) and PP = max(0, forecast + buffer − stok awal); the same for M+3. Manual buffer edits apply to M+1 only.

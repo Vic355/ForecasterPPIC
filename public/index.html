@@ -811,6 +811,13 @@ html[data-theme=dark] .rvchip { color: #1b1206; }
 /* strategy guide on Buffer */
 .bfguide summary { cursor: pointer; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; list-style: none; } .bfguide summary::-webkit-details-marker { display: none; }
 .bfguide summary::after { content: '▾'; margin-left: auto; color: var(--mut); } .bfguide details:not([open]) summary::after { content: '▸'; }
+.bfplans table.pltb { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 6px; }
+.bfplans .pltb th, .bfplans .pltb td { padding: 6px 8px; border-bottom: 1px solid var(--line2); text-align: left; vertical-align: top; }
+.bfplans .pltb th.num, .bfplans .pltb td.num { text-align: right; white-space: nowrap; }
+.bfplans .pltb tr.on td { background: var(--acc2); } .bfplans .pltb tr.plold td { color: var(--mut); }
+.bfplans .pltb td small { display: block; color: var(--mut); font-size: 12px; line-height: 1.35; }
+.bft tr.sku > td:first-child { cursor: pointer; } .bft tr.sku > td:first-child:hover .nm { text-decoration: underline; color: var(--acc); }
+.skh tr.on td { background: var(--acc2); } .skh td.cov { color: var(--acc); font-weight: 700; } .skh td.miss { color: var(--bad, #b4442b); font-weight: 700; }
 .bgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; }
 .bgrid .bg { border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; background: var(--paper); display: flex; flex-direction: column; gap: 5px; }
 .bgrid .bg.top { border-color: var(--acc); box-shadow: inset 0 3px 0 var(--acc); }
@@ -1134,6 +1141,7 @@ body.pskon #ppBalTop { display: none; }
     <section class="cards fcards" id="bfCards" aria-label="Ringkasan buffer"></section>
     <section class="panel bfctl" id="bfCtl" aria-label="Pengaturan buffer">
       <div class="seg"><span>Dasar forecast</span><button type="button" data-bk="basis" data-bv="hq">Forecast HQ</button><button type="button" data-bk="basis" data-bv="ml" title="Ensemble dari Holt, HQ terkoreksi, Regressor dan Chronos">Ensemble AI</button><button type="button" data-bk="basis" data-bv="avg">Rata-rata</button><button type="button" data-bk="basis" data-bv="gbr" title="Hanya model Regressor">Regressor</button><button type="button" data-bk="basis" data-bv="chronos" title="Hanya Chronos (hasil yang diimpor)">Chronos</button></div>
+      <div class="seg" title="Plan AI yang dipakai untuk buffer, rencana produksi dan bahan baku. Bandingkan ketiganya di panel Plan AI."><span>Plan dipakai</span><button type="button" data-bk="plan" data-bv="min">Minimum</button><button type="button" data-bk="plan" data-bv="std">Standar</button><button type="button" data-bk="plan" data-bv="max">Maksimum</button></div>
       <div class="seg"><span>Service level</span><button type="button" data-bk="sl" data-bv="90">90%</button><button type="button" data-bk="sl" data-bv="95">95%</button><button type="button" data-bk="sl" data-bv="98">98%</button></div>
       <div class="seg"><span>Lead time bahan baku</span><button type="button" data-bk="lt" data-bv="7">7 hari</button><button type="button" data-bk="lt" data-bv="14">14 hari</button><button type="button" data-bk="lt" data-bv="21">21 hari</button></div>
       <div class="seg" title="Dari mana P50 dan P90 (rentang forecast) diambil untuk strategi Kuantil P90"><span>P50/P90 dari</span><button type="button" data-bk="qsrc" data-bv="auto">Otomatis</button><button type="button" data-bk="qsrc" data-bv="chronos">Chronos</button><button type="button" data-bk="qsrc" data-bv="gbr">Regressor</button><button type="button" data-bk="qsrc" data-bv="err">Error historis</button></div>
@@ -1142,6 +1150,7 @@ body.pskon #ppBalTop { display: none; }
       <span class="sub">Rencana produksi = Forecast + Buffer final − Stok bebas</span>
       <div class="bfqs" id="bfQsrc"></div>
     </section>
+    <section class="panel bfguide bfplans" id="bfPlans" aria-label="Plan AI minimum, standar, maksimum"></section>
     <section class="panel bfguide" id="bfGuide" aria-label="Arti strategi buffer"></section>
     <section class="panel" aria-label="Buffer per famili">
       <div class="ph"><h2>Saran buffer per grup dan SKU</h2>
@@ -2555,7 +2564,7 @@ var STRAT_PLAIN = {
   habiskan: ['Tidak ada buffer dan tidak produksi: stok yang ada dihabiskan.', 'SKU edisi, promo, atau yang akan berhenti.', 'Kosong bila ternyata masih laku.']
 };
 var DEFAULT_SPREAD = 0.25;
-function bufCfg() { var c = state.bufCfg || {}; return { basis: c.basis || 'hq', sl: c.sl || 95, lt: c.lt || 14, sw: c.sw || 2, qsrc: c.qsrc || 'auto', cmp: c.cmp || '' }; }
+function bufCfg() { var c = state.bufCfg || {}; return { basis: c.basis || 'hq', sl: c.sl || 95, lt: c.lt || 14, sw: c.sw || 2, qsrc: c.qsrc || 'auto', cmp: c.cmp || '', plan: PLAN_NAME[c.plan] ? c.plan : 'std' }; }
 function saveBuf() { try { localStorage.setItem('ppic_buf', JSON.stringify({ cfg: state.bufCfg || {}, strat: state.bufStrat || {}, edits: state.bufEdits || {}, review: state.bufReview || {} })); } catch (e) {} }
 function loadBuf() { try { var o = JSON.parse(localStorage.getItem('ppic_buf') || '{}') || {}; state.bufCfg = o.cfg || {}; state.bufStrat = o.strat || {}; state.bufEdits = o.edits || {}; state.bufReview = o.review || {}; } catch (e) { state.bufCfg = {}; state.bufStrat = {}; state.bufEdits = {}; state.bufReview = {}; } }
 // basis forecast for a month: HQ, ML or the average of the two that exist
@@ -2631,6 +2640,30 @@ function stratBuf(st, F, z0, sp, ltF, tf, q) {
   if (st === 'habiskan') return 0;
   return std;
 }
+// Plan minimum / standar / maksimum. "AI hitung dasar": every forecast the app has for the month (the chosen basis,
+// Forecast HQ, Ensemble AI, P50) is a candidate base. Minimum takes the lowest base and a thin buffer (service level 90%,
+// at most 10 days of forecast); Standar is the normal plan (chosen basis + strategy buffer); Maksimum takes the highest
+// base and a thick buffer (Defensif 98% ×1,15, or P90 at 98% when a range exists). Always min ≤ standar ≤ maks.
+var PLAN_NAME = { min: 'Minimum', std: 'Standar', max: 'Maksimum' };
+var PLAN_PLAIN = {
+  min: ['Dasar terendah dari Forecast HQ, Ensemble AI, P50 dan dasar pilihan; buffer tipis (service level 90%, paling banyak 10 hari).', 'Stok ramping: SKU kelas C/Z, SKU yang akan diganti, atau bila kapasitas mesin terbatas.'],
+  std: ['Dasar forecast pilihan (di pengaturan) + buffer strategi per SKU, seperti biasa.', 'Rencana normal.'],
+  max: ['Dasar tertinggi dari Forecast HQ, Ensemble AI, P50 dan dasar pilihan; buffer tebal (Defensif 98% ×1,15, atau P90 pada 98%).', 'SKU penting yang tidak boleh kosong, menjelang musim ramai, atau bila mesin longgar.']
+};
+function planBase(s, mo, past, F, q, fSrc) {
+  var c = [[F, fSrc || 'dasar pilihan']];
+  [['hq', 'Forecast HQ'], ['ml', 'Ensemble AI']].forEach(function (bs) { var x = basisOf(s, mo, bs[0], past); if (x && typeof x.v === 'number' && x.v >= 0 && x.src !== 'Di luar musim') c.push([x.v, x.src === 'HQ' || x.src === 'ML' ? bs[1] : x.src]); });
+  if (q && q.p50 >= 0) c.push([q.p50, 'P50']);
+  var lo = c[0], hi = c[0]; c.forEach(function (x) { if (x[0] < lo[0]) lo = x; if (x[0] > hi[0]) hi = x; });
+  return { lo: lo[0], hi: hi[0], loS: lo[1], hiS: hi[1] };
+}
+// { min: {F, buf}, max: {F, buf} } around the standar buffer bStd of strategy st
+function planBufs(st, F, bStd, pb, sp, ltF, tf, q) {
+  if (st === 'habiskan') return { min: { F: F, buf: 0 }, max: { F: F, buf: 0 } };
+  var lo = stratBuf('batas', pb.lo, BUF_Z[90], sp, ltF, tf, null), hi = stratBuf('defensif', pb.hi, BUF_Z[98], sp, ltF, tf, null);
+  if (q) hi = Math.max(hi, stratBuf('kuantil', pb.hi, BUF_Z[98], sp, ltF, tf, q));
+  return { min: { F: pb.lo, buf: Math.min(bStd, lo) }, max: { F: pb.hi, buf: Math.max(bStd, hi) } };
+}
 function bbAdd(o, st, F, buf, y) { var x = o[st] = o[st] || { short: 0, exc: 0, oi: 0, n: 0, cov: 0 }, p = F + buf; x.short += Math.max(0, y - p); x.exc += Math.max(0, p - y); x.oi += y; x.n++; if (p >= y) x.cov++; }
 function bbRate(x) { return x && x.oi > 0 ? (BUFBT.shortW * x.short + x.exc) / x.oi : null; }
 function bbAcc(x) { return x && x.oi > 0 ? Math.max(0, 1 - (BUFBT.shortW * x.short + x.exc) / x.oi) * 100 : null; }
@@ -2654,7 +2687,7 @@ function bufBacktest(m, cfg) {
   BUFBT.shortW = cfg.sw; BUFBT.qsrc = cfg.qsrc; m._bfbtC = m._bfbtC || {};
   if (m._bfbtC[key]) return (m._bfbt = m._bfbtC[key]);
   var cms = m.closingMonths, K = cms.length, z0 = BUF_Z[cfg.sl] || 1.64, ltF = Math.sqrt(cfg.lt / 30);
-  var R = { key: key, sku: {}, cls: {}, glob: {}, auto: {}, months: [], pick: {}, wins: {}, mon: {} };
+  var R = { key: key, sku: {}, cls: {}, glob: {}, auto: {}, plan: {}, months: [], pick: {}, wins: {}, mon: {} };
   for (var k = Math.max(2, K - BUFBT.months); k < K; k++) {
     var mo = cms[k], pend = [];
     m.fams.forEach(function (f) {
@@ -2666,7 +2699,10 @@ function bufBacktest(m, cfg) {
         PICK.forEach(function (st) { bufs[st] = stratBuf(st, F, z0, sp, ltF, tf, q); });
         var pk = bbPick(R, s), ast = pk ? pk.st : 'standar'; // what Otomatis would have chosen with earlier months only
         bbAdd(R.auto, 'auto', F, bufs[ast], y);
-        pend.push([s, F, bufs, y]);
+        // plan minimum / standar / maksimum replayed the same way (standar = the Otomatis pick)
+        var pl = planBufs(ast, F, bufs[ast], planBase(s, mo, true, F, q), sp, ltF, tf, q);
+        bbAdd(R.plan, 'min', pl.min.F, pl.min.buf, y); bbAdd(R.plan, 'std', F, bufs[ast], y); bbAdd(R.plan, 'max', pl.max.F, pl.max.buf, y);
+        pend.push([s, F, bufs, y, ast, pl]);
       });
     });
     pend.forEach(function (a) { // added after the month so picks above only saw earlier months
@@ -2674,7 +2710,7 @@ function bufBacktest(m, cfg) {
       // month winner for this SKU: lowest w × shortfall + excess ("Defensif menang 5 dari 6 bulan")
       var cost = {}, win = null; PICK.forEach(function (st) { var p = a[1] + a[2][st]; cost[st] = BUFBT.shortW * Math.max(0, a[3] - p) + Math.max(0, p - a[3]); if (win === null || cost[st] < cost[win] - 1e-9) win = st; });
       var W = R.wins[s.key] = R.wins[s.key] || { n: 0 }; W.n++; W[win] = (W[win] || 0) + 1;
-      (R.mon[s.key] = R.mon[s.key] || []).push({ mo: mo, y: a[3], F: a[1], bufs: a[2], win: win });
+      (R.mon[s.key] = R.mon[s.key] || []).push({ mo: mo, y: a[3], F: a[1], bufs: a[2], win: win, ast: a[4], pl: a[5] });
       PICK.forEach(function (st) { [R.sku[s.key] = R.sku[s.key] || {}, R.cls[c] = R.cls[c] || {}, R.glob].forEach(function (o) { bbAdd(o, st, a[1], a[2][st], a[3]); }); });
     });
     if (pend.length) R.months.push(mo);
@@ -2746,9 +2782,18 @@ function bufferModel(m, over, prop) {
       if (st === 'batas' && z0 * spS * F * ltF > F * 10 / 30) note = 'dibatasi 10 hari';
       if (st === 'kuantil') note = q ? 'P50 ' + n(Math.round(q.p50)) + ', P90 ' + n(Math.round(q.p90)) + ' dari ' + q.src : 'belum ada P90 (Chronos, regressor atau error historis), memakai rumus Standar';
       sug = Math.round(sug);
-      if (s.offF && s.offF[mo]) { sug = 0; note = 'di luar musim'; }
+      var off = !!(s.offF && s.offF[mo]);
+      if (off) { sug = 0; note = 'di luar musim'; }
+      var fs = s.fs || 0, F0 = F, ppOf = function (f0, b0) { return st === 'habiskan' ? 0 : Math.max(0, Math.round(f0 + b0 - fs)); };
+      // three AI plans for M+1 (before manual edits) and the old rule (Forecast HQ + buffer in the closing file), for comparison
+      var pb = planBase(s, mo, false, F, q, b ? BASIS_NAME[cfg.basis] : null), PB = off ? { min: { F: F, buf: 0 }, max: { F: F, buf: 0 } } : planBufs(st, F, sug, pb, spS, ltF, tf, q);
+      var plans = { base: pb, min: { F: PB.min.F, buf: Math.round(PB.min.buf) }, std: { F: F, buf: sug }, max: { F: PB.max.F, buf: Math.round(PB.max.buf) } };
+      ['min', 'std', 'max'].forEach(function (k) { plans[k].pp = ppOf(plans[k].F, plans[k].buf); });
+      var hq1 = typeof s.fhq[mo] === 'number' ? s.fhq[mo] : null, old0 = typeof s.buf0 === 'number' ? s.buf0 : null;
+      plans.old = { F: hq1, buf: old0, pp: hq1 === null && old0 === null ? null : Math.max(0, Math.round((hq1 || 0) + (old0 || 0) - fs)) };
+      if (cfg.plan !== 'std') { F = plans[cfg.plan].F; sug = plans[cfg.plan].buf; }
       var ed = state.bufEdits[s.key], fin = ed && typeof ed.v === 'number' ? ed.v : sug;
-      var fs = s.fs || 0, prod = st === 'habiskan' ? 0 : Math.max(0, Math.round(F + fin - fs));
+      var prod = ppOf(F, fin);
       // multi-month: stok akhir M+1 = stok awal + PP − forecast → stok awal M+2, which gets its own buffer and PP (for raw material orders)
       var hz = [];
       if (prop === 'bf') {
@@ -2761,6 +2806,7 @@ function bufferModel(m, over, prop) {
             var b2 = basisOf(s, mo2, cfg.basis, false); if (!b2) { stop = true; return; }
             Fi = Math.max(0, b2.v); qi = quantFut(s, m, mo2, Fi, q, F);
             bi = s.offF && s.offF[mo2] ? 0 : Math.round(stratBuf(st, Fi, z0, spS, ltF, tf, st === 'kuantil' ? qi : null));
+            if (cfg.plan !== 'std' && !(s.offF && s.offF[mo2])) { var pl2 = planBufs(st, Fi, bi, planBase(s, mo2, false, Fi, qi), spS, ltF, tf, qi)[cfg.plan]; Fi = pl2.F; bi = Math.round(pl2.buf); }
             ppi = st === 'habiskan' ? 0 : Math.max(0, Math.round(Fi + bi - beg));
           }
           var end = beg + ppi - Fi;
@@ -2777,7 +2823,7 @@ function bufferModel(m, over, prop) {
       else if (old && fin > old * 1.1) status = ['Buffer naik', 'up'];
       else if (old && fin < old * 0.9) status = ['Buffer turun', 'down'];
       else status = ['Sesuai', 'same'];
-      s[prop] = { q: q, bt: bt.sku[s.key] || null, F: F, src: b ? b.src : 'tidak ada forecast', z: z, spread: spS, spreadInfo: sp, ltF: ltF, fac: fac, st: st, auto: auto, sug: sug, fin: fin, ed: ed || null, days: F > 0 ? fin / (F / 30) : null, prod: prod, rm: s.nw ? prod * s.nw / 1000 : null, need: rmNeed(s, prod), hz: hz, old: old, fs: fs, status: status, note: note };
+      s[prop] = { q: q, bt: bt.sku[s.key] || null, F: F, F0: F0, plans: plans, plan: cfg.plan, src: cfg.plan !== 'std' && b ? 'Plan ' + PLAN_NAME[cfg.plan].toLowerCase() + ': ' + (cfg.plan === 'min' ? pb.loS : pb.hiS) : b ? b.src : 'tidak ada forecast', z: z, spread: spS, spreadInfo: sp, ltF: ltF, fac: fac, st: st, auto: auto, sug: sug, fin: fin, ed: ed || null, days: F > 0 ? fin / (F / 30) : null, prod: prod, rm: s.nw ? prod * s.nw / 1000 : null, need: rmNeed(s, prod), hz: hz, old: old, fs: fs, status: status, note: note };
       rows.push(s);
     });
   });
@@ -2926,7 +2972,7 @@ function renderBuffer(m) {
     if (open) {
       fsk.slice(0, flt ? Infinity : lim).forEach(function (s) {
         var b = s.bf;
-        h += '<tr class="sku' + (RV[s.key] ? ' rv' : '') + '" data-bsk="' + esc(s.key) + '"><td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + (RV[s.key] ? '<button type="button" class="rvchip" data-unrv="' + esc(s.key) + '" title="Ditandai dari Forecast: ' + esc(RV[s.key].why || '') + '. Klik untuk hapus tanda.">⚑ tinjau ✕</button>' : '') + esc(s.nomat || s.art || '') + (s.cls ? ' · <span title="' + esc(clsPlain(s.cls.code)) + '">' + s.cls.code + '</span>' : '') + (b.src !== 'HQ' && b.src !== 'ML' && b.src !== 'Rata-rata' ? ' · ' + esc(b.src) : '') + '</span></td>' +
+        h += '<tr class="sku' + (RV[s.key] ? ' rv' : '') + '" data-bsk="' + esc(s.key) + '"><td title="Klik untuk riwayat forecast, buffer dan plan AI"><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + (RV[s.key] ? '<button type="button" class="rvchip" data-unrv="' + esc(s.key) + '" title="Ditandai dari Forecast: ' + esc(RV[s.key].why || '') + '. Klik untuk hapus tanda.">⚑ tinjau ✕</button>' : '') + esc(s.nomat || s.art || '') + (s.cls ? ' · <span title="' + esc(clsPlain(s.cls.code)) + '">' + s.cls.code + '</span>' : '') + (b.src !== 'HQ' && b.src !== 'ML' && b.src !== 'Rata-rata' ? ' · ' + esc(b.src) : '') + '</span></td>' +
           '<td class="num sep">' + n(b.fs) + '</td><td class="num">' + n(Math.round(b.F)) + '</td>' + cF(s.bf2) + (b.q ? '<td class="num" title="' + esc(b.q.src) + '">' + n(Math.round(b.q.p50)) + '</td><td class="num" title="' + esc(b.q.src) + '">' + n(Math.round(b.q.p90)) + '</td>' : '<td class="num">–</td><td class="num">–</td>') + '<td class="num sep">' + n(b.old) + '</td><td class="num bsug">' + n(b.sug) + '</td>' +
           '<td class="num bfin' + (b.ed ? ' edited' : '') + '" tabindex="0" data-bfin="' + esc(s.key) + '" title="' + (b.ed ? 'Manual: ' + esc(b.ed.reason || '') + ' (saran ' + n(b.sug) + ')' : 'Klik untuk mengubah; alasan wajib') + '">' + n(b.fin) + (b.ed ? ' <span class="mtag">manual</span>' : '') + '</td>' + cB(s.bf2) +
           '<td class="num">' + (b.days === null ? '–' : fmt.format(Math.round(b.days * 10) / 10)) + '</td><td>' + stratSel(s.key, state.bufStrat[s.key] || '', b.auto[0], false) + (state.bufStrat[s.key] ? '' : '<span class="code" style="display:block;max-width:220px;white-space:normal">' + esc(b.auto[1]) + '</span>') + (bfWinTxt(BT, s.key) ? '<button type="button" class="bwin" data-bwin="' + esc(s.key) + '" title="Tanya asisten kenapa">🏆 ' + esc(bfWinTxt(BT, s.key)) + '</button>' : '') + '</td>' +
@@ -2941,7 +2987,7 @@ function renderBuffer(m) {
   $('bfTable').innerHTML = h + '</tbody>';
   renderBfHz(m, bm); renderBfLegend(bm);
   CH.bm = bm;
-  renderBfGuide(bm, cnt, wT);
+  renderBfPlans(bm); renderBfGuide(bm, cnt, wT);
   // where P50/P90 come from (answers "dari model mana?")
   var qc = {}; bm.rows.forEach(function (s) { var k = s.bf.q ? (/^error historis/.test(s.bf.q.src) ? 'err' : s.bf.q.src === 'Chronos' ? 'chronos' : 'gbr') : 'none'; qc[k] = (qc[k] || 0) + 1; });
   $('bfQsrc').innerHTML = '<b>P50/P90 bukan dari Ensemble.</b> Ensemble hanya memberi satu angka; rentangnya diambil dari: ' +
@@ -3004,6 +3050,37 @@ function renderBfHz(m, bm) {
   el.innerHTML = h;
 }
 // "Arti strategi": what each strategy means in plain words, with its backtest numbers next to it
+// Plan AI panel: the old rule next to the three AI plans, totals for M+1 and the backtest of each plan
+function renderBfPlans(bm) {
+  var cfg = bm.cfg, mo = bm.month, PT = bm.bt.plan || {}, open = localStorage.getItem('ppic_bfplans') !== '0', pc = function (v) { return v === null || v === undefined ? '–' : fmt.format(Math.round(v)) + '%'; };
+  var T = { old: { F: 0, buf: 0, pp: 0, miss: 0 }, min: { F: 0, buf: 0, pp: 0 }, std: { F: 0, buf: 0, pp: 0 }, max: { F: 0, buf: 0, pp: 0 } };
+  bm.rows.forEach(function (x) { var P = x.bf.plans; if (!P) return; ['min', 'std', 'max'].forEach(function (k) { T[k].F += P[k].F; T[k].buf += P[k].buf; T[k].pp += P[k].pp; });
+    if (P.old.pp === null) T.old.miss++; else { T.old.F += P.old.F || 0; T.old.buf += P.old.buf || 0; T.old.pp += P.old.pp; } });
+  var bn = BASIS_NAME[cfg.basis] || cfg.basis, btTxt = function (k) { var x = PT[k]; return x ? '<td class="num">' + pc(bbCov(x)) + '</td><td class="num">' + n(Math.round(x.exc)) + '</td><td class="num">' + n(Math.round(x.short)) + '</td><td class="num"><b>' + pc(bbAcc(x)) + '</b></td>' : '<td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td>'; };
+  var cand = [bn].concat(['Forecast HQ', 'Ensemble AI'].filter(function (x) { return x !== bn; })).concat(['P50']).join(', ').replace(/, P50$/, ' dan P50');
+  var RUMUS = {
+    old: ['Aturan lama', 'Forecast HQ + <i>Buffer Suggestion</i> dari file closing − stok bebas. Cara HQ menghitung buffer itu tidak tertulis di file, jadi hanya angkanya yang dibandingkan.'],
+    min: ['Plan minimum', 'Dasar = terendah dari ' + esc(cand) + '. Buffer = 1,28 × sebaran error × dasar × √(lead time ÷ 30), paling banyak 10 hari dasar.'],
+    std: ['Plan standar', 'Dasar = ' + esc(bn) + '. Buffer = z (' + cfg.sl + '%) × sebaran error × dasar × √(lead time ÷ 30) × faktor strategi per SKU (Otomatis = pemenang backtest).'],
+    max: ['Plan maksimum', 'Dasar = tertinggi dari ' + esc(cand) + '. Buffer = Defensif 98% ×1,15, atau (P90 − P50) pada 98% bila lebih besar.']
+  };
+  var row = function (k) {
+    var t = T[k], on = k === cfg.plan, isOld = k === 'old';
+    return '<tr class="' + (on ? 'on' : '') + (isOld ? ' plold' : '') + '"><td><b>' + RUMUS[k][0] + '</b>' + (on ? ' <span class="pill p-ok">dipakai</span>' : '') + '<small>' + RUMUS[k][1] + '</small>' + (PLAN_PLAIN[k] && k !== 'std' ? '<small><b>Cocok untuk:</b> ' + esc(PLAN_PLAIN[k][1]) + '</small>' : '') + '</td>' +
+      '<td class="num">' + n(Math.round(t.F)) + '</td><td class="num">' + n(Math.round(t.buf)) + '</td><td class="num"><b>' + n(Math.round(t.pp)) + '</b>' + (!isOld && T.old.pp ? '<small>' + pctS((t.pp / T.old.pp - 1) * 100) + ' vs lama</small>' : isOld && t.miss ? '<small>' + t.miss + ' SKU tanpa angka</small>' : '') + '</td>' +
+      (isOld ? '<td class="num" colspan="4"><small>Tidak bisa di-backtest: buffer lama hanya ada di closing terakhir.</small></td><td></td>' : btTxt(k) + '<td>' + (on ? '' : '<button type="button" class="v-btn sm" data-useplan="' + k + '">Pakai</button>') + '</td>') + '</tr>';
+  };
+  $('bfPlans').innerHTML = '<details' + (open ? ' open' : '') + ' id="bfPlansD"><summary><span class="bgl" data-mascot="1">' + d10Lens(30) + '</span><b>Plan AI · ' + monthLabel(mo) + ': minimum, standar, maksimum</b><span class="sub"> · dipakai sekarang: <b>' + PLAN_NAME[cfg.plan] + '</b> · rencana produksi ' + n(Math.round(T[cfg.plan].pp)) + ' karton</span></summary>' +
+    '<p class="note">Setelah forecast, <b>AI hitung dasar</b>: semua forecast bulan ini (' + esc(cand) + ') menjadi calon dasar. Lalu AI menyusun tiga plan; dasarnya boleh beda. Semua plan: <b>rencana produksi = dasar + buffer − stok bebas</b> (min 0). Backtest: tiap plan diputar ulang di ' + (bm.bt.months.length || 0) + ' closing terakhir dengan data sebelum bulan itu saja; <b>tertutup</b> = SKU-bulan dengan dasar + buffer ≥ order in.</p>' +
+    '<div class="scroll"><table class="pltb" data-tt="off"><thead><tr><th>Plan · rumus</th><th class="num">Dasar</th><th class="num">Buffer</th><th class="num">Rencana produksi</th><th class="num">Tertutup</th><th class="num">Lebih</th><th class="num">Kurang</th><th class="num">Skor</th><th></th></tr></thead><tbody>' +
+    ['old', 'min', 'std', 'max'].map(row).join('') + '</tbody></table></div>' +
+    '<p class="sub" style="margin:6px 0 0">Angka dalam karton, total ' + bm.rows.length + ' SKU, sebelum buffer manual. <a href="#" data-list="bfPlan">Lihat per SKU ›</a> · Klik nama SKU di tabel untuk riwayat forecast dan buffernya.</p></details>';
+  var L = bm.rows.filter(function (x) { return x.bf.plans && (x.bf.plans.max.pp || x.bf.plans.old.pp); }).sort(function (a, b) { return (b.bf.plans.max.pp - b.bf.plans.min.pp) - (a.bf.plans.max.pp - a.bf.plans.min.pp); });
+  var cell = function (p) { return p.pp === null ? '–' : '<b>' + n(p.pp) + '</b><small style="display:block;color:var(--mut)">' + (p.F === null ? '–' : n(Math.round(p.F))) + ' + ' + (p.buf === null ? '–' : n(Math.round(p.buf))) + '</small>'; };
+  CH.lists = CH.lists || {};
+  CH.lists.bfPlan = { title: 'Plan AI per SKU · ' + monthLabel(mo), tab: 'Buffer', note: 'Rencana produksi per plan; angka kecil = dasar + buffer. Rencana produksi = dasar + buffer − stok bebas. Urut dari selisih minimum–maksimum terbesar. Klik baris untuk membuka di tabel.', head: [['SKU'], ['Stok bebas', 1], ['Aturan lama', 1], ['Minimum', 1], ['Standar', 1], ['Maksimum', 1], ['Dasar min / maks']],
+    rows: L.map(function (x) { var P = x.bf.plans; return [skuLbl(x), n(x.bf.fs), cell(P.old), cell(P.min), cell(P.std), cell(P.max), esc(P.base.loS) + ' / ' + esc(P.base.hiS)]; }), keys: L.map(function (x) { return x.key; }) };
+}
 function renderBfGuide(bm, cnt, wT) {
   var BT = bm.bt, open = localStorage.getItem('ppic_bfguide') !== '0', pc = function (v) { return v === null ? '–' : fmt.format(Math.round(v)) + '%'; };
   var best = PICK.slice().sort(function (a, b) { return (bbAcc(BT.glob[b]) || 0) - (bbAcc(BT.glob[a]) || 0); })[0];
@@ -3310,7 +3387,7 @@ function renderPlan(m) {
   var demo = !master().length && !!state.sample && !manM, MST = master().length ? master() : demo ? demoMaster(pm) : []; CH.MST = MST;
   var sm = schedModel(pm, MST); CH.sm = sm;
   renderPPData(pm);
-  $('ppCtx').innerHTML = (state.sample ? '<span><span class="pill p-warn">MOCKUP</span></span>' : '') + '<span>Closing terakhir: <b>' + monthLabel(m.latest) + '</b></span><span>Bulan rencana: <b>' + monthLabel(P) + '</b> (' + pm.D + ' hari)</span><span>Dasar forecast: <b>' + { hq: 'Forecast HQ', ml: 'Ensemble AI', avg: 'Rata-rata HQ & ML', gbr: 'Regressor', chronos: 'Chronos', holt: 'Holt', hqc: 'HQ terkoreksi' }[pm.cfg.basis] + '</b> · buffer dari <a href="#" data-goto="Buffer">Saran Buffer</a></span>' + (state.sample ? '<span><span class="pill p-warn">CONTOH SIMULASI</span></span>' : '');
+  $('ppCtx').innerHTML = (state.sample ? '<span><span class="pill p-warn">MOCKUP</span></span>' : '') + '<span>Closing terakhir: <b>' + monthLabel(m.latest) + '</b></span><span>Bulan rencana: <b>' + monthLabel(P) + '</b> (' + pm.D + ' hari)</span><span>Dasar forecast: <b>' + { hq: 'Forecast HQ', ml: 'Ensemble AI', avg: 'Rata-rata HQ & ML', gbr: 'Regressor', chronos: 'Chronos', holt: 'Holt', hqc: 'HQ terkoreksi' }[pm.cfg.basis] + '</b> · plan <b>' + (PLAN_NAME[CH.bm.cfg.plan] || 'Standar').toLowerCase() + '</b> · buffer dari <a href="#" data-goto="Buffer">Saran Buffer</a></span>' + (state.sample ? '<span><span class="pill p-warn">CONTOH SIMULASI</span></span>' : '');
   document.querySelectorAll('#ppUnitSeg button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-pu') === state.ppUnit); });
   $('schSun').checked = !!state.ppSunOff; $('schCb').checked = !!state.ppCbOff;
   var schMan = schedFor(P).mode === 'manual', nUn0 = sm.unplaced.filter(function (x) { return !x.removed && !x.unmapped; }).length, nMap0 = sm.unplaced.filter(function (x) { return x.unmapped; }).length;
@@ -4336,13 +4413,22 @@ function openSku(key) {
     { name: 'Order in', color: cssVar('--s1'), values: mos.map(function (mo) { return past(mo) && s.oi[mo] !== undefined ? s.oi[mo] || 0 : null; }) },
     { name: 'Forecast HQ', color: cssVar('--s2'), values: mos.map(function (mo) { return past(mo) ? num(s.hq[mo]) : num(s.fhq[mo]); }) },
     { name: 'Forecast AI', color: cssVar('--accent'), dash: true, values: mos.map(function (mo) { return past(mo) ? (s.bt && typeof s.bt[mo] === 'number' ? Math.round(s.bt[mo]) : null) : num(s.ml && s.ml[mo]); }) }] };
+  var b = s.bf, BTm = b && CH.bm && CH.bm.bt && CH.bm.bt.mon[s.key] || [], btBy = {}; BTm.forEach(function (x) { btBy[x.mo] = x; });
+  if (b && (BTm.length || (b.hz && b.hz.length))) spec.series.push({ name: 'Dasar + buffer', color: cssVar('--s3') || cssVar('--warn'), dash: true, values: mos.map(function (mo) { var x = btBy[mo]; if (x) return Math.round(x.F + x.bufs[x.ast || 'standar']); var z = (b.hz || []).filter(function (h) { return h.mo === mo; })[0]; return z ? Math.round(z.F + z.buf) : null; }) });
   if (state.fcModel) spec.series.push({ name: MODELS[state.fcModel], color: cssVar('--warn'), dash: true, values: mos.map(function (mo) { var v = past(mo) ? s.btm && s.btm[mo] && s.btm[mo][state.fcModel] : s.mlInfo && s.mlInfo[mo] && s.mlInfo[mo][state.fcModel]; return typeof v === 'number' ? Math.round(v) : null; }) });
   spec.title = s.name || s.key; CH.spec = spec;
   var acc = function (k) { var a = 0, o = 0; cms.forEach(function (mo) { var p = k === 'ml' ? s.bt && s.bt[mo] : s.btm && s.btm[mo] && s.btm[mo][k]; if (typeof p !== 'number' || s.oi[mo] === undefined) return; a += Math.abs(p - (s.oi[mo] || 0)); o += s.oi[mo] || 0; }); return o ? fmt.format(Math.round(Math.max(0, 1 - a / o) * 100)) + '%' : '–'; };
   var hqAcc = (function () { var a = 0, o = 0; cms.forEach(function (mo) { if (typeof s.hq[mo] !== 'number' || s.oi[mo] === undefined) return; a += Math.abs(s.hq[mo] - (s.oi[mo] || 0)); o += s.oi[mo] || 0; }); return o ? fmt.format(Math.round(Math.max(0, 1 - a / o) * 100)) + '%' : '–'; })();
   var rows = [['Forecast HQ', fut.map(function (mo) { return n(s.fhq[mo]); }), hqAcc, '']].concat([['Forecast AI (gabungan)', fut.map(function (mo) { return n(s.ml && s.ml[mo]); }), acc('ml'), '100%']])
     .concat(MODEL_KEYS.map(function (k) { var i0 = s.mlInfo && s.mlInfo[fut[0]]; return [MODELS[k], fut.map(function (mo) { var i = s.mlInfo && s.mlInfo[mo]; return i && typeof i[k] === 'number' ? n(Math.round(i[k])) : '–'; }), acc(k), i0 && i0.wts && i0.wts[k] !== undefined ? Math.round(i0.wts[k] * 100) + '%' : '–']; }));
-  var notes = aiNotes(s, m), b = s.bf;
+  var notes = aiNotes(s, m);
+  // forecast history per closing month, with what the buffer would have been (backtest, Otomatis pick) and whether it covered order in
+  var hist = cms.slice().reverse().map(function (mo) {
+    var y = s.oi[mo], hq = num(s.hq[mo]), ai = s.bt && typeof s.bt[mo] === 'number' ? Math.round(s.bt[mo]) : null, x = btBy[mo], cov = x ? x.F + x.bufs[x.ast || 'standar'] : null;
+    return '<tr><td>' + monthLabel(mo) + '</td><td class="num">' + (y === undefined ? '–' : n(y || 0)) + '</td><td class="num">' + (hq === null ? '–' : n(hq)) + '</td><td class="num">' + (ai === null ? '–' : n(ai)) + '</td><td class="num">' + (hq !== null && y ? pctS((hq / y - 1) * 100) : '–') + '</td>' +
+      (x ? '<td class="num">' + n(Math.round(x.F)) + '</td><td class="num">' + n(Math.round(x.bufs[x.ast || 'standar'])) + ' <span class="sub">' + esc(STRATS[x.ast || 'standar'][0]) + '</span></td><td class="' + (cov >= x.y ? 'cov' : 'miss') + '">' + (cov >= x.y ? '✓ tertutup' : '✗ kurang ' + n(Math.round(x.y - cov))) + '</td><td>' + esc(STRATS[x.win][0]) + '</td>' : '<td class="num">–</td><td class="num">–</td><td class="sub">di luar backtest</td><td></td>') + '</tr>';
+  }).join('');
+  var P = b && b.plans, plRow = function (k, lbl, src) { var p = P[k]; return '<tr' + (b.plan === k ? ' class="on"' : '') + '><td><b>' + lbl + '</b>' + (b.plan === k ? ' <span class="pill p-ok">dipakai</span>' : '') + '</td><td class="num">' + (p.F === null ? '–' : n(Math.round(p.F))) + '</td><td>' + esc(src) + '</td><td class="num">' + (p.buf === null ? '–' : n(Math.round(p.buf))) + '</td><td class="num"><b>' + (p.pp === null ? '–' : n(p.pp)) + '</b></td></tr>'; };
   $('chTitle').textContent = (s.name || s.key) + ' · ' + (s.nomat || s.art || '');
   $('chBody').innerHTML = (state.sample ? '<span class="pill p-warn">CONTOH SIMULASI</span> ' : '') +
     '<p class="sub" style="margin:0 0 8px">' + esc([s.brand, s.category, s.cls ? 'kelas ' + s.cls.code : null, STATUS[s.status] ? STATUS[s.status][0] : null].filter(Boolean).join(' · ')) + '</p>' +
@@ -4350,7 +4436,11 @@ function openSku(key) {
     '<div class="chwrap" id="chWrap">' + drawChart(spec) + '<div class="chtip" id="chTip" hidden></div></div>' + legendHtml(spec.series) +
     '<h3 class="chh">Prediksi per model</h3><div class="scroll"><table class="ctb"><thead><tr><th>Model</th>' + fut.map(function (mo) { return '<th class="num">' + monthLabel(mo) + '</th>'; }).join('') + '<th class="num">Akurasi uji mundur</th><th class="num">Bobot</th></tr></thead><tbody>' +
     rows.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td>' + r[1].map(function (v) { return '<td class="num">' + v + '</td>'; }).join('') + '<td class="num">' + r[2] + '</td><td class="num">' + r[3] + '</td></tr>'; }).join('') + '</tbody></table></div>' +
-    (b ? '<h3 class="chh">Saran buffer ' + monthLabel(fut[0]) + '</h3><p>Strategi <b>' + esc(STRATS[b.st][0]) + '</b> (' + esc(b.auto[1]) + ') · ' + (b.q && b.st !== 'kuantil' ? 'P50 ' + n(Math.round(b.q.p50)) + ', P90 ' + n(Math.round(b.q.p90)) + ' dari ' + esc(b.q.src) + ' · ' : '') + 'buffer final <b>' + n(b.fin) + '</b> · rencana produksi <b>' + n(b.prod) + '</b></p>' : '');
+    (b ? '<h3 class="chh">Saran buffer ' + monthLabel(fut[0]) + '</h3><p>Strategi <b>' + esc(STRATS[b.st][0]) + '</b> (' + esc(b.auto[1]) + ') · ' + (b.q && b.st !== 'kuantil' ? 'P50 ' + n(Math.round(b.q.p50)) + ', P90 ' + n(Math.round(b.q.p90)) + ' dari ' + esc(b.q.src) + ' · ' : '') + 'stok bebas ' + n(b.fs) + ' · buffer final <b>' + n(b.fin) + '</b> · rencana produksi <b>' + n(b.prod) + '</b></p>' : '') +
+    (P ? '<h3 class="chh">Plan AI ' + monthLabel(fut[0]) + '</h3><div class="scroll"><table class="ctb skh" data-tt="off"><thead><tr><th>Plan</th><th class="num">Dasar</th><th>Dasar dari</th><th class="num">Buffer</th><th class="num">Rencana produksi</th></tr></thead><tbody>' +
+      plRow('old', 'Aturan lama', 'Forecast HQ + buffer file closing') + plRow('min', 'Minimum', P.base.loS) + plRow('std', 'Standar', BASIS_NAME[CH.bm.cfg.basis] || '') + plRow('max', 'Maksimum', P.base.hiS) + '</tbody></table></div>' : '') +
+    '<h3 class="chh">Riwayat forecast' + (BTm.length ? ' dan buffer' : '') + '</h3><p class="sub" style="margin:0 0 6px">Terbaru di atas. ' + (BTm.length ? 'Dasar + buffer = yang akan dipakai bulan itu (strategi Otomatis, hanya data sebelum bulan itu), dibandingkan dengan order in. Terbaik = strategi yang paling murah bulan itu.' : 'Backtest buffer perlu minimal 3 closing.') + '</p>' +
+    '<div class="scroll"><table class="ctb skh" data-tt="off"><thead><tr><th>Bulan</th><th class="num">Order in</th><th class="num">Forecast HQ</th><th class="num">Forecast AI</th><th class="num">HQ vs order in</th><th class="num">Dasar</th><th class="num">Buffer</th><th>Hasil</th><th>Terbaik</th></tr></thead><tbody>' + hist + '</tbody></table></div>';
   bindChart();
   var dlg = $('chDlg'); if (dlg.showModal) { if (!dlg.open) dlg.showModal(); } else dlg.setAttribute('open', '');
 }
@@ -6134,7 +6224,7 @@ function mkFillDemo(auto) {
 $('bfCtl').addEventListener('click', function (e) {
   var b = e.target.closest('button[data-bk]'); if (!b) return;
   var k = b.getAttribute('data-bk'), v = b.getAttribute('data-bv'), t0 = CH.bm ? bfAgg(CH.bm.rows) : null;
-  state.bufCfg[k] = k === 'basis' || k === 'qsrc' || k === 'cmp' ? v : +v; saveBuf(); renderAll();
+  state.bufCfg[k] = k === 'basis' || k === 'qsrc' || k === 'cmp' || k === 'plan' ? v : +v; saveBuf(); renderAll();
   if (k === 'cmp' && CH.bm) { if (!v || !CH.bm.cmp) { aiSpeak(v ? (BASIS_NAME[v] || v) + ' sudah jadi Dasar forecast. Pilih forecast lain untuk dibandingkan.' : 'Perbandingan ditutup.'); return; }
     var B = { fin: 0, prod: 0 }; CH.bm.rows.forEach(function (x) { if (x.bf2) { B.fin += x.bf2.fin; B.prod += x.bf2.prod; } });
     var A = bfAgg(CH.bm.rows), an = BASIS_NAME[CH.bm.cfg.basis] || CH.bm.cfg.basis, bn = BASIS_NAME[v] || v;
@@ -6199,7 +6289,10 @@ $('bfTable').addEventListener('click', function (e) {
   var td = e.target.closest('td[data-bfin]');
   if (td) { e.stopPropagation(); openBufEdit(td); return; }
   var w = e.target.closest('button[data-bwhy]');
-  if (w) { e.stopPropagation(); bufWhy(w.getAttribute('data-bwhy'), w); }
+  if (w) { e.stopPropagation(); bufWhy(w.getAttribute('data-bwhy'), w); return; }
+  // SKU name: forecast history with the buffer of each past month and the three plans
+  var nm = e.target.closest('tr.sku[data-bsk] > td:first-child');
+  if (nm && !e.target.closest('button, select, input, a')) openSku(nm.parentNode.getAttribute('data-bsk'));
 });
 $('bfTable').addEventListener('keydown', function (e) {
   var td = e.target.closest('td[data-bfin]'); if (td && (e.key === 'Enter' || e.key === 'F2')) { e.preventDefault(); e.stopPropagation(); openBufEdit(td); }
@@ -8220,6 +8313,12 @@ $('bfTable').addEventListener('click', function (e) {
 }, true);
 $('bfGuide').addEventListener('click', function (e) { var b = e.target.closest('[data-askstrat]'); if (b) { e.preventDefault(); var st = b.getAttribute('data-askstrat'); d10Ask('Apa arti strategi ' + STRATS[st][0] + '?', aiGuide('strategi ' + STRATS[st][0].toLowerCase(), 'strategi ' + STRATS[st][0].toLowerCase(), aiCtx())); } });
 $('tabBuffer').addEventListener('toggle', function (e) { if (e.target.classList && e.target.classList.contains('bfleg')) try { localStorage.setItem('ppic_bfleg', e.target.open ? '1' : '0'); } catch (x) {} }, true);
+$('bfPlans').addEventListener('click', function (e) {
+  var u = e.target.closest('[data-useplan]'); if (u) { var k = u.getAttribute('data-useplan'), t0 = CH.bm ? bfAgg(CH.bm.rows) : null; state.bufCfg.plan = k; saveBuf(); renderAll();
+    if (t0 && CH.bm) { var t1 = bfAgg(CH.bm.rows); aiSpeak('Plan ' + PLAN_NAME[k].toLowerCase() + ' dipakai: rencana produksi ' + n(t0.prod) + ' → ' + n(t1.prod) + ', buffer ' + n(t0.fin) + ' → ' + n(t1.fin) + '. Rencana produksi per mesin dan bahan baku ikut berubah.'); } return; }
+  var l = e.target.closest('[data-list]'); if (l) { e.preventDefault(); openList(l.getAttribute('data-list')); }
+});
+$('bfPlans').addEventListener('toggle', function (e) { if (e.target.id === 'bfPlansD') try { localStorage.setItem('ppic_bfplans', e.target.open ? '1' : '0'); } catch (x) {} }, true);
 $('bfGuide').addEventListener('toggle', function (e) { if (e.target.id === 'bfGuideD') try { localStorage.setItem('ppic_bfguide', e.target.open ? '1' : '0'); } catch (x) {} }, true);
 // ---------- start ----------
 $('tabMaster').appendChild($('mmPanel'));
