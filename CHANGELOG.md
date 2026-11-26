@@ -5,6 +5,16 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
 
 ## 2026-11-26
 
+- **Plan AI: minimum, standar, maksimum.** After the forecast, Saran buffer first works out the base (*AI hitung dasar*):
+  the chosen basis, Forecast HQ, Ensemble AI and P50 are all candidates. It then builds three plans whose base may differ:
+  **Minimum** (lowest base, buffer at 90% capped at 10 days), **Standar** (the existing plan) and **Maksimum** (highest base,
+  Defensif 98% ×1,15 or P90 at 98%). A new **Plan AI** panel compares them with the **old rule** (Forecast HQ + the closing
+  file's Buffer Suggestion − stok bebas): base, buffer and production totals, plus a 6-closing backtest per plan (tertutup,
+  lebih, kurang, skor). **Plan dipakai** picks which plan feeds the buffer, Rencana produksi and raw materials; Standar is
+  the default, so nothing changes until a planner picks another one. *Lihat per SKU* lists the plans per SKU.
+- **Saran buffer: clicking a SKU name opens its history.** The dialog shows order in, Forecast HQ and AI per month, a
+  *Dasar + buffer* line, the three plans for M+1, and a *Riwayat forecast dan buffer* table: per closing month the base and
+  buffer the app would have used, whether it covered order in, and which strategy was best that month.
 - **Rencana produksi Excel in the planner's TUB Planning layout.** *Ekspor Excel* in Rencana produksi and *Excel rencana* in
   Perencanaan Produksi now write the same sheets as the planner's file: TUB (summary per SKU), Hasil, Machine (subtotals per
   area, W1–W5), JR, MT, SKU (daily plan), Capacity and BOM, with the planner's headers, colours, frozen panes, filters and live
