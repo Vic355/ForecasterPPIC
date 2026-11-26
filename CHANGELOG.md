@@ -3,6 +3,24 @@
 Changes to the PPIC Decision Support System (Forecast Desk), newest first. Built from the git history and pull requests
 of this repository. Dates are when the change reached `main`. How the parts fit together: [docs/sistem.md](docs/sistem.md).
 
+## 2026-11-26
+
+- **Material master, Forecast, Saran buffer and Rencana produksi, round of fixes.** The step *Material & status* is
+  called **Material master** again. Its table has a **No** column and a fixed order (brand, category, name), so a row no
+  longer moves when its status changes; **Status ▾** in the header filters by status like an Excel AutoFilter, and rows
+  changed while the filter is on stay visible until the filter changes. The *Forecast ›* link is replaced by **OI /
+  Forecast ▸**: a dialog with the SKU's order in, Forecast HQ ORIG and REV, error and source row per closing month, then
+  Forecast HQ and AI ahead. New hideable columns: **Order in** and **HQ** for the last three closing months. The **step
+  header** shows icons instead of numbers. **Forecast**: Kolom ▾ sits in the toolbar, Brand and Kategori are hidden by
+  default, group rows under a brand show only their own name (or *(tanpa kategori)*), the Sugesti column is clamped to two
+  lines (full text on hover), and edits no longer retrain Forecast AI on every number: a bar says how many changes are
+  pending and **▶ Jalankan forecast** runs it. **Saran buffer**: the monthly totals read stok awal + rencana produksi −
+  forecast = stok akhir, then buffer and stok akhir − buffer. **Rencana produksi**: the side panel is the **Planner** (both
+  modes) with a **Plan balance** card (planned production vs scheduled), numbered rows, *Semua* first, and it opens by
+  itself when SKUs still need a bar; a daily target of **0 skips that day** (the machine is free, the bar is cut there and
+  the other days share the PP); **▦ Tampilan Excel** shows only machine × SKU × day with editable daily targets (typing on
+  an empty day adds it, 0 skips, Delete returns to automatic). Fixed: bars painted over the frozen columns of the grid.
+
 ## 2026-11-25
 
 - **Less clutter on Input, Forecast and Saran buffer; how Forecast AI learns.** **Dashboard** leaves the step flow and
