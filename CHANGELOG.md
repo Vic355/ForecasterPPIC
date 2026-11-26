@@ -19,7 +19,9 @@ of this repository. Dates are when the change reached `main`. How the parts fit 
   modes) with a **Plan balance** card (planned production vs scheduled), numbered rows, *Semua* first, and it opens by
   itself when SKUs still need a bar; a daily target of **0 skips that day** (the machine is free, the bar is cut there and
   the other days share the PP); **▦ Tampilan Excel** shows only machine × SKU × day with editable daily targets (typing on
-  an empty day adds it, 0 skips, Delete returns to automatic). Fixed: bars painted over the frozen columns of the grid.
+  an empty day adds it, 0 skips, Delete returns to automatic). Fixed: bars and day headers painted over the frozen columns
+  of the grid. **Kolom ▾** remembers a hidden month column by its place (e.g. *Order in, oldest month*), so it stays
+  hidden when next month's data changes the column names.
 
 ## 2026-11-25
 
