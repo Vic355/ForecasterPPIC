@@ -136,7 +136,7 @@ section.flat > .ph { margin: 0; }
 .ppg tr.tot .dc.tsum { color: var(--fg); font-weight: 700; }
 .ppg td.tg { cursor: cell; background: var(--accent-soft); color: var(--fg); }
 .ppg td.tg.edited { background: linear-gradient(225deg, var(--warn) 6px, transparent 6px), var(--warn-soft); font-weight: 700; }
-.ppg td.tg.hot { color: var(--bad); font-weight: 700; box-shadow: inset 0 -2px 0 var(--bad); }
+.ppg td.tg.hot { color: var(--warn); font-weight: 700; background: var(--warn-soft); box-shadow: inset 0 -2px 0 var(--mid); }
 .ppg td.tg:focus { outline: 2px solid var(--accent); outline-offset: -2px; }
 .ppg td.tg input { width: 100%; box-sizing: border-box; text-align: right; font: inherit; min-height: 20px; border: 2px solid var(--s1); border-radius: 3px; padding: 0 2px; }
 .ppg td.tl { padding: 0; width: auto; min-width: 0; }
@@ -902,6 +902,7 @@ body.psdrag, body.psdrag * { cursor: grabbing !important; }
 .ppg tr.mach.psok > td { background: color-mix(in srgb, var(--lamp-hijau, #3f6b56) 12%, var(--paper)) !important; }
 .ppg tr.mach.psother > td { background: color-mix(in srgb, var(--lamp-kuning, #c9a227) 10%, var(--paper)) !important; }
 .trk .psprev { position: absolute; top: 3px; bottom: 3px; border: 2px dashed var(--acc); background: color-mix(in srgb, var(--acc) 22%, transparent); border-radius: 6px; z-index: 3; pointer-events: none; font-size: 11.5px; font-weight: 700; color: var(--ink); padding: 0 4px; white-space: nowrap; overflow: hidden; display: flex; align-items: center; }
+.trk .psprevs { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
 .trk .psprev.warn { border-color: var(--lamp-kuning, #c9a227); background: color-mix(in srgb, var(--lamp-kuning, #c9a227) 25%, transparent); }
 .ppg tr.nodata td { padding: 18px 14px; font-size: 15px; color: var(--mut); text-align: left; }
 /* Rencana produksi focus: hide summary cards, context line and the alert ribbon while arranging the plan */
@@ -1066,7 +1067,7 @@ table.xlt { border-collapse: separate; border-spacing: 0; font-size: 12px; width
 body.pskon #ppBalTop { display: none; }
 .xlt tr.xf td { border-top: 1.5px solid var(--line); }
 .xlt td.xd.on { background: color-mix(in srgb, var(--blu, #2f6fb5) 16%, var(--paper)); color: var(--ink); font-weight: 600; cursor: cell; }
-.xlt td.xd.on.lk { box-shadow: inset 0 -2px 0 var(--acc); } .xlt td.xd.on.hot { color: var(--bad); }
+.xlt td.xd.on.lk { box-shadow: inset 0 -2px 0 var(--acc); } .xlt td.xd.on.hot { color: var(--warn); background: var(--warn-soft); }
 .xlt td.xd.skip { background: repeating-linear-gradient(135deg, transparent 0 4px, color-mix(in srgb, var(--warn) 25%, transparent) 4px 6px); text-align: center; color: var(--warn); cursor: cell; }
 .xlt td.xd.off, .xlt th.xd.off { background: color-mix(in srgb, var(--bad) 7%, var(--paper)); } .xlt td.xd.offm { background: repeating-linear-gradient(135deg, transparent 0 4px, var(--line2, #eee) 4px 6px); }
 .xlt td.xd.nx, .xlt th.xd.nx { opacity: .75; } .xlt td.xd[data-xk] { cursor: cell; } .xlt td.xd:focus { outline: 2px solid var(--acc); outline-offset: -2px; }
@@ -1168,7 +1169,7 @@ body.pskon #ppBalTop { display: none; }
       <div class="ppctl"><button type="button" id="ppOpenAll">Buka semua mesin</button><button type="button" id="ppCloseAll">Tutup semua</button><button type="button" id="ppXlB" aria-pressed="false" title="Hanya mesin × SKU × tanggal dengan target harian, seperti rencana di Excel. Ketik angka di sel: hari baru menambah produksi, 0 melewati hari itu.">▦ Tampilan Excel</button><button type="button" id="ppFocus" aria-pressed="false" title="Sembunyikan kartu ringkasan dan alert di atas jadwal supaya fokus menyusun rencana">Sembunyikan ringkasan</button><span class="seg" id="schMode" title="Otomatis: model menjadwalkan semua SKU yang belum Anda atur sendiri, dan ikut berubah bila PP berubah. Manual: hanya bar yang Anda taruh; SKU tanpa bar tampil merah."><span>Cara menjadwal</span><button type="button" data-schmode="auto">Otomatis</button><button type="button" data-schmode="manual">Manual</button></span><button type="button" id="schReset" class="pri" title="Model menjadwalkan SKU ke mesin: SKU prioritas (stok bebas < forecast) dulu, lalu hari stok tersisa paling sedikit, lalu PP terbesar">▶ Jalankan jadwal otomatis</button><button type="button" id="ppReset" title="Kosongkan rencana, atau hapus juga perubahan manual (bar, target harian, PP target, libur)">↺ Reset…</button><button type="button" id="ppXlsx" title="Unduh rencana produksi bulan ini sebagai Excel dalam format TUB Planning: ringkasan per SKU (TUB), Hasil, Machine, JR, MT, SKU (rencana harian), Capacity dan BOM">Ekspor Excel</button><button type="button" id="ppToMon" title="Pakai jadwal ini sebagai rencana di Perencanaan Produksi (rencana harian, aktual, skenario). Data aktual yang sudah diisi tidak diubah.">Kirim ke Perencanaan Produksi ↗</button><span class="sub" id="ppHint"></span></div>
       <p class="note" id="schNote"></p>
       <div id="ppBalTop"></div><div class="ppscroll" id="ppScroll"><table id="ppTable" class="fct ppt ppg"></table></div><div id="ppXl" class="ppxlw" hidden></div><div class="ppbar" id="ppBar" aria-hidden="true"><div></div></div>
-      <div class="legend"><span><i class="schk"></i> SKU (geser / tarik ujung kanan)</span><span><i class="schk bad"></i> stok habis sebelum bar mulai</span><span><i class="schk man"></i> diatur manual</span><span><i class="schk ovr"></i> lewat akhir bulan</span><span><i class="schk clash"></i> bentrok</span><span><i class="sw offsw"></i> libur</span><span><i class="sw mntsw"></i> maintenance</span><span><i class="sw edsw"></i> target diisi manual</span><span>⚠ rencana beda dari target</span><span>Kolom SKU, Target, Rencana dan Hari dan baris tanggal tetap di tempat saat digeser (seperti freeze panes Excel)</span></div>
+      <div class="legend"><span><i class="schk"></i> SKU (geser / tarik ujung kanan)</span><span><i class="schk bad"></i> stok habis sebelum bar mulai</span><span><i class="schk man"></i> diatur manual</span><span><i class="schk clash"></i> bentrok</span><span><i class="sw offsw"></i> libur</span><span><i class="sw mntsw"></i> maintenance</span><span><i class="sw edsw"></i> target diisi manual</span><span>⚠ rencana beda dari target</span><span>Kolom SKU, Target, Rencana dan Hari dan baris tanggal tetap di tempat saat digeser (seperti freeze panes Excel)</span></div>
     </section>
   </div>
 
@@ -3184,7 +3185,7 @@ function skuGroupOf(s) {
   gs.forEach(function (g) { var k = grpKey(g.g); if (!k || !g.t) return; if ((k === fam || nm.indexOf(k) >= 0) && (!best || k.length > grpKey(best.g).length)) best = g; });
   return best;
 }
-var SCH_X = 14; // days after month end that the calendar may run into
+var SCH_X = 0; // the plan stays inside its month: no bar runs into the next month (target = what to make this month)
 function schedModel(pm, MST) {
   var P = pm.P, D = pm.D, sc = schedFor(P), cal = calOff(P), H0 = D + SCH_X, machines = [], byName = {}, unplaced = [], items = [], byKey = {};
   MST.forEach(function (g) { g[1].forEach(function (x) {
@@ -3224,6 +3225,7 @@ function schedModel(pm, MST) {
     var nd = pcs.reduce(function (a, pc) { return a + pc.days.length; }, 0); pcs.forEach(function (pc) { pc.t = nd ? t * pc.days.length / nd : 0; });
   });
   // manual mode: nothing is placed by the model; every SKU without a bar is "belum terjadwal" (red)
+  var overM = {}; // tonnes that did not fit this month at machine output (kept on the SKU's bars, above capacity)
   var manual = sc.mode === 'manual' && !sc._force;
   auto.forEach(function (r) {
     if (r.mach.guess && !state.sample) { unplaced.push({ r: r, unmapped: true, why: 'SKU belum dipetakan ke area mesin (isi Kelompok SKU di Input, atau pilih di sini)' }); return; }
@@ -3231,25 +3233,32 @@ function schedModel(pm, MST) {
     var t = r.pl * r.nw / 1000, tm = skuMachOf(r.s);
     var cand = tm && tm.mach && byName[tm.mach] && byName[tm.mach].rate > 0 ? [byName[tm.mach]] : machines.filter(function (x) { return x.type === r.mach.v && x.rate > 0; });
     if (!cand.length) { unplaced.push({ r: r, t: t, unmapped: !r.mach.v, why: r.mach.v ? 'area mesin ' + r.mach.v + ' tidak punya mesin dengan kapasitas' : 'area mesin belum dipetakan' }); return; }
-    var left = t, guard = 0, hz = D; // fill the month on all candidate machines first, only then run past month end
+    // bars follow the target: each bar is as long as the target needs at the machine's output; when a free stretch is too
+    // short the SKU gets another bar (next free stretch, or another machine of its area). Only days of this month are used:
+    // whatever does not fit stays on the SKU's bars as daily targets above capacity (amber warning), never in the next month.
+    var left = t, guard = 0, loose = false, pcs0 = [];
     while (left > 1e-6 && guard++ < 60) {
       var best = null, bestD = Infinity;
       // earliest free stretch on each machine; skip gaps of 1 day when more is needed (avoids tiny bar fragments)
       cand.forEach(function (mc) {
         var want = Math.min(2, Math.max(1, Math.ceil(left / (rateOf(r, mc) || 1) - 0.2)));
-        for (var d = 1; d <= hz; d++) {
+        for (var d = 1; d <= D; d++) {
           if (isOff(mc, d) || mc.occ[d]) continue;
-          var run = 0; for (var e = d; e <= hz && !mc.occ[e]; e++) if (!isOff(mc, e)) run++;
-          if (run >= want || (hz === H0 && run > 0)) { if (d < bestD) { bestD = d; best = mc; } break; }
-          while (d <= hz && !mc.occ[d]) d++;
+          var run = 0; for (var e = d; e <= D && !mc.occ[e]; e++) if (!isOff(mc, e)) run++;
+          if (run >= want || (loose && run > 0)) { if (d < bestD) { bestD = d; best = mc; } break; }
+          while (d <= D && !mc.occ[d]) d++;
         }
       });
-      if (!best && hz < H0) { hz = H0; continue; }
-      if (!best) { unplaced.push({ r: r, t: left, why: 'tidak muat sampai ' + SCH_X + ' hari setelah akhir bulan', partial: left < t }); break; }
+      if (!best && !loose) { loose = true; continue; }
+      if (!best) {
+        if (!pcs0.length) unplaced.push({ r: r, t: left, why: 'tidak ada hari kosong bulan ini di mesin ' + (r.mach.v || 'area ini') });
+        else { var tt = pcs0.reduce(function (a, x) { return a + x.t; }, 0); pcs0.forEach(function (x) { x.t += tt ? left * x.t / tt : 0; }); overM[r.s.key] = left; }
+        break;
+      }
       var rt = rateOf(r, best), need = Math.max(1, Math.ceil(left / rt - 0.2)), got = 0, d2 = bestD, last = bestD;
-      while (got < need && d2 <= hz) { if (best.occ[d2]) break; if (!isOff(best, d2)) { got++; last = d2; } d2++; }
+      while (got < need && d2 <= D) { if (best.occ[d2]) break; if (!isOff(best, d2)) { got++; last = d2; } d2++; }
       var pc = addPiece(r, best, bestD, last - bestD + 1, false), tk = got >= need ? left : Math.min(left, got * rt);
-      pc.t = tk; left -= tk;
+      pc.t = tk; left -= tk; pcs0.push(pc);
     }
   });
   // daily targets: PP spread evenly over the SKU's production days; typed targets are kept and the rest rebalances
@@ -3268,6 +3277,7 @@ function schedModel(pm, MST) {
     if (!dl.length) flag(k, r, 'bar hanya di hari libur');
     if (sum !== r.pp && dl.length) flag(k, r, 'PP rencana ' + n(sum) + ' ≠ PP target ' + n(r.pp));
     dl.forEach(function (d) { ds[d].forEach(function (pc) { var rt = rateOf(r, pc.mc); if (rt > 0 && o[d].v / ds[d].length * r.nw / 1000 > rt * LAMPU.rencana.diAtasKecepatan / 100) { o[d].hot = true; flag(k, r, 'target harian di atas kapasitas ' + mLbl(pc.mc.name) + ' (' + fmt.format(Math.round(rt * 10) / 10) + ' t/hari): boleh, perlu lembur'); } }); });
+    if (overM[k]) flag(k, r, 'tidak muat di kapasitas bulan ini: ' + fmt.format(Math.round(overM[k] * 10) / 10) + ' t ditaruh di atas kapasitas (lembur), tidak ke bulan berikutnya');
     pcs.forEach(function (pc) {
       if (pc.days.some(function (d) { return d > D; })) flag(k, r, 'lewat akhir bulan (selesai tgl ' + (pc.s + pc.l - 1 - D) + ' bulan berikutnya)');
       if (pc.clash) flag(k, r, 'bentrok dengan ' + (pc.clash.s.name || pc.clash.s.key) + ' di ' + pc.mc.name);
@@ -3338,7 +3348,7 @@ function renderPlan(m) {
     rows: bad.map(function (x) { var r = x.r; return [skuLbl(r.s), n(r.fs), fmt.format(Math.round(r.cover)), '<b class="red">' + x.out + '</b>', x.first ? 'tgl ' + x.first : '<b class="red">belum ada bar</b>', n(r.pp)]; }), keys: bad.map(function (x) { return x.r.s.key; }) };
   CH.lists.ppUn = { title: 'Belum terjadwal', tab: 'Plan', note: 'SKU dengan PP yang belum (seluruhnya) masuk jadwal, dengan alasannya. Baris merah di tabel: tempatkan di mesin (tombol <b>Tempatkan di mesin…</b>), pilih area mesin di grup <b>Belum dipetakan</b>, atau tekan <b>▶ Jalankan jadwal otomatis</b>.', head: [['SKU'], ['PP', 1], ['Area mesin'], ['Alasan']],
     rows: un.map(function (u) { return [skuLbl(u.r.s), n(u.r.pp), mach(u.r), esc(u.why)]; }), keys: un.map(function (u) { return u.r.s.key; }) };
-  CH.lists.ppIss = { title: 'Jadwal perlu dicek', tab: 'Plan', note: 'Bar yang lewat akhir bulan, bentrok dengan SKU lain di mesin yang sama, target harian di atas kecepatan mesin, atau jumlah target ≠ PP.', head: [['SKU'], ['Mesin'], ['Masalah']],
+  CH.lists.ppIss = { title: 'Jadwal perlu dicek', tab: 'Plan', note: 'Bar yang bentrok dengan SKU lain di mesin yang sama, target harian di atas kapasitas mesin (boleh, tanda lembur), atau jumlah target ≠ PP. Jadwal tidak pernah melewati akhir bulan: yang tidak muat ditaruh di atas kapasitas.', head: [['SKU'], ['Mesin'], ['Masalah']],
     rows: iss.map(function (x) { return [skuLbl(x.r.s), esc((sm.byKey[x.r.s.key] || []).map(function (pc) { return pc.mc.name; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).join(', ')), esc(x.why.join('; '))]; }), keys: iss.map(function (x) { return x.r.s.key; }) };
   CH.lists.ppGuess = { title: 'Mesin belum pasti', tab: 'Plan', note: 'Area mesin masih ditebak dari nama SKU. Isi lembar <i>sku_mesin</i> di template (Input → Data rencana produksi), unggah Excel PP dengan kolom Material + Mesin, atau pilih di tabel.', head: [['SKU'], ['Tebakan'], ['PP', 1]],
     rows: guess.map(function (r) { return [skuLbl(r.s), esc(r.mach.v || 'belum ada'), n(r.pp)]; }), keys: guess.map(function (r) { return r.s.key; }) };
@@ -3346,7 +3356,7 @@ function renderPlan(m) {
     listCard('ppAll', 'PP ' + monthLabel(P) + ' · target / rencana', (mt ? t1(all.t.pp) : n(all.pp)) + ' / ' + (mt ? t1(plTon) : n(plTot)), withPP.length + ' SKU. Target dari Saran Buffer' + (nLockT ? ', ' + nLockT + ' diubah manual' : '') + '. Rencana = jumlah target harian' + (plTot !== all.pp ? ' (selisih ' + (mt ? fmt.format(Math.round((plTon - all.t.pp) * 10) / 10) + ' t' : signed(plTot - all.pp)) + ')' : '') + '' + '.', plTot === all.pp ? 'Sesuai' : 'Selisih', plTot === all.pp ? '' : 'warn') +
     listCard('ppBad', 'Stok habis sebelum produksi', n(bad.length) + ' SKU', bad.length ? 'Stok bebasnya habis sebelum bar pertama mulai. Majukan barnya.' : 'Semua SKU mulai diproduksi sebelum stoknya habis.' + (nPri ? ' ' + nPri + ' SKU prioritas (stok < forecast) sudah dijadwalkan lebih dulu.' : ''), bad.length ? 'Majukan' : 'Aman', bad.length ? 'bad' : 'ok') +
     listCard('ppUn', 'Belum terjadwal', n(un.length) + ' SKU', un.length ? (manM ? 'Mode manual: tarik SKU dari panel kiri ke mesin. ' : '') + 'Juga: tanpa berat bersih, area mesin tanpa mesin, belum dipetakan, atau dikeluarkan manual.' : 'Semua SKU dengan PP sudah masuk jadwal.', un.length ? 'Belum di jadwal' : 'Lengkap', un.length ? (LAMPU.rencana.belumTerjadwal === 'kuning' ? 'warn' : 'bad') : 'ok', 'merah bila ada SKU dengan PP tanpa bar') +
-    listCard('ppIss', 'Jadwal perlu dicek', n(iss.length) + ' SKU', iss.length ? 'Lewat akhir bulan, bentrok, atau target harian di atas kecepatan mesin.' : 'Semua bar selesai dalam bulan, tanpa bentrok.', iss.length ? 'Cek' : 'Rapi', iss.length ? 'warn' : 'ok') +
+    listCard('ppIss', 'Jadwal perlu dicek', n(iss.length) + ' SKU', iss.length ? 'Bentrok, target harian di atas kapasitas (lembur, peringatan saja), atau rencana ≠ target.' : 'Tanpa bentrok, semua target dalam kapasitas.', iss.length ? 'Cek' : 'Rapi', iss.length ? 'warn' : 'ok') +
     listCard('ppGuess', 'Mesin belum pasti', n(guess.length) + ' SKU', guess.length ? 'Area mesin masih tebakan dari nama SKU.' : 'Semua SKU dengan PP punya area mesin dari data.', guess.length ? 'Tebakan' : 'Lengkap', guess.length ? 'warn' : 'ok');
   // the day grid is the slowest part of a redraw; it is drawn only while Rencana produksi is open (or when it opens)
   CH.ppGrid = [pm, sm, mt, all];
@@ -3504,7 +3514,7 @@ function renderPlanGrid(pm, sm, mt, all) {
         cells += on ? '<td class="dc tg' + dcls(d) + (x.man ? ' edited' : '') + (x.hot ? ' hot' : '') + '" tabindex="0" data-tk="' + esc(k) + '" data-td="' + d + '" title="Target tgl ' + dayLbl(d) + ': ' + n(x.v) + ' ctn' + (r.nw ? ' (' + fmt.format(Math.round(x.v * r.nw / 100) / 10) + ' t)' : '') + (x.pcs.length > 1 ? ', dibagi ' + x.pcs.length + ' mesin' : '') + (x.man ? ' · diisi manual' : ' · otomatis') + (x.hot ? ' · di atas kecepatan mesin' : '') + '. Klik dua kali atau ketik untuk mengubah, 0 = lewati hari ini, Delete untuk otomatis.">' + (mt ? cmp(sh * r.nw / 1000) : cmp(sh)) + '</td>' : pc.skip && pc.skip.indexOf(d) >= 0 ? '<td class="dc tg skip' + dcls(d) + '" tabindex="0" data-tk="' + esc(k) + '" data-td="' + d + '" data-skip="1" title="Dilewati (target 0): mesin bebas untuk SKU lain, hari lain menanggung PP-nya. Ketik angka untuk produksi lagi, Delete untuk otomatis.">⤼</td>' : '<td class="dc' + dcls(d) + '"></td>';
       }
     } else cells = '<td class="dc sep" colspan="' + H + '">' + (tail || '') + '</td>';
-    return '<tr class="sku' + (filt && !hit(r) ? ' dimrow' : '') + '"><td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + esc(s.nomat || s.art || '') + ' · ' + (r.nw ? fmt.format(r.nw) + ' kg/ct' : 'tanpa berat') + (pc && pc.part ? ' · bagian ' + pc.part : '') + '</span>' + (sm.late[k] ? '<span class="bst b-low" title="' + esc('Stok habis sebelum produksi: stok bebas ' + n(r.fs) + ' cukup ±' + fmt.format(Math.round(r.cover * 10) / 10) + ' hari (forecast ' + n(r.F) + ' ÷ ' + pm.D + ' hari = ' + n(Math.round(r.F / pm.D)) + '/hari), habis sekitar tgl ' + sm.late[k].out + (sm.late[k].first ? ', tapi bar pertama baru mulai tgl ' + sm.late[k].first : ', dan belum ada bar') + '.\nTindakan: geser bar ke tgl ' + sm.late[k].out + ' atau lebih awal.') + '">Stok habis tgl ' + sm.late[k].out + '</span>' : '<span class="bst b-' + (r.st[1] === 'low' ? 'pri' : r.st[1]) + '" title="' + esc(r.st[2]) + '">' + r.st[0] + '</span>') + (sm.issues[k] ? '<span class="bst b-low" title="' + esc(sm.issues[k].why.join('; ')) + '">Cek jadwal</span>' : '') + (opt || '') + '</td>' +
+    return '<tr class="sku' + (filt && !hit(r) ? ' dimrow' : '') + '"><td><span class="nm" title="' + esc(s.name || '') + '">' + esc(s.name || '(tanpa nama)') + '</span><span class="code">' + esc(s.nomat || s.art || '') + ' · ' + (r.nw ? fmt.format(r.nw) + ' kg/ct' : 'tanpa berat') + (pc && pc.part ? ' · bagian ' + pc.part : '') + '</span>' + (sm.late[k] ? '<span class="bst b-low" title="' + esc('Stok habis sebelum produksi: stok bebas ' + n(r.fs) + ' cukup ±' + fmt.format(Math.round(r.cover * 10) / 10) + ' hari (forecast ' + n(r.F) + ' ÷ ' + pm.D + ' hari = ' + n(Math.round(r.F / pm.D)) + '/hari), habis sekitar tgl ' + sm.late[k].out + (sm.late[k].first ? ', tapi bar pertama baru mulai tgl ' + sm.late[k].first : ', dan belum ada bar') + '.\nTindakan: geser bar ke tgl ' + sm.late[k].out + ' atau lebih awal.') + '">Stok habis tgl ' + sm.late[k].out + '</span>' : '<span class="bst b-' + (r.st[1] === 'low' ? 'pri' : r.st[1]) + '" title="' + esc(r.st[2]) + '">' + r.st[0] + '</span>') + (sm.issues[k] ? '<span class="bst ' + (sm.issues[k].why.some(function (w) { return /^bentrok|hanya di hari libur/.test(w); }) ? 'b-low' : 'b-noprod') + '" title="' + esc(sm.issues[k].why.join('; ')) + '">' + (sm.issues[k].why.every(function (w) { return /kapasitas/.test(w); }) ? '⚠ Di atas kapasitas' : 'Cek jadwal') + '</span>' : '') + (opt || '') + '</td>' +
       ppCells(r, pc) + '<td class="num">' + (pc ? pc.days.length : '') + '</td>' + cells + '</tr>';
   };
   if (!state.ppOpenT) state.ppOpenT = {}; if (!state.ppOpenMc) state.ppOpenMc = {};
@@ -5434,21 +5444,54 @@ function ppDaysFor(r, mc, s, qty) {
   return Math.max(1, d - s);
 }
 function ppFirstFree(mc, k, day) { var sm = CH.sm, d = Math.max(1, day); while (d <= sm.H0 && ((d <= sm.D && mc.off[d]) || mc.occ[d])) d++; return d <= sm.H0 ? d : null; }
-// where a drop would land: start day (first free working day from the drop point) and length
+// another SKU's bar that covers `day` on machine mc (the SKU's own bars do not count)
+function ppOccAt(mc, k, day) { var h = null; mc.items.forEach(function (x) { if (x.r.s.key !== k && x.s <= day && day <= x.s + x.l - 1) h = x; }); return h; }
+// Where a drop would land. Bars follow the target: on a free day the SKU fills free stretches from there (one bar per
+// stretch, all inside the month) until its target is covered at machine output; whatever does not fit stays on those bars
+// above capacity. Dropped on another SKU's bar, it is inserted there (A → B → A): that bar is cut and the rest of the
+// machine moves later by the inserted length.
 function ppDropPlan(k, mname, day) {
   var sm = CH.sm, r = CH.pm.rows.filter(function (x) { return x.s.key === k; })[0], mc = sm.byName[mname]; if (!r || !mc) return null;
-  var info = ppSkuInfo(r), s0 = ppFirstFree(mc, k, day); if (!s0) return { r: r, mc: mc, full: true };
-  var add = info.st === 'kurang' || info.over > 0, qty = info.st === 'kurang' ? info.short : info.over > 0 ? info.over : r.pl;
-  return { r: r, mc: mc, info: info, add: add, s: s0, l: ppDaysFor(r, mc, s0, qty), qty: qty, other: !!(r.mach.v && mc.type !== r.mach.v), nodata: !(sm.ctDay(r, mc) > 0) };
+  var info = ppSkuInfo(r), add = info.st === 'kurang' || info.over > 0, qty = info.st === 'kurang' ? info.short : info.over > 0 ? info.over : r.pl;
+  var cd = sm.ctDay(r, mc), need = cd > 0 ? Math.max(1, Math.ceil(qty / cd - 0.05)) : 1, D = sm.D, pieces = [];
+  var off = function (d) { return !!mc.off[d]; }, occ = function (d) { var o = mc.occ[d]; return !!(o && o.r.s.key !== k); };
+  var hit = day >= 1 && day <= D ? ppOccAt(mc, k, day) : null;
+  if (hit) {
+    var L = 0, g = 0, d0 = day; while (g < need && d0 <= D) { if (!off(d0)) g++; d0++; } L = Math.max(1, d0 - day);
+    pieces.push({ s: day, l: Math.min(L, D - day + 1) });
+  } else {
+    var d = Math.max(1, day); while (d <= D && (off(d) || occ(d))) d++;
+    while (need > 0 && d <= D) {
+      var st = d, got = 0; while (d <= D && !occ(d) && got < need) { if (!off(d)) got++; d++; }
+      if (got) { pieces.push({ s: st, l: d - st }); need -= got; }
+      while (d <= D && (off(d) || occ(d))) d++;
+    }
+  }
+  if (!pieces.length) return { r: r, mc: mc, full: true };
+  return { r: r, mc: mc, info: info, add: add, ins: hit, pieces: pieces, s: pieces[0].s, l: pieces[0].l, qty: qty, other: !!(r.mach.v && mc.type !== r.mach.v), nodata: !(cd > 0) };
+}
+// insert L days at `day` on machine mc: the other SKU's bar there is cut (or moved, when it starts there) and every later
+// bar on the machine moves L days later (inside the month). The caller adds the inserted bar itself.
+function schInsertAt(mc, day, k, L) {
+  var sm = CH.sm, sc = schedFor(sm.P), hit = ppOccAt(mc, k, day); if (!hit) return false;
+  var later = mc.items.filter(function (x) { return x !== hit && x.r.s.key !== k && x.s >= day; });
+  later.forEach(function (x) { schFreeze(x.r.s.key); }); var a = schFreeze(hit.r.s.key), end = hit.s + hit.l - 1;
+  later.forEach(function (x) { var p = sc.place[x.r.s.key][x.k]; if (p) p.s = Math.min(sm.D, p.s + L); });
+  if (day > hit.s) a.splice(hit.k, 1, { m: mc.name, s: hit.s, l: day - hit.s }, { m: mc.name, s: Math.min(sm.D, day + L), l: end - day + 1 });
+  else a[hit.k] = { m: mc.name, s: Math.min(sm.D, hit.s + L), l: hit.l };
+  a.sort(function (p, q) { return p.s - q.s; });
+  return hit;
 }
 function ppDropSku(k, mname, day) {
   var sm = CH.sm, sc = schedFor(sm.P), x = ppDropPlan(k, mname, day); if (!x) return;
-  if (x.full) { toast(mLbl(mname) + ' tidak punya hari kosong lagi sampai ' + SCH_X + ' hari setelah akhir bulan.'); return; }
-  var nb = { m: x.mc.name, s: x.s, l: Math.min(x.l, sm.H0 - x.s + 1) };
-  if (x.add) { var a = schFreeze(k); a.push(nb); a.sort(function (p, q) { return p.s - q.s; }); }
-  else sc.place[k] = [nb];
+  if (x.full) { toast(mLbl(mname) + ' tidak punya hari kosong lagi bulan ini. Lepas di atas bar SKU lain untuk menyisipkan.'); return; }
+  var nbs = x.pieces.map(function (p) { return { m: x.mc.name, s: p.s, l: p.l }; });
+  if (x.ins) schInsertAt(x.mc, x.s, k, x.l);
+  if (x.add) { var a = schFreeze(k); nbs.forEach(function (nb) { a.push(nb); }); a.sort(function (p, q) { return p.s - q.s; }); }
+  else sc.place[k] = nbs;
   delete sc.day[k]; PSSTICK[k] = 1; savePP(); renderAll();
-  toast((x.r.s.name || k) + (x.info.st === 'kurang' ? ' ditambah (sisa ' + n(x.qty) + ' ct) di ' : x.add ? ' ditambah (meringankan ' + n(x.qty) + ' ct di atas kapasitas) di ' : x.info.st === 'cukup' ? ' dipindah ke ' : ' ditaruh di ') + mLbl(x.mc.name) + ', tgl ' + nb.s + ', ' + nb.l + ' hari' + (x.nodata ? '. Mesin ini tidak ada data kapasitas: lama bar 1 hari, tarik ujung kanannya.' : '.') + (x.other ? ' Area mesin SKU ini ' + x.r.mach.v + ', bukan ' + x.mc.type + '.' : ''));
+  var where = nbs.map(function (nb) { return 'tgl ' + nb.s + (nb.l > 1 ? '–' + (nb.s + nb.l - 1) : ''); }).join(', ');
+  toast((x.r.s.name || k) + (x.ins ? ' disisipkan di tengah ' + (x.ins.r.s.name || '') + '; bar sesudahnya bergeser ' + x.l + ' hari. ' : x.info.st === 'kurang' ? ' ditambah (sisa ' + n(x.qty) + ' ct) di ' : x.add ? ' ditambah (meringankan ' + n(x.qty) + ' ct di atas kapasitas) di ' : x.info.st === 'cukup' ? ' dipindah ke ' : ' ditaruh di ') + mLbl(x.mc.name) + ', ' + where + (nbs.length > 1 ? ' (' + nbs.length + ' bar, mengikuti target)' : '') + (x.nodata ? '. Mesin ini tidak ada data kapasitas: lama bar 1 hari, tarik ujung kanannya.' : '.') + (x.other ? ' Area mesin SKU ini ' + x.r.mach.v + ', bukan ' + x.mc.type + '.' : ''));
 }
 var PSSTICK = {};
 // Plan balance: PP to produce this month vs what the schedule already covers (sum of daily targets of the bars)
@@ -5546,8 +5589,9 @@ document.addEventListener('change', function (e) { if (e.target.id === 'psS') { 
     if (sp) {
       var x = ppDropPlan(dg.k, sp.m, sp.day);
       if (x && !x.full) {
-        dg.at = sp; prev = document.createElement('div'); prev.className = 'psprev' + (x.other || x.nodata ? ' warn' : ''); prev.style.left = ((x.s - 1) * CH.dw) + 'px'; prev.style.width = (x.l * CH.dw - 2) + 'px'; prev.textContent = (r.s.name || dg.k); sp.trk.appendChild(prev);
-        dg.ghost.innerHTML = esc(r.s.name || dg.k) + '<small>' + esc(mLbl(sp.m)) + ' · tgl ' + x.s + ' · ' + x.l + ' hari · ' + (x.nodata ? 'tidak ada data kapasitas' : n(Math.round(CH.sm.ctDay(r, x.mc))) + ' ct/hari') + (x.other ? ' · area lain' : '') + '</small>';
+        dg.at = sp; prev = document.createElement('div'); prev.className = 'psprevs';
+        x.pieces.forEach(function (pq) { var b = document.createElement('div'); b.className = 'psprev' + (x.other || x.nodata ? ' warn' : ''); b.style.left = ((pq.s - 1) * CH.dw) + 'px'; b.style.width = (pq.l * CH.dw - 2) + 'px'; b.textContent = (r.s.name || dg.k); prev.appendChild(b); }); sp.trk.appendChild(prev);
+        dg.ghost.innerHTML = esc(r.s.name || dg.k) + '<small>' + esc(mLbl(sp.m)) + (x.ins ? ' · sisipkan di ' + esc(x.ins.r.s.name || '') + ' tgl ' + x.s : ' · tgl ' + x.s) + ' · ' + x.pieces.reduce(function (a, pq) { return a + pq.l; }, 0) + ' hari' + (x.pieces.length > 1 ? ' (' + x.pieces.length + ' bar)' : '') + ' · ' + (x.nodata ? 'tidak ada data kapasitas' : n(Math.round(CH.sm.ctDay(r, x.mc))) + ' ct/hari') + (x.other ? ' · area lain' : '') + '</small>';
       } else dg.ghost.innerHTML = esc(r.s.name || dg.k) + '<small>' + esc(mLbl(sp.m)) + ' penuh</small>';
     } else dg.ghost.innerHTML = esc(r.s.name || dg.k) + '<small>Lepas di baris mesin</small>';
     // keep scrolling while the pointer sits near the edge of the page
@@ -5758,7 +5802,11 @@ $('stMenu').addEventListener('click', function (e) {
     if (!drag) return; var d = drag; drag = null; if (d.row) d.row.classList.remove('ppdrop'); d.bar.style.transform = '';
     if (!d.moved) { if (e.type === 'pointerup') schMenu(d.bar); return; }
     if (d.mode === 'size') schSet(d.pc, d.pc.mc.name, d.pc.s, d.pc.l + d.dd);
-    else if (d.dd || d.m !== d.pc.mc.name) schSet(d.pc, d.m, d.pc.s + d.dd, d.pc.l);
+    else if (d.dd || d.m !== d.pc.mc.name) {
+      var tm = CH.sm.byName[d.m], ns = Math.max(1, Math.min(CH.sm.D, d.pc.s + d.dd)), k0 = d.pc.r.s.key;
+      if (tm && ppOccAt(tm, k0, ns)) { var a0 = schFreeze(k0); a0.splice(d.pc.k, 1); var hitB = schInsertAt(tm, ns, k0, d.pc.l); a0.push({ m: tm.name, s: ns, l: Math.min(d.pc.l, CH.sm.D - ns + 1) }); a0.sort(function (p, q) { return p.s - q.s; }); savePP(); renderAll(); toast((d.pc.r.s.name || k0) + ' disisipkan di ' + (hitB.r.s.name || '') + ' (' + mLbl(tm.name) + ' tgl ' + ns + '); bar sesudahnya bergeser ' + d.pc.l + ' hari. Tekan ↶ Urungkan untuk membatalkan.'); }
+      else schSet(d.pc, d.m, ns, d.pc.l);
+    }
     else renderAll();
   };
   $('ppTable').addEventListener('pointerup', end);
