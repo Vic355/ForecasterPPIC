@@ -846,7 +846,7 @@ function main(PLAN, STORE) {
     if (t.id === 'scenGo') { readScen(); S.options = scenarioOptions(); S.optSel = 0; render(); var o0 = S.options[0]; say(o0 ? 'Saya bandingkan ' + S.options.length + ' pilihan. Saran: <b>' + esc(o0.t) + '</b>' + (o0.late.length ? ', ' + o0.late.length + ' SKU mundur' + (o0.late.some(function (l) { return l.risk; }) ? ' dan ada yang stoknya habis duluan' : ' tanpa risiko stok habis') : ', tanpa SKU lain yang mundur') + '. Klik pilihan lain untuk membandingkan pratinjaunya.' : 'Tidak ada pilihan yang muat.'); return; }
     if ((b = t.closest('[data-osel]'))) { S.optSel = +b.dataset.osel; render(); return; }
     if (t.id === 'applyOpt') { pushHist(); var o = S.options[S.optSel], D2 = o.diff; S.rows = o.rows; S.options = null; S.step = 2; S.hl = {}; Object.keys(D2.r).forEach(function (id) { S.hl[id] = 1; }); S.filter = { label: 'baris dari skenario', ids: Object.keys(D2.r) }; render(); say('Skenario diterapkan. Baris yang berubah ditandai; urungkan bila tidak cocok.'); return; }
-    if (t.id === 'expBtn') { var rc = t.getBoundingClientRect(); openMenu('<button data-exp="xlsx">Excel rencana (.xlsx)<small>Lembar rencana per mesin + aktual, format seperti file masuk</small></button><button data-exp="gz">Cadangan (.gz)<small>Rencana + aktual halaman ini; buka lagi di Data masuk</small></button>', rc.left - 160, rc.bottom + 4); return; }
+    if (t.id === 'expBtn') { var rc = t.getBoundingClientRect(); openMenu('<button data-exp="xlsx">Excel rencana (.xlsx)<small>Format TUB Planning: TUB, Hasil, Machine, JR, MT, SKU, Capacity, BOM + lembar Rencana + aktual untuk unggah lagi</small></button><button data-exp="gz">Cadangan (.gz)<small>Rencana + aktual halaman ini; buka lagi di Data masuk</small></button>', rc.left - 160, rc.bottom + 4); return; }
     if ((b = t.closest('[data-exp]'))) { $('menu').hidden = true; if (b.dataset.exp === 'xlsx') exportXlsx(); else exportGz(); return; }
     if (t.id === 'tplBtn') { exportXlsx(true); return; }
     if (t.id === 'clearStore') { if (confirm('Hapus rencana dan semua aktual dari browser ini?')) { localStorage.removeItem(LS_KEY); location.href = location.pathname; } return; }
@@ -958,19 +958,31 @@ function main(PLAN, STORE) {
   function withXlsx() { return window.XLSX ? Promise.resolve() : loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'); }
   function download(blob, name) { var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
   function exportXlsx(tpl) {
-    withXlsx().then(function () {
-      var ds = DAYS.filter(function (d) { return d <= MONTH_END || S.rows.some(function (r) { return r.plan[d]; }); });
-      var head = ['Mesin', 'Material', 'Deskripsi', 'Kategori', 'Net (kg)', 'Target/hari', 'Rencana (CT)'].concat(ds), wb = XLSX.utils.book_new();
-      var rows = S.rows.slice().sort(function (a, b) { return MLIST.indexOf(a.m) - MLIST.indexOf(b.m); });
-      var plan = [head].concat(rows.map(function (r) { var sk = SKU[r.mat]; return [r.m, r.mat, sk.desc, sk.cat || sk.jenis, sk.net || '', sk.rate, r.target].concat(ds.map(function (d) { var a = isPast(d) ? actOf(r, d) : null; return a != null ? a : tpl && isPast(d) ? '' : r.plan[d] || ''; })); }));
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(plan), tpl ? 'Rencana' : 'Rencana + aktual');
-      if (!tpl) {
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([head.slice(0, 7).concat(ds)].concat(rows.map(function (r) { var sk = SKU[r.mat]; return [r.m, r.mat, sk.desc, sk.cat || sk.jenis, sk.net || '', sk.rate, r.target].concat(ds.map(function (d) { return r.plan[d] || ''; })); }))), 'Rencana saja');
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Mesin', 'Material', 'Deskripsi'].concat(ds)].concat(rows.map(function (r) { return [r.m, r.mat, SKU[r.mat].desc].concat(ds.map(function (d) { var a = actOf(r, d); return a == null ? '' : a; })); }))), 'Aktual');
-        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Rencana produksi ' + (PLAN.label || '')], ['Sumber', PLAN.source || ''], ['Aktual s/d', S.L || '-'], ['Dibuat', new Date().toLocaleString('id-ID')], [''], ['Lembar "Rencana + aktual": tanggal s/d aktual berisi aktual, sesudahnya rencana. Bisa diunggah lagi di Data masuk.']]), 'Info');
-      }
-      XLSX.writeFile(wb, (tpl ? 'Template_Rencana_Produksi_' : 'Rencana_Produksi_') + (PLAN.period || '') + '.xlsx');
-    }).catch(function () { toast('Gagal memuat pustaka Excel. Periksa koneksi internet.'); });
+    var ds = DAYS.filter(function (d) { return d <= MONTH_END || S.rows.some(function (r) { return r.plan[d]; }); });
+    var head = ['Mesin', 'Material', 'Deskripsi', 'Kategori', 'Net (kg)', 'Target/hari', 'Rencana (CT)'].concat(ds);
+    var rows = S.rows.slice().sort(function (a, b) { return MLIST.indexOf(a.m) - MLIST.indexOf(b.m); });
+    var combined = [head].concat(rows.map(function (r) { var sk = SKU[r.mat]; return [r.m, r.mat, sk.desc, sk.cat || sk.jenis, sk.net || '', sk.rate, r.target].concat(ds.map(function (d) { var a = isPast(d) ? actOf(r, d) : null; return a != null ? a : tpl && isPast(d) ? '' : r.plan[d] || ''; })); }));
+    if (tpl) {
+      withXlsx().then(function () { var wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(combined), 'Rencana'); XLSX.writeFile(wb, 'Template_Rencana_Produksi_' + (PLAN.period || '') + '.xlsx'); }).catch(function () { toast('Gagal memuat pustaka Excel. Periksa koneksi internet.'); });
+      return;
+    }
+    if (!window.RencanaExcel) { toast('Modul Excel belum termuat. Muat ulang halaman.'); return; }
+    // the planner's TUB Planning layout (rencana-excel.js); the last sheet keeps the old "Rencana + aktual" table for re-upload
+    var P = PLAN.period || MONTH_END.slice(0, 7), wd = 0, mdays = DAYS.filter(function (d) { return d.slice(0, 7) === P; });
+    mdays.forEach(function (d) { if (!OFF[d]) wd++; });
+    var lines = rows.map(function (r) { var sk = SKU[r.mat], first = Object.keys(r.plan).filter(function (d) { return r.plan[d] > 0; }).sort()[0]; return { mach: r.m, area: MACH[r.m] ? MACH[r.m].jenis : '', mat: r.mat, desc: sk.desc, net: sk.net || null, cat: sk.cat || sk.jenis, target: sk.rate, pp: sk.pp, plan: r.plan, first: first ? DI[first] : 999 }; });
+    var actuals = []; S.rows.forEach(function (r) { var a = S.act[r.id] || {}, sk = SKU[r.mat]; Object.keys(a).forEach(function (d) { if (a[d] > 0) actuals.push({ iso: d, mach: r.m, mat: r.mat, desc: sk.desc, cat: sk.cat || sk.jenis, net: sk.net || 0, ct: a[d] }); }); });
+    var skus = SLIST.map(function (s) { return { art: '', mat: s.mat, desc: s.desc, net: s.net || null, cat: s.cat || s.jenis, area: s.jenis, open: null, splan: null, pp: s.pp, buf: null }; });
+    var machines = MLIST.map(function (m) { return { area: MACH[m].jenis, code: m, name: MACH[m].jenis, cap: MACH[m].cap, capDay: MACH[m].cap ? MACH[m].cap / 26 : null, rem: '' }; });
+    var data = {
+      mill: 'TUB', period: P, title: 'Summary Planning · ' + (PLAN.label || P), workDays: wd, days: ds.map(function (d) { return { iso: d, off: OFF[d] ? 'libur' : '' }; }), lines: lines, skus: skus, actuals: actuals, machines: machines, bom: [],
+      noActual: 'Belum ada aktual produksi yang diisi.', bomNote: 'BOM ada di Forecast Desk (Material master); ekspor dari Rencana produksi di sana untuk lembar ini.',
+      jrNote: 'Jenis jumbo roll per SKU belum ada di aplikasi, jadi semua ton masuk satu baris.',
+      info: [['Bulan', PLAN.label || P], ['Sumber', PLAN.source || ''], ['Aktual s/d', S.L || '-'], ['Dibuat', new Date().toLocaleString('id-ID')], ['Hari kerja', wd + ' dari ' + mdays.length + ' hari'], ['Machine · Capacity', 'Perkiraan: output terbesar per hari × berat bersih × 26 hari (halaman ini tidak punya master kapasitas)'], ['Unggah lagi', 'Lembar terakhir "Rencana + aktual" bisa diunggah lagi di Data masuk: tanggal s/d aktual berisi aktual, sesudahnya rencana.']],
+      missing: ['TUB: Article code, Opening Stok, Splan dan Buffer ada di Forecast Desk, tidak di halaman ini. Nomat/stok karton dan plastik belum ada di aplikasi.', 'SKU: kolom JR (jenis jumbo roll) dan Man power belum ada di aplikasi.'],
+      extraSheets: [{ name: 'Rencana + aktual', aoa: combined, freeze: [1, 3] }]
+    };
+    RencanaExcel.download(data, 'Rencana_Produksi_' + (PLAN.period || '') + '.xlsx').catch(function (e) { toast('Gagal membuat Excel: ' + (e && e.message || e)); });
   }
   function exportGz() {
     if (DEMO) { toast('Ini data contoh; tidak ada yang perlu dicadangkan.'); return; }
@@ -1040,7 +1052,8 @@ function main(PLAN, STORE) {
     upStat('Membaca ' + file.name + '…');
     withXlsx().then(function () { return file.arrayBuffer(); }).then(function (buf) {
       var wb = XLSX.read(new Uint8Array(buf), { type: 'array', cellDates: true }), month = $('upMonth').value || todayIso().slice(0, 7), best = null;
-      wb.SheetNames.forEach(function (n) { var t = readTable(XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, raw: true, defval: '' }), month); if (t.error) { if (!best) best = { t: t, n: n }; return; } var sc = t.rows.length * Math.max(1, t.days.length); if (!best || best.t.error || sc > best.sc) best = { t: t, n: n, sc: sc }; });
+      var names = wb.SheetNames.indexOf('Rencana + aktual') >= 0 ? ['Rencana + aktual'] : wb.SheetNames;
+      names.forEach(function (n) { var t = readTable(XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, raw: true, defval: '' }), month); if (t.error) { if (!best) best = { t: t, n: n }; return; } var sc = t.rows.length * Math.max(1, t.days.length); if (!best || best.t.error || sc > best.sc) best = { t: t, n: n, sc: sc }; });
       if (!best || best.t.error) { upStat(file.name + ': ' + (best ? best.t.error : 'file kosong'), 1); return; }
       var T = best.t, ds = T.days, seen = {}, actTo = $('upAct').value || '', act = {}, L = null;
       var mStart = month + '-01', mEnd = iso(new Date(+month.slice(0, 4), +month.slice(5, 7), 0));
@@ -1063,5 +1076,6 @@ function main(PLAN, STORE) {
 }
 </script>
 <script src="../tabel.js"></script>
+<script src="../rencana-excel.js"></script>
 </body>
 </html>

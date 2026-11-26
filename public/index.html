@@ -1165,7 +1165,7 @@ body.pskon #ppBalTop { display: none; }
           <select id="ppFam" aria-label="Filter famili"></select>
           <input type="search" id="ppQ" placeholder="Cari SKU / Nomat" aria-label="Cari SKU">
         </div></div>
-      <div class="ppctl"><button type="button" id="ppOpenAll">Buka semua mesin</button><button type="button" id="ppCloseAll">Tutup semua</button><button type="button" id="ppXlB" aria-pressed="false" title="Hanya mesin × SKU × tanggal dengan target harian, seperti rencana di Excel. Ketik angka di sel: hari baru menambah produksi, 0 melewati hari itu.">▦ Tampilan Excel</button><button type="button" id="ppFocus" aria-pressed="false" title="Sembunyikan kartu ringkasan dan alert di atas jadwal supaya fokus menyusun rencana">Sembunyikan ringkasan</button><span class="seg" id="schMode" title="Otomatis: model menjadwalkan semua SKU yang belum Anda atur sendiri, dan ikut berubah bila PP berubah. Manual: hanya bar yang Anda taruh; SKU tanpa bar tampil merah."><span>Cara menjadwal</span><button type="button" data-schmode="auto">Otomatis</button><button type="button" data-schmode="manual">Manual</button></span><button type="button" id="schReset" class="pri" title="Model menjadwalkan SKU ke mesin: SKU prioritas (stok bebas < forecast) dulu, lalu hari stok tersisa paling sedikit, lalu PP terbesar">▶ Jalankan jadwal otomatis</button><button type="button" id="ppReset" title="Kosongkan rencana, atau hapus juga perubahan manual (bar, target harian, PP target, libur)">↺ Reset…</button><button type="button" id="ppXlsx" title="Unduh rencana produksi bulan ini sebagai Excel: tabel per mesin dengan target harian, daftar bar, PP per SKU dan kalender">Ekspor Excel</button><button type="button" id="ppToMon" title="Pakai jadwal ini sebagai rencana di Perencanaan Produksi (rencana harian, aktual, skenario). Data aktual yang sudah diisi tidak diubah.">Kirim ke Perencanaan Produksi ↗</button><span class="sub" id="ppHint"></span></div>
+      <div class="ppctl"><button type="button" id="ppOpenAll">Buka semua mesin</button><button type="button" id="ppCloseAll">Tutup semua</button><button type="button" id="ppXlB" aria-pressed="false" title="Hanya mesin × SKU × tanggal dengan target harian, seperti rencana di Excel. Ketik angka di sel: hari baru menambah produksi, 0 melewati hari itu.">▦ Tampilan Excel</button><button type="button" id="ppFocus" aria-pressed="false" title="Sembunyikan kartu ringkasan dan alert di atas jadwal supaya fokus menyusun rencana">Sembunyikan ringkasan</button><span class="seg" id="schMode" title="Otomatis: model menjadwalkan semua SKU yang belum Anda atur sendiri, dan ikut berubah bila PP berubah. Manual: hanya bar yang Anda taruh; SKU tanpa bar tampil merah."><span>Cara menjadwal</span><button type="button" data-schmode="auto">Otomatis</button><button type="button" data-schmode="manual">Manual</button></span><button type="button" id="schReset" class="pri" title="Model menjadwalkan SKU ke mesin: SKU prioritas (stok bebas < forecast) dulu, lalu hari stok tersisa paling sedikit, lalu PP terbesar">▶ Jalankan jadwal otomatis</button><button type="button" id="ppReset" title="Kosongkan rencana, atau hapus juga perubahan manual (bar, target harian, PP target, libur)">↺ Reset…</button><button type="button" id="ppXlsx" title="Unduh rencana produksi bulan ini sebagai Excel dalam format TUB Planning: ringkasan per SKU (TUB), Hasil, Machine, JR, MT, SKU (rencana harian), Capacity dan BOM">Ekspor Excel</button><button type="button" id="ppToMon" title="Pakai jadwal ini sebagai rencana di Perencanaan Produksi (rencana harian, aktual, skenario). Data aktual yang sudah diisi tidak diubah.">Kirim ke Perencanaan Produksi ↗</button><span class="sub" id="ppHint"></span></div>
       <p class="note" id="schNote"></p>
       <div id="ppBalTop"></div><div class="ppscroll" id="ppScroll"><table id="ppTable" class="fct ppt ppg"></table></div><div id="ppXl" class="ppxlw" hidden></div><div class="ppbar" id="ppBar" aria-hidden="true"><div></div></div>
       <div class="legend"><span><i class="schk"></i> SKU (geser / tarik ujung kanan)</span><span><i class="schk bad"></i> stok habis sebelum bar mulai</span><span><i class="schk man"></i> diatur manual</span><span><i class="schk ovr"></i> lewat akhir bulan</span><span><i class="schk clash"></i> bentrok</span><span><i class="sw offsw"></i> libur</span><span><i class="sw mntsw"></i> maintenance</span><span><i class="sw edsw"></i> target diisi manual</span><span>⚠ rencana beda dari target</span><span>Kolom SKU, Target, Rencana dan Hari dan baris tanggal tetap di tempat saat digeser (seperti freeze panes Excel)</span></div>
@@ -1358,6 +1358,7 @@ body.pskon #ppBalTop { display: none; }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="tabel.js"></script>
+<script src="rencana-excel.js"></script>
 <script>
 (function () {
 'use strict';
@@ -5094,38 +5095,43 @@ $('dlCsv').hidden = true;
 if (!canDownload) { $('ppXlsx').disabled = true; $('ppXlsx').title = 'Tampilan ini memblokir unduhan. Buka situs Cloudflare untuk mengekspor ke Excel.'; }
 $('ppXlsx').addEventListener('click', function () {
   var pm = CH.pm, sm = CH.sm; if (!pm || !sm) { alert('Belum ada rencana produksi untuk diekspor.'); return; }
-  var P = pm.P, D = pm.D, H = sm.H, wb = XLSX.utils.book_new(), t1 = function (v) { return Math.round(v * 10) / 10; };
-  var tgtSum = function (k) { var g = sm.tgt[k]; return g ? g.sum : 0; }, ton = function (ct, nw) { return nw ? t1(ct * nw / 1000) : null; };
-  var dl = function (d) { return d > D ? dateOfDay(P, d).slice(8, 10) + '/' + dateOfDay(P, d).slice(5, 7) + ' (bln berikut)' : d + ' ' + DOW[dowOf(P, d)]; };
-  var head = ['Area mesin', 'Mesin', 'Material', 'Deskripsi', 'Status', 'PP target (ct)', 'PP rencana (ct)', 'Selisih (ct)', 'PP target (t)', 'PP rencana (t)', 'Hari produksi', 'Bagian', 'Cek jadwal'], nF = head.length;
-  var days = []; for (var d = 1; d <= H; d++) days.push(d);
-  var aoa = [['Rencana produksi ' + monthLabel(P) + ' · plant ' + $('plant').value.trim() + ' · dibuat ' + new Date().toISOString().slice(0, 10)], ['Baris mesin: SKU yang jalan per hari. Baris SKU: target harian dalam karton. ⚠ = PP rencana beda dari PP target.'],
-    head.concat(days.map(dl)), head.map(function (h, i) { return i === nF - 1 ? 'Kalender' : ''; }).concat(days.map(function (d) { return d <= D && sm.cal.g[d] ? sm.cal.g[d] : sm.cal.src[d] === 'kerja' ? 'Hari kerja (lembur)' : ''; }))];
-  var skuLine = function (r, pc) {
-    var k = r.s.key, pl = tgtSum(k), g = sm.tgt[k], row = [pc ? pc.mc.type : (r.mach.v || ''), pc ? pc.mc.name : '(belum terjadwal)', r.s.nomat || r.s.art || k, r.s.name || '', r.st[0], r.pp, pl, pl - r.pp ? (pl - r.pp > 0 ? '⚠ +' : '⚠ ') + (pl - r.pp) : 0, ton(r.pp, r.nw), ton(pl, r.nw), pc ? pc.days.length : 0, pc && pc.part ? pc.part : '', sm.issues[k] ? sm.issues[k].why.join('; ') : ''];
-    days.forEach(function (d) { var x = pc && g && g.d[d]; row.push(x && x.pcs.indexOf(pc) >= 0 ? Math.round(x.v / x.pcs.length) : null); });
-    return row;
-  };
+  if (!window.RencanaExcel) { toast('Modul Excel belum termuat. Muat ulang halaman.'); return; }
+  RencanaExcel.download(ppExcelData(pm, sm), 'Rencana_Produksi_' + $('plant').value.trim() + '_' + pm.P + '.xlsx').catch(function (e) { toast('Gagal membuat Excel: ' + (e && e.message || e)); });
+});
+// the month's plan in the shape RencanaExcel (rencana-excel.js) turns into the planner's TUB Planning workbook
+function ppExcelData(pm, sm) {
+  var P = pm.P, D = pm.D, H = Math.max(D, sm.H), plant = $('plant').value.trim(), matOf = function (s) { return String(s.nomat || s.art || s.key); };
+  var catOf = function (s) { var mr = matRec(s); return s.category || (mr && mr.category) || s.family || (mr && mr.family) || ''; };
+  var days = [], off = 0; for (var d = 1; d <= H; d++) { var o = d <= D ? sm.cal.g[d] || '' : dowOf(P, d) === 0 ? 'Minggu' : ''; days.push({ iso: dateOfDay(P, d), off: o }); if (d <= D && sm.cal.g[d]) off++; }
+  var tot = {}; sm.items.forEach(function (pc) { tot[pc.r.s.key] = (tot[pc.r.s.key] || 0) + pc.plan; });
+  var lines = [];
   sm.machines.forEach(function (mc) {
-    var row = [mc.type, mc.name, '', 'Output terencana mesin (kap. ' + Math.round(mc.cap) + ' t/bulan)', '', null, Math.round(mc.plan), null, null, t1(mc.planT), mc.used + '/' + mc.avail, '', ''];
-    days.forEach(function (d) { var on = mc.items.filter(function (pc) { return pc.days.indexOf(d) >= 0; }).map(function (pc) { return pc.r.s.nomat || pc.r.s.name || pc.r.s.key; }); row.push(on.length ? on.join(' + ') : d <= D && mc.off[d] ? 'libur' : ''); });
-    aoa.push(row);
-    mc.items.slice().sort(function (a, b) { return a.s - b.s; }).forEach(function (pc) { aoa.push(skuLine(pc.r, pc)); });
+    mc.items.slice().sort(function (a, b) { return a.s - b.s; }).forEach(function (pc) {
+      var r = pc.r, g = sm.tgt[r.s.key], plan = {}, ct = 0, n = 0;
+      pc.days.forEach(function (d) { var x = g && g.d[d]; if (!x || x.pcs.indexOf(pc) < 0) return; var v = Math.round(x.v / x.pcs.length); if (!v) return; plan[dateOfDay(P, d)] = v; ct += v; n++; });
+      var sh = tot[r.s.key] ? pc.plan / tot[r.s.key] : 0;
+      lines.push({ mach: mc.name, area: mc.type, mat: matOf(r.s), desc: r.s.name || '', net: r.nw, cat: catOf(r.s), target: n ? ct / n : null, pp: r.pp, plan: plan, first: pc.s, fcT: r.nw && r.F ? r.F * r.nw / 1000 * sh : null });
+    });
   });
   var placed = {}; sm.items.forEach(function (pc) { placed[pc.r.s.key] = 1; });
-  pm.rows.filter(function (r) { return r.pl > 0 && !placed[r.s.key]; }).forEach(function (r) { aoa.push(skuLine(r, null)); });
-  var tp = 0, tl = 0, tpt = 0, tlt = 0; pm.rows.forEach(function (r) { var pl = tgtSum(r.s.key); tp += r.pp; tl += pl; if (r.nw) { tpt += r.pp * r.nw / 1000; tlt += pl * r.nw / 1000; } });
-  aoa.push(['Total', '', '', '', '', tp, tl, tl - tp, t1(tpt), t1(tlt), '', '', ''].concat(days.map(function (d) { var v = 0; Object.keys(sm.tgt).forEach(function (k) { var x = sm.tgt[k].d[d]; if (x) v += x.v; }); return v || null; })));
-  var ws = XLSX.utils.aoa_to_sheet(aoa); ws['!cols'] = [{ wch: 16 }, { wch: 12 }, { wch: 14 }, { wch: 40 }, { wch: 12 }, { wch: 11 }, { wch: 11 }, { wch: 10 }, { wch: 9 }, { wch: 9 }, { wch: 8 }, { wch: 7 }, { wch: 30 }].concat(days.map(function () { return { wch: 9 }; }));
-  XLSX.utils.book_append_sheet(wb, ws, 'Rencana ' + P);
-  var bars = sm.items.slice().sort(function (a, b) { return a.mc.name < b.mc.name ? -1 : a.mc.name > b.mc.name ? 1 : a.s - b.s; }).map(function (pc) { var e = pc.s + pc.l - 1; return { mesin: pc.mc.name, jenis_mesin: pc.mc.type, material: pc.r.s.nomat || pc.r.s.art || pc.r.s.key, deskripsi: pc.r.s.name, bagian: pc.part || '', tgl_mulai: dateOfDay(P, pc.s), tgl_selesai: dateOfDay(P, e), hari_produksi: pc.days.length, rencana_ct: Math.round(pc.plan), rencana_ton: ton(pc.plan, pc.r.nw), diatur_manual: pc.man ? 'ya' : 'tidak', lewat_akhir_bulan: e > D ? 'ya' : 'tidak' }; });
-  XLSX.utils.book_append_sheet(wb, bars.length ? XLSX.utils.json_to_sheet(bars) : XLSX.utils.aoa_to_sheet([['(kosong)']]), 'Jadwal bar');
-  var per = pm.rows.filter(function (r) { return r.pp > 0 || r.pl > 0; }).map(function (r) { var pl = tgtSum(r.s.key), g = sm.tgt[r.s.key]; return { material: r.s.nomat || r.s.art || r.s.key, deskripsi: r.s.name, jenis_mesin: r.mach.v || null, status: r.st[0], pp_saran_buffer_ct: r.ppBuf, pp_target_ct: r.pp, target_diubah: r.ppMan ? 'ya' : 'tidak', pp_rencana_ct: pl, selisih_ct: pl - r.pp, peringatan: pl !== r.pp ? '⚠ rencana beda dari target' : '', pp_target_ton: ton(r.pp, r.nw), pp_rencana_ton: ton(pl, r.nw), tgl_mulai: g && g.n ? dateOfDay(P, g.first) : null, tgl_selesai: g && g.n ? dateOfDay(P, g.last) : null, cek_jadwal: sm.issues[r.s.key] ? sm.issues[r.s.key].why.join('; ') : null }; });
-  XLSX.utils.book_append_sheet(wb, per.length ? XLSX.utils.json_to_sheet(per) : XLSX.utils.aoa_to_sheet([['(kosong)']]), 'PP per SKU');
-  var kal = []; for (var d2 = 1; d2 <= D; d2++) kal.push({ tanggal: dateOfDay(P, d2), hari: DOW[dowOf(P, d2)], status: sm.cal.g[d2] ? 'libur' : 'kerja', keterangan: sm.cal.g[d2] || sm.cal.info[d2] || null });
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(kal), 'Kalender');
-  XLSX.writeFile(wb, 'Rencana_Produksi_' + $('plant').value.trim() + '_' + P + '.xlsx');
-});
+  pm.rows.filter(function (r) { return r.pl > 0 && !placed[r.s.key]; }).forEach(function (r) { lines.push({ mach: '(belum terjadwal)', area: r.mach.v || '', mat: matOf(r.s), desc: r.s.name || '', net: r.nw, cat: catOf(r.s), target: null, pp: r.pp, plan: {}, first: 0 }); });
+  var skus = pm.rows.filter(function (r) { return r.pp > 0 || r.fs > 0 || r.F > 0; }).map(function (r) { return { art: r.s.art || '', mat: matOf(r.s), desc: r.s.name || '', net: r.nw, cat: catOf(r.s), area: r.mach.v || '', open: r.fs, splan: r.F, pp: r.pp, buf: r.buf }; });
+  // actual production entered in Perencanaan Produksi (/produksi/) for the same month
+  var actuals = [], store = {}; try { store = JSON.parse(localStorage.getItem('ppic_prod') || '{}') || {}; } catch (e) {}
+  if (store.plan && store.plan.period === P && store.actual) {
+    var byId = {}; (store.plan.lines || []).forEach(function (l) { byId[l.id] = l; });
+    Object.keys(store.actual).forEach(function (id) { var l = byId[id], a = store.actual[id]; if (!l) return; Object.keys(a).forEach(function (iso) { if (a[iso] > 0) actuals.push({ iso: iso, mach: l.machine, mat: String(l.material), desc: l.desc || '', cat: l.category || '', net: l.net || 0, ct: a[iso] }); }); });
+  }
+  var B = state.bom || {}, bom = skus.filter(function (s) { return B[s.mat]; }).map(function (s) { var b = B[s.mat]; return { mat: s.mat, desc: b.desc || s.desc, ct: b.ct, pl: b.pl, jr: b.jr }; });
+  var machines = sm.machines.map(function (mc) { return { area: mc.type, code: mc.name, name: mc.type, cap: mc.cap, capDay: mc.capDay, rem: mc.rem || '' }; });
+  return {
+    mill: 'TUB', period: P, title: 'Summary Planning Serang · plant ' + plant, workDays: D - off, days: days, lines: lines, skus: skus, actuals: actuals, machines: machines, bom: bom,
+    noActual: 'Belum ada aktual produksi ' + monthLabel(P) + '. Aktual diisi di Perencanaan Produksi (Kirim ke Perencanaan Produksi, lalu isi aktual harian).',
+    jrNote: 'Jenis jumbo roll per SKU belum ada di aplikasi, jadi semua ton masuk satu baris. Kebutuhan JR dalam kg per karton (BOM) ada di lembar BOM.',
+    info: [['Plant', plant], ['Bulan', monthLabel(P)], ['Sumber', 'PPIC Forecast Desk · Rencana produksi'], ['Dibuat', new Date().toLocaleString('id-ID')], ['Hari kerja', (D - off) + ' dari ' + D + ' hari'], ['Opening Stok', 'Stok bebas awal bulan (Saran buffer)'], ['Splan', 'Forecast bulan ini (basis yang dipilih di Saran buffer)'], ['PP', 'PP target per SKU = forecast + buffer final − stok bebas (atau angka yang diubah)'], ['Machine · Forecast', 'Forecast SKU yang dijadwalkan di mesin itu, dibagi menurut porsi rencana per mesin'], ['Machine · Capacity', 'Kapasitas efektif bulan ini (kapasitas/hari × variasi output × hari kerja mesin)'], ['Aktual', actuals.length ? actuals.length + ' baris aktual dari Perencanaan Produksi' : 'belum ada']],
+    missing: ['TUB: Nomat/stok karton, plastik dan plastik banded beserta Estimasi belum ada di aplikasi.', 'SKU: kolom JR (jenis jumbo roll) dan Man power belum ada di aplikasi.', 'BOM: aplikasi menyimpan kebutuhan per karton (karton pcs, plastik kg, JR kg), bukan nomat bahan kemasan.']
+  };
+}
 
 // send this month's schedule to Perencanaan Produksi (/produksi/), which reads it from localStorage 'ppic_prod'.
 // Only the plan is replaced; actuals already entered there stay (moved by material if a SKU changed machine).
