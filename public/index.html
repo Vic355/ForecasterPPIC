@@ -179,20 +179,19 @@ td.num.red { color: var(--bad); font-weight: 600; }
 .ppbar[hidden] { display: none; }
 .ppg thead { position: relative; z-index: 10; will-change: transform; }
 /* frozen panes like Excel: SKU, Target, Rencana and Hari stay put when the calendar scrolls sideways */
-.ppg tbody td:nth-child(-n+5), .ppg thead tr:first-child th:nth-child(-n+3), .ppg thead tr:nth-child(2) th:nth-child(-n+3) { position: sticky; }
-table.ppg tbody td:nth-child(-n+5) { z-index: 6; background-color: var(--panel); }
-.ppg tr.tot td:nth-child(-n+5) { background-color: var(--head); }
-table.ppg thead tr:first-child th:nth-child(-n+3), table.ppg thead tr:nth-child(2) th:nth-child(-n+3) { z-index: 8; }
+.ppg tbody td:nth-child(-n+4), .ppg thead tr:first-child th:nth-child(-n+3), .ppg thead tr:nth-child(2) th:nth-child(-n+2) { position: sticky; }
+table.ppg tbody td:nth-child(-n+4) { z-index: 6; background-color: var(--panel); }
+.ppg tr.tot td:nth-child(-n+4) { background-color: var(--head); }
+table.ppg thead tr:first-child th:nth-child(-n+3), table.ppg thead tr:nth-child(2) th:nth-child(-n+2) { z-index: 8; }
 .ppg tbody td:nth-child(1), .ppg thead tr:first-child th:nth-child(1) { left: 0; }
 .ppg tbody td:nth-child(2), .ppg thead tr:first-child th:nth-child(2), .ppg thead tr:nth-child(2) th:nth-child(1) { left: var(--fz1); }
 .ppg tbody td:nth-child(3), .ppg thead tr:nth-child(2) th:nth-child(2) { left: var(--fz2); }
-.ppg tbody td:nth-child(4), .ppg thead tr:nth-child(2) th:nth-child(3) { left: var(--fz3); }
-.ppg tbody td:nth-child(5), .ppg thead tr:first-child th:nth-child(3) { left: var(--fz4); box-shadow: 3px 0 0 -1px var(--line); }
+.ppg tbody td:nth-child(4), .ppg thead tr:first-child th:nth-child(3) { left: var(--fz3); box-shadow: 3px 0 0 -1px var(--line); }
 .ppg td.sisa.red { color: var(--bad); font-weight: 700; } .ppg td.sisa.ok { color: var(--ok); } .ppg td.sisa.more { color: var(--warn); }
 .ppg td[data-pcq] { cursor: cell; } .ppg td[data-pcq]:focus { outline: 2px solid var(--accent); outline-offset: -2px; }
 .ppg .shd { position: absolute; top: 4px; height: 20px; border: 1.5px dashed var(--mid); border-left: 0; border-radius: 0 3px 3px 0; background: repeating-linear-gradient(135deg, transparent 0 5px, var(--warn-soft) 5px 10px); pointer-events: auto; z-index: 1; box-sizing: border-box; font-size: 10px; line-height: 17px; color: var(--warn); padding-left: 4px; overflow: hidden; white-space: nowrap; }
 .ppg td.ppr { cursor: cell; }
-.ppg tbody td.edited:nth-child(-n+5) { background-color: var(--warn-soft); }
+.ppg tbody td.edited:nth-child(-n+4) { background-color: var(--warn-soft); }
 .ppg td.ppr .wn { float: left; color: var(--warn); font-weight: 700; }
 .ppg td.ppr input { width: 100%; box-sizing: border-box; text-align: right; font: inherit; min-height: 22px; border: 2px solid var(--s1); border-radius: 3px; }
 .edwrap h3 { margin: 0; font-size: 13px; }
@@ -884,7 +883,7 @@ html[data-theme=dark] .rvchip { color: #1b1206; }
 .pskp .psf button { min-height: 26px; padding: 2px 9px; font-size: 13px; border-radius: 999px; }
 .pskp .psf button.on { background: var(--acc); color: var(--paper); border-color: var(--acc); }
 .pskp .psg { margin: 10px 2px 4px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--mut); display: flex; justify-content: space-between; gap: 6px; }
-.psk { display: grid; grid-template-columns: 20px 8px minmax(0, 1fr) auto 62px 46px; align-items: center; gap: 0 6px; padding: 3px 6px; border-bottom: 1px solid var(--line2); cursor: grab; touch-action: none; user-select: none; font-size: 13px; line-height: 1.25; background: var(--paper); }
+.psk { display: grid; grid-template-columns: 20px 8px minmax(0, 1fr) auto 50px 50px 44px; align-items: center; gap: 0 6px; padding: 3px 6px; border-bottom: 1px solid var(--line2); cursor: grab; touch-action: none; user-select: none; font-size: 13px; line-height: 1.25; background: var(--paper); }
 .psk:hover { background: var(--acc2); } .psk:focus-visible { outline: 2px solid var(--acc); outline-offset: -2px; }
 .psk .ps-d { width: 8px; height: 8px; border-radius: 50%; background: var(--lamp-merah, #b23a2a); }
 .psk.st-kurang .ps-d { background: var(--lamp-kuning, #c9a227); } .psk.st-cukup .ps-d { background: var(--lamp-hijau, #3f6b56); } .psk.st-nodata .ps-d { background: var(--line); }
@@ -892,7 +891,7 @@ html[data-theme=dark] .rvchip { color: #1b1206; }
 .psk.low .ps-n::after { content: ' ●'; color: var(--lamp-merah, #b23a2a); font-size: 9px; vertical-align: 2px; }
 .psk .ps-n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .psk .ps-c { font-family: var(--mono); font-size: 11px; color: var(--mut); }
-.psk .ps-p, .psk .ps-s { text-align: right; font-variant-numeric: tabular-nums; }
+.psk .ps-p, .psk .ps-q, .psk .ps-s { text-align: right; font-variant-numeric: tabular-nums; } .psk .ps-q.mut { color: var(--mut); }
 .psk .ps-s.red { color: var(--lamp-merah, #b23a2a); font-weight: 700; } .psk .ovw { color: #9a5b00; font-weight: 600; margin-left: 2px; } .psk .ps-s.ok { color: var(--lamp-hijau, #3f6b56); }
 .psk.pshd { cursor: default; font-size: 11px; font-weight: 700; color: var(--mut); text-transform: uppercase; letter-spacing: .04em; background: var(--panel2); }
 .psk.pshd .ps-d { background: none; } .psk.pshd:hover { background: var(--panel2); }
@@ -3511,7 +3510,7 @@ $('ppXl').addEventListener('change', function (e) {
 });
 function ppGridDraw() { var a = CH.ppGrid; if (!a) return; CH.ppGrid = null; renderPlanGrid(a[0], a[1], a[2], a[3]); }
 function renderPlanGrid(pm, sm, mt, all) {
-  var P = pm.P, D = pm.D, H = sm.H, W0 = 250, WN = 84, WH = 42, fixedW = W0 + 3 * WN + WH;
+  var P = pm.P, D = pm.D, H = sm.H, W0 = 250, WN = 84, WH = 42, fixedW = W0 + 2 * WN + WH;
   var dw = Math.max(32, Math.min(64, Math.floor((($('ppScroll').clientWidth || document.documentElement.clientWidth - 60) - fixedW - 2) / H)));
   CH.dw = dw;
   // family filter + search
@@ -3535,17 +3534,16 @@ function renderPlanGrid(pm, sm, mt, all) {
   var planOf = function (r) { var g = sm.tgt[r.s.key]; return g ? g.sum : 0; };
   var pa = function (list) { var a = { t: 0, tt: 0, p: 0, pt: 0 }; list.forEach(function (r) { var pl = planOf(r); a.t += r.pp; a.p += pl; if (r.nw) { a.tt += r.pp * r.nw / 1000; a.pt += pl * r.nw / 1000; } }); return a; };
   var uv = function (ct, ton) { return mt ? fmt.format(Math.round(ton * 10) / 10) : n(Math.round(ct)); };
-  // PP CT (fixed: Saran buffer, or typed over) · Rencana (sum of the bars' rencana) · Sisa (PP − Rencana)
-  var sisaTd = function (sis, sisT) { var r0 = Math.round(sis); return '<td class="num sisa' + (r0 > 0 ? ' red' : r0 < 0 ? ' more' : ' ok') + '" title="' + (r0 > 0 ? 'Sisa PP yang belum ada di rencana' : r0 < 0 ? 'Rencana lebih besar dari PP' : 'PP sudah tertutup rencana') + '">' + (r0 === 0 ? '✓' : (r0 < 0 ? '+' : '') + uv(Math.abs(sis), Math.abs(sisT))) + '</td>'; };
-  var paCells = function (a) { return '<td class="num plan sep">' + uv(a.t, a.tt) + '</td><td class="num ppr">' + uv(a.p, a.pt) + '</td>' + sisaTd(a.t - a.p, a.tt - a.pt); };
+  // PP CT (fixed: Saran buffer, or typed over) · Rencana (sum of the bars' rencana); Sisa = PP − Rencana is shown in the planner panel
+  var paCells = function (a) { return '<td class="num plan sep">' + uv(a.t, a.tt) + '</td><td class="num ppr">' + uv(a.p, a.pt) + '</td>'; };
   var ppCells = function (r, pc) {
     var k = r.s.key, pl = planOf(r), ton = function (v) { return r.nw ? v * r.nw / 1000 : 0; };
-    if (pc) return '<td class="num plan sep" title="PP SKU ini (lihat di baris area mesin)">' + '<span class="sub">' + u(r.pp, r.nw) + '</span></td><td class="num ppr" tabindex="0" data-pcq="' + sm.items.indexOf(pc) + '" title="Rencana di bar ini (' + esc(mLbl(pc.mc.name)) + '). Klik dua kali atau ketik untuk mengubah; lama bar mengikuti kapasitas mesin.">' + u(Math.round(pc.plan), r.nw) + '</td>' + sisaTd(r.pp - pl, ton(r.pp - pl));
+    if (pc) return '<td class="num plan sep" title="PP SKU ini (lihat di baris area mesin)">' + '<span class="sub">' + u(r.pp, r.nw) + '</span></td><td class="num ppr" tabindex="0" data-pcq="' + sm.items.indexOf(pc) + '" title="Rencana di bar ini (' + esc(mLbl(pc.mc.name)) + '). Klik dua kali atau ketik untuk mengubah; lama bar mengikuti kapasitas mesin.">' + u(Math.round(pc.plan), r.nw) + '</td>';
     return '<td class="num plan sep ppk' + (r.ppMan ? ' edited' : '') + (r.pp === 0 ? ' zero' : '') + '" tabindex="0" data-ppk="' + esc(k) + '" title="PP CT dari Saran Buffer: ' + n(r.ppBuf) + ' ctn.' + (r.ppMan ? ' Diubah di sini (tidak lagi ikut Saran Buffer).' : ' Tidak berubah oleh jadwal.') + ' Klik dua kali untuk mengubah, Delete untuk kembali ke Saran Buffer.">' + u(r.pp, r.nw) + '</td>' +
-      '<td class="num ppr">' + u(pl, r.nw) + '</td>' + sisaTd(r.pp - pl, ton(r.pp - pl));
+      '<td class="num ppr">' + u(pl, r.nw) + '</td>';
   }; for (var d0 = 1; d0 <= H; d0++) cols += '<col style="width:' + dw + 'px">'; cols += '</colgroup>';
-  var h = cols + '<thead><tr><th rowspan="2" class="l">Area mesin › mesin › SKU</th><th colspan="3" class="grp sep">' + monthLabel(P) + ' · ' + (mt ? 'ton' : 'karton') + '</th><th rowspan="2" class="num wrap2" title="Hari produksi terpakai">Hari</th><th colspan="' + H + '" class="grp sep cal">Kalender ' + monthLabel(P) + (H > D ? ' + ' + (H - D) + ' hari bulan berikutnya' : '') + ' · target harian (' + (mt ? 'ton' : 'karton') + ')</th></tr><tr>' +
-    '<th class="num sep" title="Planned production (karton) dari Saran Buffer: forecast + buffer − stok bebas. Tetap, tidak ikut jadwal">PP CT</th><th class="num" title="Yang direncanakan di mesin: jumlah rencana semua bar">Rencana</th><th class="num" title="PP CT − Rencana: yang belum direncanakan">Sisa</th>';
+  var h = cols + '<thead><tr><th rowspan="2" class="l">Area mesin › mesin › SKU</th><th colspan="2" class="grp sep">' + monthLabel(P) + ' · ' + (mt ? 'ton' : 'karton') + '</th><th rowspan="2" class="num wrap2" title="Hari produksi terpakai">Hari</th><th colspan="' + H + '" class="grp sep cal">Kalender ' + monthLabel(P) + (H > D ? ' + ' + (H - D) + ' hari bulan berikutnya' : '') + ' · target harian (' + (mt ? 'ton' : 'karton') + ')</th></tr><tr>' +
+    '<th class="num sep" title="Planned production (karton) dari Saran Buffer: forecast + buffer − stok bebas. Tetap, tidak ikut jadwal">PP CT</th><th class="num" title="Yang direncanakan di mesin: jumlah rencana semua bar">Rencana</th>';
   for (var d1 = 1; d1 <= H; d1++) h += '<th class="dy' + dcls(d1) + (d1 === 1 ? ' sep' : '') + '" data-day="' + d1 + '" tabindex="0" title="' + esc((d1 > D ? 'Bulan berikutnya. ' : '') + (gOff[d1] ? gOff[d1] + '. ' : sm.cal.info[d1] ? sm.cal.info[d1] + '. ' : '') + (d1 <= D ? 'Klik untuk menandai libur / masuk' : '')) + '">' + dayLbl(d1) + '<i>' + (d1 <= D ? DOW[dowOf(P, d1)] : '') + '</i></th>';
   h += '</tr></thead><tbody>';
   var trk = function (mc, inner) {
@@ -3609,7 +3607,7 @@ function renderPlanGrid(pm, sm, mt, all) {
       var openM = filt || !!state.ppOpenMc[x.name], e = state.capEdits[x.name];
       h += '<tr class="mach" data-m="' + esc(x.name) + '"><td><div class="fl"><button type="button" class="exp" data-ppmc="' + esc(x.name) + '" aria-expanded="' + openM + '"' + (x.items.length ? '' : ' disabled') + ' title="Tampilkan SKU dan target harian">' + (openM ? '▼' : '▶') + '</button><div>' + esc(mLbl(x.name)) + '<span class="code">' + x.items.length + ' SKU' + (x.rem ? ' · ' + esc(x.rem) : '') + '</span></div></div></td>' +
         '<td class="num cap sep' + (e ? ' edited' : '') + '" tabindex="0" data-cap="' + esc(x.name) + '" title="' + (x.rate > 0 ? 'Kapasitas per hari ' + fmt.format(Math.round(x.capDay * 100) / 100) + ' t × variasi output ' + Math.round(x.pct) + '% = ' + fmt.format(Math.round(x.rate * 10) / 10) + ' t/hari (' + fmt.format(Math.round(x.cap)) + ' t dalam ' + x.avail + ' hari kerja). Output per SKU (karton/hari) = ini ÷ berat bersih per karton.' : 'Tidak ada data kapasitas: mesin ini tidak dipakai jadwal otomatis, tapi SKU bisa ditaruh manual.') + ' Klik dua kali untuk mengubah kapasitas per hari atau variasi output.">' + (x.rate > 0 ? fmt.format(Math.round(x.rate * 10) / 10) + ' t/hari<span class="mt">' + fmt.format(Math.round(x.capDay * 10) / 10) + ' × ' + Math.round(x.pct) + '%</span>' : 'kap. –<span class="mt">tidak ada data</span>') + '</td>' +
-        '<td class="num ppr" title="Rencana mesin ini = jumlah rencana semua bar di mesin ini">' + (mt ? fmt.format(Math.round(x.planT * 10) / 10) : n(Math.round(x.plan)) + '<span class="mt">' + fmt.format(Math.round(x.planT * 10) / 10) + ' t</span>') + '</td><td class="num sisa"></td><td class="num" title="Hari terpakai / hari kerja">' + x.used + '/' + x.avail + '</td>' +
+        '<td class="num ppr" title="Rencana mesin ini = jumlah rencana semua bar di mesin ini">' + (mt ? fmt.format(Math.round(x.planT * 10) / 10) : n(Math.round(x.plan)) + '<span class="mt">' + fmt.format(Math.round(x.planT * 10) / 10) + ' t</span>') + '</td><td class="num" title="Hari terpakai / hari kerja">' + x.used + '/' + x.avail + '</td>' +
         '<td class="tl sep" colspan="' + H + '">' + trk(x, x.items.map(function (pc) { return bar(pc, true); }).join('')) + '</td></tr>';
       if (openM) x.items.forEach(function (pc) { if (!filt || hit(pc.r)) h += skuRow(pc.r, pc); });
     });
@@ -3617,7 +3615,7 @@ function renderPlanGrid(pm, sm, mt, all) {
   });
   if (!manM) grp('__np', 'Tanpa produksi ' + monthLabel(P), 'stok bebas sudah menutup forecast + buffer', pm.rows.filter(function (r) { return r.pp === 0 && !placed[r.s.key] && (!filt || hit(r)); }), false, false);
   h += '<tr class="tot"><td>Total Serang<span class="code">' + pm.rows.length + ' SKU aktif' + (all.nwMiss ? ' · ' + all.nwMiss + ' tanpa berat' : '') + '</span></td>' + paCells(pa(pm.rows)) + '<td></td>' + dayCells(dayTot, 'tsum') + '</tr>';
-  var tb = $('ppTable'); tb.style.width = (fixedW + H * dw) + 'px'; tb.style.setProperty('--fz1', W0 + 'px'); tb.style.setProperty('--fz2', (W0 + WN) + 'px'); tb.style.setProperty('--fz3', (W0 + 2 * WN) + 'px'); tb.style.setProperty('--fz4', (W0 + 3 * WN) + 'px'); tb.innerHTML = h + '</tbody>'; ppSyncScroll();
+  var tb = $('ppTable'); tb.style.width = (fixedW + H * dw) + 'px'; tb.style.setProperty('--fz1', W0 + 'px'); tb.style.setProperty('--fz2', (W0 + WN) + 'px'); tb.style.setProperty('--fz3', (W0 + 2 * WN) + 'px'); tb.innerHTML = h + '</tbody>'; ppSyncScroll();
 }
 // Excel-like frozen panes: the first four columns are sticky inside #ppScroll; the header row follows the page scroll
 function ppSyncScroll() {
@@ -5600,15 +5598,15 @@ function ppSkuPanel() {
       (ms.length ? '<table>' + ms.map(function (mc) { var cd = sm.ctDay(r, mc); return '<tr><td>' + esc(mLbl(mc.name)) + '</td><td class="num">' + (cd > 0 ? n(Math.round(cd)) + ' ct/hari · ' + Math.ceil(r.pl / cd - 0.05) + ' hari' : 'tidak ada data') + '</td></tr>'; }).join('') + '</table>' : '<p class="sub" style="margin:0">Tidak ada data mesin untuk area ini.</p>') +
       '<p class="sub" style="margin:4px 0 0">Output = kapasitas per hari ÷ berat bersih per karton × variasi output.</p>';
     var tip = (s.name || k) + '\n' + (s.nomat || s.art || k) + (r.nw ? ' · ' + fmt.format(r.nw) + ' kg/ct' : ' · berat bersih: tidak ada data') + (r.cover !== null ? ' · stok ' + fmt.format(Math.round(r.cover)) + ' hari' : '') + '\n' + stL[i.st] + (i.over ? ' (⚠ ' + n(i.over) + ' ct di atas output mesin)' : '') + (where ? ': ' + where.replace(/<[^>]+>/g, '') : '') + (r.st[1] === 'low' ? '\n' + r.st[2] : '') + '\n' + (i.st === 'nodata' ? 'Tidak bisa dijadwalkan tanpa berat bersih.' : 'Tarik ke baris mesin; klik untuk detail.');
-    var right = i.st === 'kurang' ? '<span class="ps-s red" title="Sisa yang belum tertutup target harian">−' + n(i.short) + '</span>' : i.st === 'cukup' && i.over ? '<span class="ps-s ok" title="Tertutup. ' + n(i.over) + ' ct di atas output mesin: perlu lembur, atau pindahkan sebagian rencana ke mesin lain">✓<b class="ovw">⚠</b></span>' : i.st === 'cukup' ? '<span class="ps-s ok">✓</span>' : i.st === 'nodata' ? '<span class="ps-s mut">–</span>' : '<span class="ps-s"></span>';
+    var right = i.st === 'kurang' || i.st === 'belum' ? '<span class="ps-s red" title="Sisa: PP yang belum ada di rencana">−' + n(i.short) + '</span>' : i.st === 'cukup' && i.over ? '<span class="ps-s ok" title="Tertutup. ' + n(i.over) + ' ct di atas output mesin: perlu lembur, atau pindahkan sebagian rencana ke mesin lain">✓<b class="ovw">⚠</b></span>' : i.st === 'cukup' ? '<span class="ps-s ok">✓</span>' : i.st === 'nodata' ? '<span class="ps-s mut">–</span>' : '<span class="ps-s"></span>';
     return '<div class="psk st-' + i.st + (open ? ' open' : '') + (sm.late[k] ? ' low' : '') + '" tabindex="0" data-psk="' + esc(k) + '" title="' + esc(tip) + '">' +
-      '<span class="ps-no">' + (x.no || '') + '</span><span class="ps-d" aria-hidden="true"></span><span class="ps-n">' + esc(s.name || k) + '</span><span class="ps-c">' + esc(s.nomat || s.art || k) + '</span><span class="ps-p">' + n(r.pl) + '</span>' + right +
+      '<span class="ps-no">' + (x.no || '') + '</span><span class="ps-d" aria-hidden="true"></span><span class="ps-n">' + esc(s.name || k) + '</span><span class="ps-c">' + esc(s.nomat || s.art || k) + '</span><span class="ps-p">' + n(r.pl) + '</span><span class="ps-q' + (i.plan > 0 ? '' : ' mut') + '" title="Rencana: jumlah rencana semua bar SKU ini">' + (i.plan > 0 ? n(Math.round(i.plan)) : '–') + '</span>' + right +
       (open ? '<div class="pd">' + (i.pcs.length ? '<div class="sub" style="margin-bottom:4px">' + where + '</div>' : '') + det + '</div>' : '') + '</div>';
   };
   var h = '', lastG = null;
   vis.forEach(function (x, j) { x.no = j + 1; });
   vis.forEach(function (x) { var g = x.r.mach.v || 'Tanpa area mesin'; if (srt === 'area' && g !== lastG) { var ng = vis.filter(function (y) { return (y.r.mach.v || 'Tanpa area mesin') === g; }).length, nm = sm.machines.filter(function (mc) { return mc.type === g; }).length; h += '<div class="psg"><span>' + esc(g) + '</span><span>' + ng + ' SKU · ' + (nm ? nm + ' mesin' : 'tidak ada data mesin') + '</span></div>'; lastG = g; } h += card(x); });
-  if (h) h = '<div class="psk pshd" aria-hidden="true"><span class="ps-no">No</span><span class="ps-d"></span><span class="ps-n">SKU</span><span class="ps-c">Nomat</span><span class="ps-p">PP ct</span><span class="ps-s">Sisa</span></div>' + h;
+  if (h) h = '<div class="psk pshd" aria-hidden="true"><span class="ps-no">No</span><span class="ps-d"></span><span class="ps-n">SKU</span><span class="ps-c">Nomat</span><span class="ps-p">PP ct</span><span class="ps-q">Rencana</span><span class="ps-s">Sisa</span></div>' + h;
   var fb = function (k, t) { return '<button type="button" data-psf="' + k + '" class="' + (f === k ? 'on' : '') + '">' + t + ' ' + (cnt[k] || 0) + '</button>'; };
   var focus = document.activeElement && document.activeElement.id === 'psQ', sc0 = el.scrollTop;
   el.innerHTML = ppBalCard() + '<div class="psh"><input type="search" id="psQ" placeholder="Cari SKU / Nomat / brand" aria-label="Cari SKU" value="' + esc(state.psQ || '') + '">' +
